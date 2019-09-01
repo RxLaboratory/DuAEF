@@ -59,10 +59,11 @@ function PseudoEffect(binaryFile,matchName,name)
     {
         var xmlData = new XML(xml);
 
-		if (this.matchName == '') this.matchName = xmlData.@matchname;	
+		// all attributes using '@' don't pass the jsdoc parsing. Enclosing them in an eval(string) fixes this
+		if (this.matchName == '') this.matchName = eval('xmlData.@matchname');	
 		if (this.name == '')
 		{
-			name = xmlData.@name;
+			name = eval('xmlData.@name');
 			name = name.split("=").pop();
 			DuAEF.DuScriptUI.uiStrings.push(name);
 			this.name = tr(name);
@@ -78,7 +79,7 @@ function PseudoEffect(binaryFile,matchName,name)
 			if (typeof prefix === 'undefined') prefix = '';
 
 			var baseName = "";
-			if (xmlObj.localName() != 'Effect') baseName = xmlObj.@name.split( "=" ).pop();
+			if (xmlObj.localName() != 'Effect') baseName = eval('xmlObj.@name.split( "=" ).pop()');
 			var localName = xmlObj.localName();
 
 			currentIndex++;
