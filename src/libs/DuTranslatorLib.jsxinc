@@ -394,43 +394,50 @@ function tr(s, context, args)
 	if (typeof args === 'string' || args instanceof String) args = [args];
 
 	var languageNumber = -1;
-
 	var res = s;
-	// If a language is set, search for the translation
-	if (DuAEF.Dutranslator.current != DuAEF.Dutranslator.Settings.originalLanguageId)
-	{
-		var stringNumber = -1;
 
-		// Get the translation
+	//a function to get the translation id from a given string
+	function getTranslationId( str, noCapsNorSpaces )
+	{
+		noCapsNorSpaces = def (noCapsNorSpaces, false);
+
 		for (var i = 0 ; i < DuAEF.Dutranslator.localizedStrings.length ; i++)
 		{
-			var tr = DuAEF.Dutranslator.localizedStrings[i];
-			if(tr["source"] == s)
+			var localizedString = DuAEF.Dutranslator.localizedStrings[i];
+			var testString = localizedString["source"];
+			if (noCapsNorSpaces) testString = testString.replace(/[\s\n\r]+/g,'');
+			if( testString == str)
 			{
 				// Check context
 				if (useContextId && context > -1)
 				{
-					if (tr["contextId"] == context)
+					if (localizedString["contextId"] == context)
 					{
-						stringNumber =i;
-						break;
+						return i;
 					}
 				}
 				else if(!useContextId)
 				{
-					if (tr["context"] == context)
+					if (localizedString["context"] == context)
 					{
-						stringNumber =i;
-						break;
+						return i;
 					}
 				}
 				else {
-					stringNumber =i;
-					break;
+					return i;
 				}
 			}
 		}
 
+		return -1;
+	}
+
+	// If a language is set, search for the translation
+	if (DuAEF.Dutranslator.current != DuAEF.Dutranslator.Settings.originalLanguageId)
+	{
+		// Get the translation
+		var stringNumber = getTranslationId( s )
+		
 		// If a translation is found, set it to res
 		if (stringNumber > -1) res = DuAEF.Dutranslator.localizedStrings[stringNumber]["translation"];
 		if (!res) res = s;
