@@ -7,7 +7,7 @@
 
 (function ()
 {
-	#include "../DuAEF.jsxinc"
+	#include "../src/DuAEF.jsxinc"
 
 	var file = File.openDialog("Open include file.","Javascript files: *.jsx;*.jsxinc");
 	if (!file) return;

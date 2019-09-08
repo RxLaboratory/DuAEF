@@ -8,7 +8,7 @@
 (function ()
 {
 
-  #include "../DuAEF.jsxinc"
+  #include "../src/DuAEF.jsxinc"
 
   var folder = Folder.selectDialog ("Select Folder");
   if (!folder) return;

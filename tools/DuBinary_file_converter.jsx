@@ -8,7 +8,7 @@
 (function ()
 {
 
-  #include "../DuAEF.jsxinc"
+  #include "../src/DuAEF.jsxinc"
 
   var file = File.openDialog ("Select File(s)",undefined,true);
   if (!file) return;

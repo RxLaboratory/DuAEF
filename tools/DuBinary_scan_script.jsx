@@ -1,6 +1,6 @@
 ﻿(function ()
 {
-	#include "../DuAEF.jsxinc"
+	#include "../src/DuAEF.jsxinc"
 	#include "Dutranslator.jsxinc"
 
 	var script = File.openDialog ("Select Script");
