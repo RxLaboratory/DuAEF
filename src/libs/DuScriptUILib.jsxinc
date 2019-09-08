@@ -2518,7 +2518,7 @@ DuAEF.DuScriptUI.initHelpPanel = function()
         if ( e.shiftKey ) link = 'https://bat-ultra-bunny.tumblr.com/';
         else if ( DuAEF.DuScriptUI.helpPanel.newsButton.checked ) link = DuAEF.DuScriptUI.helpPanel.news.link;
         else if ( DuAEF.DuScriptUI.helpPanel.aboutButton.checked ) link = DuAEF.DuScriptUI.helpPanel.about.link;
-        DuAEF.DuSystem.openURL( DuAEF.aboutURL );
+        DuAEF.DuSystem.openURL( link );
     }, true );
 
     var urlButtonsGroup = DuAEF.DuScriptUI.addGroup( DuAEF.DuScriptUI.helpPanel, 'row' );
