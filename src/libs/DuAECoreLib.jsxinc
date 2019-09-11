@@ -1118,6 +1118,7 @@ DuAEF.DuAE.Comp.setUniqueCompName = function (comp)
 	var newName = comp.name;
 	comp.name = '***Duik-temp-name-xxx***';
 	comp.name = DuAEF.DuAE.Project.newUniqueCompName(newName, false);
+	app.project.autoFixExpressions(newName, comp.name);
 	return comp.name;
 }
 
