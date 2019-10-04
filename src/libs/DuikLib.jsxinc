@@ -28,6 +28,9 @@ DuAEF.Duik.postInit = function ()
 {
     //Load pseudo effect files
     {
+        //kleaner
+        #include "pseudoEffects/duik_kleaner.ffx.jsxinc"
+        duik_kleaner = new PseudoEffect( duik_kleaner );
         //structures
         #include "pseudoEffects/duik_structure.ffx.jsxinc"
         duik_structure = DuAEF.DuBinary.toFile( duik_structure );
@@ -206,6 +209,8 @@ DuAEF.Duik.postInit = function ()
      * @readonly
      */
     DuAEF.Duik.PseudoEffects = {
+        //kleaner:
+        KLEANER: duik_kleaner,
         //walk ycle
         WALK_CYCLE: duik_rigged_walk_cycle_2,
         //autorig
@@ -629,7 +634,8 @@ DuAEF.Duik.Sizes = {
 //undocumented low-level enum used by Duik
 //the ids of the expressions
 DuAEF.Duik.expressionIds = {
-    LINK: '//Duik.link'
+    LINK: '//Duik.link',
+    KLEANER: '//Duik.kleaner'
 }
 
 /**
