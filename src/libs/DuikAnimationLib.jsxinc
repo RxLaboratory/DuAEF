@@ -67,18 +67,30 @@ DuAEF.Duik.Animation.smartInterpolation = function (prop,easeStart,easeEnd)
 {
 	if (prop instanceof PropertyInfo) prop = prop.getProperty();
 	if (!prop.canVaryOverTime) return;
+	if (prop.numKeys == 0) return;
+
+	var keyframes = prop.selectedKeys;
+	if (keyframes.length == 0)
+	{
+		for (var i = 1, num = prop.numKeys; i <= num; i++)
+		{
+			keyframes.push(i);
+		}
+	}
+
 
 	//set all keys to linear
-	for (var k=0;k<prop.selectedKeys.length;k++)
+	for (var k=0, num = keyframes.length; k < num ; k++)
 	{
-		prop.setInterpolationTypeAtKey(prop.selectedKeys[k],KeyframeInterpolationType.LINEAR);
-		if (prop.isSpatial) prop.setRovingAtKey(prop.selectedKeys[k],false);
+		var key = keyframes[k];
+		prop.setInterpolationTypeAtKey(key,KeyframeInterpolationType.LINEAR);
+		if (prop.isSpatial) prop.setRovingAtKey(key,false);
 	}
 
 	//smooth!
-	for (var k=0;k<prop.selectedKeys.length;k++)
+	for (var k=0, num = keyframes.length; k < num ; k++)
 	{
-		var key = prop.selectedKeys[k];
+		var key = keyframes[k];
 		var easeIn = [];
 		var easeOut = [];
 		//Compute base velocity
@@ -102,20 +114,21 @@ DuAEF.Duik.Animation.smartInterpolation = function (prop,easeStart,easeEnd)
 		//depending on options, remove ease on first and last keyframes
 		if (key == prop.numKeys && !easeEnd)
 		{
-			prop.setInterpolationTypeAtKey(prop.selectedKeys[k],KeyframeInterpolationType.LINEAR);
-			if (prop.isSpatial) prop.setRovingAtKey(prop.selectedKeys[k],false);
+			prop.setInterpolationTypeAtKey(key,KeyframeInterpolationType.LINEAR);
+			if (prop.isSpatial) prop.setRovingAtKey(key,false);
 		}
 		if (key == 1 && !easeStart)
 		{
-			prop.setInterpolationTypeAtKey(prop.selectedKeys[k],KeyframeInterpolationType.LINEAR);
-			if (prop.isSpatial) prop.setRovingAtKey(prop.selectedKeys[k],false);
+			prop.setInterpolationTypeAtKey(key,KeyframeInterpolationType.LINEAR);
+			if (prop.isSpatial) prop.setRovingAtKey(key,false);
 		}
 	}
 
+
 	//Adjust velocities
-	for (var k=prop.selectedKeys.length-1;k>=0;k--)
+	for (var k=0, num = keyframes.length; k < num ; k++)
 	{
-		var key = prop.selectedKeys[k];
+		var key = keyframes[k];
 		var easeIn = [];
 		var easeOut = [];
 		if (key < prop.numKeys && key > 1)
