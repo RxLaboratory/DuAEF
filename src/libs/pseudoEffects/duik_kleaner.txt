@@ -1,0 +1,11 @@
+Pseudo Effect: Kleaner | matchName: Pseudo/Duik Kleaner
+index['AnticipationCheckbox'] = 1
+index['Smart InterpolationCheckbox'] = 2
+index['OverlapCheckbox'] = 3
+index['AnticipationDuration (s)Slider'] = 5
+index['AnticipationAmplitudeSlider'] = 6
+index['InterpolationSlow InSlider'] = 9
+index['InterpolationSlow OutSlider'] = 10
+index['OverlapElasticitySlider'] = 13
+index['OverlapDampingSlider'] = 14
+index['OverlapBounceCheckbox'] = 15
