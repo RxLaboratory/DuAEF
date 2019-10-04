@@ -138,7 +138,7 @@ function LayerAnim()
 	* @property {boolean} isEffect - true if this is an effect (sub)property
 	* @property {boolean} riggable  - true if this prop can be rigged (it's a value which can set expressions)
 	* @property {Layer} layer - The layer containing the property
-	* @property {int} dimensions - The number of dimensions, 0 if this is not a dimensionnal value (ie color, text, shape...)
+	* @property {int} dimensions - The number of dimensions, 0 if this is not a dimensionnal value (text, shape...)
 	* @property {string} name - The name of the property
 	* @property {string} matchName - The matchName of the property
 	* @property {PropertyGroup|null} effect - The effect containing the property

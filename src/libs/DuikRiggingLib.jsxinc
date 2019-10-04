@@ -36,6 +36,7 @@ DuAEF.Duik.Rigging.chainTypes = {
  * Separates the dimensions of the properties into an effect.<br />
  * Works with 2D, 3D, and colors
  * @param {Property|PropertyInfo} prop - The property
+ * @return {PropertyInfo[]} The seperated properties (or the original one if it could not be separated)
  */
 DuAEF.Duik.Rigging.separateDimensions = function( prop )
 {
@@ -45,7 +46,7 @@ DuAEF.Duik.Rigging.separateDimensions = function( prop )
     var layer = propInfo.layer;
     var dim = propInfo.dimensions;
 
-    if ( dim < 2 || dim > 4 ) return;
+    if ( dim < 2 || dim > 4 ) return [propInfo];
 
     if ( dim == 2 )
     {
@@ -66,12 +67,13 @@ DuAEF.Duik.Rigging.separateDimensions = function( prop )
         }
         else
         {
-            for ( var k = 1, num = prop.numKeys; k <= num; k++ )
+            for ( var k = prop.numKeys; k > 0; k-- )
             {
                 var time = prop.keyTime( k );
                 var value = prop.keyValue( k );
                 effect( pseudo.xSlider ).setValueAtTime( time, value[ 0 ] );
                 effect( pseudo.ySlider ).setValueAtTime( time, value[ 1 ] );
+                prop.removeKey(k);
             }
         }
 
@@ -79,6 +81,11 @@ DuAEF.Duik.Rigging.separateDimensions = function( prop )
         prop.expression = '//Duik.separateDimensions\n' +
             'var fx = thisLayer.effect("' + effect.name + '");\n' +
             '[fx(' + pseudo.xSlider + ').value,fx(' + pseudo.ySlider + ').value];';
+
+        //return the new props
+        var xProp = new PropertyInfo(effect( pseudo.xSlider ));
+        var yProp = new PropertyInfo(effect( pseudo.ySlider ));
+        return [xProp,yProp];
     }
     else if ( dim == 3 )
     {
@@ -100,13 +107,14 @@ DuAEF.Duik.Rigging.separateDimensions = function( prop )
         }
         else
         {
-            for ( var k = 1, num = prop.numKeys; k <= num; k++ )
+            for ( var k = prop.numKeys; k > 0; k-- )
             {
                 var time = prop.keyTime( k );
                 var value = prop.keyValue( k );
                 effect( pseudo.xSlider ).setValueAtTime( time, value[ 0 ] );
                 effect( pseudo.ySlider ).setValueAtTime( time, value[ 1 ] );
                 effect( pseudo.zSlider ).setValueAtTime( time, value[ 2 ] );
+                prop.removeKey(k);
             }
         }
 
@@ -114,6 +122,12 @@ DuAEF.Duik.Rigging.separateDimensions = function( prop )
         prop.expression = '//Duik.separateDimensions\n' +
             'var fx = thisLayer.effect("' + effect.name + '");\n' +
             '[fx(' + pseudo.xSlider + ').value,fx(' + pseudo.ySlider + ').value, fx(' + pseudo.zSlider + ').value];';
+
+        //return the new props
+        var xProp = new PropertyInfo(effect( pseudo.xSlider ));
+        var yProp = new PropertyInfo(effect( pseudo.ySlider ));
+        var zProp = new PropertyInfo(effect( pseudo.zSlider ));
+        return [xProp,yProp,zProp];
     }
     else if ( dim == 4 )
     {
@@ -133,7 +147,7 @@ DuAEF.Duik.Rigging.separateDimensions = function( prop )
         }
         else
         {
-            for ( var k = 1, num = prop.numKeys; k <= num; k++ )
+            for ( var k = prop.numKeys; k > 0; k-- )
             {
                 var time = prop.keyTime( k );
                 var value = prop.keyValue( k );
@@ -141,6 +155,7 @@ DuAEF.Duik.Rigging.separateDimensions = function( prop )
                 effect( pseudo.xSlider ).setValueAtTime( time, value[ 0 ] );
                 effect( pseudo.ySlider ).setValueAtTime( time, value[ 1 ] );
                 effect( pseudo.zSlider ).setValueAtTime( time, value[ 2 ] );
+                prop.removeKey(k);
             }
         }
 
@@ -150,6 +165,12 @@ DuAEF.Duik.Rigging.separateDimensions = function( prop )
             'var color = [fx(' + pseudo.xSlider + ').value,fx(' + pseudo.ySlider + ').value, fx(' + pseudo.zSlider + ').value, 1];\n' +
             'if (fx(' + pseudo.channelsPopup + ').value == 2) hslToRgb(color);\n' +
             'else color;\n';
+
+        //return the new props
+        var xProp = new PropertyInfo(effect( pseudo.xSlider ));
+        var yProp = new PropertyInfo(effect( pseudo.ySlider ));
+        var zProp = new PropertyInfo(effect( pseudo.zSlider ));
+        return [xProp,yProp,zProp];
     }
 }
 
