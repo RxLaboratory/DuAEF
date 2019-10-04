@@ -48,6 +48,19 @@ DuAEF.Duik.Rigging.separateDimensions = function( prop )
 
     if ( dim < 2 || dim > 4 ) return [propInfo];
 
+    if (prop.isSeparationLeader)
+    {
+        prop.dimensionsSeparated = true;
+        var newProps = [];
+        for (var i = 1; i <= dim; i++)
+        {
+            var newProp = prop.parentProperty(prop.propertyIndex + i);
+            newProp = new PropertyInfo(newProp);
+            newProps.push( newProp );
+        }
+        return newProps;
+    }
+
     if ( dim == 2 )
     {
         var pseudo;
@@ -87,7 +100,8 @@ DuAEF.Duik.Rigging.separateDimensions = function( prop )
         var yProp = new PropertyInfo(effect( pseudo.ySlider ));
         return [xProp,yProp];
     }
-    else if ( dim == 3 )
+    
+    if ( dim == 3 )
     {
         var pseudo;
         if ( propInfo.isScale ) pseudo = DuAEF.Duik.PseudoEffects.THREE_DIMENSIONS_SCALE;
@@ -129,7 +143,8 @@ DuAEF.Duik.Rigging.separateDimensions = function( prop )
         var zProp = new PropertyInfo(effect( pseudo.zSlider ));
         return [xProp,yProp,zProp];
     }
-    else if ( dim == 4 )
+    
+    if ( dim == 4 )
     {
         var pseudo = DuAEF.Duik.PseudoEffects.COLOR;
         var effect = pseudo.apply( layer, propInfo.name + " RGB/HSL" );
