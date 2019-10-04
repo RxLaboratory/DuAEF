@@ -58,15 +58,24 @@ DuAEF.Duik.Animation.resetPRS = function (layer)
 /**
 	* Automatically adjust the best bezier interpolations on the keyframes
 	* @param {Property|PropertyInfo} prop - The property containing the keyframes
+	* @param {boolean} [useExpression=true] - Use an expression instead of using the interpolation of the keyframes
 	* @param {boolean} [easeStart=true] - true to ease the first keyframe, false to set it to linear
 	* @param {boolean} [easeEnd=true] - true to ease the last keyframe, false to set it to linear
-	* @todo ability to change ease influence (only when velocity is 0?)
+	* @param {PropertyGroup} [effect=null] - A pre-existing kleaner effect to use, when useExpression is true
+	* @return {PropertyGroup|null} The effect which controls the expression when useExpression is true
 	* @todo implement a better multidimensionnal algo
 */
-DuAEF.Duik.Animation.smartInterpolation = function (prop,easeStart,easeEnd)
+DuAEF.Duik.Animation.smartInterpolation = function (prop,useExpression,easeStart,easeEnd,effect)
 {
-	if (prop instanceof PropertyInfo) prop = prop.getProperty();
-	if (!prop.canVaryOverTime) return;
+	useExpression = def(useExpression, true);
+	easeStart = def(easeStart, true);
+	easeEnd = def(easeEnd, true);
+	effect = def(effect, null);
+	if (!useExpression) effect = null;
+	var propInfo = new PropertyInfo(prop);
+	prop = propInfo.getProperty();
+	if (!propInfo.editable) return;
+	if (useExpression && !propInfo.riggable) useExpression = false;
 	if (prop.numKeys == 0) return;
 
 	var keyframes = prop.selectedKeys;
@@ -88,85 +97,364 @@ DuAEF.Duik.Animation.smartInterpolation = function (prop,easeStart,easeEnd)
 	}
 
 	//smooth!
-	for (var k=0, num = keyframes.length; k < num ; k++)
+	if (useExpression)
 	{
-		var key = keyframes[k];
-		var easeIn = [];
-		var easeOut = [];
-		//Compute base velocity
-		for (var l = 0;l<prop.keyInTemporalEase(key).length;l++)
+		if (effect == null)
 		{
-			var speedIn = prop.keyInTemporalEase(key)[l].speed;
-			var speedOut = prop.keyOutTemporalEase(key)[l].speed;
-			var speed = 0;
-
-			if ( Math.abs(speedIn) <= Math.abs(speedOut) ) speed = speedIn;
-			else speed = speedOut;
-			if (( speedIn > 0 && speedOut < 0 ) || ( speedIn < 0 && speedOut > 0 )) speed = 0;
-			if (key == prop.numKeys) speed = 0;
-			if (key == 1) speed = 0;
-
-			easeIn.push(new KeyframeEase(speed,33));
-			easeOut.push(new KeyframeEase(speed, 33));
+			effect = DuAEF.Duik.PseudoEffects.KLEANER.apply(propInfo.layer);
 		}
-		prop.setTemporalEaseAtKey(key,easeIn,easeOut);
-
-		//depending on options, remove ease on first and last keyframes
-		if (key == prop.numKeys && !easeEnd)
-		{
-			prop.setInterpolationTypeAtKey(key,KeyframeInterpolationType.LINEAR);
-			if (prop.isSpatial) prop.setRovingAtKey(key,false);
-		}
-		if (key == 1 && !easeStart)
-		{
-			prop.setInterpolationTypeAtKey(key,KeyframeInterpolationType.LINEAR);
-			if (prop.isSpatial) prop.setRovingAtKey(key,false);
-		}
+		prop = propInfo.getProperty();
+		prop.expression = [DuAEF.Duik.expressionIds.KLEANER,
+			'var fx = ' + DuAEF.DuAE.Property.getExpressionLink(effect, true) + ';',
+			'var doAnticipation = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['AnticipationCheckbox'] + ').value;',
+			'var doOverlap = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['OverlapCheckbox'] + ').value;',
+			'var doInterpolation = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['Smart InterpolationCheckbox'] + ').value;',
+			'var damping = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['OverlapDampingSlider'] + ').value;',
+			'var elasticity = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['OverlapElasticitySlider'] + ').value;',
+			'var bounce = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['OverlapBounceCheckbox'] + ').value;',
+			'var anticipationDuration = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['AnticipationDuration (s)Slider'] + ').value;',
+			'var anticipationQuantity = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['AnticipationAmplitudeSlider'] + ').value / 100;',
+			'var slowIn = 1 - fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['InterpolationSlow InSlider'] + ').value / 100;',
+			'var slowOut = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['InterpolationSlow OutSlider'] + ').value / 100;',
+			'var threshold = 0.1;',
+			'',
+			'var result = value;',
+			'',
+			'function customBezier(t, tMin, tMax, value1, value2, bezierPoints) {',
+			'    if (arguments.length !== 6) return value;',
+			'    var a = value2 - value1;',
+			'    var b = tMax - tMin;',
+			'    var c = clamp((t - tMin) / b, 0, 1);',
+			'    if (!(bezierPoints instanceof Array) || bezierPoints.length !== 4) bezierPoints = [0, 0, 1, 1];',
+			'    return a * h(c, bezierPoints) + value1;',
+			'',
+			'    function h(f, g) {',
+			'        var x = 3 * g[0];',
+			'        var j = 3 * (g[2] - g[0]) - x;',
+			'        var k = 1 - x - j;',
+			'        var l = 3 * g[1];',
+			'        var m = 3 * (g[3] - g[1]) - l;',
+			'        var n = 1 - l - m;',
+			'        var d = f;',
+			'        for (var i = 0; i < 5; i++) {',
+			'            var z = d * (x + d * (j + d * k)) - f;',
+			'            if (Math.abs(z) < 1e-3) break;',
+			'            d -= z / (x + d * (2 * j + 3 * k * d));',
+			'        }',
+			'        return d * (l + d * (m + d * n));',
+			'    }',
+			'}',
+			'',
+			'function isStill( t ) {',
+			'	if (typeof t === "undefined") t = time;',
+			'	var d = valueAtTime( t ) - valueAtTime( t + framesToTime( 1 ) );',
+			'	',
+			'	if (d instanceof Array) {',
+			'		for (var i = 0; i < d.length ; i++) {',
+			'			d[i] = Math.abs(d[i]);',
+			'			if (d[i] >= threshold) {',
+			'				return false;',
+			'			}',
+			'		}',
+			'		return true;',
+			'	}',
+			'	else {',
+			'		d = Math.abs(d);',
+			'		return d < threshold;',
+			'	}',
+			'	',
+			'}',
+			'',
+			'function isKeyTop( k, axis ) {',
+			'	if (typeof axis === "undefined") axis = 0;',
+			'	var prevSpeed = velocityAtTime(k.time - threshold);',
+			'	var nextSpeed = velocityAtTime(k.time + threshold);',
+			'	if (value instanceof Array) {',
+			'		prevSpeed = prevSpeed[axis];',
+			'		nextSpeed = nextSpeed[axis];',
+			'	}',
+			'	if (Math.abs(prevSpeed) < 0.01 || Math.abs(nextSpeed) < 0.01) return true;',
+			'	return prevSpeed * nextSpeed < 0;',
+			'}',
+			'',
+			'function getNextKey() {',
+			'	var nKey = nearestKey(time);',
+			'	if (nKey.time < time && nKey.index < numKeys)',
+			'	{',
+			'		nKey = key(nKey.index + 1);',
+			'	}',
+			'	return nKey;',
+			'}',
+			'',
+			'function getPrevKey() {',
+			'	var nKey = nearestKey(time);',
+			'	if (nKey.time > time && nKey.index > 1)',
+			'	{',
+			'		nKey = key(nKey.index - 1);',
+			'	}',
+			'	return nKey;',
+			'}',
+			'',
+			'function isAfterLastKey() {',
+			'	var nKey = nearestKey(time);',
+			'	return nKey.time <= time && nKey.index == numKeys;',
+			'}',
+			'',
+			'function anticipate() {',
+			'	var result = 0;',
+			'	if (value instanceof Array) {',
+			'		result = [0];',
+			'		for (var i = 1; i < value.length; i++)',
+			'		result.push(0);',
+			'	}',
+			'',
+			'	if ( isAfterLastKey() ) return result;',
+			'	if ( numKeys < 2 ) return result;',
+			'',
+			'	var nextKey = getNextKey();',
+			'	var aKey = nextKey;',
+			'	if ( !isStill( aKey.time - threshold) ) {',
+			'		aKey = getPrevKey();',
+			'		if ( !isStill( aKey.time - threshold ) ) return result;',
+			'	}',
+			'	if ( aKey.index == numKeys ) return result;',
+			'',
+			'	var anticipationMiddle = aKey.time;',
+			'	var anticipationStart = anticipationMiddle - anticipationDuration;',
+			'	var anticipationEnd = key(aKey.index + 1).time;',
+			'	var startValue = result;',
+			'	var midValue = - valueAtTime(anticipationMiddle + anticipationDuration) + aKey.value;',
+			'	midValue = midValue * anticipationQuantity;',
+			'	var endValue = result;',
+			'	',
+			'	if ( time < anticipationStart ) {',
+			'		return result;',
+			'	}',
+			'	else if ( time < anticipationMiddle ) {',
+			'		if (value instanceof Array) {',
+			'			for (var i = 0; i < value.length; i++)',
+			'			{',
+			'				result[i] = customBezier( time, anticipationStart, anticipationMiddle, startValue[i], midValue[i], [slowOut, 0, slowIn, 1] );',
+			'			}',
+			'			return result;',
+			'		}',
+			'		else {',
+			'			return customBezier( time, anticipationStart, anticipationMiddle, startValue, midValue, [slowOut, 0, slowIn, 1] );',
+			'		}',
+			'	}',
+			'	else if ( time <= anticipationEnd ) {',
+			'		if (value instanceof Array) {',
+			'			for (var i = 0; i < value.length; i++)',
+			'			{',
+			'				result[i] = customBezier( time, anticipationMiddle, anticipationEnd, midValue[i], endValue[i], [slowOut, 0, slowIn, 1] );',
+			'			}',
+			'			return result;',
+			'		}',
+			'		else {',
+			'			return customBezier( time, anticipationMiddle, anticipationEnd, midValue, endValue, [slowOut, 0, slowIn, 1] );',
+			'		}',
+			'	}',
+			'	else {',
+			'		return result;',
+			'	}',
+			'}',
+			'',
+			'function overlap() {',
+			'	if (typeof axis === "undefined") axis = 0;',
+			'	if ( numKeys < 2 ) return 0;',
+			'	if ( elasticity == 0 ) return 0;',
+			'	if ( nearestKey(time).index == 1 ) return 0;',
+			'	var propSpeed = length(velocity);',
+			'	if ( propSpeed >= threshold) return 0;',
+			'',
+			'	var oKey = nearestKey(time);',
+			'	var overlapStart = 0;',
+			'	if ( oKey.time <= time ) { overlapStart = oKey.time; }',
+			'	else { overlapStart = key( oKey.index-1 ).time }',
+			'',
+			'	oTime = time - overlapStart;',
+			'',
+			'	var prevValue = valueAtTime(overlapStart-thisComp.frameDuration);',
+			'	var startValue = valueAtTime(overlapStart);',
+			'',
+			'	var overlap = velocityAtTime( overlapStart-thisComp.frameDuration ) * ( .15/elasticity * Math.sin(elasticity * oTime * 2 * Math.PI) / Math.exp( oTime * damping ) );',
+			'',
+			'	if (threshold > 0) {',
+			'		overlap = overlap * (1 - propSpeed / threshold);',
+			'	}',
+			'',
+			'	if (bounce) {',
+			'		if (value.length) {',
+			'			for (var i = 0; i < prevValue.length; i++) {',
+			'				if ( prevValue[i] > startValue[i] ) overlap[i] = Math.abs(overlap[i]);',
+			'				if ( prevValue[i] < startValue[i] ) overlap[i] = - Math.abs(overlap[i]);',
+			'			}',
+			'		}',
+			'		else {',
+			'			if ( prevValue > startValue ) overlap = Math.abs(overlap);',
+			'			if ( prevValue < startValue ) overlap = - Math.abs(overlap);',
+			'		}',
+			'		',
+			'	}',
+			'',
+			'	return overlap;',
+			'',
+			'}',
+			'',
+			'function smartSmooth(axis) {',
+			'	if (typeof axis === "undefined") axis = 0;',
+			'	var startKey = nearestKey(time);',
+			'	var endKey = startKey;',
+			'	if (time == startKey.time) return 0;',
+			'	if (time < startKey.time && startKey.index == 1 ) return 0;',
+			'	if (time > startKey.time && startKey.index == numKeys ) return 0;',
+			'	if (time < startKey.time) startKey = key( startKey.index - 1);',
+			'	if (time > startKey.time) endKey = key( startKey.index + 1);',
+			'	var sI = .66;',
+			'	var sO = .33;',
+			'	var sIV = 1;',
+			'	var sOV = 0;',
+			'	var sVal = startKey.value;',
+			'	var eVal = endKey.value;',
+			'	if (value instanceof Array)',
+			'	{',
+			'		sVal = sVal[axis];',
+			'		eVal = eVal[axis];',
+			'	}',
+			'	var sTime = startKey.time;',
+			'	var eTime = endKey.time;',
+			'	if (isKeyTop(startKey,axis)) sO = slowOut;',
+			'	else {',
+			'		var prevKey = key(startKey.index - 1);',
+			'		var pVal = prevKey.value;',
+			'		if (value instanceof Array) pVal = pVal[axis];',
+			'		sOV = (sVal - pVal) / (eVal - pVal);',
+			'	}',
+			'	if (isKeyTop(endKey,axis)) {',
+			'		sI = slowIn;',
+			'		if (endKey.index != numKeys) {',
+			'			var nextKey = key(endKey.index + 1);',
+			'			var nVal = nextKey.value;',
+			'			if (value instanceof Array) nVal = nVal[axis];',
+			'			if ( Math.abs( nVal - eVal) < 0.01 && doOverlap ) sI = 1;',
+			'		}',
+			'	}',
+			'	else {',
+			'		var nextKey = key(endKey.index + 1);',
+			'		var nVal = nextKey.value;',
+			'		if (value instanceof Array) nVal = nVal[axis];',
+			'		sIV = (eVal - sVal) / (nVal - sVal);',
+			'	}',
+			'	if (endKey.index == numKeys && doOverlap) {',
+			'		sI = 1;',
+			'	}',
+			'',
+			'	var val = value;',
+			'	if (value instanceof Array) val = val[axis];',
+			'	return customBezier( time, sTime, eTime, sVal, eVal, [sO, sOV, sI, sIV]) - val;',
+			'}',
+			'',
+			'if ( numKeys > 1 && fx.enabled) {',
+			'	var smartSmoothResult = 0;',
+			'	if (doInterpolation) smartSmoothResult = smartSmooth();',
+			'	if (value instanceof Array) {',
+			'		smartSmoothResult = [smartSmoothResult];',
+			'		for (var i = 1; i < value.length; i++) {',
+			'			if (doInterpolation) smartSmoothResult.push(smartSmooth(i));',
+			'			else smartSmoothResult.push(0);',
+			'		}',
+			'	}',
+			'	if (doAnticipation) result += anticipate();',
+			'	result = result + smartSmoothResult;',
+			'	if (doOverlap) result += overlap();',
+			'}',
+			'result;',
+			''
+			].join('\n');
 	}
-
-
-	//Adjust velocities
-	for (var k=0, num = keyframes.length; k < num ; k++)
+	else
 	{
-		var key = keyframes[k];
-		var easeIn = [];
-		var easeOut = [];
-		if (key < prop.numKeys && key > 1)
+		for (var k=0, num = keyframes.length; k < num ; k++)
 		{
+			var key = keyframes[k];
+			var easeIn = [];
+			var easeOut = [];
+			//Compute base velocity
 			for (var l = 0;l<prop.keyInTemporalEase(key).length;l++)
 			{
+				var speedIn = prop.keyInTemporalEase(key)[l].speed;
+				var speedOut = prop.keyOutTemporalEase(key)[l].speed;
+				var speed = 0;
 
-				var nextSpeed = prop.keyInTemporalEase(key+1)[l].speed;
-				var speed = prop.keyOutTemporalEase(key)[l].speed;
-				var defaultSpeed = ( prop.valueAtTime(prop.keyTime(key+1),true)-prop.valueAtTime(prop.keyTime(key),true) ) / (prop.keyTime(key+1) - prop.keyTime(key));
+				if ( Math.abs(speedIn) <= Math.abs(speedOut) ) speed = speedIn;
+				else speed = speedOut;
+				if (( speedIn > 0 && speedOut < 0 ) || ( speedIn < 0 && speedOut > 0 )) speed = 0;
+				if (key == prop.numKeys) speed = 0;
+				if (key == 1) speed = 0;
 
-				var nextAbsSpeed = Math.abs(nextSpeed);
-				var absSpeed = Math.abs(speed);
-
-				var nextDif = nextSpeed - defaultSpeed;
-				var dif = speed - defaultSpeed;
-
-				if (speed != 0)
-				{
-					if (nextAbsSpeed < absSpeed)
-					{
-						var fix = (1-nextAbsSpeed/absSpeed)*absSpeed;
-					}
-					else if (nextAbsSpeed != 0)
-					{
-						var fix = (1-absSpeed/nextAbsSpeed)*absSpeed;
-					}
-
-					if (-nextDif > dif) speed += fix;
-					else speed -= fix;
-
-				}
 				easeIn.push(new KeyframeEase(speed,33));
 				easeOut.push(new KeyframeEase(speed, 33));
 			}
 			prop.setTemporalEaseAtKey(key,easeIn,easeOut);
+
+			//depending on options, remove ease on first and last keyframes
+			if (key == prop.numKeys && !easeEnd)
+			{
+				prop.setInterpolationTypeAtKey(key,KeyframeInterpolationType.LINEAR);
+				if (prop.isSpatial) prop.setRovingAtKey(key,false);
+			}
+			if (key == 1 && !easeStart)
+			{
+				prop.setInterpolationTypeAtKey(key,KeyframeInterpolationType.LINEAR);
+				if (prop.isSpatial) prop.setRovingAtKey(key,false);
+			}
+		}
+
+		//Adjust velocities
+		for (var k=0, num = keyframes.length; k < num ; k++)
+		{
+			var key = keyframes[k];
+			var easeIn = [];
+			var easeOut = [];
+			if (key < prop.numKeys && key > 1)
+			{
+				for (var l = 0;l<prop.keyInTemporalEase(key).length;l++)
+				{
+
+					var nextSpeed = prop.keyInTemporalEase(key+1)[l].speed;
+					var speed = prop.keyOutTemporalEase(key)[l].speed;
+					var defaultSpeed = ( prop.valueAtTime(prop.keyTime(key+1),true)-prop.valueAtTime(prop.keyTime(key),true) ) / (prop.keyTime(key+1) - prop.keyTime(key));
+
+					var nextAbsSpeed = Math.abs(nextSpeed);
+					var absSpeed = Math.abs(speed);
+
+					var nextDif = nextSpeed - defaultSpeed;
+					var dif = speed - defaultSpeed;
+
+					if (speed != 0)
+					{
+						if (nextAbsSpeed < absSpeed)
+						{
+							var fix = (1-nextAbsSpeed/absSpeed)*absSpeed;
+						}
+						else if (nextAbsSpeed != 0)
+						{
+							var fix = (1-absSpeed/nextAbsSpeed)*absSpeed;
+						}
+
+						if (-nextDif > dif) speed += fix;
+						else speed -= fix;
+
+					}
+					easeIn.push(new KeyframeEase(speed,33));
+					easeOut.push(new KeyframeEase(speed, 33));
+				}
+				prop.setTemporalEaseAtKey(key,easeIn,easeOut);
+			}
 		}
 	}
+	
+	return effect;
 }
 
 /**
