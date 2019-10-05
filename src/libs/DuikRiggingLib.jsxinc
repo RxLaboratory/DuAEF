@@ -2636,7 +2636,7 @@ DuAEF.Duik.Rigging.bezierIK = function( layers, goal, controller )
         {
             var index = DuAEF.DuJS.Math.getLength( endPosition, layer.transform.position.value );
             index = index / totalLength;
-            layer.transform.position.expression = '//Duik.bezierIK\n' +
+            var expression = '//Duik.bezierIK\n' +
                 'var end = null;\n' +
                 'var root = null;\n' +
                 'var curve = null;\n' +
@@ -2661,6 +2661,7 @@ DuAEF.Duik.Rigging.bezierIK = function( layers, goal, controller )
                 'result -= ' + layer.transform.position.value.toSource() + ';\n' +
                 '}\n' +
                 'result;';
+            DuAEF.DuAE.Property.setExpression( layer.transform.position, expression );
         }
 
         //rotation
