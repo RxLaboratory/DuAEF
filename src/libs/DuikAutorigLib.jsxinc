@@ -1567,7 +1567,7 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 		//get the controller
 		var ctrl = structure.getController(customControllers, preferFK, 10);
 		//if any controller
-		if (ctrl)
+		if (ctrl != null)
 		{
 			//if the controller is not at the end, remove the end
 			if (ctrl.structureIndex < structure.elements.length - 1 && ctrl.structureIndex != 0) structure.elements.pop();
@@ -1598,7 +1598,7 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 
 		//create
 		if (useFK) allCtrls.push(DuAEF.Duik.Rigging.fkOverlap(structure, ctrl));
-		else if (useBezier) allCtrls = allCtrls.concat(DuAEF.Duik.Rigging.ik(structure, ctrl, true));
+		else if (useBezier) allCtrls = allCtrls.concat( DuAEF.Duik.Rigging.ik(structure, ctrl, true) );
 		else allCtrls = allCtrls.concat(DuAEF.Duik.Rigging.ik(structure, ctrl, false, threeAsOneAndTwo));
 	});
 

@@ -1041,7 +1041,7 @@ DuAEF.Duik.Rigging.ik = function( layers, controller, forceBezier, threeAsOneAnd
 
     //check if the last one is a goal
     var withGoal = true;
-    if ( typeof controller !== 'undefined' )
+    if ( typeof controller !== 'undefined' && controller != null )
     {
         var l = layers[ layers.length - 1 ];
         //check position
