@@ -2211,8 +2211,6 @@ DuAEF.DuScriptUI.addLayerSelector = function( container )
         selector.mainGroup.addEventListener( "click", selector.clicked, true );
     }
 
-
-
     //the pick button
     selector.pickImage = DuAEF.DuBinary.toFile( w14_eyedropper_m );
     selector.pickImageOver = DuAEF.DuBinary.toFile( w14_eyedropper_l );
@@ -2232,7 +2230,10 @@ DuAEF.DuScriptUI.addLayerSelector = function( container )
         selector.pauseRefresh = true;
 
         var layers;
-        if ( selector.selectedOnly ) layers = comp.selectedLayers;
+        if ( selector.selectedOnly )
+        {
+            layers = DuAEF.DuAE.Layer.sortByIndex ( comp.selectedLayers );
+        }
         else layers = comp.layers;
 
         var prevIndex = selector.index;
@@ -2291,7 +2292,9 @@ DuAEF.DuScriptUI.addLayerSelector = function( container )
     selector.popup.list.onChange = function()
     {
         if ( selector.pauseRefresh ) return;
-        selector.setCurrentIndex( selector.popup.list.selection.index );
+        var t = selector.popup.list.selection.text;
+        var index = parseInt( t.split( ' | ' )[ 0 ] );
+        selector.setCurrentIndex( index );
         if ( !cs6 ) selector.popup.hide();
     };
 
@@ -2336,6 +2339,7 @@ DuAEF.DuScriptUI.addLayerSelector = function( container )
         if ( !comp ) return null;
         try
         {
+            alert(selector.index);
             return comp.layer( selector.index )
         }
         catch ( e )
