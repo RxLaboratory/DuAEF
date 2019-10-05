@@ -284,7 +284,7 @@ DuAEF.Duik.Animation.smartInterpolation = function (prop,useExpression,easeStart
 			'	}',
 			'',
 			'	if (bounce) {',
-			'		if (value.length) {',
+			'		if (value instanceof Array) {',
 			'			for (var i = 0; i < prevValue.length; i++) {',
 			'				if ( prevValue[i] > startValue[i] ) overlap[i] = Math.abs(overlap[i]);',
 			'				if ( prevValue[i] < startValue[i] ) overlap[i] = - Math.abs(overlap[i]);',
