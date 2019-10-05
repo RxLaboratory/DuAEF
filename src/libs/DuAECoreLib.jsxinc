@@ -2845,7 +2845,11 @@ DuAEF.DuAE.Property.isEditable = function (prop)
 	if (prop.propertyType != PropertyType.PROPERTY) return false;
 	if (prop.elided) return false;
 	if (prop.dimensionsSeparated) return false;
-	if (typeof prop.value === 'undefined') return false;
+	if (prop.propertyValueType == PropertyValueType.NO_VALUE) return false;
+	if (prop.propertyValueType == PropertyValueType.CUSTOM_VALUE) return false;
+	if (prop.propertyValueType == PropertyValueType.LAYER_INDEX) return false;
+	if (prop.propertyValueType == PropertyValueType.MASK_INDEX) return false;
+	try { if (typeof prop.value === 'undefined') return false; } catch (e) { return false; }
 	//TODO find a way to detect if prop is hidden without using a try/catch
 	//try to set a value if there's no keyframe
 	if (prop.numKeys == 0)
