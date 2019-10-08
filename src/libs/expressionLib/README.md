@@ -16,8 +16,10 @@ You could "stringify" these expressions, but a useful file containing them is al
 
 #### Using DuAEF
 
-In your script, if you already use DuAEF, the expressions are available in the `DuAEF.Expressions.Library` object. Their name is the same as the name of the files in this folder.  
+In your script, if you already use DuAEF, the expressions are available in the `DuAEF.Expressions.Library` object. Their name is the same as the name of the files in this folder.
+
 Example:
+
     var myExpression = DuAEF.Expressions.Library.checkEffect;
     myExpression += '\ncheckEffect( thisLayer.effect(1), 1, "Blur" );
 
@@ -26,8 +28,10 @@ But we tolerate the use of this expression library in any script or expression, 
 
 #### Without DuAEF
 
-If you don't use DuAEF in your script, you'll have to create an empty `DuAEF` object and then include the library.  
+If you don't use DuAEF in your script, you'll have to create an empty `DuAEF` object and then include the library.
+
 Example:
+
     var DuAEF = {};
     DuAEF.Expressions = {};
     #include DuExpressionLibrary
