@@ -22,8 +22,8 @@
         "search"                : "true"
     },
 	"opts": {
-        "template": "../src-docs/templates/node_modules/tui-jsdoc-template/",
+        "template": "node_modules/tui-jsdoc-template",
 		"recurse": false,
-        "destination": "../docs/Reference"
+        "destination": "../docs"
     }
 }
