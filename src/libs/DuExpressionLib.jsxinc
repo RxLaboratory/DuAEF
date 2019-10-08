@@ -23,6 +23,6 @@
 * @namespace
 * @memberof DuAEF
 */
-DuAEF.Expressions = {};
+DuAEF.Expression = {};
 
 #include "expressionLib/DuExpressionLibrary.jsxinc"
