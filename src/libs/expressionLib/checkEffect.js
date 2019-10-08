@@ -2,6 +2,7 @@
  * Checks the type of an effect.<br />
  * This is a workaround for the missing matchName in expressions.<br />
  * It checks if the given effect has a specific property at a specific index.
+ * @function
  * @example
  * if ( checkEffect(thisLayer.effect(1), 1, "Blur") ) { "The first effect is a blur!" }
  * else { "Who knows what this is?" }
