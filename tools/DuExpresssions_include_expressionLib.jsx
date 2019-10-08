@@ -31,7 +31,7 @@
         '* @namespace',
         '* @memberof DuAEF.Expressions',
         '*/',
-        'DuAEF.Expressions.Library = {};',
+        'DuAEF.Expression.Library = {};',
         '',
         ''
         ].join('\n');
