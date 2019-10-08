@@ -106,9 +106,9 @@ DuAEF.Duik.postInit = function ()
         duik_ctrl_angle = new PseudoEffect( duik_ctrl_angle );
         //constraints
         #include "pseudoEffects/duik_orientation.ffx.jsxinc"
-        duik_orientation = DuAEF.DuBinary.toFile( duik_orientation );
+        duik_orientation = new PseudoEffect( duik_orientation );
 		#include "pseudoEffects/duik_position.ffx.jsxinc"
-        duik_position = new PseudoEffect( duik_position, 'Pseudo/DUIK position', "Position Constraint" );
+        duik_position = new PseudoEffect( duik_position );
 		#include "pseudoEffects/duik_path.ffx.jsxinc"
         duik_path = new PseudoEffect( duik_path );
 		#include "pseudoEffects/duik_parent.ffx.jsxinc"
@@ -488,9 +488,6 @@ DuAEF.Duik.postInit = function ()
     DuAEF.Duik.PseudoEffects.BLENDER.blendingCheckbox = 3;
     DuAEF.Duik.PseudoEffects.BLENDER.durationSlider = 4;
     DuAEF.Duik.PseudoEffects.BLENDER.interpolationPopup = 5;
-    //Position Constraint
-    DuAEF.Duik.PseudoEffects.POSITION.constraintLayer = 1;
-    DuAEF.Duik.PseudoEffects.POSITION.weightSlider = 2;
     //Connector
     DuAEF.Duik.PseudoEffects.ONED_CONNECTOR.connexionModePopup = 1;
     DuAEF.Duik.PseudoEffects.ONED_CONNECTOR.minimumSlider = 2;
@@ -531,8 +528,6 @@ DuAEF.Duik.postInit = function ()
         //constraints
         ATTACHMENT_OPTIONS: "Pseudo/DUIK attachment options",
         ATTACHMENT: "Pseudo/DUIK attachment",
-        PARENT: "Pseudo/DUIK parent",
-        ORIENTATION: "Pseudo/DUIK orientation",
         //Controller
         CONTROLLER: "Pseudo/DUIK controller",
         CONTROLLER_SLIDER: "Pseudo/DUIK controller slider",
@@ -635,7 +630,10 @@ DuAEF.Duik.Sizes = {
 //the ids of the expressions
 DuAEF.Duik.expressionIds = {
     LINK: '//Duik.link',
-    KLEANER: '//Duik.kleaner'
+    KLEANER: '//Duik.kleaner',
+    PARENT: '//Duik.parentConstraint',
+    POSITION: '//Duik.positionConstraint',
+    ORIENTATION: '//Duik.orientationConstraint'
 }
 
 /**
