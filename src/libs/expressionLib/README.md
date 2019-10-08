@@ -16,21 +16,25 @@ You could "stringify" these expressions, but a useful file containing them is al
 
 #### Using DuAEF
 
-In your script, if you already use DuAEF, the expressions are available in the `DuAEF.Expressions.Library` object. Their name is the same as the name of the files in this folder.  
+In your script, if you already use DuAEF, the expressions are available in the `DuAEF.Expressions.Library` object. Their name is the same as the name of the files in this folder.
+
 Example:
+
     var myExpression = DuAEF.Expressions.Library.checkEffect;
     myExpression += '\ncheckEffect( thisLayer.effect(1), 1, "Blur" );
 
-Note that due to the licence of DuAEF, if you use DuAEF in your own script, your script has to be free and open source, released under a licence compatible with the GNU General Public Licence. **This is mandatory**.  
+> Note that due to the [licence of DuAEF](https://github.com/Rainbox-dev/DuAEF/blob/master/LICENSE.md), if you use DuAEF in your own script, your script has to be free and open source, released under a licence compatible with the [GNU General Public Licence](https://github.com/Rainbox-dev/DuAEF/blob/master/LICENSE.md). **This is mandatory**.  
 But we tolerate the use of this expression library in any script or expression, as long as you don't include the full DuAEF framework. Please read the next section in this case.
 
 #### Without DuAEF
 
-If you don't use DuAEF in your script, you'll have to create an empty `DuAEF` object and then include the library.  
+If you don't use DuAEF in your script, you'll have to create an empty `DuAEF` object and then include the library.
+
 Example:
+
     var DuAEF = {};
     DuAEF.Expressions = {};
-    #include DuExpressionLibrary
+    #include DuExpressionLibrary.jsxinc
 
     var myExpression = DuAEF.Expressions.Library.checkEffect;
     myExpression += '\ncheckEffect( thisLayer.effect(1), 1, "Blur" );
