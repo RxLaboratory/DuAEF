@@ -1,16 +1,39 @@
 /**
- * The general Duduf After Effects ExtendScript Framework namespace.<br />
- * Provides some general tools and information.
- * @namespace
+ * The Duduf After Effects ExtendScript Framework.<br />
+ * by {@link https://rainboxlab.org Rainbox Lab}.
  * @example
- * //The framework version is
- * DuAEF.version;
- * //If you need to get the OS the script is running on
- * DuAEF.mac; //true on mac
- * DuAEF.win; //true on windows
- * //You can customize your script, these values are used in alerts, ui controls, etc.
- * DuAEF.scriptName = "My Beautiful Script";
- * DuAEF.scriptVersion = "1.0.0";
+ * //Encapsulate the script in a function to avoid global variables.
+ * (function(thisObj) {
+ *     //include the framework
+ *     #include DuAEF.jsxinc
+ *     //you need to initialize DuAEF, with a script name and a version
+ *     DuAEF.init("YourScriptName", "1.0.2");
+ *     //The framework version is
+ *     DuAEF.version;
+ *     //If you need to get the OS the script is running on
+ *     DuAEF.mac; //true on mac
+ *     DuAEF.win; //true on windows
+ *     //implement what you need, build the UI....
+ *     //At the end, after everything in your script has been loaded and initilized, you need to tell DuAEF you're now in runtime
+ *     DuAEF.enterRunTime();
+ * @namespace
+ * @author Nicolas Dufresne and contributors
+ * @copyright 2017 - 2019 Nicolas Dufresne, Rainbox Laboratory
+ * @version 0.1.1-Beta
+ * @license GPL-3.0 <br />
+ * DuAEF is free software: you can redistribute it and/or modify<br />
+ * it under the terms of the GNU General Public License as published by<br />
+ * the Free Software Foundation, either version 3 of the License, or<br />
+ * (at your option) any later version.<br />
+ *<br />
+ * DuAEF is distributed in the hope that it will be useful,<br />
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+ * GNU General Public License for more details.<br />
+ *<br />
+ * You should have received a copy of the GNU General Public License<br />
+ * along with DuAEF. If not, see {@link http://www.gnu.org/licenses/}.
+ * })(this);
  */
 var DuAEF = {};
 /**
