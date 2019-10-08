@@ -26,7 +26,15 @@
     }
 
     //create jsxinc content
-    var content = '';
+    var content = ['/**',
+        '* Expression Library',
+        '* @namespace',
+        '* @memberof DuAEF.Expressions',
+        '*/',
+        'DuAEF.Expressions.Library = {};',
+        '',
+        ''
+        ].join('\n');
     for (var i = 0, num = expressions.length; i < num; i++)
     {
         var exp = expressions[i];
