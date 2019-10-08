@@ -411,66 +411,66 @@ DuAEF.Duik.Automation.createEffectorController = function (comp)
 		var innerContent = innerGroup.property("ADBE Vectors Group");
 		var innerCircle = innerContent.addProperty("ADBE Vector Shape - Ellipse");
 		innerCircle("ADBE Vector Ellipse Size").expression = '//Duik.effector.inner\n' +
-			'if (effect("Effector")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.modePopup + ').value == 1)\n' +
+			'if (effect("' + ef.name + '")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.modePopup + ').value == 1)\n' +
 			'{\n' +
-			'var inner = effect("Effector")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.innerLimitSlider + ')*2;\n' +
+			'var inner = effect("' + ef.name + '")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.innerLimitSlider + ')*2;\n' +
 			'[inner,inner];\n' +
 			'}\n' +
 			'else [0,0];';
 		var innerStroke = innerContent.addProperty("ADBE Vector Graphic - Stroke");
 		innerStroke("ADBE Vector Stroke Color").setValue(DuAEF.DuJS.Color.Colors.GREEN);
-		innerGroup.property('ADBE Vector Transform Group').property('ADBE Vector Group Opacity').expression = 'if (effect("Effector")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.modePopup + ').value == 1) 100; else 0;';
+		innerGroup.property('ADBE Vector Transform Group').property('ADBE Vector Group Opacity').expression = 'if (effect("' + ef.name + '")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.modePopup + ').value == 1) 100; else 0;';
 
 		var outerGroup =  ctrlLayer("ADBE Root Vectors Group").addProperty("ADBE Vector Group");
 		outerGroup.name = "Outer (Circle)";
 		var outerContent = outerGroup.property("ADBE Vectors Group");
 		var outerCircle = outerContent.addProperty("ADBE Vector Shape - Ellipse");
-		outerCircle("ADBE Vector Ellipse Size").expression = '//Duik.effector.inner\n' +
-			'if (effect("Effector")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.modePopup + ').value == 1)\n' +
+		outerCircle("ADBE Vector Ellipse Size").expression = '//Duik.effector.outer\n' +
+			'if (effect("' + ef.name + '")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.modePopup + ').value == 1)\n' +
 			'{\n' +
-			'var inner = effect("Effector")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.outerLimitSlider + ')*2;\n' +
+			'var inner = effect("' + ef.name + '")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.outerLimitSlider + ')*2;\n' +
 			'[inner,inner];\n' +
 			'}\n' +
 			'else [0,0];';
 		var outerStroke = outerContent.addProperty("ADBE Vector Graphic - Stroke");
 		outerStroke("ADBE Vector Stroke Color").setValue(DuAEF.DuJS.Color.Colors.RAINBOX_RED);
-		outerGroup.property('ADBE Vector Transform Group').property('ADBE Vector Group Opacity').expression = 'if (effect("Effector")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.modePopup + ').value == 1) 100; else 0;';
+		outerGroup.property('ADBE Vector Transform Group').property('ADBE Vector Group Opacity').expression = 'if (effect("' + ef.name + '")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.modePopup + ').value == 1) 100; else 0;';
 
 		var innerGroupLinear = ctrlLayer("ADBE Root Vectors Group").addProperty("ADBE Vector Group");
 		innerGroupLinear.name = "Inner (Line)";
 		var innerContentLinear = innerGroupLinear.property("ADBE Vectors Group");
 		var innerRect = innerContentLinear.addProperty("ADBE Vector Shape - Rect");
 		innerRect("ADBE Vector Rect Size").expression = '//Duik.effector.inner\n' +
-			'if (effect("Effector")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.modePopup + ').value == 2)\n' +
-			'[effect("Effector")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.innerLimitSlider + '),thisComp.height];\n' +
+			'if (effect("' + ef.name + '")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.modePopup + ').value == 2)\n' +
+			'[effect("' + ef.name + '")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.innerLimitSlider + '),thisComp.height];\n' +
 			'else [0,0];';
 		var innerTrim = innerContentLinear.addProperty('ADBE Vector Filter - Trim');
 		innerTrim('ADBE Vector Trim Start').setValue(50);
-		innerTrim('ADBE Vector Trim End').expression = 'var w = effect("Effector")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.innerLimitSlider + ');\n' +
+		innerTrim('ADBE Vector Trim End').expression = 'var w = effect("' + ef.name + '")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.innerLimitSlider + ');\n' +
 			'var h = thisComp.height;\n' +
 			'var l = 2*w+2*h;\n' +
 			'100-w/l*100;';
 		var innerStroke = innerContentLinear.addProperty("ADBE Vector Graphic - Stroke");
 		innerStroke("ADBE Vector Stroke Color").setValue(DuAEF.DuJS.Color.Colors.GREEN);
-		innerGroupLinear.property('ADBE Vector Transform Group').property('ADBE Vector Group Opacity').expression = 'if (effect("Effector")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.modePopup + ').value == 2) 100; else 0;';
+		innerGroupLinear.property('ADBE Vector Transform Group').property('ADBE Vector Group Opacity').expression = 'if (effect("' + ef.name + '")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.modePopup + ').value == 2) 100; else 0;';
 
 		var outerGroupLinear = ctrlLayer("ADBE Root Vectors Group").addProperty("ADBE Vector Group");
 		outerGroupLinear.name = "Inner (Line)";
 		var outerContentLinear = outerGroupLinear.property("ADBE Vectors Group");
 		var outerRect = outerContentLinear.addProperty("ADBE Vector Shape - Rect");
 		outerRect("ADBE Vector Rect Size").expression = '//Duik.effector.inner\n' +
-			'if (effect("Effector")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.modePopup + ').value == 2)\n' +
-			'[effect("Effector")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.innerLimitSlider + '),thisComp.height];\n' +
+			'if (effect("' + ef.name + '")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.modePopup + ').value == 2)\n' +
+			'[effect("' + ef.name + '")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.innerLimitSlider + '),thisComp.height];\n' +
 			'else [0,0];';
 		var outerTrim = outerContentLinear.addProperty('ADBE Vector Filter - Trim');
 		outerTrim('ADBE Vector Trim Start').setValue(0);
-		outerTrim('ADBE Vector Trim End').expression = 'var w = effect("Effector")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.innerLimitSlider + ');\n' +
+		outerTrim('ADBE Vector Trim End').expression = 'var w = effect("' + ef.name + '")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.innerLimitSlider + ');\n' +
 			'var h = thisComp.height;\n' +
 			'var l = 2*w+2*h;\n' +
 			'100-(h+2*w)/l*100;';
 		var outerStroke = outerContentLinear.addProperty("ADBE Vector Graphic - Stroke");
 		outerStroke("ADBE Vector Stroke Color").setValue(DuAEF.DuJS.Color.Colors.RAINBOX_RED);
-		outerGroupLinear.property('ADBE Vector Transform Group').property('ADBE Vector Group Opacity').expression = 'if (effect("Effector")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.modePopup + ').value == 2) 100; else 0;';
+		outerGroupLinear.property('ADBE Vector Transform Group').property('ADBE Vector Group Opacity').expression = 'if (effect("' + ef.name + '")(' + DuAEF.Duik.PseudoEffects.EFFECTOR.modePopup + ').value == 2) 100; else 0;';
 
 		//unselect
 		ctrlLayer.guideLayer = true;
@@ -501,17 +501,21 @@ DuAEF.Duik.Automation.effector = function (prop,effect,ctrlLayer)
 	var layer = prop.layer;
 	var comp = layer.containingComp;
 
+	var createCtrlLayer = ctrlLayer == null;
+
 	//create effector
-	if (ctrlLayer == null)
+	if (createCtrlLayer)
 	{
 		ctrlLayer = DuAEF.Duik.Automation.createEffectorController(comp);
 		//unselect
 		ctrlLayer.selected = false;
 		//set Defaults
 		var distance = DuAEF.DuAE.Layer.getDistance(layer,ctrlLayer);
-		ctrlLayer.effect("Effector")(DuAEF.Duik.PseudoEffects.EFFECTOR.innerLimitSlider).setValue(distance/4);
-		ctrlLayer.effect("Effector")(DuAEF.Duik.PseudoEffects.EFFECTOR.outerLimitSlider).setValue(distance*3/4);
+		ctrlLayer.effect( DuAEF.Duik.PseudoEffects.EFFECTOR.matchName )( DuAEF.Duik.PseudoEffects.EFFECTOR.innerLimitSlider ).setValue(distance/4);
+		ctrlLayer.effect( DuAEF.Duik.PseudoEffects.EFFECTOR.matchName )( DuAEF.Duik.PseudoEffects.EFFECTOR.outerLimitSlider ).setValue(distance*3/4);
 	}
+
+	var effectorEffect = ctrlLayer.effect( DuAEF.Duik.PseudoEffects.EFFECTOR.matchName );
 
 	var ctrlComp = ctrlLayer.containingComp;
 
@@ -536,7 +540,7 @@ DuAEF.Duik.Automation.effector = function (prop,effect,ctrlLayer)
 		'try',
 		'{',
 		'    var ctrl = ' + ctrlLink  + ';',
-		'    fx = ctrl.effect( "Effector" );',
+		'    fx = ctrl.effect( "' + effectorEffect.name + '" );',
 		'}',
 		'catch ( e )',
 		'{}',
