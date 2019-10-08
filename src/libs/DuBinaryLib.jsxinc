@@ -80,8 +80,8 @@ DuAEF.DuBinary.toFile = function(duBinaryFile,outputFileName,onlyAtFirstRun)
 	var file = new File(outputFileName);
 
   // performance
-  // do not extract if the file exists and we're not in the first run
-  if (file.exists && !DuAEF.scriptFirstRun)
+  // do not extract if the file exists and we're not in the first run (or debug mode)
+  if (file.exists && !DuAEF.scriptFirstRun && !DuAEF.debug)
   {
     return file;
   }
