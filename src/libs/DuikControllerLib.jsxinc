@@ -1130,11 +1130,11 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 	else if (type == DuAEF.Duik.Controller.Types.SLIDER)
 	{
 		var shape1 = iconContent.addProperty("ADBE Vector Shape - Ellipse");
-		shape1('ADBE Vector Ellipse Size').expression = 'c = (effect("Slider")(' + pseudoEffect.index["HandleSizeSlider"] + '))/5-2;\n[c, c]';
+		shape1('ADBE Vector Ellipse Size').expression = 'c = (effect("' + effect.name + '")(' + pseudoEffect.index["HandleSizeSlider"] + '))/5-2;\n[c, c]';
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Slider")(' + pseudoEffect.index["HandleColorColor"] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index["HandleColorColor"] + ')';
 
-		iconGroup.transform.opacity.expression = 'effect("Slider")(' + pseudoEffect.index["HandleOpacitySlider"] + ')';
+		iconGroup.transform.opacity.expression = 'effect("' + effect.name + '")(' + pseudoEffect.index["HandleOpacitySlider"] + ')';
 
 		ctrl.position.expression = '[value[0],0];';
 
@@ -1163,17 +1163,17 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		anchorGroup.name = 'Anchor';
 		var anchorContent = anchorGroup.property("ADBE Vectors Group");
 		var rectangle = anchorContent.addProperty("ADBE Vector Shape - Rect");
-		rectangle("ADBE Vector Rect Size").expression = 'var fx = thisComp.layer("' + ctrl.name + '").effect("Slider");\nc = fx(' + pseudoEffect.index["HandleSizeSlider"] + ').value/100*20;\nx = fx(' + pseudoEffect.index["SliderSizeSlider"] + ').value+c;\n[x,c]';
-		rectangle("ADBE Vector Rect Roundness").expression = 'thisComp.layer("' + ctrl.name + '").effect("Slider")(' + pseudoEffect.index["HandleSizeSlider"] + ')/100*10';
+		rectangle("ADBE Vector Rect Size").expression = 'var fx = thisComp.layer("' + ctrl.name + '").effect("' + effect.name + '");\nc = fx(' + pseudoEffect.index["HandleSizeSlider"] + ').value/100*20;\nx = fx(' + pseudoEffect.index["SliderSizeSlider"] + ').value+c;\n[x,c]';
+		rectangle("ADBE Vector Rect Roundness").expression = 'thisComp.layer("' + ctrl.name + '").effect("' + effect.name + '")(' + pseudoEffect.index["HandleSizeSlider"] + ')/100*10';
 		var stroke = anchorContent.addProperty("ADBE Vector Graphic - Stroke");
-		stroke("ADBE Vector Stroke Color").expression = 'thisComp.layer("' + ctrl.name + '").effect("Slider")(' + pseudoEffect.index["SliderColorColor"] + ').value';
+		stroke("ADBE Vector Stroke Color").expression = 'thisComp.layer("' + ctrl.name + '").effect("' + effect.name + '")(' + pseudoEffect.index["SliderColorColor"] + ').value';
 		stroke("ADBE Vector Stroke Width").expression = '100/content("Anchor").transform.scale[0]';
 		stroke("ADBE Vector Stroke Line Cap").setValue(2);
 
 		effect( pseudoEffect.index["ValueSlider"] ).expression = 'ctrl = thisComp.layer("' + ctrl.name + '");\n' +
 						'x = ctrl.transform.position[0];\n' +
-						'c = ctrl.effect("Slider")(' + pseudoEffect.index["HandleSizeSlider"] + ').value/100*20;\n' +
-						'h = ctrl.effect("Slider")(' + pseudoEffect.index["SliderSizeSlider"] + ').value+c;\n' +
+						'c = ctrl.effect("' + effect.name + '")(' + pseudoEffect.index["HandleSizeSlider"] + ').value/100*20;\n' +
+						'h = ctrl.effect("' + effect.name + '")(' + pseudoEffect.index["SliderSizeSlider"] + ').value+c;\n' +
 						'h = h-c;\n' +
 						'h = h/2;\n' +
 						'linear(x,-h,h,-100,100);';
@@ -1181,11 +1181,11 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 	else if (type == DuAEF.Duik.Controller.Types.DOUBLE_SLIDER)
 	{
 		var shape1 = iconContent.addProperty("ADBE Vector Shape - Ellipse");
-		shape1('ADBE Vector Ellipse Size').expression = 'c = (effect("Slider")(' + pseudoEffect.index["HandleSizeSlider"] + '))/5-2;\n[c, c]';
+		shape1('ADBE Vector Ellipse Size').expression = 'c = (effect("' + effect.name + '")(' + pseudoEffect.index["HandleSizeSlider"] + '))/5-2;\n[c, c]';
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Slider")(' + pseudoEffect.index["HandleColorColor"] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index["HandleColorColor"] + ')';
 
-		iconGroup.transform.opacity.expression = 'effect("Slider")(' + pseudoEffect.index["HandleOpacitySlider"] + ')';
+		iconGroup.transform.opacity.expression = 'effect("' + effect.name + '")(' + pseudoEffect.index["HandleOpacitySlider"] + ')';
 
 		//create anchor
 		var ctrlBG = comp.layers.addShape();
@@ -1213,28 +1213,28 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		anchorGroup.name = 'Anchor';
 		var anchorContent = anchorGroup.property("ADBE Vectors Group");
 		var rectangle = anchorContent.addProperty("ADBE Vector Shape - Rect");
-		rectangle("ADBE Vector Rect Size").expression = 'ctrl = thisComp.layer("' + ctrl.name + '");\nc = ctrl.effect("Slider")(' + pseudoEffect.index["HandleSizeSlider"] + ')/100*20;\nx = ctrl.effect("Slider")(' + pseudoEffect.index["SliderSizeSlider"] + ')+c;\n[x,x]';
-		rectangle("ADBE Vector Rect Roundness").expression = 'thisComp.layer("' + ctrl.name + '").effect("Slider")(' + pseudoEffect.index["HandleSizeSlider"] + ')/100*10';
+		rectangle("ADBE Vector Rect Size").expression = 'ctrl = thisComp.layer("' + ctrl.name + '");\nc = ctrl.effect("' + effect.name + '")(' + pseudoEffect.index["HandleSizeSlider"] + ')/100*20;\nx = ctrl.effect("' + effect.name + '")(' + pseudoEffect.index["SliderSizeSlider"] + ')+c;\n[x,x]';
+		rectangle("ADBE Vector Rect Roundness").expression = 'thisComp.layer("' + ctrl.name + '").effect("' + effect.name + '")(' + pseudoEffect.index["HandleSizeSlider"] + ')/100*10';
 		var stroke = anchorContent.addProperty("ADBE Vector Graphic - Stroke");
-		stroke("ADBE Vector Stroke Color").expression = 'thisComp.layer("' + ctrl.name + '").effect("Slider")(' + pseudoEffect.index["SliderColorColor"] + ')';
+		stroke("ADBE Vector Stroke Color").expression = 'thisComp.layer("' + ctrl.name + '").effect("' + effect.name + '")(' + pseudoEffect.index["SliderColorColor"] + ')';
 		stroke("ADBE Vector Stroke Width").expression = '100/content("Anchor").transform.scale[0]';
 		stroke("ADBE Vector Stroke Line Cap").setValue(2);
 
 		effect(pseudoEffect.index["X ValueSlider"]).expression = 'ctrl = thisComp.layer("' + ctrl.name + '");\n' +
 						'x = ctrl.transform.position[0];\n' +
-						'c = ctrl.effect("Slider")(' + pseudoEffect.index["HandleSizeSlider"] + ')/100*20;\n' +
-						'h = ctrl.effect("Slider")(' + pseudoEffect.index["SliderSizeSlider"] + ')+c;\n' +
+						'c = ctrl.effect("' + effect.name + '")(' + pseudoEffect.index["HandleSizeSlider"] + ')/100*20;\n' +
+						'h = ctrl.effect("' + effect.name + '")(' + pseudoEffect.index["SliderSizeSlider"] + ')+c;\n' +
 						'h = h-c;\n' +
 						'h = h/2;\n' +
 						'linear(x,-h,h,-100,100);';
 		effect(pseudoEffect.index["Y ValueSlider"]).expression = 'ctrl = thisComp.layer("' + ctrl.name + '");\n' +
 						'x = ctrl.transform.position[1];\n' +
-						'c = ctrl.effect("Slider")(' + pseudoEffect.index["HandleSizeSlider"] + ')/100*20;\n' +
-						'h = ctrl.effect("Slider")(' + pseudoEffect.index["SliderSizeSlider"] + ')+c;\n' +
+						'c = ctrl.effect("' + effect.name + '")(' + pseudoEffect.index["HandleSizeSlider"] + ')/100*20;\n' +
+						'h = ctrl.effect("' + effect.name + '")(' + pseudoEffect.index["SliderSizeSlider"] + ')+c;\n' +
 						'h = h-c;\n' +
 						'h = h/2;\n' +
 						'linear(x,-h,h,-100,100);';
-		effect( pseudoEffect.index["2D ValuePoint"] ).expression = '[effect("Slider")(' + pseudoEffect.index["X ValueSlider"] + '),effect("Slider")(' + pseudoEffect.index["Y ValueSlider"] + ')]';
+		effect( pseudoEffect.index["2D ValuePoint"] ).expression = '[effect("' + effect.name + '")(' + pseudoEffect.index["X ValueSlider"] + '),effect("' + effect.name + '")(' + pseudoEffect.index["Y ValueSlider"] + ')]';
 	}
 	else if (type == DuAEF.Duik.Controller.Types.ANGLE)
 	{
@@ -1242,10 +1242,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
          shape1("ADBE Vector Rect Size").setValue([2,25]);
          shape1("ADBE Vector Rect Position").setValue([0,-12]);
 		var fill = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		fill("ADBE Vector Fill Color").expression = 'effect("Angle")(2)';
+		fill("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(2)';
         
-		iconGroup.transform.opacity.expression = 'effect("Angle")(' + pseudoEffect.index["HandleOpacitySlider"] + ')';
-		iconGroup.transform.scale.expression = '[effect("Angle")(' + pseudoEffect.index["HandleSizeSlider"] + ')*2,effect("Angle")(' + pseudoEffect.index["HandleSizeSlider"] + ')*2]';
+		iconGroup.transform.opacity.expression = 'effect("' + effect.name + '")(' + pseudoEffect.index["HandleOpacitySlider"] + ')';
+		iconGroup.transform.scale.expression = '[effect("' + effect.name + '")(' + pseudoEffect.index["HandleSizeSlider"] + ')*2,effect("' + effect.name + '")(' + pseudoEffect.index["HandleSizeSlider"] + ')*2]';
 
 		//create anchor
 		var ctrlBG = comp.layers.addShape();
@@ -1273,9 +1273,9 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		anchorGroup.name = 'Anchor';
 		var anchorContent = anchorGroup.property("ADBE Vectors Group");
 		var circle = anchorContent.addProperty("ADBE Vector Shape - Ellipse");
-		circle("ADBE Vector Ellipse Size").expression = 'x = thisComp.layer("' + ctrl.name + '").effect("Angle")(' + pseudoEffect.index["SliderSizeSlider"] + ');\n[x,x]';
+		circle("ADBE Vector Ellipse Size").expression = 'x = thisComp.layer("' + ctrl.name + '").effect("' + effect.name + '")(' + pseudoEffect.index["SliderSizeSlider"] + ');\n[x,x]';
 		var stroke = anchorContent.addProperty("ADBE Vector Graphic - Stroke");
-		stroke("ADBE Vector Stroke Color").expression = 'thisComp.layer("' + ctrl.name + '").effect("Angle")(' + pseudoEffect.index["SliderColorColor"] + ')';
+		stroke("ADBE Vector Stroke Color").expression = 'thisComp.layer("' + ctrl.name + '").effect("' + effect.name + '")(' + pseudoEffect.index["SliderColorColor"] + ')';
 		stroke("ADBE Vector Stroke Width").expression = '100/content("Anchor").transform.scale[0]';
 		stroke("ADBE Vector Stroke Line Cap").setValue(2);
 
