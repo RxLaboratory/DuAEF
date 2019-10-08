@@ -12,12 +12,12 @@
  * @return {boolean} True when the property at propIndex is named propName
  */
 function checkDuikEffect(fx, duikMatchName) {
-    if (fx.numProperties  < 1) return false;
+    if (fx.numProperties  < 3) return false;
     if (!!$.engineName) {
-        if ( fx(1).name != duikMatchName ) return false;
+        if ( fx(2).name != duikMatchName ) return false;
     }
     else {
-        try { if (fx(1).name != duikMatchName) return false; }
+        try { if (fx(2).name != duikMatchName) return false; }
         catch (e) { return false; }
     }
     return true;
