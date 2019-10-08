@@ -55,3 +55,4 @@
 #include "libs/DuXMLLib.jsxinc"
 #include "libs/DuSystemLib.jsxinc"
 #include "libs/DuPseudoEffectLib.jsxinc"
+#include "libs/DuExpressionLib.jsxinc"
