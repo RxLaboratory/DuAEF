@@ -34,7 +34,7 @@ Example:
 
     var DuAEF = {};
     DuAEF.Expressions = {};
-    #include DuExpressionLibrary
+    #include DuExpressionLibrary.jsxinc
 
     var myExpression = DuAEF.Expressions.Library.checkEffect;
     myExpression += '\ncheckEffect( thisLayer.effect(1), 1, "Blur" );
