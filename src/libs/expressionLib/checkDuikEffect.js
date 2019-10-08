@@ -3,7 +3,6 @@
  * This is a workaround for the missing matchName in expressions.<br />
  * Pseudo-Effects used by Duik start with a hidden property which name is the same as the matchName of the effect itself (without the 'Pseudo/' part).
  * @function
- * @name checkDuikEffect
  * @example
  * if ( checkEffect(thisLayer.effect(1), "DUIK parentConstraint2") ) { "This is the second version of the parent constraint by Duik" }
  * else { "Who knows what this is?" }
