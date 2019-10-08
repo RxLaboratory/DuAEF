@@ -482,9 +482,9 @@ DuAEF.Duik.Rigging.orientationConstraint = function( layer )
     var index = DuAEF.Duik.PseudoEffects.ORIENTATION.index;
 
     layer.rotation.expression = [DuAEF.Duik.expressionIds.ORIENTATION,
-        DuAEF.Expression.Library.getOrientation,
-        DuAEF.Expression.Library.dishineritRotation,
-        DuAEF.Expression.Library.checkDuikEffect,
+        DuAEF.DuExpression.Library.getOrientation,
+        DuAEF.DuExpression.Library.dishineritRotation,
+        DuAEF.DuExpression.Library.checkDuikEffect,
         'var result = dishineritRotation();',
         'for ( var i = 1; i <= thisLayer( "Effects" ).numProperties; i++ ) {',
         '    var fx = effect( i );',
@@ -512,7 +512,7 @@ DuAEF.Duik.Rigging.positionConstraint = function( layer )
     effect( index['Weight_Slider'] ).setValue( 0 );
 
     layer.position.expression = [DuAEF.Duik.expressionIds.POSITION,
-        DuAEF.Expression.Library.checkDuikEffect,
+        DuAEF.DuExpression.Library.checkDuikEffect,
         'var result = value;',
         'for ( var i = 1; i <= thisLayer( "Effects" ).numProperties; i++ ) {',
         '    var fx = effect( i );',
@@ -596,8 +596,8 @@ DuAEF.Duik.Rigging.parentConstraint = function( layer )
     var index = DuAEF.Duik.PseudoEffects.PARENT.index;
 
     var posExpr = [DuAEF.Duik.expressionIds.PARENT,
-        DuAEF.Expression.Library.translatePointWithLayer,
-        DuAEF.Expression.Library.checkDuikEffect,
+        DuAEF.DuExpression.Library.translatePointWithLayer,
+        DuAEF.DuExpression.Library.checkDuikEffect,
         'var result = thisLayer.position.valueAtTime( 0 );',
         'var cF = 1;',
         'while ( cF <= timeToFrames() ) {',
@@ -635,8 +635,8 @@ DuAEF.Duik.Rigging.parentConstraint = function( layer )
 	}
 
     var rotExpression = [DuAEF.Duik.expressionIds.PARENT,
-        DuAEF.Expression.Library.getOrientationAtTime,
-        DuAEF.Expression.Library.checkDuikEffect,
+        DuAEF.DuExpression.Library.getOrientationAtTime,
+        DuAEF.DuExpression.Library.checkDuikEffect,
         'var result = value;',
         'for ( var i = 1; i <= thisLayer( "Effects" ).numProperties; i++ ) {',
         '    var fx = effect( i );',
