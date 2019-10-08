@@ -1,9 +1,10 @@
-Pseudo Effect: Parent constraint | matchName: Pseudo/DUIK Parent constraint
-index['LayerLayer'] = 1
-index['WeightSlider'] = 2
-index['InheritancePositionCheckbox'] = 4
-index['InheritanceRotationCheckbox'] = 5
-index['Motion Blur PrecisionSlider'] = 7
-index['Duplicate this effectGroup'] = 8
-index['to link toGroup'] = 10
-index['other layers.Group'] = 12
+Pseudo Effect: Parent constraint | matchName: Pseudo/DUIK parentConstraint2
+index['DUIK DataDUIK parentConstraint2_Checkbox'] = 2
+index['Layer_Layer'] = 4
+index['Weight_Slider'] = 5
+index['InheritancePosition_Checkbox'] = 7
+index['InheritanceRotation_Checkbox'] = 8
+index['Motion Blur Precision_Slider'] = 10
+index['Duplicate this effect_Group'] = 11
+index['to constain to_Group'] = 13
+index['other layers._Group'] = 15
