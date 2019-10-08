@@ -93,7 +93,7 @@ function PseudoEffect(binaryFile,matchName,name)
 			}
 			else
 			{
-				var n = prefix + baseName + localName;
+				var n = prefix + baseName + "_" + localName;
 				index[n] = currentIndex;
 			}
 
