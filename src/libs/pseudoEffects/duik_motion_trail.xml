@@ -1,0 +1,17 @@
+<Effect matchname="Pseudo/DUIK motion trail v02" name="$$$/AE/Preset/DUIKmotiontrailv02=Motion trail">
+	<Layer name="$$$/AE/Preset/Motionsource=Motion source" default_self="false" />
+	<Slider name="$$$/AE/Preset/In(frames)=In (frames)" default="-50" slider_min="-1000" slider_max="1000" valid_min="-10000" valid_max="10000" precision="0" />
+	<Slider name="$$$/AE/Preset/Out(frames)=Out (frames)" default="0" slider_min="-1000" slider_max="1000" valid_min="-10000" valid_max="10000" precision="0" />
+	<Color name="$$$/AE/Preset/Color=Color" default_red="236" default_green="24" default_blue="24" />
+	<Slider name="$$$/AE/Preset/Opacity=Opacity" default="100" slider_min="0" slider_max="100" valid_min="0" valid_max="100" precision="0" DISPLAY_PERCENT="true" />
+	<Slider name="$$$/AE/Preset/Width=Width" default="2" slider_min="1" slider_max="100" valid_min="1" valid_max="1000" precision="1" />
+	<Slider name="$$$/AE/Preset/Pathoffset=Path offset" default="0" slider_min="0" slider_max="100" valid_min="0" valid_max="1000" precision="1" />
+	<Checkbox name="$$$/AE/Preset/Taper=Taper" hold="true" default="false" />
+	<Checkbox name="$$$/AE/Preset/Auto-width=Auto-width" hold="true" default="true" />
+	<Group name="$$$/AE/Preset/Sampling=Sampling" >
+		<Popup name="$$$/AE/Preset/Method=Method" hold="true" CANNOT_TIME_VARY="true" default="2" popup_string="Each frame|Automatic|Sub-frame" />
+		<Group name="$$$/AE/Preset/Famesubdivisionwhenusing=Fame subdivision when using" dim="true" />
+		<Group name="$$$/AE/Preset/sub-frameorautomethod:=sub-frame or auto method:" dim="true" />
+		<Slider name="$$$/AE/Preset/Samples=Samples" CANNOT_TIME_VARY="true" default="2" slider_min="1" slider_max="10" valid_min="1" valid_max="100" precision="0" />
+	</Group>
+</Effect>
