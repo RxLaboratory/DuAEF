@@ -4770,7 +4770,7 @@ DuAEF.DuAE.Property.getMaxVelocity = function(prop,preExpression)
 
 /**
 * Converts the expression as a string which can be copy/pasted and included in a script.
-* @param {Property|PropertyInfo[string]} prop - The property containing the expression or the expression itself.
+* @param {Property|PropertyInfo|string} prop - The property containing the expression or the expression itself.
 * @param {string} [varName] - A name for the variable
 * @return {string} The stringified expression.
 */
