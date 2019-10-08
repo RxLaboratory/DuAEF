@@ -3,7 +3,7 @@
 * @namespace
 * @memberof DuAEF.Expressions
 */
-DuAEF.Expressions.Library = {};
+DuAEF.Expression.Library = {};
 
 /**
  * Checks the type of a pseudo-effect used by Duik.<br />
@@ -59,6 +59,54 @@ DuAEF.Expression.Library.checkEffect = ['',
 	'        catch (e) { return false; }',
 	'    }',
 	'    return true;',
+	'}'
+	].join('\n');
+
+/**
+ * Gets the world orientation of a (2D) layer at a specific time.
+ * @function
+ * @name getOrientationAtTime
+ * @param {Layer} l The layer to get the orientation from
+ * @param {float} [t=time] The time at which to get the orientation
+ * @return {float} The orientation, in degrees.
+ */
+DuAEF.Expression.Library.getOrientationAtTime = ['',
+	'function getOrientationAtTime( l, t ) {',
+	'    if (typeof t === "undefined" ) t = time;',
+	'    var r = 0;',
+	'    r += l.rotation.valueAtTime( t );',
+	'    while ( l.hasParent ) {',
+	'        l = l.parent;',
+	'        r += l.rotation.valueAtTime( t );',
+	'    }',
+	'    return r;',
+	'}'
+	].join('\n');
+
+/**
+ * Translates a point with a layer, as if it was parented to it.
+ * @function
+ * @name translatePointWithLayer
+ * @param {Layer} l The layer to get the translation from.
+ * @param {float[]} [point=[0,0]] The [X,Y] point to translate (using world coordinates).
+ * @param {float} [startFrame=0] The start frame of the translation
+ * @param {float} [endFrame=timeToFrames()] The end frame of the translation
+ * @return {float[]} The coordinates of the translated point.
+ */
+DuAEF.Expression.Library.translatePointWithLayer = ['',
+	'function translatePointWithLayer( l, point, startFrame, endFrame ) {',
+	'    if (typeof startFrame === "undefined") startFrame = 0;',
+	'    if (typeof endFrame === "undefined") endFrame = timeToFrames();',
+	'    var sT = framesToTime( startFrame );',
+	'    var eT = framesToTime( endFrame );',
+	'    try {',
+	'        var pos = l.fromWorld( point, sT );',
+	'    } catch ( e ) {',
+	'        var pos = [ 0, 0 ];',
+	'    }',
+	'    var prevPos = l.toWorld( pos, sT );',
+	'    var newPos = l.toWorld( pos, eT );',
+	'    return newPos - prevPos;',
 	'}'
 	].join('\n');
 
