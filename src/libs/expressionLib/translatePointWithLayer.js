@@ -1,7 +1,6 @@
 /**
  * Translates a point with a layer, as if it was parented to it.
  * @function
- * @name translatePointWithLayer
  * @param {Layer} l The layer to get the translation from.
  * @param {float[]} [point=[0,0]] The [X,Y] point to translate (using world coordinates).
  * @param {float} [startFrame=0] The start frame of the translation

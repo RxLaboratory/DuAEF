@@ -1,7 +1,6 @@
 /**
  * Gets the world orientation of a (2D) layer.
  * @function
- * @name getOrientation
  * @param {Layer} l The layer to get the orientation from
  * @return {float} The orientation, in degrees.
  */

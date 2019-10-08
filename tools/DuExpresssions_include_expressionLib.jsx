@@ -29,9 +29,9 @@
     var content = ['/**',
         '* Expression Library',
         '* @namespace',
-        '* @memberof DuAEF.Expressions',
+        '* @memberof DuAEF.DuExpression',
         '*/',
-        'DuAEF.Expression.Library = {};',
+        'DuAEF.DuExpression.Library = {};',
         '',
         ''
         ].join('\n');
@@ -39,7 +39,7 @@
     {
         var exp = expressions[i];
         content += exp.doc + '\n';
-        content += 'DuAEF.Expression.Library.' + exp.name + " = " + DuAEF.DuAE.Property.scriptifyExpression(exp.expression) + '\n\n';
+        content += 'DuAEF.DuExpression.Library.' + exp.name + " = " + DuAEF.DuAE.Property.scriptifyExpression(exp.expression) + '\n\n';
     }
 
     //write jsxinc

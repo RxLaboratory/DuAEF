@@ -1,16 +1,15 @@
 /**
 * Expression Library
 * @namespace
-* @memberof DuAEF.Expressions
+* @memberof DuAEF.DuExpression
 */
-DuAEF.Expression.Library = {};
+DuAEF.DuExpression.Library = {};
 
 /**
  * Checks the type of a pseudo-effect used by Duik.<br />
  * This is a workaround for the missing matchName in expressions.<br />
  * Pseudo-Effects used by Duik start with a hidden property which name is the same as the matchName of the effect itself (without the 'Pseudo/' part).
  * @function
- * @name checkDuikEffect
  * @example
  * if ( checkEffect(thisLayer.effect(1), "DUIK parentConstraint2") ) { "This is the second version of the parent constraint by Duik" }
  * else { "Who knows what this is?" }
@@ -18,7 +17,7 @@ DuAEF.Expression.Library = {};
  * @param {string} duikMatchName The matchName of a pseudo-effect used by Duik (without the 'Pseudo/' part)
  * @return {boolean} True when the property at propIndex is named propName
  */
-DuAEF.Expression.Library.checkDuikEffect = ['',
+DuAEF.DuExpression.Library.checkDuikEffect = ['',
 	'function checkDuikEffect(fx, duikMatchName) {',
 	'    if (fx.numProperties  < 3) return false;',
 	'    if (!!$.engineName) {',
@@ -37,7 +36,6 @@ DuAEF.Expression.Library.checkDuikEffect = ['',
  * This is a workaround for the missing matchName in expressions.<br />
  * It checks if the given effect has a specific property at a specific index.
  * @function
- * @name checkEffect
  * @example
  * if ( checkEffect(thisLayer.effect(1), 1, "Blur") ) { "The first effect is a blur!" }
  * else { "Who knows what this is?" }
@@ -46,7 +44,7 @@ DuAEF.Expression.Library.checkDuikEffect = ['',
  * @param {string} propName The expected name of the property. Be careful with the internationalization of After Effects...
  * @return {boolean} True when the property at propIndex is named propName
  */
-DuAEF.Expression.Library.checkEffect = ['',
+DuAEF.DuExpression.Library.checkEffect = ['',
 	'function checkEffect(fx, propIndex, propName) {',
 	'    if (fx.numProperties  < propIndex) return false;',
 	'    //Check when this is a javascript engine (without try/catch for better performance)',
@@ -74,11 +72,10 @@ DuAEF.Expression.Library.checkEffect = ['',
  * var result = dishineritRotation();
  * result + wiggle(5,20);
  * @function
- * @name dishineritRotation
  * @param {Layer} [l=thisLayer] The layer
  * @return {float} The new rotation value, in degrees.
  */
-DuAEF.Expression.Library.dishineritRotation = ['',
+DuAEF.DuExpression.Library.dishineritRotation = ['',
 	'function dishineritRotation( l ) {',
 	'    if (typeof l === "undefined") l = thisLayer;',
 	'    var r = l.rotation.value;',
@@ -93,11 +90,10 @@ DuAEF.Expression.Library.dishineritRotation = ['',
 /**
  * Gets the world orientation of a (2D) layer.
  * @function
- * @name getOrientation
  * @param {Layer} l The layer to get the orientation from
  * @return {float} The orientation, in degrees.
  */
-DuAEF.Expression.Library.getOrientation = ['',
+DuAEF.DuExpression.Library.getOrientation = ['',
 	'function getOrientation( l ) {',
 	'    var r = 0;',
 	'    r += l.rotation.value;',
@@ -112,12 +108,11 @@ DuAEF.Expression.Library.getOrientation = ['',
 /**
  * Gets the world orientation of a (2D) layer at a specific time.
  * @function
- * @name getOrientationAtTime
  * @param {Layer} l The layer to get the orientation from
  * @param {float} [t=time] The time at which to get the orientation
  * @return {float} The orientation, in degrees.
  */
-DuAEF.Expression.Library.getOrientationAtTime = ['',
+DuAEF.DuExpression.Library.getOrientationAtTime = ['',
 	'function getOrientationAtTime( l, t ) {',
 	'    if (typeof t === "undefined" ) t = time;',
 	'    var r = 0;',
@@ -133,14 +128,13 @@ DuAEF.Expression.Library.getOrientationAtTime = ['',
 /**
  * Translates a point with a layer, as if it was parented to it.
  * @function
- * @name translatePointWithLayer
  * @param {Layer} l The layer to get the translation from.
  * @param {float[]} [point=[0,0]] The [X,Y] point to translate (using world coordinates).
  * @param {float} [startFrame=0] The start frame of the translation
  * @param {float} [endFrame=timeToFrames()] The end frame of the translation
  * @return {float[]} The coordinates of the translated point.
  */
-DuAEF.Expression.Library.translatePointWithLayer = ['',
+DuAEF.DuExpression.Library.translatePointWithLayer = ['',
 	'function translatePointWithLayer( l, point, startFrame, endFrame ) {',
 	'    if (typeof startFrame === "undefined") startFrame = 0;',
 	'    if (typeof endFrame === "undefined") endFrame = timeToFrames();',

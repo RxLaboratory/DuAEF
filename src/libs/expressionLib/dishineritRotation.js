@@ -10,7 +10,6 @@
  * var result = dishineritRotation();
  * result + wiggle(5,20);
  * @function
- * @name dishineritRotation
  * @param {Layer} [l=thisLayer] The layer
  * @return {float} The new rotation value, in degrees.
  */
