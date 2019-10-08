@@ -478,26 +478,38 @@ DuAEF.Duik.Rigging.parent = function( children, parent )
  */
 DuAEF.Duik.Rigging.orientationConstraint = function( layer )
 {
-    var effect = DuAEF.Duik.PseudoEffects.ORIENTATION.apply( layer );
-    var index = DuAEF.Duik.PseudoEffects.ORIENTATION.index;
+    var effect = DuAEF.DuAE.Layer.addPseudoEffect( layer, DuAEF.Duik.PseudoEffects.ORIENTATION, DuAEF.Duik.PseudoEffectsMatchNames.ORIENTATION, 'Orientation constraint' );
 
-    layer.rotation.expression = [DuAEF.Duik.expressionIds.ORIENTATION,
-        DuAEF.Expression.Library.getOrientation,
-        DuAEF.Expression.Library.dishineritRotation,
-        DuAEF.Expression.Library.checkDuikEffect,
-        'var result = dishineritRotation();',
-        'for ( var i = 1; i <= thisLayer( "Effects" ).numProperties; i++ ) {',
-        '    var fx = effect( i );',
-        '    if ( !checkDuikEffect(fx, "' + effect.matchName.replace('Pseudo/','') + '") ) continue;',
-        '    var l = null;',
-        '    try {',
-        '        l = fx(' + index['Constraint to_Layer'] + ');',
-        '    } catch ( e ) {}',
-        '    if ( l ) result += getOrientation( l ) * ( fx(' + index['Weight_Slider'] + ').value / 100 );',
-        '}',
-        'result;',
-        ''
-        ].join('\n');
+    layer.rotation.expression = '//Duik.orientationConstraint\n' +
+        'function o(l)\n' +
+        '{\n' +
+        'var r = 0;\n' +
+        'r += l.rotation;\n' +
+        'while(l.hasParent)\n' +
+        '{\n' +
+        'l = l.parent;\n' +
+        'r += l.rotation;\n' +
+        '}\n' +
+        'return r;\n' +
+        '}\n' +
+        'var result = value;\n' +
+        'var p = thisLayer;\n' +
+        'while(p.hasParent)\n' +
+        '{\n' +
+        'p = p.parent;\n' +
+        'result -= p.rotation.value;\n' +
+        '}\n' +
+        'for (var i = 1 ; i <= thisLayer("Effects").numProperties ; i++)\n' +
+        '{\n' +
+        'var fx = effect(i) ;\n' +
+        'if (fx.name.indexOf("Orientation constraint") == 0)\n' +
+        '{\n' +
+        'var l = null;\n' +
+        'try { l = fx(1); } catch (e){}\n' +
+        'if (l) result += o(l)*(fx(2).value/100);\n' +
+        '}\n' +
+        '}\n' +
+        'result;';
 
 }
 
@@ -508,31 +520,29 @@ DuAEF.Duik.Rigging.orientationConstraint = function( layer )
 DuAEF.Duik.Rigging.positionConstraint = function( layer )
 {
     var effect = DuAEF.Duik.PseudoEffects.POSITION.apply( layer );
-    var index = DuAEF.Duik.PseudoEffects.POSITION.index;
-    effect( index['Weight_Slider'] ).setValue( 0 );
+    effect( DuAEF.Duik.PseudoEffects.POSITION.weightSlider ).setValue( 0 );
 
-    layer.position.expression = [DuAEF.Duik.expressionIds.POSITION,
-        DuAEF.Expression.Library.checkDuikEffect,
-        'var result = value;',
-        'for ( var i = 1; i <= thisLayer( "Effects" ).numProperties; i++ ) {',
-        '    var fx = effect( i );',
-        '    if ( !checkDuikEffect(fx, "' + effect.matchName.replace('Pseudo/','') + '") ) continue;',
-        '    var l = null;',
-        '    try {',
-        '        l = fx( ' + index['Constraint to_Layer'] + ' );',
-        '    } catch ( e ) {}',
-        '    if ( l ) {',
-        '        var cp = l.toWorld( l.anchorPoint );',
-        '        if ( thisLayer.hasParent ) cp = thisLayer.parent.fromWorld( cp );',
-        '        cp0 = l.toWorld( l.anchorPoint, 0 );',
-        '        if ( thisLayer.hasParent ) cp0 = thisLayer.parent.fromWorld( cp0 );',
-        '        cp -= cp0;',
-        '        result += cp * ( fx( ' + index['Weight_Slider'] + ' ).value / 100 );',
-        '    }',
-        '}',
-        'result;',
-        ''
-        ].join('\n');
+    layer.position.expression = '//Duik.positionConstraint\n' +
+        'var result = value;\n' +
+        'for (var i = 1 ; i <= thisLayer("Effects").numProperties ; i++)\n' +
+        '{\n' +
+        'var fx = effect(i) ;\n' +
+        'if (fx.name.indexOf("' + effect.name + '") == 0)\n' +
+        '{\n' +
+        'var l = null;\n' +
+        'try { l = fx(1); } catch (e){}\n' +
+        'if (l)\n' +
+        '{\n' +
+        'var cp = l.toWorld(l.anchorPoint);\n' +
+        'if (thisLayer.hasParent) cp = thisLayer.parent.fromWorld(cp);\n' +
+        'cp0 = l.toWorld(l.anchorPoint,0);\n' +
+        'if (thisLayer.hasParent) cp0 = thisLayer.parent.fromWorld(cp0);\n' +
+        'cp -= cp0;\n' +
+        'result += cp*(fx(2).value/100);\n' +
+        '}\n' +
+        '}\n' +
+        '}\n' +
+        'result;';
 }
 
 /**
@@ -595,33 +605,38 @@ DuAEF.Duik.Rigging.parentConstraint = function( layer )
 	var effect = DuAEF.Duik.PseudoEffects.PARENT.apply(layer);
     var index = DuAEF.Duik.PseudoEffects.PARENT.index;
 
-    var posExpr = [DuAEF.Duik.expressionIds.PARENT,
-        DuAEF.Expression.Library.translatePointWithLayer,
-        DuAEF.Expression.Library.checkDuikEffect,
-        'var result = thisLayer.position.valueAtTime( 0 );',
-        'var cF = 1;',
-        'while ( cF <= timeToFrames() ) {',
-        '    for ( var i = 1; i <= thisLayer( "Effects" ).numProperties; i++ ) {',
-        '        var fx = effect( i );',
-        '        if ( !checkDuikEffect(fx, "' + effect.matchName.replace('Pseudo/','') + '") ) continue;',
-        '        if ( !fx(' + index['InheritancePosition_Checkbox'] + ').value ) continue;',
-        '        var parentLayer = null;',
-        '        try {',
-        '            parentLayer = fx(' + index['Layer_Layer'] + ');',
-        '        } catch ( e ) {',
-        '            continue;',
-        '        }',
-        '        if ( !parentLayer ) continue;',
-        '        if ( parentLayer.index == index ) continue;',
-        '        var weight = fx(' + index['Weight_Slider'] + ').valueAtTime( framesToTime( cF ) ) / 100;',
-        '        if ( weight == 0 ) continue;',
-        '        result += translatePointWithLayer( parentLayer, result, cF - 1, cF ) * weight;',
-        '    }',
-        '    result += valueAtTime( framesToTime( cF ) ) - valueAtTime( framesToTime( cF - 1 ) );',
-        '    cF++;',
-        '}',
-        'result;'
-        ].join('\n');
+	var posExpr = '//Duik.parent\n' +
+		'function getParentTransform(l,origin,sF,eF)\n' +
+		'{\n' +
+		'var sT = framesToTime(sF);\n' +
+		'var eT = framesToTime(eF);\n' +
+		'try { var pos = l.fromWorld( origin , sT ) ; }\n' +
+		'catch (e) { var pos = [0,0]; }\n' +
+		'var prevPos = l.toWorld( pos , sT );\n' +
+		'var newPos =  l.toWorld( pos , eT );\n' +
+		'return newPos - prevPos;\n' +
+		'}\n' +
+		'var result = thisLayer.position.valueAtTime(0);\n' +
+		'var cF = 1;\n' +
+		'while (cF <= timeToFrames())\n' +
+		'{\n' +
+		'for (var i = 1 ; i <= thisLayer("Effects").numProperties ; i++)\n' +
+		'{\n' +
+		'var fx = effect(i);\n' +
+		'if (fx.name.indexOf("Parent constraint") != 0) continue;\n' +
+		'if (!fx(' + index['InheritancePositionCheckbox'] + ').value) continue;\n' +
+		'var parentLayer = null;\n' + 
+		'try { parentLayer = fx(' + index['LayerLayer'] + '); } catch (e){ continue; }\n' +
+		'if (!parentLayer) continue;\n' + 
+		'if (parentLayer.index == index) continue;\n' +
+		'var weight = fx(' + index['WeightSlider'] + ').valueAtTime( framesToTime(cF) ) / 100;\n' +
+		'if (weight == 0) continue;\n' +
+		'result += getParentTransform( parentLayer , result , cF-1 , cF )*weight;\n' +
+		'}\n' +
+		'result += valueAtTime(framesToTime(cF)) - valueAtTime(framesToTime(cF-1));\n' +
+		'cF++;\n' +
+		'}\n' +
+		'result;';
 
 	if (layer.position.dimensionsSeparated)
 	{
@@ -634,44 +649,52 @@ DuAEF.Duik.Rigging.parentConstraint = function( layer )
 		layer.position.expression = posExpr;
 	}
 
-    var rotExpression = [DuAEF.Duik.expressionIds.PARENT,
-        DuAEF.Expression.Library.getOrientationAtTime,
-        DuAEF.Expression.Library.checkDuikEffect,
-        'var result = value;',
-        'for ( var i = 1; i <= thisLayer( "Effects" ).numProperties; i++ ) {',
-        '    var fx = effect( i );',
-        '    if ( !checkDuikEffect(fx, "' + effect.matchName.replace('Pseudo/','') + '") ) continue;',
-        '    if ( !fx(' + index['InheritanceRotation_Checkbox'] + ').value ) continue;',
-        '    var l = null;',
-        '    try {',
-        '        l = fx(' + index['Layer_Layer'] + ');',
-        '    } catch ( e ) {',
-        '        continue;',
-        '    }',
-        '    if ( !l ) continue;',
-        '    if ( l.index == index ) continue;',
-        '    if ( fx(' + index['Weight_Slider'] + ').numKeys < 2 ) {',
-        '        var w = fx(' + index['Weight_Slider'] + ').value / 100;',
-        '        if ( w == 0 ) continue;',
-        '        var P = getOrientationAtTime( l );',
-        '        var oP = getOrientationAtTime( l, 0 );',
-        '        result += ( P - oP ) * w;',
-        '    } else {',
-        '        var frame = timeToFrames( time );',
-        '        for ( var j = frame; j >= 0; j-- ) {',
-        '            var t = framesToTime( j );',
-        '            var prevT = framesToTime( j - 1 );',
-        '            var w = fx(2).valueAtTime( t ) / 100;',
-        '            var P = getOrientationAtTime( l, t );',
-        '            var oP = getOrientationAtTime( l, prevT );',
-        '            result += ( P - oP ) * w;',
-        '        }',
-        '    }',
-        '}',
-        'result;'
-        ].join('\n');
-
-	layer.rotation.expression = rotExpression
+	layer.rotation.expression = '//Duik.parent\n' +
+						'function o(l,t)\n' +
+						'{\n' +
+						'if (t == undefined) t = time;\n' +
+						'var r = 0;\n' +
+						'r += l.rotation.valueAtTime(t);\n' +
+						'while(l.hasParent)\n' +
+						'{\n' +
+						'l = l.parent;\n' +
+						'r += l.rotation.valueAtTime(t);\n' +
+						'}\n' +
+						'return r;\n' +
+						'}\n' +
+						'var result = value;\n' +
+						'for (var i = 1 ; i <= thisLayer("Effects").numProperties ; i++)\n' +
+						'{\n' +
+						'var fx = effect(i) ;\n' +
+						'if (fx.name.indexOf("Parent constraint") != 0) continue;\n' +
+						'if (!fx(' + index['InheritanceRotationCheckbox'] + ').value) continue;\n' +
+						'var l = null;\n' + 
+						'try { l = fx(' + index['LayerLayer'] + '); } catch (e){ continue; }\n' +
+						'if (!l) continue;\n' + 
+						'if (l.index == index) continue;\n' +
+						'if ( fx(' + index['WeightSlider']  + ').numKeys < 2 )\n' +
+						'{\n' +
+						'var w = fx(' + index['WeightSlider']  + ').value/100;\n' +
+						'if (w == 0) continue;\n' +
+						'var P = o(l);\n' +
+						'var oP = o(l,0);\n' +
+						'result += (P - oP)*w;\n' +
+						'}\n' +
+						'else\n' +
+						'{\n' +
+						'var frame = timeToFrames(time);\n' +
+						'for (var j = frame;j>=0;j--)\n' +
+						'{\n' +
+						'var t = framesToTime(j);\n' +
+						'var prevT = framesToTime(j-1);\n' +
+						'var w = fx(' + index['WeightSlider']  + ').valueAtTime(t)/100;\n' +
+						'var P = o(l,t);\n' +
+						'var oP = o(l,prevT);\n' +
+						'result += (P - oP)*w;\n' +
+						'}\n' +
+						'}\n' +
+						'}\n' +
+						'result;';
 
 	if (layer.parent != null)
 	{
