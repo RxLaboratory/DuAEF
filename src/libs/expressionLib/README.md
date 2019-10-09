@@ -4,7 +4,7 @@ This folder contains useful and re-usable expression snippets and functions, whi
 
 ## How to use
 
-Each snippet/function is stored in its own file, and all are documented in the source code, using jsdoc syntax. This documentation will be generated and available as html soon.
+Each snippet/function is stored in its own file, and all are documented in the source code, using jsdoc syntax. The comprehensive documentation of these expressions is also available at [duaef-expressions.rainboxlab.org](http://duaef-expressions.rainboxlab.org)
 
 ### In your expressions
 
