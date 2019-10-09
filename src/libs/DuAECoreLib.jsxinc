@@ -4298,7 +4298,7 @@ DuAEF.DuAE.Property.pickWhip = function (childProp,parentProp,useThisComp)
 
 /**
  * Link all the properties found in childProp to all the same properties of parentProp (this is a recursive method)<br />
- * Note: any Property or PropertyGroup (and its subproperties) named "Data" will be ignored.
+ * Note: any Property or PropertyGroup (and its subproperties) named "Data" will be linked the opposite way (from parentProp to childProp).
  * @memberof DuAEF.DuAE.Property
  * @param {PropertyBase} childProp - The child property
  * @param {PropertyBase} parentProp - The parent property
@@ -4366,6 +4366,7 @@ DuAEF.DuAE.Property.linkProperties = function (childProp,parentProp,useThisComp,
 					}
 				}
 				if (insideData == 0) DuAEF.DuAE.Property.linkProperties(childProp(p),subProp,useThisComp,timeLayer);
+				else DuAEF.DuAE.Property.linkProperties(subProp,childProp(p),useThisComp,timeLayer);
 			}
 		}
 		else
