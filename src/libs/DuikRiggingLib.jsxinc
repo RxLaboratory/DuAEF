@@ -995,14 +995,14 @@ DuAEF.Duik.Rigging.quickConnector = function( childProps )
  */
 DuAEF.Duik.Rigging.ik = function( layers, controller, forceBezier, threeAsOneAndTwo )
 {
+    controller = def(controller, null);
+    forceBezier = def(forceBezier, false);
+    threeAsOneAndTwo = def(threeAsOneAndTwo, true);
     if ( layers instanceof Structure ) layers = layers.elements;
-    if ( typeof forceBezier === 'undefined' ) forceBezier = false;
-    if ( typeof threeAsOneAndTwo === 'undefined' ) threeAsOneAndTwo = true;
     if ( layers.length < 1 ) return [];
 
-
     //check if there is a controller in the selection
-    if ( typeof controller === 'undefined' )
+    if ( controller == null )
     {
         if ( layers.length < 2 ) return [];
         for ( var i = 0; i < layers.length; i++ )
