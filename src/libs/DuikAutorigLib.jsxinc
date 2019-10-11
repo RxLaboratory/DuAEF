@@ -349,6 +349,41 @@ DuAEF.Duik.Autorig.tagTail = function (tail,tip)
 }
 
 /**
+ * Create a new controller, or get the one existing at the same location
+ * @memberof DuAEF.Duik.Autorig
+ * @param {Layer} layer - The Layer where to create the controller
+ * @param {CompItepm} [comp=DuAEF.DuAE.Project.getActiveComp()] - The composition
+ * @param {DuAEF.Duik.Controller.Types} [type=DuAEF.Duik.Controller.defaultType] - The type of the controller
+ * @param {Layer[]|LayerCollection|Controller[]} [controllers=comp.layers] - A set of layers where to get the existing controller
+ * @return {Controller} The new controller or the pre-existing one
+ */
+DuAEF.Duik.Autorig.getCreateController = function ( layer, comp, type, controllers)
+{
+	comp = def(comp, DuAEF.DuAE.Project.getActiveComp());
+	if (!comp) return
+	type = def(type, DuAEF.Duik.Controller.defaultType);
+	controllers = def(controllers, comp.layers);
+
+	//get the layer position
+	var pos = DuAEF.DuAE.Layer.getWorldPos(layer);
+	
+	var ctrl = null;
+
+	//look for an existing controller
+	var it = new Iterator(controllers);
+	while(it.next())
+	{
+		var controller = controllers[it.current];
+		if (controller instanceof Controller) controller = controller.layer;
+		var ctrlPos = DuAEF.DuAE.Layer.getWorldPos(controller);
+		if (DuAEF.DuJS.Array.compare( pos, ctrlPos, 2)) return new Controller(controller);
+	}
+
+	//create a new one
+	return DuAEF.Duik.Controller.create(comp, type, layer);
+}
+
+/**
  * Rigs the layers according to the tags found
  * @memberof DuAEF.Duik.Autorig
  * @param {Layer[]} layers - The layers to rig
@@ -666,12 +701,12 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 		var hipsCtrlName = DuAEF.DuAE.Comp.newUniqueLayerName("C | Hips", comp);
 		if (spine.hips)
 		{
-			bigHipsCtrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : DuAEF.Duik.Controller.Types.BODY,spine.hips);
+			bigHipsCtrl = DuAEF.Duik.Autorig.getCreateController(spine.hips, comp, useNull ? defaultType : DuAEF.Duik.Controller.Types.BODY, customControllers);
 			hipsCtrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : DuAEF.Duik.Controller.Types.HIPS,spine.hips);
 		}
 		else if (spine.spine.length > 0)
 		{
-			bigHipsCtrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : DuAEF.Duik.Controller.Types.BODY,spine.spine[0]);
+			bigHipsCtrl = DuAEF.Duik.Autorig.getCreateController(spine.spine[0], comp, useNull ? defaultType : DuAEF.Duik.Controller.Types.BODY, customControllers);
 			hipsCtrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : DuAEF.Duik.Controller.Types.HIPS,spine.spine[0]);
 		}
 		//name
@@ -685,7 +720,7 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 		if (spine.neck.length > 0)
 		{
 			var shoulderCtrlName = DuAEF.DuAE.Comp.newUniqueLayerName("C | Shoulders & Neck", comp);
-			shoulderCtrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : DuAEF.Duik.Controller.Types.SHOULDERS,spine.neck[0]);
+			shoulderCtrl = DuAEF.Duik.Autorig.getCreateController(spine.neck[0], comp, useNull ? defaultType : DuAEF.Duik.Controller.Types.SHOULDERS, customControllers);
 			shoulderCtrl.layer.name = shoulderCtrlName;
 			//re-set type in case of the controller being a null
 			DuAEF.Duik.setDuikMarkerParameter(shoulderCtrl,DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE,DuAEF.Duik.Controller.Types.SHOULDERS);
@@ -695,7 +730,7 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 		if (spine.head)
 		{
 			var headCtrlName = DuAEF.DuAE.Comp.newUniqueLayerName("C | Head", comp);
-			headCtrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : DuAEF.Duik.Controller.Types.HEAD,spine.head);
+			headCtrl = DuAEF.Duik.Autorig.getCreateController(spine.head, comp, useNull ? defaultType : DuAEF.Duik.Controller.Types.HEAD, customControllers);
 			headCtrl.layer.name = headCtrlName;
 			//re-set type in case of the controller being a null
 			DuAEF.Duik.setDuikMarkerParameter(headCtrl,DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE,DuAEF.Duik.Controller.Types.HEAD);
@@ -852,7 +887,7 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 		if (ikTail)
 		{
 			//controllers
-			var tailCtrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : DuAEF.Duik.Controller.Types.TAIL,tail.tip);
+			var tailCtrl = DuAEF.Duik.Autorig.getCreateController(tail.tip, comp, useNull ? defaultType : DuAEF.Duik.Controller.Types.TAIL, customControllers);
 			//re-set type in case of the controller being a null
 			DuAEF.Duik.setDuikMarkerParameter(tailCtrl,DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE,DuAEF.Duik.Controller.Types.TAIL);
 
@@ -887,7 +922,7 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 		else
 		{
 			//controllers
-			var tailCtrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : DuAEF.Duik.Controller.Types.TAIL,tail.tail[0]);
+			var tailCtrl = DuAEF.Duik.Autorig.getCreateController(tail.tail[0], comp, useNull ? defaultType : DuAEF.Duik.Controller.Types.TAIL, customControllers);
 			//re-set type in case of the controller being a null
 			DuAEF.Duik.setDuikMarkerParameter(tailCtrl,DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE,DuAEF.Duik.Controller.Types.TAIL);
 
@@ -974,14 +1009,15 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 		var ctrlType = DuAEF.Duik.Controller.Types.FOOT;
 		if (leg.type == DuAEF.Duik.Autorig.AnimalTypes.DIGITIGRADE) ctrlType = DuAEF.Duik.Controller.Types.CLAWS;
 		if (leg.type == DuAEF.Duik.Autorig.AnimalTypes.UNGULATE) ctrlType = DuAEF.Duik.Controller.Types.HOOF;
+		
 		var ctrl = null;
-		if (leg.foot && ((leg.femur || leg.tibia) || (!leg.toes && !leg.tip)) && leg.type != DuAEF.Duik.Autorig.AnimalTypes.UNGULATE) ctrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : ctrlType,leg.foot);
-		else if (leg.toes && ((leg.femur || leg.tibia) || !leg.tip)) ctrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : ctrlType,leg.toes);
-		else if (leg.foot && leg.type == DuAEF.Duik.Autorig.AnimalTypes.UNGULATE) ctrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : ctrlType,leg.foot);
-		else if (leg.tip) ctrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : ctrlType,leg.tip);
-		else if (leg.heel) ctrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : ctrlType,leg.heel);
-		else if (leg.tibia) ctrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : ctrlType,leg.tibia);
-		else if (leg.femur) ctrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : ctrlType,leg.femur);
+		if (leg.foot && ((leg.femur || leg.tibia) || (!leg.toes && !leg.tip)) && leg.type != DuAEF.Duik.Autorig.AnimalTypes.UNGULATE) ctrl = DuAEF.Duik.Autorig.getCreateController(leg.foot, comp, useNull ? defaultType : ctrlType, customControllers);
+		else if (leg.toes && ((leg.femur || leg.tibia) || !leg.tip)) ctrl = DuAEF.Duik.Autorig.getCreateController(leg.toes, comp, useNull ? defaultType : ctrlType, customControllers);
+		else if (leg.foot && leg.type == DuAEF.Duik.Autorig.AnimalTypes.UNGULATE) ctrl = DuAEF.Duik.Autorig.getCreateController(leg.foot, comp, useNull ? defaultType : ctrlType, customControllers);
+		else if (leg.tip) ctrl = DuAEF.Duik.Autorig.getCreateController(leg.tip, comp, useNull ? defaultType : ctrlType, customControllers);
+		else if (leg.heel) ctrl = DuAEF.Duik.Autorig.getCreateController(leg.heel, comp, useNull ? defaultType : ctrlType, customControllers);
+		else if (leg.tibia) ctrl = DuAEF.Duik.Autorig.getCreateController(leg.tibia, comp, useNull ? defaultType : ctrlType, customControllers);
+		else if (leg.femur) ctrl = DuAEF.Duik.Autorig.getCreateController(leg.femur, comp, useNull ? defaultType : ctrlType, customControllers);
 		//re-set type in case of the controller being a null
 		DuAEF.Duik.setDuikMarkerParameter(ctrl,DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE,ctrlType);
 
@@ -1241,18 +1277,18 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 		else if (arm.type == DuAEF.Duik.Autorig.AnimalTypes.DIGITIGRADE) ctrlType = DuAEF.Duik.Controller.Types.CLAWS;
 		else if (arm.type == DuAEF.Duik.Autorig.AnimalTypes.UNGULATE) ctrlType = DuAEF.Duik.Controller.Types.HOOF;
 		var ctrl = null;
-		if (arm.hand && ((arm.humerus || arm.radius || arm.shoulder) || (!arm.claws && !arm.tip)) && arm.type != DuAEF.Duik.Autorig.AnimalTypes.UNGULATE) ctrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : ctrlType,arm.hand);
-		else if (arm.claws && ((arm.humerus || arm.radius || arm.shoulder) || !arm.tip)) ctrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : ctrlType,arm.claws);
-		else if (arm.hand && arm.type == DuAEF.Duik.Autorig.AnimalTypes.UNGULATE) ctrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : ctrlType,arm.hand);
-		else if (arm.tip) ctrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : ctrlType,arm.tip);
-		else if (arm.palm) ctrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : ctrlType,arm.palm);
-		else if (arm.radius) ctrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : ctrlType,arm.radius);
-		else if (arm.humerus) ctrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : ctrlType,arm.humerus);
-		else if (arm.shoulder) ctrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : ctrlType,arm.shoulder);
+
+		if (arm.hand && ((arm.humerus || arm.radius || arm.shoulder) || (!arm.claws && !arm.tip)) && arm.type != DuAEF.Duik.Autorig.AnimalTypes.UNGULATE) ctrl = DuAEF.Duik.Autorig.getCreateController(arm.hand, comp, useNull ? defaultType : ctrlType, customControllers);
+		else if (arm.claws && ((arm.humerus || arm.radius || arm.shoulder) || !arm.tip)) ctrl = DuAEF.Duik.Autorig.getCreateController(arm.claws, comp, useNull ? defaultType : ctrlType, arm.claws, customControllers);
+		else if (arm.hand && arm.type == DuAEF.Duik.Autorig.AnimalTypes.UNGULATE) ctrl = DuAEF.Duik.Autorig.getCreateController(arm.hand, comp, useNull ? defaultType : ctrlType, arm.hand, customControllers);
+		else if (arm.tip) ctrl = DuAEF.Duik.Autorig.getCreateController(arm.tip, comp, useNull ? defaultType : ctrlType, customControllers);
+		else if (arm.palm) ctrl = DuAEF.Duik.Autorig.getCreateController(arm.palm, comp, useNull ? defaultType : ctrlType, customControllers);
+		else if (arm.radius) ctrl = DuAEF.Duik.Autorig.getCreateController(arm.radius, comp, useNull ? defaultType : ctrlType, customControllers);
+		else if (arm.humerus) ctrl = DuAEF.Duik.Autorig.getCreateController(arm.humerus, comp, useNull ? defaultType : ctrlType, customControllers);
+		else if (arm.shoulder) ctrl = DuAEF.Duik.Autorig.getCreateController(arm.shoulder, comp, useNull ? defaultType : ctrlType, customControllers);
 
 		//re-set type in case of the controller being a null
 		DuAEF.Duik.setDuikMarkerParameter(ctrl,DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE,ctrlType);
-
 
 		//side effect
 		var sideEffect = DuAEF.DuAE.Layer.addPseudoEffect(ctrl.layer,DuAEF.Duik.PseudoEffects.SIDE,DuAEF.Duik.PseudoEffectsMatchNames.SIDE,"Arm");
