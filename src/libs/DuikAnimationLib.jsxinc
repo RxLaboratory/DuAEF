@@ -76,17 +76,16 @@ DuAEF.Duik.Animation.smartInterpolation = function (prop,useExpression,easeStart
 	prop = propInfo.getProperty();
 	if (!propInfo.editable) return;
 	if (useExpression && !propInfo.riggable) useExpression = false;
-	if (prop.numKeys == 0) return;
+	if (prop.numKeys == 0 && !useExpression) return;
 
 	var keyframes = prop.selectedKeys;
-	if (keyframes.length == 0)
+	if (keyframes.length == 0 && prop.numKeys > 0)
 	{
 		for (var i = 1, num = prop.numKeys; i <= num; i++)
 		{
 			keyframes.push(i);
 		}
 	}
-
 
 	//set all keys to linear
 	for (var k=0, num = keyframes.length; k < num ; k++)
@@ -106,16 +105,16 @@ DuAEF.Duik.Animation.smartInterpolation = function (prop,useExpression,easeStart
 		prop = propInfo.getProperty();
 		prop.expression = [DuAEF.Duik.expressionIds.KLEANER,
 			'var fx = ' + DuAEF.DuAE.Property.getExpressionLink(effect, true) + ';',
-			'var doAnticipation = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['AnticipationCheckbox'] + ').value;',
-			'var doOverlap = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['OverlapCheckbox'] + ').value;',
-			'var doInterpolation = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['Smart InterpolationCheckbox'] + ').value;',
-			'var damping = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['OverlapDampingSlider'] + ').value;',
-			'var elasticity = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['OverlapElasticitySlider'] + ').value;',
-			'var bounce = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['OverlapBounceCheckbox'] + ').value;',
-			'var anticipationDuration = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['AnticipationDuration (s)Slider'] + ').value;',
-			'var anticipationQuantity = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['AnticipationAmplitudeSlider'] + ').value / 100;',
-			'var slowIn = 1 - fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['InterpolationSlow InSlider'] + ').value / 100;',
-			'var slowOut = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['InterpolationSlow OutSlider'] + ').value / 100;',
+			'var doAnticipation = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['Anticipation_Checkbox'] + ').value;',
+			'var doOverlap = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['Overlap_Checkbox'] + ').value;',
+			'var doInterpolation = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['Smart Interpolation_Checkbox'] + ').value;',
+			'var damping = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['Overlap_Damping_Slider'] + ').value;',
+			'var elasticity = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['Overlap_Elasticity_Slider'] + ').value;',
+			'var bounce = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['Overlap_Bounce_Checkbox'] + ').value;',
+			'var anticipationDuration = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['Anticipation_Duration (s)_Slider'] + ').value;',
+			'var anticipationQuantity = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['Anticipation_Amplitude_Slider'] + ').value / 100;',
+			'var slowIn = 1 - fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['Interpolation_Slow In_Slider'] + ').value / 100;',
+			'var slowOut = fx(' + DuAEF.Duik.PseudoEffects.KLEANER.index['Interpolation_Slow Out_Slider'] + ').value / 100;',
 			'var threshold = 0.1;',
 			'',
 			'var result = value;',

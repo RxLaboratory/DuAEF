@@ -344,14 +344,14 @@ DuAEF.Duik.Automation.wheel = function (layer,radius)
 
 	var effect = DuAEF.Duik.PseudoEffects.WHEEL.apply(layer);
 
-	effect(DuAEF.Duik.PseudoEffects.WHEEL.index['RadiusSlider']).setValue(radius);
+	effect(DuAEF.Duik.PseudoEffects.WHEEL.index['Radius_Slider']).setValue(radius);
 
 	rotation.expression = ['//Duik.Wheel',
 		'var fx = thisLayer.effect("' + effect.name + '");',
-		'var R = fx(' + DuAEF.Duik.PseudoEffects.WHEEL.index['RadiusSlider'] + ').value;',
-		'var Rev = fx(' + DuAEF.Duik.PseudoEffects.WHEEL.index['ReverseCheckbox'] + ');',
-		'var curved = fx(' + DuAEF.Duik.PseudoEffects.WHEEL.index['TrajectoryPopup'] + ') == 2;',
-		'var moBlurPrecision = fx(' + DuAEF.Duik.PseudoEffects.WHEEL.index['Motion Blur PrecisionSlider'] + ');',
+		'var R = fx(' + DuAEF.Duik.PseudoEffects.WHEEL.index['Radius_Slider'] + ').value;',
+		'var Rev = fx(' + DuAEF.Duik.PseudoEffects.WHEEL.index['Reverse_Checkbox'] + ');',
+		'var curved = fx(' + DuAEF.Duik.PseudoEffects.WHEEL.index['Trajectory_Popup'] + ') == 2;',
+		'var moBlurPrecision = fx(' + DuAEF.Duik.PseudoEffects.WHEEL.index['Motion Blur Precision_Slider'] + ');',
 		'',
 		'function pos(t) {',
 		'    return thisLayer.toWorld(thisLayer.anchorPoint, t);',
@@ -697,10 +697,10 @@ DuAEF.Duik.Automation.mapEffector = function (prop,texture,effect)
 		'',
 		'function effector ()',
 		'{',
-		'    var min = fx( ' + DuAEF.Duik.PseudoEffects.MAP_EFFECTOR.index['MinimumSlider'] + ' ).value;',
-		'    var max = fx( ' + DuAEF.Duik.PseudoEffects.MAP_EFFECTOR.index['MaximumSlider'] + ' ).value;',
-		'    var reverse = fx( ' + DuAEF.Duik.PseudoEffects.MAP_EFFECTOR.index['ReverseCheckbox'] + ' ).value;',
-		'    var channel = fx( ' + DuAEF.Duik.PseudoEffects.MAP_EFFECTOR.index['ChannelPopup'] + ' ).value;',
+		'    var min = fx( ' + DuAEF.Duik.PseudoEffects.MAP_EFFECTOR.index['Minimum_Slider'] + ' ).value;',
+		'    var max = fx( ' + DuAEF.Duik.PseudoEffects.MAP_EFFECTOR.index['Maximum_Slider'] + ' ).value;',
+		'    var reverse = fx( ' + DuAEF.Duik.PseudoEffects.MAP_EFFECTOR.index['Reverse_Checkbox'] + ' ).value;',
+		'    var channel = fx( ' + DuAEF.Duik.PseudoEffects.MAP_EFFECTOR.index['Channel_Popup'] + ' ).value;',
 		'',
 		'    min = min / 100;',
 		'    max = max / 100;',

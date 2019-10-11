@@ -28,19 +28,18 @@
 	* @class Structure
 	* @classdesc Describes a pseudo effect<br />
     * The indices of the properties in the effect are stored as their display names + type.<br />
-    * <code>pseudoEffect.index["amplitudeAngle"]</code> is the index of an Angle property named "amplitude"
+    * <code>pseudoEffect.index["amplitude_Angle"]</code> is the index of an Angle property named "amplitude"
 	* @param {DuBinaryFile} binaryFile - The ffx file
 	* @param {string} [matchName=""] - The matchName
 	* @param {string} [name=""] - The default name
-    * @param {string} [xml=""] - The xml representation of the pseudo-effect (used to automatically get the matchName, the indices, etc)
 	* @property {File} file - The ffx file
 	* @property {string} matchName - The matchName
 	* @property {string} name - The default name
 	* @property {object} index - An associative array containing the indices of the properties.
 	* @example
-    * pseudoEffect.index["amplitudeAngle"] //returns the index of an Angle property named "amplitude"
+    * pseudoEffect.index["amplitude_Angle"] //returns the index of an Angle property named "amplitude"
 	* //If the property is in a group, its name is also prefixed with the name of the group.
-	* pseudoEffect.index["GroupamplitudeAngle"] //returns the index of the Angle property named "amplitude" in the group "Group"
+	* pseudoEffect.index["Group_amplitude_Angle"] //returns the index of the Angle property named "amplitude" in the group "Group"
     */
 function PseudoEffect(binaryFile,matchName,name)
 {
@@ -93,7 +92,9 @@ function PseudoEffect(binaryFile,matchName,name)
 			}
 			else
 			{
-				var n = prefix + baseName + "_" + localName;
+				var n = '';
+				if (prefix != '') n += prefix + "_";
+				n += baseName + "_" + localName;
 				index[n] = currentIndex;
 			}
 

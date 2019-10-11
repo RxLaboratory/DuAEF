@@ -553,9 +553,9 @@ DuAEF.Duik.Rigging.pathConstraint = function( layer, path )
         'var fx = effect("' + effect.name + '");',
         'var l = thisComp.layer("' + l.name + '");',
         'var p = ' + pathExpr + ';',
-        'var percent = fx(' + DuAEF.Duik.PseudoEffects.PATH.index['Percent along pathSlider'] + ').value % 100 / 100;',
+        'var percent = fx(' + DuAEF.Duik.PseudoEffects.PATH.index['Percent along path_Slider'] + ').value % 100 / 100;',
         'if (percent == 0) percent = 0.0001;',
-        'var pathOffset = fx(' + DuAEF.Duik.PseudoEffects.PATH.index['Path OffsetSlider']  + ');',
+        'var pathOffset = fx(' + DuAEF.Duik.PseudoEffects.PATH.index['Path Offset_Slider']  + ');',
         'var result = value;',
         '//path value',
         'result += p.pointOnPath(percent, time);',
@@ -569,12 +569,12 @@ DuAEF.Duik.Rigging.pathConstraint = function( layer, path )
 
     var expr = '//Duik.pathConstraint\n' +
         'var fx = effect("' + effect.name + '");\n' +
-        'var autoOrient = fx(' + DuAEF.Duik.PseudoEffects.PATH.index['OrientationCheckbox'] + ').value;\n' +
+        'var autoOrient = fx(' + DuAEF.Duik.PseudoEffects.PATH.index['Orientation_Checkbox'] + ').value;\n' +
         'var result = value;\n' +
         'if (autoOrient)\n' +
         '{\n' +
         'var p = ' + pathExpr + ';\n' +
-        'var percent = fx(' + DuAEF.Duik.PseudoEffects.PATH.index['Percent along pathSlider'] + ').value % 100 / 100;\n' +
+        'var percent = fx(' + DuAEF.Duik.PseudoEffects.PATH.index['Percent along path_Slider'] + ').value % 100 / 100;\n' +
         'var C = p.tangentOnPath(percent, time);\n' +
         'var angle = Math.atan2(C[1], C[0]);\n' +
         'angle = radiansToDegrees(angle);\n' +
@@ -607,7 +607,7 @@ DuAEF.Duik.Rigging.parentConstraint = function( layer )
         '	for ( var i = 1; i <= thisLayer( "Effects" ).numProperties; i++ ) {',
         '		var fx = effect( i );',
         '		if ( !checkDuikEffect(fx, "' + effect.matchName.replace('Pseudo/','') + '") ) continue;',
-        '		if ( !fx(' + index['InheritancePosition_Checkbox'] + ').value ) continue;',
+        '		if ( !fx(' + index['Inheritance_Position_Checkbox'] + ').value ) continue;',
         '		var parentLayer = null;',
         '		try {',
         '			parentLayer = fx(' + index['Layer_Layer'] + ');',
@@ -648,7 +648,7 @@ DuAEF.Duik.Rigging.parentConstraint = function( layer )
         'for ( var i = 1; i <= thisLayer( "Effects" ).numProperties; i++ ) {',
         '    var fx = effect( i );',
         '    if ( !checkDuikEffect(fx, "' + effect.matchName.replace('Pseudo/','') + '") ) continue;',
-        '    if ( !fx(' + index['InheritanceRotation_Checkbox'] + ').value ) continue;',
+        '    if ( !fx(' + index['Inheritance_Rotation_Checkbox'] + ').value ) continue;',
         '    var l = null;',
         '    try {',
         '        l = fx(' + index['Layer_Layer'] + ');',
@@ -2957,7 +2957,7 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
     var path = refOrientation.addProperty("ADBE Vector Shape - Group");
     path("ADBE Vector Shape").expression = ['//Duik.exposeTransform',
         'var fx = effect("' + effect.name + '");',
-        'if (fx(' + index['DisplayGuidesCheckbox'] + ').value)',
+        'if (fx(' + index['Display_Guides_Checkbox'] + ').value)',
         '{',
         '	var A = [0,0];',
         '	var B = [ 0 , -thisComp.height/20 ];',
@@ -2973,12 +2973,12 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
     path("ADBE Vector Ellipse Size").expression = ['//Duik.exposeTransform',
         'var fx = effect("' + effect.name + '");',
 	    'var s = thisComp.height/40;',
-	    'if (fx(' + index['DisplayGuidesCheckbox'] + ').value) [s,s];',
+	    'if (fx(' + index['Display_Guides_Checkbox'] + ').value) [s,s];',
 	    'else [0,0];'
 	    ].join('\n');
 
     var stroke = refOrientation.addProperty("ADBE Vector Graphic - Stroke");
-    stroke("ADBE Vector Stroke Color").expression = 'effect("Expose Transform")(' + index['DisplayReferenceColor'] + ');';
+    stroke("ADBE Vector Stroke Color").expression = 'effect("Expose Transform")(' + index['Display_Reference_Color'] + ');';
     stroke("ADBE Vector Stroke Width").expression = 'thisComp.height/500;';
     stroke( "ADBE Vector Stroke Dashes" ).addProperty( "ADBE Vector Stroke Dash 1" );
     stroke("ADBE Vector Stroke Dashes").property('ADBE Vector Stroke Dash 1').expression = 'thisComp.height/100;';
@@ -2988,8 +2988,8 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
     refOrientationTransform = refOrientationGroup('ADBE Vector Transform Group');
     refOrientationTransform('ADBE Vector Position').expression = ['//Duik.exposeTransform',
         'var fx = effect("' + effect.name + '");',
-        'var P = fx(' + index['2D Position (Comp projection)Absolute Point'] + ');',
-        'var R = fx(' + index['2D Position (Comp projection)Absolute Point'] + ') - fx(' + index['2D Position (Comp projection)Relative to referencePoint'] + ');',
+        'var P = fx(' + index['2D Position (Comp projection)_Absolute_Point'] + ');',
+        'var R = fx(' + index['2D Position (Comp projection)_Absolute_Point'] + ') - fx(' + index['2D Position (Comp projection)_Relative to reference_Point'] + ');',
         'fromComp(R);'
     ].join('\n');
     refOrientationTransform('ADBE Vector Rotation').expression = 'content("Guides").content("Target").transform.rotation + content("Guides").content("Target").content("Reference Orientation").transform.rotation;'
@@ -3004,7 +3004,7 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
     path = targetOrientation.addProperty("ADBE Vector Shape - Group");
     path("ADBE Vector Shape").expression = ['//Duik.exposeTransform',
         'var fx = effect("' + effect.name + '");',
-        'if (fx(' + index['DisplayGuidesCheckbox'] + ').value)',
+        'if (fx(' + index['Display_Guides_Checkbox'] + ').value)',
         '{',
         '	var A = [0,0];',
         '	var B = [ 0 , -thisComp.height/10 ];',
@@ -3020,12 +3020,12 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
     path("ADBE Vector Ellipse Size").expression = ['//Duik.exposeTransform',
         'var fx = effect("' + effect.name + '");',
 	    'var s = thisComp.height/20;',
-	    'if (fx(' + index['DisplayGuidesCheckbox'] + ').value) [s,s];',
+	    'if (fx(' + index['Display_Guides_Checkbox'] + ').value) [s,s];',
 	    'else [0,0];'
 	].join('\n');
 
     stroke = targetOrientation.addProperty("ADBE Vector Graphic - Stroke");
-    stroke("ADBE Vector Stroke Color").expression = 'effect("Expose Transform")(' + index['DisplayTargetColor'] + ');';
+    stroke("ADBE Vector Stroke Color").expression = 'effect("Expose Transform")(' + index['Display_Target_Color'] + ');';
     stroke("ADBE Vector Stroke Width").expression = 'thisComp.height/500;';
     stroke( "ADBE Vector Stroke Dashes" ).addProperty( "ADBE Vector Stroke Dash 1" );
     stroke("ADBE Vector Stroke Dashes").property('ADBE Vector Stroke Dash 1').expression = 'thisComp.height/100;';
@@ -3039,7 +3039,7 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
     path = refOrientation.addProperty("ADBE Vector Shape - Group");
     path("ADBE Vector Shape").expression = ['//Duik.exposeTransform',
         'var fx = effect("' + effect.name + '");',
-        'if (fx(' + index['DisplayGuidesCheckbox'] + ').value)',
+        'if (fx(' + index['Display_Guides_Checkbox'] + ').value)',
         '{',
         '	var A = [0,0];',
         '	var B = [ 0 , -thisComp.height/20 ];',
@@ -3052,7 +3052,7 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
     ].join('\n');
 
     stroke = refOrientation.addProperty("ADBE Vector Graphic - Stroke");
-    stroke("ADBE Vector Stroke Color").expression = 'effect("Expose Transform")(' + index['DisplayReferenceColor'] + ');';
+    stroke("ADBE Vector Stroke Color").expression = 'effect("Expose Transform")(' + index['Display_Reference_Color'] + ');';
     stroke("ADBE Vector Stroke Width").expression = 'thisComp.height/500;';
     stroke( "ADBE Vector Stroke Dashes" ).addProperty( "ADBE Vector Stroke Dash 1" );
     stroke("ADBE Vector Stroke Dashes").property('ADBE Vector Stroke Dash 1').expression = 'thisComp.height/100;';
@@ -3063,15 +3063,15 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
 
     refOrientationTransform('ADBE Vector Rotation').expression = ['//Duik.exposeTransform',
         'var fx = effect("' + effect.name + '");',
-        '-fx(' + index['2D OrientationRelative to referenceAngle'] + ');'
+        '-fx(' + index['2D Orientation_Relative to reference_Angle'] + ');'
 	].join('\n');
 
     targetTransform = targetGroup('ADBE Vector Transform Group');
     targetTransform('ADBE Vector Position').expression = ['//Duik.exposeTransform',
         'var fx = effect("' + effect.name + '");',
-        'if (fx(' + index['DisplayGuidesCheckbox'] + ').value)',
+        'if (fx(' + index['Display_Guides_Checkbox'] + ').value)',
         '{',
-        '	fromComp(fx(' + index['2D Position (Comp projection)Absolute Point'] + '));',
+        '	fromComp(fx(' + index['2D Position (Comp projection)_Absolute_Point'] + '));',
         '}',
         'else',
         '{',
@@ -3080,7 +3080,7 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
     ].join('\n');
     targetTransform('ADBE Vector Rotation').expression = ['//Duik.exposeTransform',
         'var fx = effect("' + effect.name + '");',
-        'var result = fx(' + index['2D OrientationAbsoluteAngle'] + ');',
+        'var result = fx(' + index['2D Orientation_Absolute_Angle'] + ');',
         'var l = thisLayer;',
         'result -= l.rotation.value;',
         'while(l.hasParent)',
@@ -3100,10 +3100,10 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
     path = angle1.addProperty("ADBE Vector Shape - Group");
     path("ADBE Vector Shape").expression = ['//Duik.exposeTransform',
         'var fx = effect("Expose Transform");',
-        'if (fx(' + index['DisplayGuidesCheckbox'] + ').value)',
+        'if (fx(' + index['Display_Guides_Checkbox'] + ').value)',
         '{',
-        '	var A = fromComp(fx(' + index['2D Position (Comp projection)Absolute Point'] + '));',
-        '	var B = fromComp( fx(' + index['2D Position (Comp projection)Absolute Point'] + ') - fx(' + index['2D Position (Comp projection)Relative to referencePoint'] + ') );',
+        '	var A = fromComp(fx(' + index['2D Position (Comp projection)_Absolute_Point'] + '));',
+        '	var B = fromComp( fx(' + index['2D Position (Comp projection)_Absolute_Point'] + ') - fx(' + index['2D Position (Comp projection)_Relative to reference_Point'] + ') );',
         '	createPath([A,[0,0],B],[],[],false);',
         '}',
         'else',
@@ -3113,7 +3113,7 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
 	].join('\n');
 
     stroke = angle1.addProperty("ADBE Vector Graphic - Stroke");
-    stroke("ADBE Vector Stroke Color").expression = 'effect("Expose Transform")(' + index['DisplayAngleColor'] + ');';
+    stroke("ADBE Vector Stroke Color").expression = 'effect("Expose Transform")(' + index['Display_Angle_Color'] + ');';
     stroke("ADBE Vector Stroke Width").expression = 'thisComp.height/500;';
     stroke( "ADBE Vector Stroke Dashes" ).addProperty( "ADBE Vector Stroke Dash 1" );
     stroke("ADBE Vector Stroke Dashes").property('ADBE Vector Stroke Dash 1').expression = 'thisComp.height/100;';
@@ -3126,10 +3126,10 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
     path = angle2.addProperty("ADBE Vector Shape - Group");
     path("ADBE Vector Shape").expression = ['//Duik.exposeTransform',
         'var fx = effect("' + effect.name + '");',
-        'if (fx(' + index['DisplayGuidesCheckbox'] + ').value)',
+        'if (fx(' + index['Display_Guides_Checkbox'] + ').value)',
         '{',
-        '	var A = fromComp(fx(' + index['2D Position (Comp projection)Absolute Point'] + '));',
-        '	var B = fromComp( fx(' + index['2D Position (Comp projection)Absolute Point'] + ') - fx(' + index['2D Position (Comp projection)Relative to referencePoint'] + ') );',
+        '	var A = fromComp(fx(' + index['2D Position (Comp projection)_Absolute_Point'] + '));',
+        '	var B = fromComp( fx(' + index['2D Position (Comp projection)_Absolute_Point'] + ') - fx(' + index['2D Position (Comp projection)_Relative to reference_Point'] + ') );',
         '	var M = (A+B)/2;',
         '	var tA = [0,0];',
         '	var tB = [0,0];',
@@ -3162,7 +3162,7 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
 	].join('\n');
 
     stroke = angle2.addProperty("ADBE Vector Graphic - Stroke");
-    stroke("ADBE Vector Stroke Color").expression = 'effect("Expose Transform")(' + index['DisplayAngleColor'] + ');';
+    stroke("ADBE Vector Stroke Color").expression = 'effect("Expose Transform")(' + index['Display_Angle_Color'] + ');';
     stroke("ADBE Vector Stroke Width").expression = 'thisComp.height/500;';
     stroke( "ADBE Vector Stroke Dashes" ).addProperty( "ADBE Vector Stroke Dash 1" );
     stroke("ADBE Vector Stroke Dashes").property('ADBE Vector Stroke Dash 1').expression = 'thisComp.height/100;';
@@ -3176,10 +3176,10 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
     path = distance.addProperty("ADBE Vector Shape - Group");
     path("ADBE Vector Shape").expression = ['//Duik.exposeTransform',
         'var fx = effect("' + effect.name + '");',
-        'if (fx(' + index['DisplayGuidesCheckbox'] + ').value)',
+        'if (fx(' + index['Display_Guides_Checkbox'] + ').value)',
         '{',
-        '	var A = fromComp(fx(' + index['2D Position (Comp projection)Absolute Point'] + '));',
-        '	var B = fromComp( fx(' + index['2D Position (Comp projection)Absolute Point'] + ') - fx(' + index['2D Position (Comp projection)Relative to referencePoint'] + ') );',
+        '	var A = fromComp(fx(' + index['2D Position (Comp projection)_Absolute_Point'] + '));',
+        '	var B = fromComp( fx(' + index['2D Position (Comp projection)_Absolute_Point'] + ') - fx(' + index['2D Position (Comp projection)_Relative to reference_Point'] + ') );',
         '	createPath([A,B],[],[],false);',
         '}',
         'else',
@@ -3189,7 +3189,7 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
 	].join('\n');
 
     stroke = distance.addProperty("ADBE Vector Graphic - Stroke");
-    stroke("ADBE Vector Stroke Color").expression = 'effect("Expose Transform")(' + index['DisplayDistanceColor'] + ');';
+    stroke("ADBE Vector Stroke Color").expression = 'effect("Expose Transform")(' + index['Display_Distance_Color'] + ');';
     stroke("ADBE Vector Stroke Width").expression = 'thisComp.height/500;';
     stroke( "ADBE Vector Stroke Dashes" ).addProperty( "ADBE Vector Stroke Dash 1" );
     stroke("ADBE Vector Stroke Dashes").property('ADBE Vector Stroke Dash 1').expression = 'thisComp.height/100;';
@@ -3198,32 +3198,32 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
 
     //Effect expressions
 
-    effect(index['2D Position (Comp projection)Absolute Point']).expression = ['//Duik.exposeTransform',
+    effect(index['2D Position (Comp projection)_Absolute_Point']).expression = ['//Duik.exposeTransform',
         'var fx = thisProperty.propertyGroup();',
         'var l = null;',
-        'try { l = fx(' + index['Target LayerLayer'] + '); } catch (e){ }',
+        'try { l = fx(' + index['Target Layer_Layer'] + '); } catch (e){ }',
         'if (!l) l = thisLayer;',
         'var result = l.toComp(l.anchorPoint);',
         'result;'
 	].join('\n');
 
-    effect(index['2D Position (Comp projection)Relative to referencePoint']).expression = ['//Duik.exposeTransform',
+    effect(index['2D Position (Comp projection)_Relative to reference_Point']).expression = ['//Duik.exposeTransform',
         'var fx = thisProperty.propertyGroup();',
-        'var useParent = fx(' + index['ReferenceCheckbox'] + ').value;',
-        'var layerPosition = fx(' + index['2D Position (Comp projection)Absolute Point'] + ');',
+        'var useParent = fx(' + index['Reference_Checkbox'] + ').value;',
+        'var layerPosition = fx(' + index['2D Position (Comp projection)_Absolute_Point'] + ');',
         'var referencePosition = [0,0];',
         'var rL = null;',
         'if (useParent)',
         '{',
         '   var l = null;',
-        '	try { l = fx(' + index['Target LayerLayer'] + '); } catch (e){ }',
+        '	try { l = fx(' + index['Target Layer_Layer'] + '); } catch (e){ }',
         '   if (!l) l = thisLayer;',
         '	if (l.hasParent) rL = l.parent;',
         '	else rL = l;',
         '}',
         'else',
         '{',
-        '	try { rL = fx(' + index['Reference LayerLayer'] + '); } catch (e){ }',
+        '	try { rL = fx(' + index['Reference Layer_Layer'] + '); } catch (e){ }',
         '   if (!rL) rL = thisLayer;',
         '}',
         'referencePosition = rL.toComp(rL.anchorPoint);',
@@ -3231,38 +3231,38 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
         'result;'
 	].join('\n');
 
-    effect(index['2D Position (Comp projection)2D DistanceSlider']).expression = ['//Duik.exposeTransform',
+    effect(index['2D Position (Comp projection)_2D Distance_Slider']).expression = ['//Duik.exposeTransform',
         'var fx = thisProperty.propertyGroup();',
-        'var relativePosition = fx(' + index['2D Position (Comp projection)Relative to referencePoint'] + ');',
+        'var relativePosition = fx(' + index['2D Position (Comp projection)_Relative to reference_Point'] + ');',
         'var result = length( relativePosition );',
         'result;'
 	].join('\n');
 
-    effect(index['3D Position (World)AbsolutePoint3D']).expression = ['//Duik.exposeTransform',
+    effect(index['3D Position (World)_Absolute_Point3D']).expression = ['//Duik.exposeTransform',
         'var fx = thisProperty.propertyGroup();',
         'var l = null;',
-        'try { l = fx(' + index['Target LayerLayer'] + '); } catch (e){ }',
+        'try { l = fx(' + index['Target Layer_Layer'] + '); } catch (e){ }',
         'if (!l) l = thisLayer;',
         'var result = l.toWorld(l.anchorPoint);',
         'result;'
 	].join('\n');
 
-    effect(index['3D Position (World)Relative to referencePoint3D']).expression = ['//Duik.exposeTransform',
+    effect(index['3D Position (World)_Relative to reference_Point3D']).expression = ['//Duik.exposeTransform',
         'var fx = thisProperty.propertyGroup();',
-        'var layerPosition = fx(' + index['3D Position (World)AbsolutePoint3D'] + ');',
-        'var useParent = fx(' + index['ReferenceCheckbox'] + ').value;',
+        'var layerPosition = fx(' + index['3D Position (World)_Absolute_Point3D'] + ');',
+        'var useParent = fx(' + index['Reference_Checkbox'] + ').value;',
         'var rL = null;',
         'if (useParent)',
         '{',
         '   var l = null;',
-        '	try { l = fx(' + index['Target LayerLayer'] + '); } catch (e){ }',
+        '	try { l = fx(' + index['Target Layer_Layer'] + '); } catch (e){ }',
         '   if (!l) l = thisLayer;',
         '	if (l.hasParent) rL = l.parent;',
         '	else rL = l;',
         '}',
         'else',
         '{',
-        '	try { rL = fx(' + index['Reference LayerLayer'] + '); } catch (e){ }',
+        '	try { rL = fx(' + index['Reference Layer_Layer'] + '); } catch (e){ }',
         '   if (!rL) rL = thisLayer;',
         '}',
         'var referencePosition = rL.toWorld(rL.anchorPoint);',
@@ -3270,17 +3270,17 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
         'result;'
 	].join('\n');
 
-    effect(index['3D Position (World)3D DistanceSlider']).expression = ['//Duik.exposeTransform',
+    effect(index['3D Position (World)_3D Distance_Slider']).expression = ['//Duik.exposeTransform',
         'var fx = thisProperty.propertyGroup();',
-        'var relativePosition = fx(' + index['3D Position (World)Relative to referencePoint3D'] + ');',
+        'var relativePosition = fx(' + index['3D Position (World)_Relative to reference_Point3D'] + ');',
         'var result = length( relativePosition );',
         'result;'
 	].join('\n');
 
-    effect(index['2D OrientationAbsoluteAngle']).expression = ['//Duik.exposeTransform',
+    effect(index['2D Orientation_Absolute_Angle']).expression = ['//Duik.exposeTransform',
         'var fx = thisProperty.propertyGroup();',
         'var l = null;',
-        'try { l = fx(' + index['Target LayerLayer'] + ') } catch (e){ }',
+        'try { l = fx(' + index['Target Layer_Layer'] + ') } catch (e){ }',
         'if (!l) l = thisLayer;',
         'var result = l.rotation;',
         'if (l.position.value.length == 3) result += l.orientation[2];',
@@ -3293,23 +3293,23 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
         'result;'
 	].join('\n');
 
-    effect(index['2D OrientationRelative to referenceAngle']).expression = ['//Duik.exposeTransform',
+    effect(index['2D Orientation_Relative to reference_Angle']).expression = ['//Duik.exposeTransform',
         'var fx = thisProperty.propertyGroup();',
-        'var useParent = fx(' + index['ReferenceCheckbox'] + ').value;',
-        'var rot = fx(' + index['2D OrientationAbsoluteAngle'] + ');',
+        'var useParent = fx(' + index['Reference_Checkbox'] + ').value;',
+        'var rot = fx(' + index['2D Orientation_Absolute_Angle'] + ');',
         'var result = value;',
         'var rL = null;',
         'if (useParent)',
         '{',
         '   var l = null;',
-        '	try { l = fx(' + index['Target LayerLayer'] + '); } catch (e){ }',
+        '	try { l = fx(' + index['Target Layer_Layer'] + '); } catch (e){ }',
         '   if (!l) l = thisLayer;',
         '	if (l.hasParent) rL = l.parent;',
         '	else rL = l;',
         '}',
         'else',
         '{',
-        '	try { rL = fx(' + index['Reference LayerLayer'] + '); } catch (e){ }',
+        '	try { rL = fx(' + index['Reference Layer_Layer'] + '); } catch (e){ }',
         '   if (!rL) rL = thisLayer;',
         '}',
         'var refRot = rL.rotation.value;',
@@ -3324,13 +3324,13 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
         'result;'
 	].join('\n');
 
-    effect(index['Angle (Layer-This-Reference)Angle']).expression = ['//Duik.exposeTransform',
+    effect(index['Angle (Layer-This-Reference)_Angle']).expression = ['//Duik.exposeTransform',
         'var fx = thisProperty.propertyGroup();',
-        'var useParent = fx(' + index['ReferenceCheckbox'] + ').value;',
+        'var useParent = fx(' + index['Reference_Checkbox'] + ').value;',
         'var O = thisLayer.toComp(thisLayer.anchorPoint);',
         'var l = null;',
         'var rL = null;',
-        'try { l = fx(' + index['Target LayerLayer'] + '); } catch (e){ }',
+        'try { l = fx(' + index['Target Layer_Layer'] + '); } catch (e){ }',
         'if (!l) l = thisLayer;',
         'if (useParent)',
         '{',
@@ -3339,7 +3339,7 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
         '}',
         'else',
         '{',
-        '	try { rL = fx(' + index['Reference LayerLayer'] + '); } catch (e){ }',
+        '	try { rL = fx(' + index['Reference Layer_Layer'] + '); } catch (e){ }',
         '   if (!rL) rL = thisLayer;',
         '}',
         'var A = l.toComp(l.anchorPoint);',
@@ -3357,7 +3357,7 @@ DuAEF.Duik.Rigging.exposeTransform = function( comp, layer )
     //set the layer as target
     if (typeof layer !== 'undefined')
     {
-        effect(index['Target LayerLayer'] ).setValue(layer.index);
+        effect(index['Target Layer_Layer'] ).setValue(layer.index);
     }
 
     return ctrl;
