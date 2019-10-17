@@ -1,0 +1,162 @@
+/**
+ * Ramses
+ * @author Nicolas Dufresneand contributors
+ * @copyright 2019 Nicolas Dufresne, Rainbox Productions<br />
+ * {@link https://rainboxlab.org}
+ * @namespace
+ * @memberof DuAEF
+ * @license GPL-3.0 <br />
+ * DuAEF is free software: you can redistribute it and/or modify<br />
+ * it under the terms of the GNU General Public License as published by<br />
+ * the Free Software Foundation, either version 3 of the License, or<br />
+ * (at your option) any later version.<br />
+ *<br />
+ * DuAEF is distributed in the hope that it will be useful,<br />
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+ * GNU General Public License for more details.<br />
+ *<br />
+ * You should have received a copy of the GNU General Public License<br />
+ * along with DuAEF. If not, see {@link http://www.gnu.org/licenses/}.
+ */
+DuAEF.Ramses = {};
+
+/**
+ * Suffix for wip files 
+ */
+DuAEF.Ramses.wipName = 'WIP';
+
+/**
+ * Name of the folder for version history
+ */
+DuAEF.Ramses.versionFolderName = '_versions';
+
+/**
+ * Gets the folder used to store version history 
+ * @return {Folder}
+ */
+DuAEF.Ramses.getVersionFolder = function() {
+    var projectFolder = app.project.file.parent;
+    var versionFolder = new Folder(projectFolder.absoluteURI + DuAEF.Ramses.versionFolderName);
+    if ( !versionFolder.exists ) versionFolder.create();
+    return versionFolder;
+}
+
+/**
+ * Gets the name of the project, without the wip part
+ * @return {string}
+ */
+DuAEF.Ramses.getProjectName = function () {
+    var projectFile = app.project.file;
+    projectName = DuAEF.DuJS.Fs.getBasename( projectFile );
+    if ( DuAEF.DuJS.String.endsWith( projectName, DuAEF.Ramses.wipName ) ) {
+        projectName = projectName.substring( 0, projectName.length - DuAEF.Ramses.wipName.length - 1 );
+    }
+    return projectName;
+}
+
+/**
+ * Gets the current version number of the project 
+ * @return {int}
+ */
+DuAEF.Ramses.getCurrentProjectVersion = function () {
+    var versionFolder = DuAEF.Ramses.getVersionFolder();
+
+    var currentVersion = 0;
+    // gets all existing versions
+    var projectVersionFiles = versionFolder.getFiles( projectName + "_wip*.aep" );
+    projectVersionFiles = projectVersionFiles.concat( versionFolder.getFiles( projectName + "_pub*.aep" ) );
+    for ( var i = 0, num = projectVersionFiles.length; i < num; i++ ) {
+        var f = projectVersionFiles[ i ];
+        if ( DuAEF.DuJS.Fs.isFile( f ) ) {
+            var fName = DuAEF.DuJS.Fs.getBasename( f );
+            var v = fName.replace( projectName + "_wip", '' );
+            v = v.replace( projectName + "_pub", '' );
+            v = v.replace( ".aepx", '' );
+            v = v.replace( ".aep", '' );
+            v = parseInt( v, 10 );
+            if ( !isNaN( v ) ) {
+                if ( v > currentVersion ) currentVersion = v;
+            }
+        }
+    }
+    return currentVersion;
+}
+
+
+/**
+ * Saves the current project, and copies a backup file.
+ * @param {boolean} [increment=false] Set to true to increment the current version.
+ * @param {boolean} [publish=false] Set to true to publish the current project (remove the WIP part)
+ * @return {File} The backup file.
+ */
+DuAEF.Ramses.saveProject = function ( increment, publish ) {
+
+    increment = def(increment, false);
+    publish = def(publish, false);
+
+    var projectFile = app.project.file;
+    
+    var projectName = '';
+    var projectPath = '';
+
+    // == save WIP project ==
+
+    if ( projectFile ) {
+        projectName = DuAEF.Ramses.getProjectName();
+    } else {
+        throw ( 'Please save this project with After Effects once before using Ramses.' );
+        return;
+    }
+
+    projectPath = projectFile.path;
+
+    var saveName = projectPath + '/' + projectName;
+    if ( !publish ) saveName += '_' + DuAEF.Ramses.wipName;
+    saveName += '.aep';
+    projectFile = new File( saveName );
+    app.project.save( projectFile );
+
+    // == Copy version ==
+
+    var versionFolder = DuAEF.Ramses.getVersionFolder();
+
+    // gets current version
+    var currentVersion = DuAEF.Ramses.getCurrentProjectVersion();
+
+    // increment
+    if ( increment || currentVersion == 0 ) currentVersion++;
+
+    // copy version
+    var currentVersionString = DuAEF.DuJS.Number.convertToString( currentVersion, 3 );
+    var versionPath = versionFolder.absoluteURI + "/" + projectName;
+    if ( publish ) versionPath += "_pub";
+    else versionPath += "_wip";
+    versionPath += currentVersionString + ".aep";
+    var successful = projectFile.copy( versionPath );
+    if ( !successful ) alert( "Warning - Error writing file\nThe version could not be backed up properly." );
+    return new File( versionPath );
+}
+
+/**
+ * Collect the files from the current project. Gets both the WIP and the publish versions.
+ * @param {Folder} [destination] The folder where to save the files. The project files will be collected in a subfolder called "project name.aep.archive" or "project name.aep.zip". If not provided, will use the current folder.
+ * @param {boolean} [reduce=true] Will reduce the project before collecting files, using all comps found at first level in the project (not in subfolders)
+ * @param {boolean} [zip=false] Set to true to automatically zip the archive.
+ * @return {File|Folder} The zip file or the folder containing the collected files.
+ */
+DuAEF.Ramses.archiveProject = function ( destination, reduce, zip ) {
+    var projectFile = app.project.file;
+    
+    destination = def (destination, projectFile.parent);
+    cleanFolder = def (cleanFolder, projectFile.parent);
+    zip = def (zip, projectFile.parent);
+    reduce = def(reduce, true);
+    
+    if (reduce) {
+        DuAEF.DuAE.Project.reduce();
+    }
+
+    DuAEF.DuAE.Project.collectFiles( destination, true, zip);
+}
+
