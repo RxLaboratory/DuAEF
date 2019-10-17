@@ -120,15 +120,6 @@ DuAEF.States = {
  */
 DuAEF.state = DuAEF.States.NOT_SET;
 
-/**
- * Includes binaries needed by some libraries, like pngquant for DuQuantLib or FFmpeg for DuFFmpegLib.<br />
- * The binaries are available only if you include DuAEF.jsxinc or DuAEF_full.jsxinc.<br />
- * If you use the DuAEF_no_bin.jsxinc version of DuAEF, this is an empty object.<br />
- * @namespace
- * @memberof DuAEF
- */
-DuAEF.bin = {};
-
 //Initializes DuAEF
 ( function()
 {
@@ -148,11 +139,6 @@ DuAEF.bin = {};
      * @type {boolean}
      */
     DuAEF.win = !mac;
-
-    //the binaries
-    DuAEF.bin.pngquant = null;
-    DuAEF.bin.pngquantbatch = null
-
 } )();
 
 /**

@@ -38,3 +38,4 @@
 #include "libs/DuPseudoEffectLib.jsxinc"
 #include "libs/DuExpressionLib.jsxinc"
 #include "libs/RamsesLib.jsxinc"
+#include "libs/DuZipLib.jsxinc"
