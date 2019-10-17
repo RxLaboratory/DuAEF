@@ -169,10 +169,10 @@ DuAEF.DuAE.Project.reduceSelected = function ( keepExpressionOnly ) {
 /**
  * Reduces the project, the same way the native command does it, but being able to keep comps used only by expressions.
  * @param {CompItem|CompItem[]} [comps] The name or the id of the comp(s) to keep. If omitted, it will use all comps at the root of the project (the ones not in a subfolder).
- * @param {boolean} [keepExpressionOnly=false] Set to false to ignore comps used only by expressions (same as the native command)
+ * @param {boolean} [keepExpressionOnly=true] Set to false to ignore comps used only by expressions (same as the native command)
  */
 DuAEF.DuAE.Project.reduce = function ( comps, keepExpressionOnly ) {
-    keepExpressionOnly = def( keepExpressionOnly, false );
+    keepExpressionOnly = def( keepExpressionOnly, true );
     comps = def( comps, DuAEF.DuAE.Project.getComps( true ) );
     if ( comps instanceof CompItem ) comps = [ comps ];
 
@@ -214,9 +214,6 @@ DuAEF.DuAE.Project.reduce = function ( comps, keepExpressionOnly ) {
  * @param {Folder} [destination] The folder where to save the files. The project files will be collected in a subfolder called "project name.aep.archive" or "project name.aep.zip". If not provided, will use the current folder.
   * @param {boolean} [overwrite=false] Set to true to overwrite existing projects and footages.
  * @param {boolean} [zip=false] Set to true to automatically zip the archive.
- * @return {Object} An object where `object.file` is the folder or zip archive for the collected files,<br />
- * `object.missingFootages` is an array of string paths for missing footages,
- * `object.collectedFiles` is an array of string paths containing the original file paths being collected
  */
 DuAEF.DuAE.Project.collectFiles = function ( destination, overwrite, zip ) {
     var projectFile = app.project.file;
@@ -229,7 +226,9 @@ DuAEF.DuAE.Project.collectFiles = function ( destination, overwrite, zip ) {
     zip = def (zip, false);
 
     //create folder for the project
-    var projectFolder = new Folder( destination.absoluteURI + '/' + projectFile.name  + '_temp');
+    var projectName = DuAEF.DuJS.Fs.getBasename( projectFile.name );
+    var projectFolderName = projectName + ".archive";
+    var projectFolder = new Folder( destination.absoluteURI + '/' + projectFolderName );
 	var footageFolder = new Folder( projectFolder.absoluteURI + "/(Footage)/" );
 	projectFolder.create();
 	footageFolder.create();
@@ -320,5 +319,10 @@ DuAEF.DuAE.Project.collectFiles = function ( destination, overwrite, zip ) {
     report += missingFootageString;
     DuAEF.DuJS.Fs.writeTextFile( reportFile, report );
 
-    //TODO ZIP
+    //ZIP
+    if (zip) {
+        app.project.close( CloseOptions.DO_NOT_SAVE_CHANGES );
+        app.open( projectFile );
+        var zipFile = DuAEF.Zip.compressFolderContent( projectFolder, projectName + ".zip", true );
+    }
 }
