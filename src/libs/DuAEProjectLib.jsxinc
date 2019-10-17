@@ -158,7 +158,12 @@ DuAEF.DuAE.Project.updateExpressionCache = function () {
  * @param {boolean} [keepExpressionOnly=true] Set to false to ignore comps used only by expressions (same as the native command)
  */
 DuAEF.DuAE.Project.reduceSelected = function ( keepExpressionOnly ) {
-
+    var comps = [];
+    for (var i = 0, num = app.project.selection.length; i < num; i++) {
+        var item = app.project.selection[i];
+        if (item instanceof CompItem) comps.push(item);
+    }
+    DuAEF.DuAE.Project.reduce( comps, keepExpressionOnly );
 }
 
 /**
@@ -203,3 +208,5 @@ DuAEF.DuAE.Project.reduce = function ( comps, keepExpressionOnly ) {
         else if ( item.numItems == 0 ) item.remove();
     }
 }
+
+

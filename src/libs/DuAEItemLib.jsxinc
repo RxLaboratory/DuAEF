@@ -53,6 +53,8 @@ DuAEF.DuAE.Item.usedIn = function (item, recursive, keepExpressionOnly ) {
         }
     }
 
+    DuAEF.DuJS.Array.removeDuplicates(usedIn, DuAEF.DuAE.Item.compareItems);
+
     if (cacheSuspended) DuAEF.DuAE.Project.suspendCacheUpdates = false;
 
     return usedIn;
