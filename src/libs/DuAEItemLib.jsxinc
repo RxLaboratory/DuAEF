@@ -5,6 +5,84 @@
  */
 DuAEF.DuAE.Item = {};
 
+DuAEF.DuAE.Item.stillFormats = [
+    "bmp",
+    "rle",
+    "dib",
+    "tif",
+    "crw",
+    "nef",
+    "raf",
+    "orf",
+    "mrw",
+    "dcr",
+    "mos",
+    "raw",
+    "pef",
+    "srf",
+    "dng",
+    "x3f",
+    "cr2",
+    "erf",
+    "sr2",
+    "kdc",
+    "mfw",
+    "mef",
+    "arw",
+    "nrw",
+    "rw2",
+    "rwl",
+    "iiq",
+    "3fr",
+    "fff",
+    "srw",
+    "gpr",
+    "dxo",
+    "heic",
+    "arq",
+    "cr3",
+    "cin",
+    "dpx",
+    "img",
+    "ei",
+    "ai",
+    "pdf",
+    "eps",
+    "ai3",
+    "ai4",
+    "ai5",
+    "ai6",
+    "ai7",
+    "ai8",
+    "epsf",
+    "epsp",
+    "jpg",
+    "jpeg",
+    "jfif",
+    "jpe",
+    "ico",
+    "exr",
+    "sxr",
+    "mxr",
+    "psd",
+    "psb",
+    "png",
+    "hdr",
+    "rgbe",
+    "xyze",
+    "rla",
+    "rpf",
+    "sgi",
+    "bw",
+    "rgb",
+    "pic",
+    "tga",
+    "vda",
+    "icb",
+    "vst",
+    "tiff"
+]
+
 //low-level undocumented method
 //a function to compare items
 DuAEF.DuAE.Item.compareItems = function (itemA, itemB) { return itemA.id == itemB.id; }
@@ -60,3 +138,21 @@ DuAEF.DuAE.Item.usedIn = function (item, recursive, keepExpressionOnly ) {
     return usedIn;
 }
 
+/**
+ * Checks if this item source is an image sequence
+ * @param {FootageItem} item The item
+ * @return {boolean} true if the source is an image sequence
+ */
+DuAEF.DuAE.Item.isImageSequence = function (item) {
+    if (!(item instanceof FootageItem)) return false;
+
+    //check if it's still
+    if (item.mainSource.isStill) return false;
+
+    //check if it's a video 
+    var extension = DuAEF.DuJS.Fs.getExtension(item.file);
+    extension = extension.toLowerCase();
+
+    return DuAEF.DuJS.Array.indexOf( DuAEF.DuAE.Item.stillFormats, extension ) >= 0;
+
+}
