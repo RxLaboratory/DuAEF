@@ -209,4 +209,116 @@ DuAEF.DuAE.Project.reduce = function ( comps, keepExpressionOnly ) {
     }
 }
 
+/**
+ * Collects all dependencies in a folder
+ * @param {Folder} [destination] The folder where to save the files. The project files will be collected in a subfolder called "project name.aep.archive" or "project name.aep.zip". If not provided, will use the current folder.
+  * @param {boolean} [overwrite=false] Set to true to overwrite existing projects and footages.
+ * @param {boolean} [zip=false] Set to true to automatically zip the archive.
+ * @return {Object} An object where `object.file` is the folder or zip archive for the collected files,<br />
+ * `object.missingFootages` is an array of string paths for missing footages,
+ * `object.collectedFiles` is an array of string paths containing the original file paths being collected
+ */
+DuAEF.DuAE.Project.collectFiles = function ( destination, overwrite, zip ) {
+    var projectFile = app.project.file;
 
+    var result = {};
+    result.missingFootages = [];
+    
+    destination = def ( destination, projectFile.parent );
+    overwrite = def (overwrite, false);
+    zip = def (zip, false);
+
+    //create folder for the project
+    var projectFolder = new Folder( destination.absoluteURI + '/' + projectFile.name  + '_temp');
+	var footageFolder = new Folder( projectFolder.absoluteURI + "/(Footage)/" );
+	projectFolder.create();
+	footageFolder.create();
+
+    //create report file
+    var missingFootageString = "=== MISSING FOOTAGE ===\n\n";
+    var ignoredFootageString = "=== IGNORED FOOTAGE ===\n\n";
+
+    var currentFootageFolder = footageFolder;
+    currentFootageFolder.id = -1;
+
+	//for each item, copy and re-link
+	for (var i = 1, num = app.project.numItems; i <= num; i++ ) {
+        var item = app.project.item(i);
+
+        //check if we're still in the right folder
+        if (item.parentFolder.id != currentFootageFolder.id) {
+            if (item.parentFolder == app.project.rootFolder )
+            {
+                currentFootageFolder = footageFolder;  
+            }
+            else
+            {
+                currentFootageFolder = currentFootageFolder.parent;
+            }
+            currentFootageFolder.id = item.parentFolder.id;
+        }
+
+
+        if ( item instanceof CompItem ) continue;
+        if ( item instanceof FolderItem ) {
+            currentFootageFolder = new Folder( currentFootageFolder.absoluteURI + "/" + item.name);
+            currentFootageFolder.create();
+            currentFootageFolder.id = item.id;
+            continue;
+        }
+
+        
+
+        //if no source file
+        if (item.file == null) continue;
+        //if missing source
+        if (item.footageMissing) {
+            missingFootageString += item.name + " @ " + item.file.fsName + "\n";
+            result.missingFootages.push(item.file.fsName);
+            continue;
+        }
+
+        //if this is not an image sequence
+        if (!DuAEF.DuAE.Item.isImageSequence(item)) {
+            var newPath = currentFootageFolder.absoluteURI + "/" + item.file.name;
+            var newFile = new File( newPath );
+            //copy
+            if ( (newFile.exists && overwrite) || !newFile.exists) item.file.copy( newPath );
+            //re-link
+            item.replace(new File( newPath ));
+        }
+        else {
+            //get files and create a folder
+            var sequenceFolder = item.file.parent;
+            var frameSequence = sequenceFolder.getFiles();
+            var sequenceFolderTarget = new Folder(currentFootageFolder.absoluteURI + "/" + sequenceFolder.name + "/");
+            sequenceFolderTarget.create();
+            var newPath = sequenceFolderTarget.absoluteURI + "/" + item.file.name;
+            var newFile = new File(newPath);
+
+            //copy frames
+            if ( (newFile.exists && overwrite) || !newFile.exists) {
+                for (var j = 0, numFrames = frameSequence.length; j < numFrames; j++ ) {
+                    var frame = frameSequence[j];
+                    if ( frame instanceof Folder ) continue;
+                    frame.copy( sequenceFolderTarget.absoluteURI + "/" + frame.name );
+                }
+            }
+            
+            //re-link
+            item.replaceWithSequence(newFile, true);
+        }
+
+	}
+
+	//sauvegarder le projet
+	app.project.save(new File(projectFolder.absoluteURI + "/" + app.project.file.name));
+
+    //write report
+    var reportFile = new File(projectFolder.absoluteURI + "/" + app.project.file.name + "_report.txt");
+    var report = app.project.file.name + "\n\n";
+    report += missingFootageString;
+    DuAEF.DuJS.Fs.writeTextFile( reportFile, report );
+
+    //TODO ZIP
+}
