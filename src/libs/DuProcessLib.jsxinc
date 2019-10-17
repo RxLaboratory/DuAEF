@@ -197,7 +197,6 @@ DuProcess.prototype.startCmd = function ( cmd ) {
         bat.close();
         bat.execute();
     }
-	alert(cmd);
 }
 
 /**
