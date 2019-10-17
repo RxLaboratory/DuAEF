@@ -353,16 +353,19 @@ DuAEF.DuJS.Array.getDuplicates = function (arr)
 	* Removes all duplicated values from the Array, and returns them
 	* @memberof DuAEF.DuJS.Array
 	* @param {Array}	arr	- The array
+	* @param {function}	[comparisonFunction] - A function which compares two values which returns true if the values are considered the same.
 	* @return {Array}	The duplicated (and removed) values
 */
-DuAEF.DuJS.Array.removeDuplicates = function (arr)
+DuAEF.DuJS.Array.removeDuplicates = function (arr, comparisonFunction)
 {
+	var useFunction = typeof comparisonFunction === 'function';
 	var removed = [];
 	for (var i = 0;i<arr.length-1;i++)
 	{
         for (var j=i+1;j<arr.length;j++)
 		{
-            if (arr[i] === arr[j]) removed = removed.concat(arr.splice(j,1));
+            if (! useFunction && arr[i] === arr[j]) removed = removed.concat(arr.splice(j,1));
+			if (useFunction && comparisonFunction(arr[i],arr[j]) ) removed = removed.concat(arr.splice(j,1));
         }
 	}
 	return removed;
