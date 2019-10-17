@@ -1,0 +1,205 @@
+/**
+ * After Effects project methods
+ * @namespace
+ * @memberof DuAEF.DuAE
+ */
+DuAEF.DuAE.Project = {};
+
+//undocumented flags
+DuAEF.DuAE.Project.progressMode = false;
+DuAEF.DuAE.Project.activeComp = null;
+DuAEF.DuAE.Project.progressComp = null;
+DuAEF.DuAE.Project.viewerMaximized = false;
+
+//caches
+//this must be set to true during work on the cache to prevent it from updating
+DuAEF.DuAE.Project.suspendCacheUpdates = false;
+
+// the expression cache is an array of PropertyInfo
+DuAEF.DuAE.Project.expressionCache = [];
+DuAEF.DuAE.Project.lastExpressionCacheUpdateTime = 0;
+
+/**
+ * Sets the project in "waiting mode" to speed up things.
+ * @param {bool} inProgress - True to set progress mode, false to stop it.
+ */
+DuAEF.DuAE.Project.setProgressMode = function ( inProgress ) {
+    if ( inProgress && DuAEF.DuAE.Project.progressMode ) return;
+    if ( !inProgress && !DuAEF.DuAE.Project.progressMode ) return;
+
+    if ( inProgress ) {
+        //store the current comp
+        DuAEF.DuAE.Project.activeComp = DuAEF.DuAE.Project.getActiveComp();
+
+        if ( app.activeViewer != null ) DuAEF.DuAE.Project.viewerMaximized = app.activeViewer.maximized;
+
+        //create a temp comp, open it
+        DuAEF.DuAE.Project.progressComp = app.project.items.addComp( "MAGIC IS HAPPENING...", 500, 500, 1, 1, 1 );
+
+        var tempL = DuAEF.DuAE.Project.progressComp.layers.addShape();
+        tempL.applyPreset( DuAEF.DuAE.Presets.MAGIC );
+        tempL.selected = false;
+
+        DuAEF.DuAE.Project.progressComp.openInViewer();
+        if ( app.activeViewer != null ) app.activeViewer.maximized = true;
+
+        DuAEF.DuAE.Project.progressMode = true;
+    } else {
+        //remove temp comp
+        if ( DuAEF.DuAE.Project.progressComp != null ) DuAEF.DuAE.Project.progressComp.remove();
+        //re-activate previous comp
+        if ( DuAEF.DuAE.Project.activeComp != null ) DuAEF.DuAE.Project.activeComp.openInViewer();
+        if ( app.activeViewer != null ) app.activeViewer.maximized = DuAEF.DuAE.Project.viewerMaximized;
+
+        DuAEF.DuAE.Project.progressMode = false;
+    }
+
+}
+
+/**
+ * Gets all compositions in the project (or only the root of the project, ignoring subfolders)
+ * @param {boolean} [rootOnly=false] Set to true to get only comps from the root of the project
+ * @return {CompItem[]} The compositions
+ */
+DuAEF.DuAE.Project.getComps = function ( rootOnly ) {
+    rootOnly = def( rootOnly, false );
+    var comps = [];
+    var it = new Iterator( app.project.items );
+    it.do( function ( comp ) {
+        if ( comp instanceof CompItem ) {
+            if ( rootOnly && comp.parentFolder != app.project.rootFolder ) return;
+            comps.push( comp );
+        }
+    } );
+    return comps;
+}
+
+/**
+ * Gets the After Effects current composition
+ * @return {CompItem|null} The current composition or null if there's no current comp
+ */
+DuAEF.DuAE.Project.getActiveComp = function () {
+    if ( DuAEF.DuAE.Project.progressMode ) return DuAEF.DuAE.Project.activeComp;
+    var comp = app.project.activeItem;
+    if ( !comp ) return null;
+    if ( !( comp instanceof CompItem ) ) return null;
+    return comp;
+}
+
+/**
+ * Retrieves an item by its Item ID
+ * @return {Item|null} The item
+ */
+DuAEF.DuAE.Project.getItemById = function ( id ) {
+
+    var it = new Iterator( app.project.items );
+    while ( item = it.next() ) {
+        if ( item.id == id ) return item;
+    }
+    return null;
+}
+
+/**
+ * Generates a new unique name for a composition
+ * @param {string} newName - The wanted new name
+ * @param {CompItem} comp  - The comp
+ * @param {boolean} [increment=true] - true to automatically increment the new name if it already ends with a digit
+ * @return {string}	The unique name, with a new number at the end if needed.
+ */
+DuAEF.DuAE.Project.newUniqueCompName = function ( newName, increment ) {
+    if ( typeof increment == 'undefined' ) increment = true;
+    var compNames = [];
+    var it = new Iterator( app.project.items );
+    it.do( function ( comp ) {
+        if ( comp instanceof CompItem ) compNames.push( comp.name );
+    } );
+    return DuAEF.DuJS.String.generateUnique( newName, compNames, increment );
+}
+
+/**
+ * Makes sure all compositions in the project have unique names, renaming them if needed.
+ */
+DuAEF.DuAE.Project.setUniqueCompNames = function () {
+    var comps = DuAEF.DuAE.Project.getComps();
+    var it = new Iterator( app.project.items );
+    it.do( function ( comp ) {
+        //temporarily set another name to correctly generate a new unique name 
+        var newName = comp.name;
+        comp.name = '***Duik-temp-name-xxx***';
+        comp.name = DuAEF.DuAE.Project.newUniqueCompName( newName );
+    } );
+}
+
+/**
+ * Updates the cache of the expressions used by Duik to speed up batch process of expressions in the whole project.<br />
+ * It's automatically run when needed if it's not been updated in a long time (1 mn) or if it's empty
+ */
+DuAEF.DuAE.Project.updateExpressionCache = function () {
+
+    if ( DuAEF.DuAE.Project.suspendCacheUpdates ) return;
+
+    //clear cache
+    DuAEF.DuAE.Project.expressionCache = [];
+
+    for ( var i = 1, num = app.project.numItems; i <= num; i++ ) {
+        var comp = app.project.item( i );
+        if ( !( comp instanceof CompItem ) ) continue;
+
+        for ( var l = 1, num = comp.numLayers; l <= num; l++ ) {
+            DuAEF.DuAE.Property.addToExpressionCache( comp.layer( l ) );
+        }
+    }
+
+    DuAEF.DuAE.Project.lastExpressionCacheUpdateTime = new Date().getTime();
+}
+
+/**
+ * Reduces the project using the selected compositions, the same way the native command does it, but being able to keep comps used only by expressions.
+ * @param {boolean} [keepExpressionOnly=true] Set to false to ignore comps used only by expressions (same as the native command)
+ */
+DuAEF.DuAE.Project.reduceSelected = function ( keepExpressionOnly ) {
+
+}
+
+/**
+ * Reduces the project, the same way the native command does it, but being able to keep comps used only by expressions.
+ * @param {CompItem|CompItem[]} [comps] The name or the id of the comp(s) to keep. If omitted, it will use all comps at the root of the project (the ones not in a subfolder).
+ * @param {boolean} [keepExpressionOnly=false] Set to false to ignore comps used only by expressions (same as the native command)
+ */
+DuAEF.DuAE.Project.reduce = function ( comps, keepExpressionOnly ) {
+    keepExpressionOnly = def( keepExpressionOnly, false );
+    comps = def( comps, DuAEF.DuAE.Project.getComps( true ) );
+    if ( comps instanceof CompItem ) comps = [ comps ];
+
+    //update cache before running
+    DuAEF.DuAE.Project.updateExpressionCache();
+
+    for ( i = app.project.numItems; i > 0; i-- ) {
+        var item = app.project.item( i );
+        //if it's one of the comp, ignore
+        if ( DuAEF.DuJS.Array.indexOf( comps, item, DuAEF.DuAE.Item.compareItems ) >= 0 ) continue;
+        //if AVItem
+        if ( item instanceof CompItem || item instanceof FootageItem ) {
+            var usedIn = DuAEF.DuAE.Item.usedIn( item, true, keepExpressionOnly );
+
+            if ( usedIn.length == 0 ) {
+                item.remove();
+                continue;
+            }
+
+            var remove = true;
+
+            for ( j = 0, num = usedIn.length; j < num; j++ ) {
+                //if there's one of the comp to keep, do not remove
+                if ( DuAEF.DuJS.Array.indexOf( comps, usedIn[ j ], DuAEF.DuAE.Item.compareItems ) >= 0 ) {
+                    remove = false;
+                    break;
+                }
+            }
+
+            if ( remove ) item.remove();
+        }
+        //remove folder if  empty 
+        else if ( item.numItems == 0 ) item.remove();
+    }
+}

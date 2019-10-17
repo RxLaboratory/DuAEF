@@ -1,0 +1,60 @@
+/**
+ * After Effects item methods
+ * @namespace
+ * @memberof DuAEF.DuAE
+ */
+DuAEF.DuAE.Item = {};
+
+//low-level undocumented method
+//a function to compare items
+DuAEF.DuAE.Item.compareItems = function (itemA, itemB) { return itemA.id == itemB.id; }
+
+/**
+ * Gets the compositions this item is used in.
+ * @param {AVItem} item The item
+ * @param {boolean} [includeExpressionOnly=false] Check for comps using this item only through expressions. The cache has to be updated with {@link DuAEF.DuAE.Project.updateExpressionCache} before using this method with this argument set to true.
+ * @param {boolean} [recursive=false] Check recursively in parent comps too.
+ * @return {CompItem[]} The compositions.
+ */
+DuAEF.DuAE.Item.usedIn = function (item, recursive, keepExpressionOnly ) {
+    keepExpressionOnly = def (keepExpressionOnly, false);
+    recursive = def (recursive, false);
+    var cacheSuspended = false;
+
+    if (item instanceof FolderItem) return [];
+
+    var usedIn = item.usedIn;
+
+    if (!keepExpressionOnly) return usedIn;
+
+    //update cache if needed
+    var currentTime = new Date().getTime();
+    if ( ( currentTime - DuAEF.DuAE.Project.lastExpressionCacheUpdateTime > 60000 ) || DuAEF.DuAE.Project.expressionCache.length == 0) {
+        DuAEF.DuAE.Project.updateExpressionCache();
+        DuAEF.DuAE.Project.suspendCacheUpdates = true;
+        cacheSuspended = true;
+    }
+
+    //the regexps we need 
+    var regExp = '';
+    if (item instanceof CompItem ) regExp = new RegExp("comp\\s*\\(\\s*(\"|')" + item.name + "\\1\\s*\\)");
+    else regExp = new RegExp("footage\\s*\\(\\s*(\"|')" + item.name + "\\1\\s*\\)");
+
+    //check for expressions using this item
+    for (var i = 0, num = DuAEF.DuAE.Project.expressionCache.length; i < num; i++)
+    {
+        var exp = DuAEF.DuAE.Project.expressionCache[i];
+        if ( regExp.test(exp.expression) ) usedIn.push( exp.layer.containingComp );
+    }
+
+    if ( recursive ) {
+        for ( var i = 0, num = usedIn.length; i < num; i++) {
+            usedIn = usedIn.concat( DuAEF.DuAE.Item.usedIn( usedIn[i] , true, keepExpressionOnly ) );
+        }
+    }
+
+    if (cacheSuspended) DuAEF.DuAE.Project.suspendCacheUpdates = false;
+
+    return usedIn;
+}
+
