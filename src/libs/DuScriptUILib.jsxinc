@@ -90,6 +90,8 @@ along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
 #include 'icons/w18_bugreport_r.png.jsxinc'
 #include 'icons/w18_featurerequest_r.png.jsxinc'
 #include 'icons/w18_featurerequest_l.png.jsxinc'
+#include 'icons/w14_folder_r.png.jsxinc'
+#include 'icons/w14_folder_m.png.jsxinc'
 
 /**
  * ScriptUI tools
@@ -327,6 +329,7 @@ DuAEF.DuScriptUI.setBackgroundColor = function( uiItem, color, adjusted )
  * @param {Panel|null}		container	- The container ('this' in the root of the calling script), either a Panel (when launched from the 'Window' menu) or null (when launched from 'file/scripts/run...')
  * @param {string}	scriptName	- A name for this UI
  * @param {string[]}	[contentAlignment=DuAEF.DuScriptUI.defaultColumnAlignment]	- The alignment of the contents in the panel
+ * @param {string}	[borderless=false]	- When true, creates a borderless window if container is not a panel
  * @return {DuPanel}	The panel created, either a ScriptUI Panel or a ScriptUI Window.
  * @example
  * var ui = DuAEF.DuScriptUI.createUI(this,"Test Script");
@@ -334,10 +337,11 @@ DuAEF.DuScriptUI.setBackgroundColor = function( uiItem, color, adjusted )
  * refreshButton.onClick = function() { ui.refreshUI( new File($.fileName) ); }; //reloads the current script
  * DuAEF.DuScriptUI.showUI(ui);
  */
-DuAEF.DuScriptUI.createUI = function( container, scriptName, contentAlignment )
+DuAEF.DuScriptUI.createUI = function( container, scriptName, contentAlignment, bless )
 {
     scriptName = def(scriptName, DuAEF.scriptName, false);
     contentAlignment = def(contentAlignment, DuAEF.DuScriptUI.defaultColumnAlignment, false);
+    bless = def (bless, false);
 
     if ( scriptName != '' ) DuAEF.DuScriptUI.uiStrings.push( scriptName );
     scriptName = tr( scriptName );
@@ -345,7 +349,8 @@ DuAEF.DuScriptUI.createUI = function( container, scriptName, contentAlignment )
     var myPal = null;
     container instanceof Panel ? myPal = container : myPal = new Window( 'palette', scriptName, undefined,
     {
-        resizeable: true
+        resizeable: true,
+        borderless: bless
     } );
 
     if ( myPal == null ) throw "Failed to create User Interface.";
@@ -451,6 +456,141 @@ DuAEF.DuScriptUI.createUI = function( container, scriptName, contentAlignment )
     bottomMargin.addEventListener( "mouseover", DuAEF.DuScriptUI.dimControls );
 
     return myPal;
+}
+
+/**
+ * @class
+ * @name DuPopup
+ * @classdesc For use with {@link DuAEF.DuScriptUI}.<br />
+ * A borderless popup, to be tied to a ui control.<br />
+ * This is not a real class, and cannot be instanciated.<br />
+ * Use {@link DuAEF.DuScriptUI.createPopup} to create a Popup.<br />
+ * The DuPopup inherits the Window object from ScriptUI and has all of its properties and methods.
+ * @property {Group} contents - The ScriptUI group where the new controls must be added. Do not add any control directly inside the DuPopup.
+ */
+
+/**
+ * Ties the popup to a ui control. The popup will be shown just above the control when it is clicked.<br />
+ * The control must have an addEventListener method.
+ * @method
+ * @memberof DuPopup
+ * @name tieTo
+ * @param {ScriptUI} [control] - The control
+ */
+
+/**
+ * Creates a borderless popup
+ * @memberof DuAEF.DuScriptUI
+ * @param {string[]} [alignment=DuAEF.DuScriptUI.defaultColumnAlignment] The alignement of this window
+ * @return {DuPopup} The popup, a ScriptUI Window which is borderless, with a 'tieTo(control)' method.
+ * @example
+ * var popup = DuAEF.DuScriptUI.createPopup( );
+ * var popupButton = DuAEF.DuScriptUI.addButton( myUI, "My Buttton for the popup" );
+ * popup.tieTo( popupButton ); // will show the popup when the button is clicked, just above it.
+ */
+DuAEF.DuScriptUI.createPopup = function( alignment )
+{
+    alignment = def( alignment, DuAEF.DuScriptUI.defaultColumnAlignment );
+
+    var popup = new Window( 'palette', "", undefined,
+    {
+        resizeable: false,
+        borderless: true
+    } );
+
+    popup.margins = 0;
+    popup.spacing = 0;
+
+    //add stroke around
+    function drawBorder ( drawState ) {
+        var g = this.graphics;
+        var c = DuAEF.DuJS.Color.Colors.DARK_GREY;
+        c = DuAEF.DuScriptUI.adjustColor( c );
+
+        var pen = g.newPen( g.PenType.SOLID_COLOR, c, 1 );
+
+        g.newPath();
+        if (this.side == 0) {
+            g.moveTo (0, 0);
+            g.lineTo (this.size.width, 0);
+        }
+        else if (this.side == 2) {
+            g.moveTo (this.size.width, 0);
+            g.lineTo (this.size.width, this.size.height);
+        }
+        else if (this.side == 1) {
+            g.moveTo (0, 0);
+            g.lineTo (0, this.size.height);
+        }
+        else if (this.side == 3) {
+            g.moveTo (0, this.size.height);
+            g.lineTo (this.size.width, this.size.height);
+        }
+
+        g.strokePath( pen );
+    };
+
+    //create margins to dim buttons
+    var topMargin = popup.add( 'group' );
+    topMargin.onDraw = drawBorder;
+    topMargin.side = 0;
+    topMargin.minimumSize.height = DuAEF.DuScriptUI.defaultMargins;
+    topMargin.alignment = [ 'fill', 'top' ];
+    topMargin.maximumSize.height = topMargin.minimumSize.height = topMargin.preferredSize.height = DuAEF.DuScriptUI.defaultMargins;
+    //DuAEF.DuScriptUI.setBackgroundColor( topMargin, DuAEF.DuJS.Color.Colors.DARK_GREY );
+
+    var mainRow = popup.add( 'group' );
+    mainRow.alignment = alignment;
+    mainRow.alignChildren = alignment;
+    mainRow.margins = 0;
+    mainRow.spacing = 0;
+
+    var leftMargin = mainRow.add( 'button' );
+    leftMargin.onDraw = drawBorder;
+    leftMargin.side = 1;
+    leftMargin.maximumSize.width = leftMargin.minimumSize.width = leftMargin.preferredSize.width = DuAEF.DuScriptUI.defaultMargins;
+    leftMargin.alignment = [ 'left', 'fill' ];
+
+    popup.contents = mainRow.add( 'group' );
+    popup.contents.margins = 0;
+    popup.contents.spacing = DuAEF.DuScriptUI.defaultSpacing;
+    popup.contents.alignChildren = alignment;
+    popup.contents.orientation = "column";
+
+    var rightMargin = mainRow.add( 'button' );
+    rightMargin.onDraw = drawBorder;
+    rightMargin.side = 2;
+    rightMargin.maximumSize.width = rightMargin.minimumSize.width = rightMargin.preferredSize.width = DuAEF.DuScriptUI.defaultMargins;
+    rightMargin.alignment = [ 'right', 'fill' ];
+
+    var bottomMargin = popup.add( 'button' );
+    bottomMargin.onDraw = drawBorder;
+    bottomMargin.side = 3;
+    bottomMargin.maximumSize.height = bottomMargin.minimumSize.height = bottomMargin.preferredSize.height = DuAEF.DuScriptUI.defaultMargins;
+    bottomMargin.alignment = [ 'fill', 'bottom' ];
+
+    popup.tieTo = function (control)
+    {
+        control.addEventListener( 'click', function(e) {
+            var x = e.screenX - e.clientX;
+            var y = e.screenY - e.clientY;
+            popup.location = [ x, y ];
+            popup.show();
+        }, true);
+    }
+
+    popup.onDeactivate = function()
+    {
+        popup.hide();
+    };
+
+    popup.addEventListener( "mouseover", DuAEF.DuScriptUI.dimControls );
+    topMargin.addEventListener( "mouseover", DuAEF.DuScriptUI.dimControls );
+    leftMargin.addEventListener( "mouseover", DuAEF.DuScriptUI.dimControls );
+    rightMargin.addEventListener( "mouseover", DuAEF.DuScriptUI.dimControls );
+    bottomMargin.addEventListener( "mouseover", DuAEF.DuScriptUI.dimControls );
+
+    return popup;
 }
 
 /**
@@ -3518,4 +3658,89 @@ DuAEF.DuScriptUI.buildAllTabs = function()
         }
     }
     if ( redo ) DuAEF.DuScriptUI.buildAllTabs();
+}
+
+/**
+ * @class
+ * @name DuFolderSelector
+ * @classdesc For use with {@link DuAEF.DuScriptUI}.<br />
+ * A "Browse" button for folders only, with an optional text field for the path.<br />
+ * This is not a real class, and cannot be instanciated.<br />
+ * Use {@link DuAEF.DuScriptUI.addFolderSelector} to create a selector.<br />
+ * The DuFolderSelector inherits the Group object from ScriptUI and has all of its properties and methods.
+ * @property {string} path - The folder path, initialized with an empty string. Note that this may not point to an existing folder if the user entered an incorrect path in the text field.<br />
+ * To be sure to get an existing folder, you can use the getFolder() method.
+ * @property {DuEditText|null} editText - The text field, if any.
+ * @property {DuButton} button - The "Browse" button.
+ */
+
+/**
+ * Gets the selected folder.
+ * @method
+ * @memberof DuFolderSelector
+ * @name getFolder
+ * @return {Folder|null} The new Folder, if any. null if the Folder does not exist or the user has input an incorrect path.
+ */
+
+/**
+ * Creates a folder selector with a field for the path and a browse button<br />
+ * @memberof DuAEF.DuScriptUI
+ * @param {Window|Panel|Group} container - The ScriptUI Object which will contain and display the panel.
+ * @param {string} [text="Browse..."] - The text to display on the button.
+ * @param {boolean} [textField=true] - Wether to show the text field for the path.
+ * @param {string} [helpTip=''] - The helptip for this control.
+ * @return {TabPanel} The panel.
+ */
+DuAEF.DuScriptUI.addFolderSelector = function ( container, text, textField, helpTip )
+{
+    text = def(text, "Browse...");
+    textField = def(textField, true);
+    helpTip = def(helpTip, '');
+
+    var folderSelector = container.add('group');
+    folderSelector.orientation = 'row';
+    folderSelector.margins = 2;
+    folderSelector.spacing = 0;
+
+    folderSelector.path = '';
+
+    folderSelector.button = DuAEF.DuScriptUI.addButton(
+        folderSelector,
+        text,
+        DuAEF.DuBinary.toFile(w14_folder_m),
+        helpTip,
+        DuAEF.DuBinary.toFile(w14_folder_r)
+        );
+    folderSelector.button.alignment = ['left','fill'];
+
+    folderSelector.editText = null;
+    if (textField) {
+        folderSelector.editText = DuAEF.DuScriptUI.addEditText(
+            folderSelector,
+            '',
+            '',
+            '',
+            'Path...',
+            helpTip,
+            false
+            );
+        folderSelector.editText.alignment = ['fill','center'];
+
+        folderSelector.editText.onChange = function () {
+            folderSelector.path = folderSelector.editText.text;
+        }
+    }
+
+    folderSelector.button.onClick = function () {
+        var folder = Folder.selectDialog ("Select Folder");
+        if (!folder) return;
+        folderSelector.editText.setText(folder.fsName);
+        folderSelector.path = folder.absoluteURI;
+    }
+
+    folderSelector.getFolder = function () {
+        var folder = new Folder(folderSelector.path);
+        if (folder.exists) return folder;
+        else return null;
+    }
 }
