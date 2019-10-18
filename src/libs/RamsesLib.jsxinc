@@ -144,13 +144,12 @@ DuAEF.Ramses.saveProject = function ( increment, publish ) {
  * @param {boolean} [reduce=true] Will reduce the project before collecting files, using all comps found at first level in the project (not in subfolders)
  * @param {boolean} [selectedComps=false] Use selected comps to reduce the project, if any.
  * @param {boolean} [zip=false] Set to true to automatically zip the archive.
- * @return {File|Folder} The zip file or the folder containing the collected files.
+ * @return {File|Folder} Thwe zip file or the folder containing the collected files.
  */
 DuAEF.Ramses.archiveProject = function ( destination, reduce, selectedComps, zip ) {
     var projectFile = app.project.file;
     
     destination = def (destination, projectFile.parent);
-    cleanFolder = def (cleanFolder, projectFile.parent);
     selectedComps = def (selectedComps, true);
     zip = def (zip, projectFile.parent);
     reduce = def(reduce, true);
