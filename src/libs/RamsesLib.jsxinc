@@ -142,19 +142,22 @@ DuAEF.Ramses.saveProject = function ( increment, publish ) {
  * Collect the files from the current project. Gets both the WIP and the publish versions.
  * @param {Folder} [destination] The folder where to save the files. The project files will be collected in a subfolder called "project name.aep.archive" or "project name.aep.zip". If not provided, will use the current folder.
  * @param {boolean} [reduce=true] Will reduce the project before collecting files, using all comps found at first level in the project (not in subfolders)
+ * @param {boolean} [selectedComps=false] Use selected comps to reduce the project, if any.
  * @param {boolean} [zip=false] Set to true to automatically zip the archive.
  * @return {File|Folder} The zip file or the folder containing the collected files.
  */
-DuAEF.Ramses.archiveProject = function ( destination, reduce, zip ) {
+DuAEF.Ramses.archiveProject = function ( destination, reduce, selectedComps, zip ) {
     var projectFile = app.project.file;
     
     destination = def (destination, projectFile.parent);
     cleanFolder = def (cleanFolder, projectFile.parent);
+    selectedComps = def (selectedComps, true);
     zip = def (zip, projectFile.parent);
     reduce = def(reduce, true);
     
     if (reduce) {
-        DuAEF.DuAE.Project.reduce();
+        if (selectedComps) DuAEF.DuAE.Project.reduceSelected();
+        else DuAEF.DuAE.Project.reduce();
     }
 
     DuAEF.DuAE.Project.collectFiles( destination, true, zip);

@@ -154,7 +154,7 @@ DuAEF.DuAE.Project.updateExpressionCache = function () {
 }
 
 /**
- * Reduces the project using the selected compositions, the same way the native command does it, but being able to keep comps used only by expressions.
+ * Reduces the project using the selected compositions, the same way the native command does it, but being able to keep comps used only by expressions. If there's no comp selected, will use all comps at the root of the project.
  * @param {boolean} [keepExpressionOnly=true] Set to false to ignore comps used only by expressions (same as the native command)
  */
 DuAEF.DuAE.Project.reduceSelected = function ( keepExpressionOnly ) {
@@ -175,6 +175,7 @@ DuAEF.DuAE.Project.reduce = function ( comps, keepExpressionOnly ) {
     keepExpressionOnly = def( keepExpressionOnly, true );
     comps = def( comps, DuAEF.DuAE.Project.getComps( true ) );
     if ( comps instanceof CompItem ) comps = [ comps ];
+    if ( comps.length == 0 ) return;
 
     //update cache before running
     DuAEF.DuAE.Project.updateExpressionCache();
@@ -235,7 +236,6 @@ DuAEF.DuAE.Project.collectFiles = function ( destination, overwrite, zip ) {
 
     //create report file
     var missingFootageString = "=== MISSING FOOTAGE ===\n\n";
-    var ignoredFootageString = "=== IGNORED FOOTAGE ===\n\n";
 
     var currentFootageFolder = footageFolder;
     currentFootageFolder.id = -1;
@@ -257,7 +257,6 @@ DuAEF.DuAE.Project.collectFiles = function ( destination, overwrite, zip ) {
             currentFootageFolder.id = item.parentFolder.id;
         }
 
-
         if ( item instanceof CompItem ) continue;
         if ( item instanceof FolderItem ) {
             currentFootageFolder = new Folder( currentFootageFolder.absoluteURI + "/" + item.name);
@@ -265,8 +264,6 @@ DuAEF.DuAE.Project.collectFiles = function ( destination, overwrite, zip ) {
             currentFootageFolder.id = item.id;
             continue;
         }
-
-        
 
         //if no source file
         if (item.file == null) continue;
