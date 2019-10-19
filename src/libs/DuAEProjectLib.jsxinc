@@ -213,10 +213,11 @@ DuAEF.DuAE.Project.reduce = function ( comps, keepExpressionOnly ) {
 /**
  * Collects all dependencies in a folder
  * @param {Folder} [destination] The folder where to save the files. The project files will be collected in a subfolder called "project name.aep.archive" or "project name.aep.zip". If not provided, will use the current folder.
-  * @param {boolean} [overwrite=false] Set to true to overwrite existing projects and footages.
+ * @param {boolean} [overwrite=false] Wether to overwrite existing footage in the destination.
  * @param {boolean} [zip=false] Set to true to automatically zip the archive.
+ * @param {boolean} [createProjectFolder=true] Wether to create a folder for this project or use the destination as is.
  */
-DuAEF.DuAE.Project.collectFiles = function ( destination, overwrite, zip ) {
+DuAEF.DuAE.Project.collectFiles = function ( destination, overwrite, zip, createProjectFolder ) {
     var projectFile = app.project.file;
 
     var result = {};
@@ -225,11 +226,15 @@ DuAEF.DuAE.Project.collectFiles = function ( destination, overwrite, zip ) {
     destination = def ( destination, projectFile.parent );
     overwrite = def (overwrite, false);
     zip = def (zip, false);
+    createProjectFolder = def (createProjectFolder, true);
 
     //create folder for the project
     var projectName = DuAEF.DuJS.Fs.getBasename( projectFile.name );
-    var projectFolderName = projectName + ".archive";
-    var projectFolder = new Folder( destination.absoluteURI + '/' + projectFolderName );
+    var projectFolderPath = destination.absoluteURI;
+    if (createProjectFolder) {
+        projectFolderPath += '/' + projectName + ".archive";
+    }
+    var projectFolder = new Folder( projectFolderPath );
 	var footageFolder = new Folder( projectFolder.absoluteURI + "/(Footage)/" );
 	projectFolder.create();
 	footageFolder.create();
@@ -308,7 +313,8 @@ DuAEF.DuAE.Project.collectFiles = function ( destination, overwrite, zip ) {
 	}
 
 	//sauvegarder le projet
-	app.project.save(new File(projectFolder.absoluteURI + "/" + app.project.file.name));
+    var newProjectFileName = DuAEF.DuJS.Fs.newUniqueFileName(app.project.file.name , projectFolder);
+	app.project.save(new File(projectFolder.absoluteURI + "/" + newProjectFileName));
 
     //write report
     var reportFile = new File(projectFolder.absoluteURI + "/" + app.project.file.name + "_report.txt");
