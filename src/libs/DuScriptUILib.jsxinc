@@ -3743,4 +3743,6 @@ DuAEF.DuScriptUI.addFolderSelector = function ( container, text, textField, help
         if (folder.exists) return folder;
         else return null;
     }
+
+    return folderSelector;
 }
