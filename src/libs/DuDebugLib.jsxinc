@@ -130,6 +130,32 @@ DuAEF.Debug.inspect = function(obj, ownProperties)
 }
 
 /**
+ * Alerts a nice TypeError description, if {@link DuAEF.debug} is true.<br />
+ * Note that it does not actually throws an error.
+ * @param {any} variable The failing argument
+ * @param {string} varName The failing argument name
+ * @param {string} varType The expected type
+ * @param {string} [functionName] The name or description of the function throwing the error.
+ * @return {string} The (multiline) description for the error
+ */
+DuAEF.Debug.throwTypeError = function (variable, varName, varType, functionName)
+{
+	if (!DuAEF.debug) return;
+	functionName = def (functionName, '');
+	if (typeof functionName === 'Function') {
+		functionName = func.toString().split('\n')[0];
+	}
+
+	var e = 'TypeError:\n';
+	if (functionName != '') e += "in function " + functionName + "\n";
+	e += "\n" + varName + " should be of the type " + varType + "\n";
+	e += "but it is of the type " + DuAEF.DuJS.typeof(variable);
+	if (typeof variable !== 'undefined') try { e += "and has value: " + variable.toString(); } catch(e) {};
+	alert(e);
+}
+
+
+/**
  * Constructs a new debug logger
  * @class DebugLog
  * @classdesc A logger for debugging purposes: writes debug messages to a file, with date and type
