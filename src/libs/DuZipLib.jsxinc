@@ -42,7 +42,7 @@ else DuAEF.Zip.processPath = 'zip';
  */
 DuAEF.Zip.compressFolderContent = function (folder, archiveName, wipeFolder) {
     wipeFolder = def (wipeFolder, true);
-    archiveName = def(archiveName, folder.name + ".zip");
+    archiveName = def(archiveName, DuAEF.DuJS.Fs.getName(folder) + ".zip");
     if (archiveName == '') archiveName = folder.name + ".zip";
 
     var folderPath = folder.fsName;
