@@ -60,8 +60,9 @@ DuAEF.Zip.compressFolderContent = function (folder, archiveName, wipeFolder) {
             wipeProcessArgs = [ '/Q', '/S', folder.fsName];
         }
         else {
-            wipeProcessPath = 'rm';
-            wipeProcessArgs = [ '-rf', folder.fsName];
+            wipeProcessPath = 'rmdir';
+            //TODO test on mac. For safety, set to interactive mode. change the flags to '-rf' when tests are run succesfully
+            wipeProcessArgs = [ '-ir', folder.fsName];
         }
         processes.push( new DuProcess( wipeProcessPath, wipeProcessArgs ) );
     }
