@@ -502,6 +502,28 @@ DuAEF.DuJS.Fs.isFile = function (file)
 	return file instanceof File;
 }
 
+
+/**
+	* Returns the name of the given path or file, as displayed by the filesystem
+	* @memberof DuAEF.DuJS.Fs
+	* @example
+	* DuAEF.DuJS.Fs.getName(new File("D:\\code\\open\\Duik\\shape test.test")) // "shape test.test"
+	* DuAEF.DuJS.Fs.getName("D:/code/open/Duik/other shape.test") // "other shape.test"
+	* @param {String|File|Folder}  [pathOrFile]	- The file or the path
+	* @return {String} The basename
+*/
+DuAEF.DuJS.Fs.getName = function(pathOrFile)
+{
+    if (pathOrFile instanceof File || pathOrFile instanceof Folder) pathOrFile = pathOrFile.fsName;
+	else {
+		//make sure it's the fsName we use
+		pathOrFile = new File(pathOrFile).fsName;
+	}
+    var name = pathOrFile.split("/").pop();
+    name = name.split("\\").pop();
+    return name;
+}
+
 /**
 	* Returns the basename of the given path or file
 	* @memberof DuAEF.DuJS.Fs
@@ -514,6 +536,10 @@ DuAEF.DuJS.Fs.isFile = function (file)
 DuAEF.DuJS.Fs.getBasename = function(pathOrFile)
 {
     if (pathOrFile instanceof File) pathOrFile = pathOrFile.fsName;
+	else {
+		//make sure it's the fsName we use
+		pathOrFile = new File(pathOrFile).fsName;
+	}
     var name = pathOrFile.split("/").pop();
     name = name.split("\\").pop();
     if(name.lastIndexOf(".") > 0) return name.slice(0, name.lastIndexOf("."));
@@ -726,6 +752,50 @@ DuAEF.DuJS.Fs.saveFileDialog = function(prompt, filter, defaultExtension)
 	}
 
 	return saveFile;
+}
+
+/**
+ * Generates a new unique name for a file
+ * @param {string} newName	- The wanted new name
+ * @param {Folder} folder 	- The folder
+ * @param {boolean} [increment=true] - true to automatically increment the new name if it already ends with a digit
+ * @return {string}	The unique name, with a new number at the end if needed.
+ */
+DuAEF.DuJS.Fs.newUniqueFileName = function ( newName, folder ) {   
+	var file = new File(folder.absoluteURI + "/" + newName);
+	while (file.exists)
+	{
+		file = new File(folder.absoluteURI + "/" + DuAEF.DuJS.Fs.incrementFileName(file) );
+	}
+	return DuAEF.DuJS.Fs.getName(file);
+}
+
+/**
+ * Increments the last number before the extension in a filename
+ * @param {File} file The file
+ * @return {string} The incremented fileName
+ */
+DuAEF.DuJS.Fs.incrementFileName = function (file) {
+
+	var ext = DuAEF.DuJS.Fs.getExtension(file);
+	var baseName = DuAEF.DuJS.Fs.getBasename(file);
+
+	var regex = /(\d*)$/
+	var match = baseName.match(regex);
+	var num = '_01';
+	var numDigits = 0;
+	if (match) {
+		var n = match[0];
+		numDigits = n.length;
+		var n = parseInt(n);
+		if (!isNaN(n)) {
+			n++;
+			num = DuAEF.DuJS.Number.convertToString(n,numDigits);
+		}
+	}
+
+	return baseName.substring(0, baseName.length - numDigits) + num + '.' + ext;
+
 }
 
 /**
@@ -1057,11 +1127,12 @@ DuAEF.DuJS.String.endsWith = function (str, suffix)
  * @param {string} newString	- The wanted new string
  * @param {string[]} stringList 	- The list of strings where the new one must be generateUnique
  * @param {boolean} [increment=true] - true to automatically increment the new name if it already ends with a digit
+ * @param {boolean} [isFile=false] - when generating name for files, setting this to true will add the increment before the extension
  * @return {string}	The unique string, with a new number at the end if needed.
  */
 DuAEF.DuJS.String.generateUnique = function ( newString , stringList , increment )
 {
-	if (increment == undefined) increment = true;
+	increment =def(increment, true);
 	if (!increment) newString += ' ';
 
     //detect digits
