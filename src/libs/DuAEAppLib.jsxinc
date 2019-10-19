@@ -189,3 +189,25 @@ DuAEF.DuAE.App.copyWithPropertyLinks = function () {
 DuAEF.DuAE.App.paste = function () {
     DuAEF.DuAE.App.executeCommand( DuAEF.DuAE.menuCommandID.PASTE );
 }
+
+/**
+ * Checks if the Folder is an Auto-Save folder
+ * @param {Folder|string} folder The folder or path to check
+ * @return {boolean} true if the folder is an auto-save folder 
+ */
+DuAEF.DuAE.App.isAutoSaveFolder = function ( folder ) {
+    if (DuAEF.DuJS.typeof(folder).toLowerCase() == 'string' ) folder = new Folder(folder);
+    if (!(folder instanceof Folder)) {
+        DuAEF.Debug.throwTypeError( folder, 'folder', 'Folder/string', 'DuAEF.DuAE.App.isAutoSaveFolder( folder )');
+        return false;
+    }
+
+    var folderName = folder.fsName.toLowerCase();
+    if (DuAEF.win) folderName = folderName.split('\\').pop();
+    else folderName = folderName.split('/').pop();
+    
+    var aaeString = 'adobe after effects';
+    var autosaveString = localize("$$$/AE/MenuID/0307/AutoSave=Auto-Save").toLowerCase();
+
+    return folderName.indexOf( aaeString ) >= 0 && folderName.indexOf( autosaveString ) >= 0;
+}
