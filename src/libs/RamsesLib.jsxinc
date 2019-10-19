@@ -155,22 +155,30 @@ DuAEF.Ramses.saveProject = function ( increment, publish ) {
  * @param {boolean} [reduce=true] Will reduce the project before collecting files, using all comps found at first level in the project (not in subfolders)
  * @param {boolean} [selectedComps=false] Use selected comps to reduce the project, if any.
  * @param {boolean} [zip=false] Set to true to automatically zip the archive.
+ * @param {File} [projectFile=app.project.file] The project to archive. The currently opened project if omitted.
+ * @param {boolean} [createProjectFolder=true] Wether to create a folder for this project or use the destination as is.
  * @return {File|Folder} Thwe zip file or the folder containing the collected files.
  */
-DuAEF.Ramses.archiveProject = function ( destination, reduce, selectedComps, zip ) {
-    var projectFile = app.project.file;
-    
+DuAEF.Ramses.archiveProject = function ( destination, reduce, selectedComps, zip, projectFile, createProjectFolder ) {
+    projectFile = def (projectFile, app.project.file);
+    if (!projectFile) return;
     destination = def (destination, projectFile.parent);
     selectedComps = def (selectedComps, true);
-    zip = def (zip, projectFile.parent);
+    zip = def (zip, false);
     reduce = def(reduce, true);
+    createProjectFolder = def(createProjectFolder, true);
+
+    app.project.close( CloseOptions.PROMPT_TO_SAVE_CHANGES );
+    app.open( projectFile );
     
     if (reduce) {
         if (selectedComps) DuAEF.DuAE.Project.reduceSelected();
         else DuAEF.DuAE.Project.reduce();
     }
 
-    DuAEF.DuAE.Project.collectFiles( destination, true, zip);
+    DuAEF.DuAE.Project.collectFiles( destination, false, zip, createProjectFolder);
+
+    app.project.close( CloseOptions.DO_NOT_SAVE_CHANGES );
 }
 
 /**
@@ -180,8 +188,97 @@ DuAEF.Ramses.archiveProject = function ( destination, reduce, selectedComps, zip
  * @param {boolean} [recursive=true] Scan for subfolders too. Folders named '_versions' and 'old' will be ignored, as long as auto-save folders from After Effects
  * @param {boolean} [zip=false] Set to true to automatically zip the archives.
  * @param {DuAEF.Ramses.ArchiveModes} [archiveMode=DuAEF.Ramses.ArchiveModes.ONE_PER_FOLDER] Creates only one archive for each subfolder. This is a nice way to not duplicate dependencies, as they will be shared between projects from the same folder.
- * @todo
  */
 DuAEF.Ramses.archiveFolder = function ( inputFolder, outputFolder, recursive, zip, archiveMode ) {
 
+    if (!(inputFolder instanceof Folder)) {
+        DuAEF.Debug.throwTypeError(inputFolder, 'inputFolder', 'Folder', 'DuAEF.Ramses.archiveFolder( inputFolder, outputFolder, recursive, zip, archiveMode )');
+        return;
+    }
+    if (!(outputFolder instanceof Folder)) {
+        DuAEF.Debug.throwTypeError(outputFolder, 'outputFolder', 'Folder', 'DuAEF.Ramses.archiveFolder( inputFolder, outputFolder, recursive, zip, archiveMode )');
+        return;
+    }
+
+    recursive = def(recursive, true);
+    zip = def(zip, true);
+    archiveMode = def(archiveMode, DuAEF.Ramses.ArchiveModes.ONE_PER_FOLDER);
+
+    //if we're doing only one zip for all, create a temp subfolder to be zipped at the end
+    if (zip && archiveMode == DuAEF.Ramses.ArchiveModes.ONE_FOR_ALL ) {
+        outputFolder = new Folder (outputFolder.absoluteURI + "/" + outputFolder.name);
+        outputFolder.create();
+    }
+
+    //if we're doing one zip per subfolder, we need to separate aeps from subfolders.
+    //Let's create a folder for aeps
+    var aepFolder = new Folder(outputFolder.absoluteURI + "/" + "Ramses_aep_temp");
+    if ( zip && archiveMode == DuAEF.Ramses.ArchiveModes.ONE_PER_FOLDER ) {
+        aepFolder.create();
+    }
+
+    function isAepOrFolder (file) {
+        //recursive and a folder
+        if ( file instanceof Folder && recursive ) {
+            //let's ignore old, '_versions' and autosaves
+            var fileName = file.name;
+            if (fileName.toLowerCase() == 'old') return false;
+            if (fileName == DuAEF.Ramses.versionFolderName) return false;
+            if ( DuAEF.DuAE.App.isAutoSaveFolder(file) ) return false;
+            return true;
+        }
+        //if not recursive
+        if ( file instanceof Folder ) return false;
+
+        //get aep, aet, and aepx
+        var ext = DuAEF.DuJS.Fs.getExtension( file ).toLowerCase();
+        if (ext == 'aep' || ext == 'aet' || ext == 'aepx') return true;
+
+        //ignore other files
+        return false;
+    }
+
+    //scan for files and folders in the inputFolder 
+    var files = inputFolder.getFiles( isAepOrFolder );
+
+    for (var f = 0, numF = files.length; f < numF; f++) {
+        var file = files[f];
+
+        if (file instanceof Folder ) {
+            //if one archive for all, don't keep hierarchy and continue without zipping yet
+            if ( archiveMode == DuAEF.Ramses.ArchiveModes.ONE_FOR_ALL ) {
+                DuAEF.Ramses.archiveFolder( file, outputFolder, recursive, false, archiveMode );
+            }
+            else {
+                //create a destination subfolder to keep hierarchy
+                var subFolder = new Folder( outputFolder.absoluteURI + '/' + file.name );
+                subFolder.create();
+                DuAEF.Ramses.archiveFolder( file, subFolder, recursive, zip, archiveMode );
+            }
+        }
+        else {
+            //if one archive per aep, archive it in it own folder and zip it right away
+            if ( archiveMode == DuAEF.Ramses.ArchiveModes.ONE_PER_AEP ) {
+                DuAEF.Ramses.archiveProject( outputFolder, true, false, zip, file, true );
+            }
+            //one per folder, if zipped, keep the aeps apart to zip them later
+            else if ( zip && archiveMode == DuAEF.Ramses.ArchiveModes.ONE_PER_FOLDER ) {
+                DuAEF.Ramses.archiveProject( aepFolder, true, false, false, file, false );
+            }
+            //else, don't create its own folder and don't zip it yet
+            else {
+                DuAEF.Ramses.archiveProject( outputFolder, true, false, false, file, false );
+            }
+        }
+    }
+
+    //now it's finished, we can zip the main outputFolder if one archive for all 
+    if ( archiveMode == DuAEF.Ramses.ArchiveModes.ONE_FOR_ALL && zip) {
+        DuAEF.Zip.compressFolderContent( outputFolder, undefined, true );
+    }
+
+    //and zip the aep folder 
+    if ( archiveMode == DuAEF.Ramses.ArchiveModes.ONE_PER_FOLDER && zip) {
+        DuAEF.Zip.compressFolderContent( aepFolder, DuAEF.DuJS.Fs.getName(outputFolder) + ".zip", true );
+    }
 }
