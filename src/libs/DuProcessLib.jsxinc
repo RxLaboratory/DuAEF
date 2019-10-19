@@ -191,7 +191,9 @@ DuProcess.prototype.startCmd = function ( cmd ) {
     }
     if ( DuAEF.win ) {
         //create batch file
-        var bat = new File( DuAEF.DuJS.Fs.duaefData.absoluteURI + '/DuProcess.bat' );
+        var batName = 'DuProcess_' + new Date().getTime() + '.bat'
+        var bat = new File( DuAEF.DuJS.Fs.duaefData.absoluteURI + '/' + batName );
+        cmd += '\ndel "' + DuAEF.DuJS.Fs.duaefData.fsName + '\\' + batName + '"';
         bat.open( 'w' );
         bat.write( cmd );
         bat.close();
@@ -227,5 +229,6 @@ DuProcessQueue.prototype.start = function () {
         cmd += p.buildQueueCmd();
         p.queue = [];
     }
+
     this.processes[ 0 ].startCmd( cmd );
 }
