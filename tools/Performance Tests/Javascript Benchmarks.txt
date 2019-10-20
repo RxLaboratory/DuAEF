@@ -1,0 +1,5 @@
+Regular Expression: str.match() vs regexp.test() vs regexp.exec()
+http://jsben.ch/oe8r7
+
+Regular Expression: test and replace vs replace only
+http://jsben.ch/Mk4Kg
