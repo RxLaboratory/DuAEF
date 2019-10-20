@@ -248,6 +248,8 @@ function PropertyExpression(property)
 	}
 	this.layer = DuAEF.DuAE.Property.getLayer(property);
 	this.expression = property.expression;
+
+	this.changed = false;
 }
 
 /**
