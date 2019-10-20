@@ -351,16 +351,19 @@ DuAEF.DuAE.Property.getAnim = function ( prop, selected, timeRange ) {
 }
 
 // low-level undocumented method to get all expressions and cache them
-DuAEF.DuAE.Property.addToExpressionCache = function (prop) {
+//if compCache is true, add to the comp cache instead of the project cache
+DuAEF.DuAE.Property.addToExpressionCache = function ( prop , compCache) {
+    compCache = def(compCache, false);
     //it it's a prop, add to cache
     if ( prop.propertyType === PropertyType.PROPERTY ) {
         var exp = new PropertyExpression(prop);
-        if ( !exp.empty ) DuAEF.DuAE.Project.expressionCache.push(exp);
+        if ( !exp.empty && compCache) DuAEF.DuAE.Comp.expressionCache.push(exp);
+        else if (!exp.empty) DuAEF.DuAE.Project.expressionCache.push(exp);
     }
     //if it's a group, get props inside
     else if ( prop.numProperties > 0 ) {
         for ( var p = 1; p <= prop.numProperties; p++ ) {
-            DuAEF.DuAE.Property.addToExpressionCache( prop.property(p) );
+            DuAEF.DuAE.Property.addToExpressionCache( prop.property(p), compCache );
         }
     }
 }
@@ -1400,7 +1403,7 @@ DuAEF.DuAE.Property.setExpression = function ( property, expr, keepValue ) {
  * @param {boolean} [caseSensitive=true] - Wether the search has to be case sensitive
  */
 DuAEF.DuAE.Property.replaceInExpressions = function ( prop, oldString, newString, caseSensitive ) {
-    if ( caseSensitive == undefined ) caseSensitive = true;
+    caseSensitive = def (caseSensitive, true);
 
     if ( prop.propertyType == PropertyType.PROPERTY ) {
         if ( prop.canSetExpression ) {

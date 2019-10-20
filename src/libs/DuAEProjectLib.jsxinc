@@ -15,7 +15,7 @@ DuAEF.DuAE.Project.viewerMaximized = false;
 //this must be set to true during work on the cache to prevent it from updating
 DuAEF.DuAE.Project.suspendCacheUpdates = false;
 
-// the expression cache is an array of PropertyInfo
+// the expression cache is an array of PropertyExpression
 DuAEF.DuAE.Project.expressionCache = [];
 DuAEF.DuAE.Project.lastExpressionCacheUpdateTime = 0;
 
@@ -151,6 +151,19 @@ DuAEF.DuAE.Project.updateExpressionCache = function () {
     }
 
     DuAEF.DuAE.Project.lastExpressionCacheUpdateTime = new Date().getTime();
+}
+
+//low-level undocumented method used to re-set expressions once they have been modified in the cache
+DuAEF.DuAE.Project.updateExpressionsFromCache = function ( cache ) {
+    for (var i = 0, num = cache.length; i < num; i++)
+    {
+        var pExp = cache[i];
+        if (pExp.layer.locked) continue;
+        if (!pExp.changed) continue;
+
+        var prop = pExp.getProperty();
+        prop.expression = pExp.expression;
+    } 
 }
 
 /**
@@ -328,4 +341,28 @@ DuAEF.DuAE.Project.collectFiles = function ( destination, overwrite, zip, create
         app.open( projectFile );
         var zipFile = DuAEF.Zip.compressFolderContent( projectFolder, projectName + ".zip", true );
     }
+}
+
+/**
+ * Replaces text in Expressions
+ * @param {string} oldString - The string to replace
+ * @param {string} newString - The new string
+ * @param {boolean} [caseSensitive=true] - Wether the search has to be case sensitive
+ */
+DuAEF.DuAE.Project.replaceInExpressions = function ( oldString, newString, caseSensitive ) {
+    caseSensitive = def (caseSensitive, true);
+
+    //update expression cache before searching
+    DuAEF.DuAE.Project.updateExpressionCache();
+
+    var re = new RegExp( DuAEF.DuJS.RegExp.escapeRegExp(oldString), caseSensitive ? 'g' : 'gi');
+
+    //search and replace in the cache
+    for (var i = 0, num = DuAEF.DuAE.Project.expressionCache.length; i < num; i++) {
+        DuAEF.DuAE.Project.expressionCache[i].changed = re.test( DuAEF.DuAE.Project.expressionCache[i].expression );
+        if (DuAEF.DuAE.Project.expressionCache[i].changed) DuAEF.DuAE.Project.expressionCache[i].expression = DuAEF.DuAE.Project.expressionCache[i].expression.replace( re, newString );
+    }
+
+    //update expressions from cache
+    DuAEF.DuAE.Project.updateExpressionsFromCache( DuAEF.DuAE.Project.expressionCache )
 }
