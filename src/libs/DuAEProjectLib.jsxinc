@@ -24,22 +24,27 @@ DuAEF.DuAE.Project.lastExpressionCacheUpdateTime = 0;
  * @param {bool} inProgress - True to set progress mode, false to stop it.
  */
 DuAEF.DuAE.Project.setProgressMode = function ( inProgress ) {
-    if ( inProgress && DuAEF.DuAE.Project.progressMode ) return;
     if ( !inProgress && !DuAEF.DuAE.Project.progressMode ) return;
 
     if ( inProgress ) {
-        //store the current comp
-        DuAEF.DuAE.Project.activeComp = DuAEF.DuAE.Project.getActiveComp();
 
-        if ( app.activeViewer != null ) DuAEF.DuAE.Project.viewerMaximized = app.activeViewer.maximized;
+        //if not already in progress, create temp comp etc
+        if (!DuAEF.DuAE.Project.progressMode)
+        {
+            //store the current comp
+            DuAEF.DuAE.Project.activeComp = DuAEF.DuAE.Project.getActiveComp();
 
-        //create a temp comp, open it
-        DuAEF.DuAE.Project.progressComp = app.project.items.addComp( "MAGIC IS HAPPENING...", 500, 500, 1, 1, 1 );
+            if ( app.activeViewer != null ) DuAEF.DuAE.Project.viewerMaximized = app.activeViewer.maximized;
 
-        var tempL = DuAEF.DuAE.Project.progressComp.layers.addShape();
-        tempL.applyPreset( DuAEF.DuAE.Presets.MAGIC );
-        tempL.selected = false;
+            //create a temp comp, open it
+            DuAEF.DuAE.Project.progressComp = app.project.items.addComp( "MAGIC IS HAPPENING...", 500, 500, 1, 1, 1 );
 
+            var tempL = DuAEF.DuAE.Project.progressComp.layers.addShape();
+            tempL.applyPreset( DuAEF.DuAE.Presets.MAGIC );
+            tempL.selected = false;
+        }        
+
+        //open and maximize the temp comp
         DuAEF.DuAE.Project.progressComp.openInViewer();
         if ( app.activeViewer != null ) app.activeViewer.maximized = true;
 
