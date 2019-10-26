@@ -54,7 +54,7 @@ function DuSettings(namespace,file)
 
 /**
  * loads data from the settings file
- * @memberof DuAEF.DuSettings
+ * @memberof DuSettings
  */
 DuSettings.prototype.load = function()
 {
@@ -67,7 +67,7 @@ DuSettings.prototype.load = function()
 
 /**
  * Saves data to the file
- * @memberof DuAEF.DuSettings
+ * @memberof DuSettings
  * @param {string}		name	- The name of the setting
  * @return {boolean} true if the file has been correctly written
  */
