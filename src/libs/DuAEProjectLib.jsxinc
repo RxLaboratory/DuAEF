@@ -30,7 +30,7 @@ DuAEF.DuAE.Project.setProgressMode = function ( inProgress ) {
     if ( inProgress ) {
 
         //if not already in progress, create temp comp etc
-        if (!DuAEF.DuAE.Project.progressMode)
+        if (!DuAEF.DuAE.Project.progressMode || !Object.isValid(DuAEF.DuAE.Project.progressComp))
         {
             //store the current comp
             DuAEF.DuAE.Project.activeComp = DuAEF.DuAE.Project.getActiveComp();
@@ -43,7 +43,7 @@ DuAEF.DuAE.Project.setProgressMode = function ( inProgress ) {
             var tempL = DuAEF.DuAE.Project.progressComp.layers.addShape();
             tempL.applyPreset( DuAEF.DuAE.Presets.MAGIC );
             tempL.selected = false;
-        }        
+        }
 
         //open and maximize the temp comp
         DuAEF.DuAE.Project.progressComp.openInViewer();
