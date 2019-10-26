@@ -33,7 +33,7 @@ DuAEF.Duik.postInit = function ()
         duik_kleaner = new PseudoEffect( duik_kleaner );
         //structures
         #include "pseudoEffects/duik_structure.ffx.jsxinc"
-        duik_structure = DuAEF.DuBinary.toFile( duik_structure );
+        duik_structure = new PseudoEffect( duik_structure );
         //list
         #include "pseudoEffects/duik_1d_list.ffx.jsxinc"
         duik_1d_list = new PseudoEffect( duik_1d_list, 'Pseudo/DUIK 1d list', "List" )
@@ -554,16 +554,11 @@ DuAEF.Duik.postInit = function ()
         ONED_SWING: "Pseudo/DUIK 1d swing",
         SPATIAL_SWING: "Pseudo/DUIK spatial swing",
         TWOD_SWING: "Pseudo/DUIK 2d swing",
-        THREED_SWING: "Pseudo/DUIK 3d swing",
-        //structures
-        STRUCTURE: "Pseudo/DUIK structure"
+        THREED_SWING: "Pseudo/DUIK 3d swing"
     };
 
     //Load preset files
     {
-        //structures
-        #include "pseudoEffects/duik_structure_element.ffx.jsxinc"
-        duik_structure_element = DuAEF.DuBinary.toFile( duik_structure_element );
         //camera
         #include "pseudoEffects/duframe.ffx.jsxinc"
         duframe = DuAEF.DuBinary.toFile( duframe );
@@ -575,7 +570,6 @@ DuAEF.Duik.postInit = function ()
      * @readonly
      */
     DuAEF.Duik.Presets = {
-        STRUCTURE_ELEMENT: duik_structure_element,
         FRAME: duframe
     }
 }
@@ -633,7 +627,8 @@ DuAEF.Duik.expressionIds = {
     KLEANER: '//Duik.kleaner',
     PARENT: '//Duik.parentConstraint',
     POSITION: '//Duik.positionConstraint',
-    ORIENTATION: '//Duik.orientationConstraint'
+    ORIENTATION: '//Duik.orientationConstraint',
+    STRUCTURE: '//Duik.structure'
 }
 
 /**

@@ -749,7 +749,7 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 				//if structure, disable display link (bug AE)
 				if (DuAEF.Duik.isLayerType(spine.spine[0],DuAEF.Duik.LayerTypes.STRUCTURE))
 				{
-					var structureEffect = spine.spine[0].effect(DuAEF.Duik.PseudoEffectsMatchNames.STRUCTURE);
+					var structureEffect = spine.spine[0].effect( DuAEF.Duik.PseudoEffects.STRUCTURE.matchName );
 					if (structureEffect) structureEffect(3).setValue(0);
 				}
 			}
