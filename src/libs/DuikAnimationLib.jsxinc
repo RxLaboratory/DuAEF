@@ -1021,17 +1021,27 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 			var numProps = DuAEF.DuAE.Property.addToEGP(ctrlLayer.transform);
 			//effects
 			numProps += DuAEF.DuAE.Property.addToEGP(ctrlLayer('ADBE Effect Parade'));
+			//if Ae >= 16.1 just use all master properties (as numProps is 0 if they were already there)
+			if ( DuAEF.DuAE.App.version >= 16.1 ) {
+				numProps = preComp.motionGraphicsTemplateControllerCount;
+			}
 			//links
 			for (var p = 1; p <= numProps; p++)
 			{
 				var mp = preComposition('ADBE Layer Overrides')(p);
+				if (!mp) continue;
 				//get prop name
 				var nameArray = mp.name.split(' / ');
 				var pLink = nameArray[1];
 				var layerName = nameArray[0];
-				var newProp = eval('newCtrlLayer' + pLink);
+				if ( layerName != ctrlLayer.name ) continue;
+				try {
+					var newProp = eval('newCtrlLayer' + pLink);
+				}
+				catch (e) { continue; }
+				
 				//link
-				DuAEF.DuAE.Property.pickWhip(mp,newProp,true);
+				if (newProp) DuAEF.DuAE.Property.pickWhip(mp,newProp,true);
 			}
 
 		}

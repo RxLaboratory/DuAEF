@@ -1557,9 +1557,9 @@ DuAEF.DuAE.Property.removeExpressions = function ( prop ) {
 
 /**
  * Adds all the (supported) properties found in a property to the essential graphics panel<br />
- * Note: any Property or PropertyGroup (and its subproperties) named "Data" will be ignored.
+ * Note: any Property or PropertyGroup (and its subproperties) named "data" will be ignored.
  * @memberof DuAEF.DuAE.Property
- * @param {PropertyBase}	prop			- The property
+ * @param {PropertyBase} prop - The property
  * @return {int} The number of properties added
  */
 DuAEF.DuAE.Property.addToEGP = function ( prop ) {
@@ -1570,9 +1570,18 @@ DuAEF.DuAE.Property.addToEGP = function ( prop ) {
         var layer = DuAEF.DuAE.Property.getLayer( prop );
         //set the link
         if ( prop.canAddToMotionGraphicsTemplate( comp ) && !prop.elided && prop.canSetExpression ) {
-            prop.addToMotionGraphicsTemplate( comp );
-            //rename the master property if >=15.1
-            if ( DuAEF.DuAE.App.version >= 15.1 ) {
+            //get the name 
+            var mPropName = layer.name + ' / ' + DuAEF.DuAE.Property.getExpressionLink( prop, true, false );
+            //add with name
+            if ( DuAEF.DuAE.App.version >= 16.1 ) {
+                prop.addToMotionGraphicsTemplateAs( comp, mPropName);
+            }
+            else {
+                prop.addToMotionGraphicsTemplate( comp );
+            }
+
+            //rename the master property if >=15.1 and < 16.1
+            if ( DuAEF.DuAE.App.version >= 15.1 && DuAEF.DuAE.App.version < 16.1 ) {
                 var it = new Iterator( comp.usedIn );
                 it.do( function ( mainComp ) {
                     //search the layer of the precomp
@@ -1580,7 +1589,7 @@ DuAEF.DuAE.Property.addToEGP = function ( prop ) {
                         var l = mainComp.layer( i );
                         if ( l.source )
                             if ( l.source.id == comp.id ) {
-                                l( 'ADBE Layer Overrides' )( 1 ).name = layer.name + ' / ' + DuAEF.DuAE.Property.getExpressionLink( prop, true, false );
+                                l( 'ADBE Layer Overrides' )( 1 ).name = mPropName;
                             }
                     }
                 } );
