@@ -425,6 +425,9 @@ DuAEF.DuAE.Layer.applyPreset = function ( layer, preset, matchName ) {
     layer.selected = true;
     layer.applyPreset( preset );
 
+    //applying a presets gets out of progress mode
+    if (DuAEF.DuAE.Project.progressMode) DuAEF.DuAE.Project.setProgressMode( true );
+
     var effect = null;
     if ( matchName != '' ) effect = layer.property( "ADBE Effect Parade" )( matchName );
 
