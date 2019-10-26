@@ -21,9 +21,10 @@ DuAEF.DuAE.Project.lastExpressionCacheUpdateTime = 0;
 
 /**
  * Sets the project in "waiting mode" to speed up things.
- * @param {bool} inProgress - True to set progress mode, false to stop it.
+ * @param {bool} [inProgress=true] - True to set progress mode, false to stop it.
  */
 DuAEF.DuAE.Project.setProgressMode = function ( inProgress ) {
+    inProgress = def (inProgress, true);
     if ( !inProgress && !DuAEF.DuAE.Project.progressMode ) return;
 
     if ( inProgress ) {
