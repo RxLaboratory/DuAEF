@@ -9,7 +9,7 @@
  * @param {number} value2 The maximum for the interpolated value
  * @return {number[]} bezierPoints an Array of 4 coordinates wihtin the 0.0 ... 1.0 range which describes the Bézier interpolation.
  */
-function customBezier(t, tMin, tMax, value1, value2, bezierPoints) {
+function bezier(t, tMin, tMax, value1, value2, bezierPoints) {
     if (arguments.length !== 6) return value;
     var a = value2 - value1;
     var b = tMax - tMin;
