@@ -1,3 +1,14 @@
+/**
+ * Interpolates a value with a bezier curve.<br />
+ * This method can replace <code>linear()</code> and <code>ease()</code> with a custom bézier interpolation.
+ * @function
+ * @param {number} t The value to interpolate
+ * @param {number} tMin The minimum the value can take
+ * @param {number} tMax The maximum the value can take
+ * @param {number} value1 The minimum for the interpolated value
+ * @param {number} value2 The maximum for the interpolated value
+ * @return {number[]} bezierPoints an Array of 4 coordinates wihtin the 0.0 ... 1.0 range which describes the Bézier interpolation.
+ */
 function customBezier(t, tMin, tMax, value1, value2, bezierPoints) {
     if (arguments.length !== 6) return value;
     var a = value2 - value1;
