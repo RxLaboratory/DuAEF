@@ -114,6 +114,11 @@ DuAEF.WUStoryboarder.loadStoryboard = function(file)
 	var it = new Iterator(data.boards);
 	it.do( function(board) {
 		if (!board.duration) board.duration = data.defaultBoardTiming;
+		//update duration to a number
+		if (DuAEF.DuJS.typeof(board.duration) == 'string')
+		{
+			board.duration = parseInt(board.duration);
+		}
 	});
 
 	return data;
@@ -141,6 +146,8 @@ DuAEF.WUStoryboarder.import = function (file,overlayInfo,precompShots)
 	var boards = storyboard.boards;
 	var numBoards = boards.length;
 	if (numBoards == 0) return 0;
+
+	var storyboarderVersion = storyboard.version;
 
 	//check images
 	var imagesPath = file.path + '/images/';
