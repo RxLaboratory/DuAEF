@@ -48,7 +48,7 @@ DuAEF.Ramses.versionFolderName = '_versions';
  */
 DuAEF.Ramses.getVersionFolder = function() {
     var projectFolder = app.project.file.parent;
-    var versionFolder = new Folder(projectFolder.absoluteURI + DuAEF.Ramses.versionFolderName);
+    var versionFolder = new Folder(projectFolder.absoluteURI + "/" + DuAEF.Ramses.versionFolderName);
     if ( !versionFolder.exists ) versionFolder.create();
     return versionFolder;
 }
