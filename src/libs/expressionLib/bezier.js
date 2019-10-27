@@ -7,7 +7,8 @@
  * @param {number} tMax The maximum the value can take
  * @param {number} value1 The minimum for the interpolated value
  * @param {number} value2 The maximum for the interpolated value
- * @return {number[]} bezierPoints an Array of 4 coordinates wihtin the 0.0 ... 1.0 range which describes the Bézier interpolation.
+ * @return {number[]} bezierPoints an Array of 4 coordinates wihtin the 0.0 ... 1.0 range which describes the Bézier interpolation.<br />
+ * [ outTangentX, outTangentY, inTangentX, inTangentY ]
  */
 function bezier(t, tMin, tMax, value1, value2, bezierPoints) {
     if (arguments.length !== 6) return value;
