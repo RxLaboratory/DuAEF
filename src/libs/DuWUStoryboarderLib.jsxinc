@@ -482,6 +482,22 @@ DuAEF.WUStoryboarder.import = function (file,overlayInfo,precompShots)
 			layer.parent = shotLayer;
 		}
 
+		//add shot-generator layer
+		if (board.layers["shot-generator"] && !psd)
+		{
+			var file = new File(imagesPath + board.layers["shot-generator"].url);
+			var item = app.project.importFile(new ImportOptions(file));
+			item.parentFolder = imageFolder;
+			var layer = shotComp.layers.add(item,board.duration/1000);
+			layer.label = 14;
+			layer.name = board.shot + " | Shot Generator";
+			layer.startTime = boardTime;
+			if (!overlayInfo) layer.transform.position.setValue([width/2,itemHeight/2]);
+			layer.moveBefore(shotLayer);
+			layer.parent = shotLayer;
+			layer.transform.opacity.setValue( board.layers["shot-generator"].opacity * 100 );
+		}
+
 		//add audio layer
 		if (board.audio)
 		{
