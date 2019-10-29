@@ -50,6 +50,11 @@ DuAEF.Zip.compressFolderContent = function (folder, archiveName, wipeFolder) {
 
     var args = DuAEF.Zip.processArgs.concat( [folder.parent.fsName + "/" + archiveName, folderPath ] );
 
+    if ( DuAEF.win && !new File(DuAEF.Zip.processPath).exists ) {
+        alert("7zip not found. Cannot zip folder: " + folder.fsName);
+        return null;
+    }
+
     var processes = [ new DuProcess(DuAEF.Zip.processPath, args) ];
 
     if (wipeFolder) {
