@@ -170,6 +170,12 @@ DuAEF.Ramses.archiveProject = function ( destination, reduce, selectedComps, zip
 
     app.project.close( CloseOptions.PROMPT_TO_SAVE_CHANGES );
     app.open( projectFile );
+    //save it right away in case this was a project with a different version
+    if (!app.project.file) {
+        var name = DuAEF.DuJS.Fs.getBasename(projectFile);
+        projectFile = new File(projectFile.parent.absoluteURI + '/' + name + " (converted).aep");
+        app.project.save( projectFile );
+    }
     
     if (reduce) {
         if (selectedComps) DuAEF.DuAE.Project.reduceSelected();
