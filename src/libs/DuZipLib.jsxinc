@@ -26,11 +26,11 @@ else DuAEF.Zip.processArgs = ['-r', '-X'];
 
 /**
  * The path to 7za.exe or 7z.exe (windows only, mac uses the internal command 'zip')
- * @default '/../bin/7za.exe'
+ * @default '7za.exe'
  */
 DuAEF.Zip.processPath = '';
 
-if ( DuAEF.win ) DuAEF.Zip.processPath = DuAEF.file.parent.absoluteURI + '/../bin/7za.exe';
+if ( DuAEF.win ) DuAEF.Zip.processPath = DuAEF.file.parent.absoluteURI + '/7za.exe';
 else DuAEF.Zip.processPath = 'zip';
 
 /**
