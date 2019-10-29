@@ -198,7 +198,6 @@ DuAEF.DuAE.Project.reduce = function ( comps, keepExpressionOnly ) {
 
     //consolidate footage
     app.project.consolidateFootage();
-    app.project.removeUnusedFootage();
 
     //update cache before running
     DuAEF.DuAE.Project.updateExpressionCache();
