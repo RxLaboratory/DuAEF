@@ -241,6 +241,11 @@ DuAEF.Ramses.archiveFolder = function ( inputFolder, outputFolder, recursive, zi
     //scan for files and folders in the inputFolder 
     var files = inputFolder.getFiles( isAepOrFolder );
 
+    if (files.length == 0) {
+        aepFolder.remove();
+        return;
+    } 
+
     for (var f = 0, numF = files.length; f < numF; f++) {
         var file = files[f];
 
@@ -279,6 +284,7 @@ DuAEF.Ramses.archiveFolder = function ( inputFolder, outputFolder, recursive, zi
 
     //and zip the aep folder 
     if ( archiveMode == DuAEF.Ramses.ArchiveModes.ONE_PER_FOLDER && zip) {
-        DuAEF.Zip.compressFolderContent( aepFolder, DuAEF.DuJS.Fs.getName(outputFolder) + ".zip", true );
+        //remove the folder if empty
+        if ( !aepFolder.remove() ) DuAEF.Zip.compressFolderContent( aepFolder, DuAEF.DuJS.Fs.getName(outputFolder) + ".zip", true );
     }
 }
