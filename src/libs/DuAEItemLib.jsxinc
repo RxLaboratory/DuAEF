@@ -115,8 +115,9 @@ DuAEF.DuAE.Item.usedIn = function (item, recursive, keepExpressionOnly ) {
 
     //the regexps we need 
     var regExp = '';
-    if (item instanceof CompItem ) regExp = new RegExp("comp\\s*\\(\\s*(\"|')" + item.name + "\\1\\s*\\)");
-    else regExp = new RegExp("footage\\s*\\(\\s*(\"|')" + item.name + "\\1\\s*\\)");
+    var itemNameRegEx = DuAEF.DuJS.RegExp.escapeRegExp(item.name);
+    if (item instanceof CompItem ) regExp = new RegExp("comp\\s*\\(\\s*(\"|')" + itemNameRegEx + "\\1\\s*\\)");
+    else regExp = new RegExp("footage\\s*\\(\\s*(\"|')" + itemNameRegEx + "\\1\\s*\\)");
 
     //check for expressions using this item
     for (var i = 0, num = DuAEF.DuAE.Project.expressionCache.length; i < num; i++)
