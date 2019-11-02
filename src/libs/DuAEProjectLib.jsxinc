@@ -86,6 +86,8 @@ DuAEF.DuAE.Project.getComps = function ( rootOnly ) {
  */
 DuAEF.DuAE.Project.getActiveComp = function () {
     if ( DuAEF.DuAE.Project.progressMode ) return DuAEF.DuAE.Project.activeComp;
+    //activate the viewer first to try to get the opened composition
+    if ( app.activeViewer.type == ViewerType.VIEWER_COMPOSITION ) app.activeViewer.setActive();
     var comp = app.project.activeItem;
     if ( !comp ) return null;
     if ( !( comp instanceof CompItem ) ) return null;
