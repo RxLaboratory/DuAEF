@@ -14,6 +14,7 @@ function bezier(t, tMin, tMax, value1, value2, bezierPoints) {
     if (arguments.length !== 6) return value;
     var a = value2 - value1;
     var b = tMax - tMin;
+    if (b == 0) return t;
     var c = clamp((t - tMin) / b, 0, 1);
     if (!(bezierPoints instanceof Array) || bezierPoints.length !== 4) bezierPoints = [0, 0, 1, 1];
     return a * h(c, bezierPoints) + value1;
