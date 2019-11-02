@@ -752,8 +752,9 @@ DuAEF.Duik.Automation.mapEffector = function (prop,texture,effect)
 }
 
 /**
-	* Adds a spring effect on the property
-	* @param {PropertyInfo} prop - The property to rig
+ * Adds a spring effect on the property
+ * @deprecated since Duik 16.2. Use DuAEF.Duik.Animation.kleaner instead, which includes an auto follow-through.
+ * @param {PropertyInfo} prop - The property to rig
 */
 DuAEF.Duik.Automation.spring = function (prop)
 {
