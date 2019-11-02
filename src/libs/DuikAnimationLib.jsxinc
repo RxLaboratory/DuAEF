@@ -65,7 +65,7 @@ DuAEF.Duik.Animation.resetPRS = function (layer)
 	* @return {PropertyGroup|null} The effect which controls the expression when useExpression is true
 	* @todo implement a better multidimensionnal algo
 */
-DuAEF.Duik.Animation.smartInterpolation = function (prop,useExpression,easeStart,easeEnd,effect)
+DuAEF.Duik.Animation.kleaner = function (prop,useExpression,easeStart,easeEnd,effect)
 {
 	useExpression = def(useExpression, true);
 	easeStart = def(easeStart, true);
