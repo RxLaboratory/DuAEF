@@ -91,7 +91,7 @@ DuAEF.Duik.postInit = function ()
         duik_paint_rig = DuAEF.DuBinary.toFile( duik_paint_rig );
         //Motion Trail
         #include "pseudoEffects/duik_motion_trail.ffx.jsxinc"
-        duik_motion_trail = DuAEF.DuBinary.toFile( duik_motion_trail );
+        duik_motion_trail = new PseudoEffect( duik_motion_trail );
         //X-Sheet
         #include "pseudoEffects/duik_x_sheet.ffx.jsxinc"
         duik_x_sheet = DuAEF.DuBinary.toFile( duik_x_sheet );
@@ -535,8 +535,6 @@ DuAEF.Duik.postInit = function ()
         CONTROLLER_ANGLE: "Pseudo/DUIK controller angle",
         //X-Sheet
         X_SHEET: "Pseudo/DUIK x sheet",
-        //Motion trail
-        MOTION_TRAIL: "Pseudo/DUIK motion trail",
         //Paint Rig
         PAINT_RIG: "Pseudo/DUIK paint rig",
         //Blink
@@ -628,7 +626,8 @@ DuAEF.Duik.expressionIds = {
     PARENT: '//Duik.parentConstraint',
     POSITION: '//Duik.positionConstraint',
     ORIENTATION: '//Duik.orientationConstraint',
-    STRUCTURE: '//Duik.structure'
+    STRUCTURE: '//Duik.structure',
+    MOTION_TRAIL: '//Duik.motionTrail'
 }
 
 /**
