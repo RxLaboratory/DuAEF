@@ -163,6 +163,80 @@ DuAEF.DuExpression.Library.getEffectLayer = ['',
 	].join('\n');
 
 /**
+ * Gets the comp position (2D Projection in the comp) of a layer.
+ * @param {number} [t=time] Time from when to get the position
+ * @param {Layer} [l=thisLayer] The layer
+ * @return {number[]} The comp position
+ */
+DuAEF.DuExpression.Library.getLayerCompPos = ['',
+	'function getLayerCompPos( t, l ) {',
+	'    if (typeof l === "undefined") l = thisLayer;',
+	'    if (typeof t === "undefined") t = time;',
+	'    return l.toComp( l.anchorPoint, t );',
+	'}'
+	].join('\n');
+
+/**
+ * Gets the world position of a layer.
+ * @param {number} [t=time] Time from when to get the position
+ * @param {Layer} [l=thisLayer] The layer
+ * @return {number[]} The world position
+ */
+DuAEF.DuExpression.Library.getLayerWorldPos = ['',
+	'function getLayerWorldPos(t, l) {',
+	'	if (typeof l === "undefined") l = thisLayer;',
+	'	if (typeof t === "undefined") t = time;',
+	'	return l.toWorld(l.anchorPoint, t);',
+	'}',
+	''
+	].join('\n');
+
+/**
+ * Gets the world instant speed of a layer.
+ * @param {number} [t=time] The time when to get the velocity
+ * @param {Layer} [l=thisLayer] The layer
+ * @return {number} A positive number. The speed.
+ * @requires getLayerWorldVelocity
+ * @requires getLayerWorldPos
+ */
+DuAEF.DuExpression.Library.getLayerWorldSpeed = ['',
+	'function getLayerWorldSpeed(t, l) {',
+	'	return length(getWorldVelocity(t, l));',
+	'}'
+	].join('\n');
+
+/**
+ * Gets the world instant velocity of a layer.
+ * @param {number} [t=time] The time when to get the velocity
+ * @param {Layer} [l=thisLayer] The layer
+ * @return {number[]} The velocity.
+ * @requires getLayerWorldPos
+ */
+DuAEF.DuExpression.Library.getLayerWorldVelocity = ['',
+	'function getLayerWorldVelocity(t, l) {',
+	'	if (typeof t === "undefined") t = time;',
+	'	return (getWorldPos(t, l) - getWorldPos(t - 0.01, l)) * 100;',
+	'}'
+	].join('\n');
+
+/**
+ * Gets the key immediately after the given time
+ * @param {number} [t=time] Time at which to get the key
+ * @return {Key|null} The key, or null if there's no key before.
+ */
+DuAEF.DuExpression.Library.getNextKey = ['',
+	'function getNextKey(t) {',
+	'    if (typeof t === "undefined") t = time;',
+	'    if (numKeys == 0) return null;',
+	'    var nKey = nearestKey(t);',
+	'    if (nKey.time >= t) return nKey;',
+	'    if (nKey.index < numKeys) return key(nKey.index + 1);',
+	'    return null;',
+	'  }',
+	'  '
+	].join('\n');
+
+/**
  * Gets the world orientation of a (2D) layer.
  * @function
  * @param {Layer} l The layer to get the orientation from
@@ -197,6 +271,130 @@ DuAEF.DuExpression.Library.getOrientationAtTime = ['',
 	'        r += l.rotation.valueAtTime( t );',
 	'    }',
 	'    return r;',
+	'}'
+	].join('\n');
+
+/**
+ * Gets the key immediately before the given time
+ * @param {number} [t=time] Time at which to get the key
+ * @return {Key|null} The key, or null if there's no key before.
+ */
+DuAEF.DuExpression.Library.getPrevKey = ['',
+	'function getPrevKey(t) {',
+	'    if (typeof t === "undefined") t = time;',
+	'    if (numKeys == 0) return null;',
+	'    var nKey = nearestKey(t);',
+	'    if (nKey.time <= t) return nKey;',
+	'    if (nKey.index > 1) return key(nKey.index - 1);',
+	'    return null;',
+	'  }'
+	].join('\n');
+
+/**
+ * Gets the world speed of a property.
+ * @param {number} [t=time] Time from when to get the position
+ * @param {Layer} [prop=thisProperty] The property
+ * @return {number[]} The world speed
+ * @requires getPropWorldVelocity
+ * @requires getPropWorldValue
+ * @requires getLayerWorldPos
+ */
+DuAEF.DuExpression.Library.getPropWorldSpeed = ['',
+	'function getPropWorldSpeed(t, prop) {',
+	'	return length(getPropWorldVelocity(t, prop));',
+	'}'
+	].join('\n');
+
+/**
+ * Gets the world coordinates of a property.
+ * @param {number} [t=time] Time from when to get the position
+ * @param {Layer} [prop=thisProperty] The property
+ * @return {number[]} The world coordinates
+ * @requires getLayerWorldPos
+ */
+DuAEF.DuExpression.Library.getPropWorldValue = ['',
+	'function getPropWorldValue(t, prop) {',
+	'	if (typeof prop === "undefined") prop = thisProperty;',
+	'	if (typeof t === "undefined") t = time;',
+	'	if (isPosition(prop)) return getLayerWorldPos(t);',
+	'	return thisLayer.toWorld(prop.valueAtTime(t), t);',
+	'}'
+	].join('\n');
+
+/**
+ * Gets the world velocity of a property.
+ * @param {number} [t=time] Time from when to get the position
+ * @param {Layer} [prop=thisProperty] The property
+ * @return {number[]} The world velocity
+ * @requires getPropWorldValue
+ * @requires getLayerWorldPos
+ */
+DuAEF.DuExpression.Library.getPropWorldVelocity = ['',
+	'function getPropWorldVelocity(t, prop) {',
+	'	if (typeof t === "undefined") t = time;',
+	'	return (getPropWorldValue(t, prop) - getPropWorldValue(t - 0.01, prop)) * 100;',
+	'}'
+	].join('\n');
+
+/**
+ * Checks if current time is after the time of the last key in the property
+ * @return {boolean} true if time is > lastkey.time
+ */
+DuAEF.DuExpression.Library.isAfterLastKey = ['',
+	'function isAfterLastKey() {',
+	'	if (numKeys == 0) return false;',
+	'	var nKey = nearestKey(time);',
+	'	return nKey.time <= time && nKey.index == numKeys;',
+	'}',
+	''
+	].join('\n');
+
+/**
+ * Checks if a property is a transform.position property.
+ * @param {Property} [prop=thisProperty] The property
+ * @return {boolean} true if the property is the transform.position property.
+ */
+DuAEF.DuExpression.Library.isPosition = ['',
+	'function isPosition(prop) {',
+	'	if (typeof prop === "undefined") prop = thisProperty;',
+	'	if (!(thisProperty.value instanceof Array)) return false;',
+	'	if (thisProperty.value.length > 3) return false;',
+	'	//compare the value to world with the anchor point to world',
+	'	var apWorld = thisLayer.toWorld(thisLayer.anchorPoint.valueAtTime(0), 0);',
+	'	var posWorld = thisProperty.valueAtTime(0);',
+	'	if (thisLayer.hasParent) posWorld = thisLayer.parent.toWorld(posWorld, 0);',
+	'	var result = true;',
+	'	for (var i = 0, num = thisProperty.value.length; i < num; i++) {',
+	'		if (posWorld[i] != apWorld[i]) return false;',
+	'	}',
+	'	return true;',
+	'}'
+	].join('\n');
+
+/**
+ * Checks if the current property is animated at a given time.
+ * @param {number} [t=time] The time
+ * @param {number} [threshold=0.1] The speed under which the property is considered still.
+ * @return {boolean} true if the property does not vary.
+ */
+DuAEF.DuExpression.Library.isStill = ['',
+	'function isStill(t, threshold) {',
+	'	if (typeof t === "undefined") t = time;',
+	'	if (typeof threshold === "undefined") threshold = 0.1;',
+	'	var d = valueAtTime(t) - valueAtTime(t + framesToTime(1));',
+	'',
+	'	if (d instanceof Array) {',
+	'		for (var i = 0; i < d.length; i++) {',
+	'			d[i] = Math.abs(d[i]);',
+	'			if (d[i] >= threshold) {',
+	'				return false;',
+	'			}',
+	'		}',
+	'		return true;',
+	'	} else {',
+	'		d = Math.abs(d);',
+	'		return d < threshold;',
+	'	}',
 	'}'
 	].join('\n');
 
