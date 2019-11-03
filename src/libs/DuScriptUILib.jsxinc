@@ -735,11 +735,32 @@ DuAEF.DuScriptUI.addSeparator = function( container, name, checkable, drawLine )
  * @property {Image} image - The scriptui object representing the image
  * @property {StaticText} label - The label
  * @property {DuButton~onClick} onClick - The function to execute when the button is clicked
+ * @property {DuButton~onAltClick} onClick - The function to execute when the button is Alt + clicked
+ * @property {DuButton~onCtrlClick} onClick - The function to execute when the button is Ctrl + clicked
+ * @property {DuButton~onCtrlAltClick} onClick - The function to execute when the button is Ctrl + Alt + clicked
  */
 
 /**
  * The function to execute when the button is clicked.
  * @callback DuButton~onClick
+ * @memberof DuButton
+ */
+
+/**
+ * The function to execute when the button is Alt + clicked.
+ * @callback DuButton~onAltClick
+ * @memberof DuButton
+ */
+
+/**
+ * The function to execute when the button is Ctrl + clicked.
+ * @callback DuButton~onCtrlClick
+ * @memberof DuButton
+ */
+
+/**
+ * The function to execute when the button is Ctrl + Alt + clicked.
+ * @callback DuButton~onCtrlAltClick
  * @memberof DuButton
  */
 
