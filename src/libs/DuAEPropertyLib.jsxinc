@@ -1859,9 +1859,9 @@ DuAEF.DuAE.Property.scriptifyExpression = function ( prop, varName ) {
     var expArray = exp.split( '\n' );
     var expString = "";
     if ( varName != '' ) expString += "var " + varName + " ";
-    expString += "['" + expArray[ 0 ].replace( "\r", "" ) + "'";
+    expString += "['" + expArray[ 0 ].replace( "\r", "" ).replace("'","\\'") + "'";
     for ( var i = 1; i < expArray.length; i++ ) {
-        expString += ",\n\t'" + expArray[ i ].replace( '\r', '' ) + "'";
+        expString += ",\n\t'" + expArray[ i ].replace( '\r', '' ).replace("'","\\'") + "'";
     }
     expString += "\n\t].join('\\n');";
 
