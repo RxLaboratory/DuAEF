@@ -206,7 +206,6 @@ function PropertyInfo(property)
 	if (this.isPixels) this.unit = localize("$$$/AE/TLW/GraphEditor/PixelsDest=px");
 
 	if (this.riggable) {
-		property.expressionEnabled = expressionEnabled;
 		this.expression = property.expression;
 	}
 }

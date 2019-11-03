@@ -174,11 +174,10 @@ DuAEF.DuAE.Property.isRiggable = function ( prop ) {
     if ( prop.elided ) return false;
     if ( prop.dimensionsSeparated ) return false;
     if ( typeof prop.expression !== 'string' ) return false;
-    //test to see if the try catch can be avoided
-    return true;
     //TODO find a way to detect if prop is hidden without using a try/catch
+    var expressionEnabled = prop.expressionEnabled;
     try {
-        prop.expression = prop.expression;
+        prop.expressionEnabled = expressionEnabled;
         return true
     } catch ( e ) {
         return false;
@@ -1544,13 +1543,14 @@ DuAEF.DuAE.Property.removeDataExpressions = function ( prop ) {
  * Removes all expressions found in the property.
  * @memberof DuAEF.DuAE.Property
  * @param {PropertyBase} prop - The property
+ * @param {function} filter - A function which takes a string as a parameter (the expression). Returns true if the expression has to be removed.
  */
-DuAEF.DuAE.Property.removeExpressions = function ( prop ) {
+DuAEF.DuAE.Property.removeExpressions = function ( prop, filter ) {
     if ( prop.propertyType == PropertyType.PROPERTY ) {
-        DuAEF.DuAE.Property.removeExpression( prop );
+        DuAEF.DuAE.Property.removeExpression( prop, filter );
     } else {
         for ( var p = 1, num = prop.numProperties; p <= num; p++ ) {
-            DuAEF.DuAE.Property.removeExpressions( prop( p ) );
+            DuAEF.DuAE.Property.removeExpressions( prop( p ), filter );
         }
     }
 }
@@ -1658,14 +1658,20 @@ DuAEF.DuAE.Property.lock = function ( properties ) {
  * Removes the expression from the property, keeping the post-expression value.
  * @memberof DuAEF.DuAE.Property
  * @param {Property|PropertyInfo} prop - The property
+ * @param {function} filter - A function which takes a string as a parameter (the expression). Returns true if the expression has to be removed.
  */
-DuAEF.DuAE.Property.removeExpression = function ( prop ) {
+DuAEF.DuAE.Property.removeExpression = function ( prop, filter ) {
     if ( typeof ( prop ) === 'undefined' ) return;
 
     var propInfo = new PropertyInfo( prop );
     prop = propInfo.getProperty();
 
-    if ( prop.expression == '' ) return;
+    var expression = prop.expression;
+
+    if ( expression == '' ) return;
+    if (typeof filter === 'function') {
+        if (!filter(expression )) return;
+    }
     if ( propInfo.riggable ) {
         DuAEF.DuAE.Property.setValue( prop, prop.value );
         prop.expression = '';
