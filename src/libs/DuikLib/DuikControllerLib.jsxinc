@@ -6,6 +6,7 @@
 	* @property {ShapeLayer} layer - The Shape layer of the controller
 	* @property {DuAEF.Duik.Controller.Types} type - The type of the controller
 	* @property {PropertyGroup} effect - The effect on the layer
+	* @property {int} id - The uid of the controller
 */
 function Controller(layer)
 {
@@ -20,6 +21,13 @@ function Controller(layer)
 		this.effectInfo = new PropertyInfo(effect);
 	}
 	else this.effect = null;
+	this.id = 0;
+	this.type = DuAEF.Duik.Controller.Types.TRANSFORM;
+	var params = DuAEF.Duik.getDuikMarkerParameters( layer );
+	if (params) {
+		if (params[DuAEF.Duik.MarkerParameters.CONTROLLER_ID]) this.id = params[DuAEF.Duik.MarkerParameters.CONTROLLER_ID];
+		if (params[DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE]) this.type = params[DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE];
+	}
 }
 
 /**
