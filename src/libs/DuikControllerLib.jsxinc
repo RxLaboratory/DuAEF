@@ -354,6 +354,8 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 	}
 
 	DuAEF.Duik.setDuikMarkerParameter(ctrl,DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE,type);
+	var id = new Date().getTime();
+	DuAEF.Duik.setDuikMarkerParameter( ctrl, DuAEF.Duik.MarkerParameters.CONTROLLER_ID, id );
 
 	DuAEF.Dugr.addLayerToGroup(ctrl,"Controllers");
 	ctrl.guideLayer = true;

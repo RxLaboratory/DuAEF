@@ -600,6 +600,7 @@ DuAEF.Duik.MarkerParameters = {
     AUTORIG_LIMB: 'autorigLimb',
     AUTORIG_ID: 'autorigId',
     STRUCTURE_ID: 'structureId',
+    CONTROLLER_ID: 'controllerId',
     CONTROLLER_TYPE: 'controllerType',
     SIDE: 'side',
     LINKEDTOCOMP: 'linkedToComp',
