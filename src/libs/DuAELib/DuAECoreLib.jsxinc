@@ -320,7 +320,7 @@ DuAEF.DuAE.postInit = function()
 
 	//PRESETS
 
-	#include "pseudoEffects/duaef_magic.ffx.jsxinc"
+	#include "../pseudoEffects/duaef_magic.ffx.jsxinc"
 	duaef_magic = DuAEF.DuBinary.toFile(duaef_magic);
 
 	DuAEF.DuAE.Presets =
@@ -816,3 +816,12 @@ DuAEF.DuAE.convertCollectionToArray = function (collection)
 	}
 	return arr;
 }
+
+
+#include "DuAEAppLib.jsxinc"
+#include "DuAEProjectLib.jsxinc"
+#include "DuAEItemLib.jsxinc"
+#include "DuAECompLib.jsxinc"
+#include "DuAELayerLib.jsxinc"
+#include "DuAEPropertyLib.jsxinc"
+#include "DuAEShapeLib.jsxinc"
