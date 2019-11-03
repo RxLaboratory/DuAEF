@@ -1143,6 +1143,9 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 	var controllers = DuAEF.Duik.Controller.getControllers(preComp);
 	if (controllers.length == 0) return -3;
 
+	//get controllers from current comp, to check if some are already extracted
+	var currentControllers = DuAEF.Duik.Controller.getControllers(comp);
+
 	//check for parenting and list layers
 
 	app.beginSuppressDialogs();
@@ -1153,8 +1156,18 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 	var itCtrls = new Iterator(controllers);
 	var controller;
 	var ctrlLayers = [];
+	var newCtrlLayers = [];
 	itCtrls.do(function(controller)
 	{
+		//check if it's already extracted
+		for (var i = 0, num = currentControllers.length; i < num; i++) {
+			if ( currentControllers[i].id == controller.id ) {
+				var newCtrlLayer = currentControllers[i].layer;
+				newCtrlLayer.reparent = false;
+				newCtrlLayers.push( newCtrlLayer );
+				return;
+			}
+		}
 		var layer = controller.layer;
 		//check if the layer has a parent which is not a controller or nothing
 		var ctrlParent = layer.parent;
@@ -1166,7 +1179,13 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 	});
 
 	//copy controllers
-	var newCtrlLayers = DuAEF.DuAE.Layer.copyToComp(ctrlLayers, comp);
+	newCtrlLayers = newCtrlLayers.concat( DuAEF.DuAE.Layer.copyToComp(ctrlLayers, comp) );
+
+	//get controller objects 
+	var newCtrls = [];
+	for (var i = 0, num = newCtrlLayers.length; i < num; i++) {
+		newCtrls.push(new Controller(newCtrlLayers[i]));
+	}
 
 	//Add null at position precomp.width/2 precomp.height/2
 	var nullLayer = comp.layers.addNull();
@@ -1179,15 +1198,20 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 	//remove the null
 	nullLayer.remove();
 	//create Master Props or Expressions
-	//sort by index to be sure to link layers correctly
-	ctrlLayers = DuAEF.DuAE.Layer.sortByIndex(ctrlLayers);
-	newCtrlLayers = DuAEF.DuAE.Layer.sortByIndex(newCtrlLayers);
-
+	
 	//link transformations and effects (only)
-	for (var i = 0, num = ctrlLayers.length; i < num; i++)
+	itCtrls.do(function(controller)
 	{
-		var ctrlLayer = ctrlLayers[i];
-		var newCtrlLayer = newCtrlLayers[i];
+		var ctrlLayer = controller.layer;
+		//get the new controller 
+		var newCtrlLayer = null;
+		for (var i = 0, num = newCtrls.length; i < num; i++) {
+			if ( newCtrls[i].id == controller.id ) {
+				newCtrlLayer = newCtrls[i].layer;
+				break;
+			}
+		}
+		if (!newCtrlLayer) return;
 
 		//use locators for all controllers parented to something else than a controller or nothing
 		if (ctrlLayer.reparent) DuAEF.Duik.Rigging.parent(newCtrlLayer, ctrlLayer.parent);
@@ -1235,7 +1259,7 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 		//set params to keep the link
 		DuAEF.Duik.setDuikMarkerParameter(newCtrlLayer, DuAEF.Duik.MarkerParameters.LINKEDTOCOMP, preComp.id);
 		DuAEF.Duik.setDuikMarkerParameter(newCtrlLayer, DuAEF.Duik.MarkerParameters.LINKEDTOLAYER, ctrlLayer.name);
-	}
+	});
 
 	app.endSuppressDialogs(false);
 
