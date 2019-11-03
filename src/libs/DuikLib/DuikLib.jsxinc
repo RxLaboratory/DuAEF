@@ -604,7 +604,8 @@ DuAEF.Duik.MarkerParameters = {
     CONTROLLER_TYPE: 'controllerType',
     SIDE: 'side',
     LINKEDTOCOMP: 'linkedToComp',
-    LINKEDTOLAYER: 'linkedToLayer'
+    LINKEDTOLAYER: 'linkedToLayer',
+    LINKED_THROUGH_MP: 'linkedThroughMP'
 }
 
 /**
@@ -629,6 +630,18 @@ DuAEF.Duik.expressionIds = {
     ORIENTATION: '//Duik.orientationConstraint',
     STRUCTURE: '//Duik.structure',
     MOTION_TRAIL: '//Duik.motionTrail'
+}
+
+//undocumented low-level function used by Duik
+//checks the type of an expression 
+DuAEF.Duik.getExpressionId = function ( expression ) {
+    return expression.split('\n')[0].replace('\r','');
+}
+
+//undocumented low-level function used by Duik
+//checks the type of an expression 
+DuAEF.Duik.isExpressionId = function ( expression, id ) {
+    return DuAEF.Duik.getExpressionId(expression) == id;
 }
 
 /**

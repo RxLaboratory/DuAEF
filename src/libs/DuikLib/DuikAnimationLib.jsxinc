@@ -1130,7 +1130,8 @@ DuAEF.Duik.Animation.switchIkFk = function (controller)
 DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMasterProperties)
 {
 	if (DuAEF.DuAE.App.version < 15.1) useMasterProperties = false;
-	if (typeof useMasterProperties === 'undefined') useMasterProperties = true;
+	if (DuAEF.DuAE.App.version < 17.0) useMasterProperties = def( useMasterProperties, false );
+	else useMasterProperties = def( useMasterProperties, true );
 
 	var comp = preComposition.containingComp;
 
@@ -1247,7 +1248,6 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 				//link
 				if (newProp) DuAEF.DuAE.Property.pickWhip(mp,newProp,true);
 			}
-
 		}
 		else
 		{
@@ -1259,11 +1259,82 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 		//set params to keep the link
 		DuAEF.Duik.setDuikMarkerParameter(newCtrlLayer, DuAEF.Duik.MarkerParameters.LINKEDTOCOMP, preComp.id);
 		DuAEF.Duik.setDuikMarkerParameter(newCtrlLayer, DuAEF.Duik.MarkerParameters.LINKEDTOLAYER, ctrlLayer.name);
+		DuAEF.Duik.setDuikMarkerParameter(newCtrlLayer, DuAEF.Duik.MarkerParameters.LINKED_THROUGH_MP, useMasterProperties);
 	});
 
 	app.endSuppressDialogs(false);
 
 	return 1;
+}
+
+/**
+	* Un-Extracts the controllers from the precomposition.
+	* @param {AVLayer} preComposition - The precomposition layer
+*/
+DuAEF.Duik.Animation.unExtractControllersFromComp = function( preComposition )
+{
+	var comp = preComposition.containingComp;
+	var preComp = preComposition.source;
+
+	var controllers = DuAEF.Duik.Controller.getControllers(preComp);
+	if (controllers.length == 0) return;
+
+	var extractedControllers = DuAEF.Duik.Controller.getControllers(comp);
+	if (extractedControllers.length == 0) return;
+
+	//a function to check if an expression is indeed a link
+	function isLink(exp) {
+		return DuAEF.Duik.isExpressionId(exp, DuAEF.Duik.expressionIds.LINK);
+	}
+
+	//for each controller
+	var itCtrl = new Iterator(extractedControllers);
+	itCtrl.do(function(extractedController)
+	{
+		var controller = null;
+		for (var i = 0, num = controllers.length; i < num; i++) {
+			if ( controllers[i].id == extractedController.id ) {
+				controller = controllers[i];
+				break;
+			}
+		}
+		if ( !controller ) return;
+
+		//check how it was extracted
+		var params = DuAEF.Duik.getDuikMarkerParameters( extractedController.layer );
+		var useMP = false;
+
+		if (params) {
+			useMP = params[DuAEF.Duik.MarkerParameters.LINKED_THROUGH_MP] == 'true';
+		}
+		if (useMP && DuAEF.DuAE.App.version >= 16.1) {
+			//remove expressions from master properties
+			var numMPs = preComp.motionGraphicsTemplateControllerCount;
+			for (var i = 1; i <= numMPs; i++)
+			{
+				var mp = preComposition('ADBE Layer Overrides')(i);
+				//get layer name
+				var layerName = mp.name.split(' / ')[0];
+				var nameCheck = extractedController.layer.name;
+				if (params) {
+					if (params[DuAEF.Duik.MarkerParameters.LINKEDTOLAYER]) nameCheck = params[DuAEF.Duik.MarkerParameters.LINKEDTOLAYER];
+				}
+				//if the layer name corresponds, remove the expression.
+				if ( layerName == nameCheck ) {
+					mp.expression = '';
+				}
+			}
+		}
+		else if (!useMP)
+		{
+
+			//remove expressions from controller 
+			DuAEF.DuAE.Property.removeExpressions(controller.layer, isLink);
+		}
+
+		//remove the extracted controller
+		extractedController.layer.remove();
+	});
 }
 
 /**
