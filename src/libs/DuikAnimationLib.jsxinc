@@ -121,6 +121,8 @@ DuAEF.Duik.Animation.kleaner = function (prop,useExpression,easeStart,easeEnd,ef
 			'var spatialMode = fx(' + index['Spatial Options_Mode_Popup'] + ').value;',
 			'var spatialDoInterpolation = fx(' + index['Spatial Options_Smart Interpolation_Checkbox'] + ').value;',
 			'var moBlurPrecision = fx(' + index['Spatial Options_Motion Blur Precision_Slider'] + ').value;',
+			'var elasticityRandom = fx(' + index['Follow Through_Elasticity random_Slider'] + ').value;',
+			'var dampingRandom = fx(' + index['Follow Through_Damping random_Slider'] + ').value;',
 			'var threshold = 0.1;',
 			'',
 			'//adjust parameters',
@@ -136,8 +138,14 @@ DuAEF.Duik.Animation.kleaner = function (prop,useExpression,easeStart,easeEnd,ef
 			'	simulate = spatialMode == 2;',
 			'}',
 			'',
+			'// randomness',
+			'seedRandom(0, true);',
+			'elasticity = addNoise( elasticity, elasticityRandom );',
+			'damping = addNoise( damping, dampingRandom );',
+			'',
 			'var result = value;',
 			'',
+			DuAEF.DuExpression.Library.addNoise,
 			DuAEF.DuExpression.Library.bezier,
 			DuAEF.DuExpression.Library.isPosition,
 			DuAEF.DuExpression.Library.getLayerWorldPos,
@@ -416,6 +424,8 @@ DuAEF.Duik.Animation.kleaner = function (prop,useExpression,easeStart,easeEnd,ef
 		//defaults
 		effect( index['Follow Through_Elasticity_Slider'] ).setValue(10);
 		effect( index['Follow Through_Damping_Slider'] ).setValue(50);
+		effect( index['Follow Through_Elasticity random_Slider'] ).setValue(30);
+		effect( index['Follow Through_Damping random_Slider'] ).setValue(30);
 	}
 	else
 	{
