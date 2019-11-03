@@ -852,7 +852,11 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 			DuAEF.Duik.Rigging.goal(spine.head,headCtrl);
 			if (shoulderCtrl)
 			{
-				var exp = DuAEF.DuAE.Property.getExpressionLink(headCtrl.layer.transform.position, true) + " - " + DuAEF.DuAE.Property.getExpressionLink(headCtrl.layer.transform.anchorPoint, true);
+				var exp = [ 'var ctrlLayer = ' + DuAEF.DuAE.Property.getExpressionLink(headCtrl.layer) + ';',
+					'var result = ctrlLayer.toWorld( ctrlLayer.anchorPoint );',
+					'if ( hasParent ) result = parent.fromWorld(result);',
+					'result;'
+				].join('\n');
 				spine.head.transform.position.expression = exp;
 			}
 		}
