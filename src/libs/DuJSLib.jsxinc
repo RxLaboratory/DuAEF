@@ -458,24 +458,24 @@ DuAEF.DuJS.Fs.wipeFolder = function(folder)
 	* Returns an array of File objects.
 	* @memberof DuAEF.DuJS.Fs
 	* @param {Folder}	folder	- The Folder
-	* @param {string|function}	[filter=*]	- A search mask for file names, specified as a string or a function.
+	* @param {string|function}	[filter="*"]	- A search mask for file names, specified as a string or a function.
 	* A mask string can contain question mark (?) and asterisk (*) wild cards. Default is "*", which matches all file names.
 	* Can also be the name of a function that takes a File or Folder object as its argument. It is called for each file or folder found in the search; if it returns true, the object is added to the return array.
 	* @return {Array}	The files found.
 */
 DuAEF.DuJS.Fs.getFilesInFolder = function (folder,filter)
 {
-	if (folder === undefined) return [];
+	if (typeof folder === 'undefined') return [];
 	if (!(folder instanceof Folder)) return [];
 
 	var files = folder.getFiles(filter);
 	if (files === null) files = [];
 
-	var folders = folder.getFiles(DuJS.fs.isFolder);
+	var folders = folder.getFiles(DuAEF.DuJS.Fs.isFolder);
 
-	for (var i = 0 ; i < folders.length ; i++)
+	for (var i = 0, num = folders.length ; i < num ; i++)
 	{
-		files = files.concat(DuJS.fs.getFilesInFolder(folders[i],filter));
+		files = files.concat(DuAEF.DuJS.Fs.getFilesInFolder(folders[i],filter));
 	}
 	return files;
 }
