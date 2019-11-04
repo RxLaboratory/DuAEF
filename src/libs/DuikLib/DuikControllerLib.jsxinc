@@ -328,10 +328,12 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 
 	if (layer != null && type != DuAEF.Duik.Controller.Types.SLIDER && type != DuAEF.Duik.Controller.Types.DOUBLE_SLIDER && type != DuAEF.Duik.Controller.Types.ANGLE)
 	{
-		//if it's a null, switch to 3D if the layer is 3D
-		if (type == DuAEF.Duik.Controller.Types.NULL)
+		// if it's a null, switch to 3D if the layer is 3D
+		// and move it just above the layer
+		if (type == DuAEF.Duik.Controller.Types.NULL && !(layer instanceof Array))
 		{
 			if (layer.threeDLayer) ctrl.threeDLayer = true;
+			ctrl.moveBefore(layer);
 		}
 
 		//center the controller and name it after the layer(s)
@@ -368,7 +370,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 	DuAEF.Dugr.addLayerToGroup(ctrl,"Controllers");
 	ctrl.guideLayer = true;
 	ctrl.label = 9;
-	DuAEF.DuAE.Layer.lockScale(ctrl);
+	
 	if (DuAEF.Duik.Controller.draft) ctrl.quality = LayerQuality.DRAFT;
 
 	if (type == DuAEF.Duik.Controller.Types.NULL)
@@ -376,6 +378,8 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		ctrl = new Controller(ctrl,type);
 		return ctrl;
 	}
+
+	DuAEF.DuAE.Layer.lockScale(ctrl);
 
 	var effect = null;
 
