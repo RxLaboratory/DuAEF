@@ -1,5 +1,6 @@
 /**
  * Gets the world instant speed of a layer.
+ * @function
  * @param {number} [t=time] The time when to get the velocity
  * @param {Layer} [l=thisLayer] The layer
  * @return {number} A positive number. The speed.

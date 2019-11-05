@@ -1,6 +1,7 @@
 /**
  * Removes the ancestors rotation from the rotation of a layer.
  * This is very useful to make a layer keep its orientation without being influenced by its parents.
+ * @function
  * @example
  * //in a rotation property, just include the function and use:
  * dishineritRotation();

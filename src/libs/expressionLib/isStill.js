@@ -1,5 +1,6 @@
 /**
  * Checks if the current property is animated at a given time.
+ * @function
  * @param {number} [t=time] The time
  * @param {number} [threshold=0.1] The speed under which the property is considered still.
  * @return {boolean} true if the property does not vary.

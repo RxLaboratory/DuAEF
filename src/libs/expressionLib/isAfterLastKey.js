@@ -1,5 +1,6 @@
 /**
  * Checks if current time is after the time of the last key in the property
+ * @function
  * @return {boolean} true if time is > lastkey.time
  */
 function isAfterLastKey() {

@@ -1,5 +1,6 @@
 /**
  * Gets the key immediately before the given time
+ * @function
  * @param {number} [t=time] Time at which to get the key
  * @return {Key|null} The key, or null if there's no key before.
  */

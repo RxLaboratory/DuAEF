@@ -1,5 +1,6 @@
 /**
  * Checks if a property is a transform.position property.
+ * @function
  * @param {Property} [prop=thisProperty] The property
  * @return {boolean} true if the property is the transform.position property.
  */
