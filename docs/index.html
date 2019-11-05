@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
     <meta charset="utf-8">
     <title>Namespace: DuAEF | Namespace: DuAEF</title>
 
@@ -56,7 +57,8 @@
         <div class="container-overview">
         
             
-                <div class="description">The Duduf After Effects ExtendScript Framework.<br />by <a href="https://rainboxlab.org">Rainbox Lab</a>.</div>
+                <div class="description">The Duduf After Effects ExtendScript Framework.<br />
+by <a href="https://rainboxlab.org">Rainbox Lab</a>.</div>
             
 
             
@@ -99,7 +101,20 @@
 
     
     <dt class="tag-license">License:</dt>
-    <dd class="tag-license"><ul class="dummy"><li>GPL-3.0 <br />DuAEF is free software: you can redistribute it and/or modify<br />it under the terms of the GNU General Public License as published by<br />the Free Software Foundation, either version 3 of the License, or<br />(at your option) any later version.<br /><br />DuAEF is distributed in the hope that it will be useful,<br />but WITHOUT ANY WARRANTY; without even the implied warranty of<br />MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />GNU General Public License for more details.<br /><br />You should have received a copy of the GNU General Public License<br />along with DuAEF. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.})(this);</li></ul></dd>
+    <dd class="tag-license"><ul class="dummy"><li>GPL-3.0 <br />
+DuAEF is free software: you can redistribute it and/or modify<br />
+it under the terms of the GNU General Public License as published by<br />
+the Free Software Foundation, either version 3 of the License, or<br />
+(at your option) any later version.<br />
+<br />
+DuAEF is distributed in the hope that it will be useful,<br />
+but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+GNU General Public License for more details.<br />
+<br />
+You should have received a copy of the GNU General Public License<br />
+along with DuAEF. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
+})(this);</li></ul></dd>
     
 
     
@@ -115,7 +130,20 @@
             
                 <h3>Example</h3>
                 
-    <pre class="prettyprint"><code>//Encapsulate the script in a function to avoid global variables.(function(thisObj) {    //include the framework    #include DuAEF.jsxinc    //you need to initialize DuAEF, with a script name and a version    DuAEF.init("YourScriptName", "1.0.2");    //The framework version is    DuAEF.version;    //If you need to get the OS the script is running on    DuAEF.mac; //true on mac    DuAEF.win; //true on windows    //implement what you need, build the UI....    //At the end, after everything in your script has been loaded and initilized, you need to tell DuAEF you're now in runtime    DuAEF.enterRunTime();</code></pre>
+    <pre class="prettyprint"><code>//Encapsulate the script in a function to avoid global variables.
+(function(thisObj) {
+    //include the framework
+    #include DuAEF.jsxinc
+    //you need to initialize DuAEF, with a script name and a version
+    DuAEF.init("YourScriptName", "1.0.2");
+    //The framework version is
+    DuAEF.version;
+    //If you need to get the OS the script is running on
+    DuAEF.mac; //true on mac
+    DuAEF.win; //true on windows
+    //implement what you need, build the UI....
+    //At the end, after everything in your script has been loaded and initilized, you need to tell DuAEF you're now in runtime
+    DuAEF.enterRunTime();</code></pre>
 
             
         
