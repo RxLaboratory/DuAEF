@@ -9,14 +9,15 @@ DuAEF.DuExpression.Library = {};
  * Adds some noise to a value.<br />
  * You may use seedRandom() before using this function as it will influence the generated noise.
  * A timeless noise can be achieved with <code>seedRandom(index,true)</code> for example.
+ * @function
  * @param {number|number[]} val The value to add noise to.
  * @param {float} quantity The quantity of noise. A percentage. 100 means the value can range from (val * 0) to (val * 2).
  * @example
  * seedRandom(index, true) // a timeless noise
- * addNoise(value, 50); // the property value will have noise between (value * 0.5) and (value * 1.5) which won't vary through time.
+ * addNoise(value, 50 ); // the property value will have noise between (value * 0.5) and (value * 1.5) which won't vary through time.
  * @example
  * seedRandom(index, false);
- * addNoise( value, 33); // the noise will change at each frame, varying between (value * .66) and (value * 1.33)
+ * addNoise(value, 33 ); // the noise will change at each frame, varying between (value * .66) and (value * 1.33)
  */
 DuAEF.DuExpression.Library.addNoise = ['',
 	'function addNoise( val, quantity ) {',
@@ -130,6 +131,7 @@ DuAEF.DuExpression.Library.checkEffect = ['',
 /**
  * Removes the ancestors rotation from the rotation of a layer.
  * This is very useful to make a layer keep its orientation without being influenced by its parents.
+ * @function
  * @example
  * //in a rotation property, just include the function and use:
  * dishineritRotation();
@@ -156,6 +158,7 @@ DuAEF.DuExpression.Library.dishineritRotation = ['',
 
 /**
  * Gets the "real" scale of a layer, resulting to its scale property, the scale of its parents, and it's location in Z-space if it's 3D.
+ * @function
  * @param {Layer} [l=thisLayer] The layer 
  * @param {number} [t=time] The time when to get the scale
  * @return {number} The scale ratio. This is not a percent, 1.0 is 100%.
@@ -190,6 +193,7 @@ DuAEF.DuExpression.Library.getEffectLayer = ['',
 
 /**
  * Gets the comp position (2D Projection in the comp) of a layer.
+ * @function
  * @param {number} [t=time] Time from when to get the position
  * @param {Layer} [l=thisLayer] The layer
  * @return {number[]} The comp position
@@ -204,6 +208,7 @@ DuAEF.DuExpression.Library.getLayerCompPos = ['',
 
 /**
  * Gets the world position of a layer.
+ * @function
  * @param {number} [t=time] Time from when to get the position
  * @param {Layer} [l=thisLayer] The layer
  * @return {number[]} The world position
@@ -219,6 +224,7 @@ DuAEF.DuExpression.Library.getLayerWorldPos = ['',
 
 /**
  * Gets the world instant speed of a layer.
+ * @function
  * @param {number} [t=time] The time when to get the velocity
  * @param {Layer} [l=thisLayer] The layer
  * @return {number} A positive number. The speed.
@@ -233,6 +239,7 @@ DuAEF.DuExpression.Library.getLayerWorldSpeed = ['',
 
 /**
  * Gets the world instant velocity of a layer.
+ * @function
  * @param {number} [t=time] The time when to get the velocity
  * @param {Layer} [l=thisLayer] The layer
  * @return {number[]} The velocity.
@@ -247,6 +254,7 @@ DuAEF.DuExpression.Library.getLayerWorldVelocity = ['',
 
 /**
  * Gets the key immediately after the given time
+ * @function
  * @param {number} [t=time] Time at which to get the key
  * @return {Key|null} The key, or null if there's no key before.
  */
@@ -302,6 +310,7 @@ DuAEF.DuExpression.Library.getOrientationAtTime = ['',
 
 /**
  * Gets the key immediately before the given time
+ * @function
  * @param {number} [t=time] Time at which to get the key
  * @return {Key|null} The key, or null if there's no key before.
  */
@@ -318,6 +327,7 @@ DuAEF.DuExpression.Library.getPrevKey = ['',
 
 /**
  * Gets the world speed of a property.
+ * @function
  * @param {number} [t=time] Time from when to get the position
  * @param {Layer} [prop=thisProperty] The property
  * @return {number[]} The world speed
@@ -333,6 +343,7 @@ DuAEF.DuExpression.Library.getPropWorldSpeed = ['',
 
 /**
  * Gets the world coordinates of a property.
+ * @function
  * @param {number} [t=time] Time from when to get the position
  * @param {Layer} [prop=thisProperty] The property
  * @return {number[]} The world coordinates
@@ -349,6 +360,7 @@ DuAEF.DuExpression.Library.getPropWorldValue = ['',
 
 /**
  * Gets the world velocity of a property.
+ * @function
  * @param {number} [t=time] Time from when to get the position
  * @param {Layer} [prop=thisProperty] The property
  * @return {number[]} The world velocity
@@ -364,6 +376,7 @@ DuAEF.DuExpression.Library.getPropWorldVelocity = ['',
 
 /**
  * Checks if current time is after the time of the last key in the property
+ * @function
  * @return {boolean} true if time is > lastkey.time
  */
 DuAEF.DuExpression.Library.isAfterLastKey = ['',
@@ -377,6 +390,7 @@ DuAEF.DuExpression.Library.isAfterLastKey = ['',
 
 /**
  * Checks if a property is a transform.position property.
+ * @function
  * @param {Property} [prop=thisProperty] The property
  * @return {boolean} true if the property is the transform.position property.
  */
@@ -399,6 +413,7 @@ DuAEF.DuExpression.Library.isPosition = ['',
 
 /**
  * Checks if the current property is animated at a given time.
+ * @function
  * @param {number} [t=time] The time
  * @param {number} [threshold=0.1] The speed under which the property is considered still.
  * @return {boolean} true if the property does not vary.
@@ -430,7 +445,7 @@ DuAEF.DuExpression.Library.isStill = ['',
  * @param {Layer} l The layer to get the translation from.
  * @param {float[]} [point=[0,0]] The [X,Y] point to translate (using world coordinates).
  * @param {float} [startT=0] The start time of the translation
- * @param {float} [endT=timeToFrames()] The end time of the translation
+ * @param {float} [endT=time] The end time of the translation
  * @return {float[]} The coordinates of the translated point.
  */
 DuAEF.DuExpression.Library.translatePointWithLayer = ['',
@@ -445,6 +460,7 @@ DuAEF.DuExpression.Library.translatePointWithLayer = ['',
 	'    var prevPos = l.toWorld( pos, startT );',
 	'    var newPos = l.toWorld( pos, endT );',
 	'    return newPos - prevPos;',
-	'}'
+	'}',
+	''
 	].join('\n');
 
