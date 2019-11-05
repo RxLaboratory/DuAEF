@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Namespace: ImageSequence | Namespace: ImageSequence</title>
+    <title>Class: DuPopup | Class: DuPopup</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -24,7 +24,7 @@
         
     </div>
     <div class="title">
-        <h1><a href="index.html" class="link">Namespace: ImageSequence</a></h1>
+        <h1><a href="index.html" class="link">Class: DuPopup</a></h1>
         
     </div>
     <div class="search-container" id="search-container">
@@ -46,8 +46,9 @@
 
 <header>
     
-        <h2>
-            <span class="ancestors"><a href="DuAEF.html">DuAEF</a><a href="DuAEF.DuJS.html">.DuJS</a><a href="DuAEF.DuJS.Fs.html">.Fs</a>.</span>ImageSequence</h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>DuPopup<span class="signature">()</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description">For use with <a href="DuAEF.DuScriptUI.html"><code>DuAEF.DuScriptUI</code></a>.<br />A borderless popup, to be tied to a ui control.<br />This is not a real class, and cannot be instanciated.<br />Use <a href="DuAEF.DuScriptUI.html#.createPopup"><code>DuAEF.DuScriptUI.createPopup</code></a> to create a Popup.<br />The DuPopup inherits the Window object from ScriptUI and has all of its properties and methods.</div>
         
     
 </header>
@@ -57,10 +58,101 @@
         <div class="container-overview">
         
             
-                <div class="description">Image sequences tools</div>
+
+<dt>
+    
+        <h4 class="name" id="DuPopup">
+            
+                new <span class="type-signature"></span>DuPopup<span class="signature">()</span><span class="type-signature"></span>
+                
+            
+            <div class="container-source members">
+                <code><a href="DuAEF.jsxinc.html">DuAEF.jsxinc</a></code>,
+                <code><a href="DuAEF.jsxinc.html#line11670">line 11670</a></code>
+            </div>
+            
+        </h4>
+
+        
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>contents</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Group</span>
+
+
+            
+            </td>
+
             
 
             
+
+            <td class="description last">The ScriptUI group where the new controls must be added. Do not add any control directly inside the DuPopup.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
 
 
 <dl class="details">
@@ -97,7 +189,10 @@
 </dl>
 
 
-            
+    
+
+</dd>
+
         
         </div>
     
@@ -124,14 +219,14 @@
 
 <dt>
     
-        <h4 class="name" id=".getNumber">
+        <h4 class="name" id=".tieTo">
             
-                <span class="type-signature"><span class="icon green">static</span> </span>getNumber<span class="signature">(path)</span><span class="type-signature"></span>
+                <span class="type-signature"><span class="icon green">static</span> </span>tieTo<span class="signature">(control<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
                 
             
             <div class="container-source members">
                 <code><a href="DuAEF.jsxinc.html">DuAEF.jsxinc</a></code>,
-                <code><a href="DuAEF.jsxinc.html#line9429">line 9429</a></code>
+                <code><a href="DuAEF.jsxinc.html#line11681">line 11681</a></code>
             </div>
             
         </h4>
@@ -143,7 +238,7 @@
 
     
     <div class="description">
-        Gets the number of a frame from an image sequence<br />The number must be right before the extension.
+        Ties the popup to a ui control. The popup will be shown just above the control when it is clicked.<br />The control must have an addEventListener method.
     </div>
     
 
@@ -167,6 +262,8 @@
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -179,23 +276,33 @@
 
         <tr>
             
-                <td class="name"><code>path</code></td>
+                <td class="name"><code>control</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">ScriptUI</span>
 
 
             
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last">The path of the frame</td>
+            <td class="description last">The control</td>
         </tr>
 
     
@@ -283,7 +390,7 @@
 <script src="scripts/linenumber.js"></script>
 
     <script>
-        var id = 'DuAEF.DuJS.Fs.ImageSequence_sub'.replace(/"/g, '_');
+        var id = 'DuPopup_sub'.replace(/"/g, '_');
         var selectedApi = document.getElementById(id); // do not use jquery selector
         var $selectedApi = $(selectedApi);
 

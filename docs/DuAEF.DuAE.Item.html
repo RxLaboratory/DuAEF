@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Namespace: ImageSequence | Namespace: ImageSequence</title>
+    <title>Namespace: Item | Namespace: Item</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -24,7 +24,7 @@
         
     </div>
     <div class="title">
-        <h1><a href="index.html" class="link">Namespace: ImageSequence</a></h1>
+        <h1><a href="index.html" class="link">Namespace: Item</a></h1>
         
     </div>
     <div class="search-container" id="search-container">
@@ -47,7 +47,7 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="DuAEF.html">DuAEF</a><a href="DuAEF.DuJS.html">.DuJS</a><a href="DuAEF.DuJS.Fs.html">.Fs</a>.</span>ImageSequence</h2>
+            <span class="ancestors"><a href="DuAEF.html">DuAEF</a><a href="DuAEF.DuAE.html">.DuAE</a>.</span>Item</h2>
         
     
 </header>
@@ -57,7 +57,7 @@
         <div class="container-overview">
         
             
-                <div class="description">Image sequences tools</div>
+                <div class="description">After Effects item methods</div>
             
 
             
@@ -124,14 +124,14 @@
 
 <dt>
     
-        <h4 class="name" id=".getNumber">
+        <h4 class="name" id=".isImageSequence">
             
-                <span class="type-signature"><span class="icon green">static</span> </span>getNumber<span class="signature">(path)</span><span class="type-signature"></span>
+                <span class="type-signature"><span class="icon green">static</span> </span>isImageSequence<span class="signature">(item)</span><span class="type-signature"> &rarr; {boolean}</span>
                 
             
             <div class="container-source members">
                 <code><a href="DuAEF.jsxinc.html">DuAEF.jsxinc</a></code>,
-                <code><a href="DuAEF.jsxinc.html#line9429">line 9429</a></code>
+                <code><a href="DuAEF.jsxinc.html#line4350">line 4350</a></code>
             </div>
             
         </h4>
@@ -143,7 +143,7 @@
 
     
     <div class="description">
-        Gets the number of a frame from an image sequence<br />The number must be right before the extension.
+        Checks if this item source is an image sequence
     </div>
     
 
@@ -179,13 +179,13 @@
 
         <tr>
             
-                <td class="name"><code>path</code></td>
+                <td class="name"><code>item</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">FootageItem</span>
 
 
             
@@ -195,7 +195,7 @@
 
             
 
-            <td class="description last">The path of the frame</td>
+            <td class="description last">The item</td>
         </tr>
 
     
@@ -215,6 +215,281 @@
 
     
 
+    
+    <div class="container-returns">
+        <h5>Returns:</h5>
+        
+                
+
+
+
+<span class="param-type">boolean</span>
+
+
+
+
+
+- true if the source is an image sequence
+
+
+
+
+            
+    </div>
+    
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+</dd>
+
+            
+                
+
+<dt>
+    
+        <h4 class="name" id=".usedIn">
+            
+                <span class="type-signature"><span class="icon green">static</span> </span>usedIn<span class="signature">(item, includeExpressionOnly<span class="signature-attributes">opt</span>, recursive<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array.&lt;CompItem>}</span>
+                
+            
+            <div class="container-source members">
+                <code><a href="DuAEF.jsxinc.html">DuAEF.jsxinc</a></code>,
+                <code><a href="DuAEF.jsxinc.html#line4300">line 4300</a></code>
+            </div>
+            
+        </h4>
+
+        
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Gets the compositions this item is used in.
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>item</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">AVItem</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The item</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>includeExpressionOnly</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">Check for comps using this item only through expressions. The cache has to be updated with <a href="DuAEF.DuAE.Project.html#.updateExpressionCache"><code>DuAEF.DuAE.Project.updateExpressionCache</code></a> before using this method with this argument set to true.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>recursive</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">Check recursively in parent comps too.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-returns">
+        <h5>Returns:</h5>
+        
+                
+
+
+
+<span class="param-type">Array.&lt;CompItem></span>
+
+
+
+
+
+- The compositions.
+
+
+
+
+            
+    </div>
     
 
     
@@ -283,7 +558,7 @@
 <script src="scripts/linenumber.js"></script>
 
     <script>
-        var id = 'DuAEF.DuJS.Fs.ImageSequence_sub'.replace(/"/g, '_');
+        var id = 'DuAEF.DuAE.Item_sub'.replace(/"/g, '_');
         var selectedApi = document.getElementById(id); // do not use jquery selector
         var $selectedApi = $(selectedApi);
 

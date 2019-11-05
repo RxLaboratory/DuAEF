@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Namespace: ImageSequence | Namespace: ImageSequence</title>
+    <title>Namespace: Zip | Namespace: Zip</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -24,7 +24,7 @@
         
     </div>
     <div class="title">
-        <h1><a href="index.html" class="link">Namespace: ImageSequence</a></h1>
+        <h1><a href="index.html" class="link">Namespace: Zip</a></h1>
         
     </div>
     <div class="search-container" id="search-container">
@@ -47,7 +47,7 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="DuAEF.html">DuAEF</a><a href="DuAEF.DuJS.html">.DuJS</a><a href="DuAEF.DuJS.Fs.html">.Fs</a>.</span>ImageSequence</h2>
+            <span class="ancestors"><a href="DuAEF.html">DuAEF</a>.</span>Zip</h2>
         
     
 </header>
@@ -57,7 +57,7 @@
         <div class="container-overview">
         
             
-                <div class="description">Image sequences tools</div>
+                <div class="description">Zip lib</div>
             
 
             
@@ -82,9 +82,22 @@
     
 
     
-
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>Nicolas Dufresneand contributors</li>
+        </ul>
+    </dd>
     
 
+    
+    <dt class="tag-copyright">Copyright:</dt>
+    <dd class="tag-copyright"><ul class="dummy"><li>2019 Nicolas Dufresne, Rainbox Productions<br /><a href="https://rainboxlab.org">https://rainboxlab.org</a></li></ul></dd>
+    
+
+    
+    <dt class="tag-license">License:</dt>
+    <dd class="tag-license"><ul class="dummy"><li>GPL-3.0 <br />DuAEF is free software: you can redistribute it and/or modify<br />it under the terms of the GNU General Public License as published by<br />the Free Software Foundation, either version 3 of the License, or<br />(at your option) any later version.<br /><br />DuAEF is distributed in the hope that it will be useful,<br />but WITHOUT ANY WARRANTY; without even the implied warranty of<br />MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />GNU General Public License for more details.<br /><br />You should have received a copy of the GNU General Public License<br />along with DuAEF. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</li></ul></dd>
     
 
     
@@ -115,6 +128,84 @@
     
 
     
+        <h3 class="subsection-title">Members</h3>
+
+        <dl>
+            
+
+<dt>
+<h4 class="name" id=".processPath">
+    <span class="type-signature"><span class="icon green">static</span> </span>processPath<span class="type-signature"></span>
+    
+    <div class="container-source members">
+        <code><a href="DuAEF.jsxinc.html">DuAEF.jsxinc</a></code>,
+        <code><a href="DuAEF.jsxinc.html#line33741">line 33741</a></code>
+    </div>
+    
+</h4>
+
+
+</dt>
+<dd>
+    
+    <div class="description">
+        The path to 7za.exe or 7z.exe (windows only, mac uses the internal command 'zip')
+    </div>
+    
+
+    <!--
+    
+    -->
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-default">Default Value:</dt>
+    <dd class="tag-default"><ul class="dummy">
+            <li>'7za.exe'</li>
+        </ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        </dl>
+    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -124,14 +215,14 @@
 
 <dt>
     
-        <h4 class="name" id=".getNumber">
+        <h4 class="name" id=".compressFolderContent">
             
-                <span class="type-signature"><span class="icon green">static</span> </span>getNumber<span class="signature">(path)</span><span class="type-signature"></span>
+                <span class="type-signature"><span class="icon green">static</span> </span>compressFolderContent<span class="signature">(folder, archiveName<span class="signature-attributes">opt</span>, wipeFolder<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {File}</span>
                 
             
             <div class="container-source members">
                 <code><a href="DuAEF.jsxinc.html">DuAEF.jsxinc</a></code>,
-                <code><a href="DuAEF.jsxinc.html#line9429">line 9429</a></code>
+                <code><a href="DuAEF.jsxinc.html#line33753">line 33753</a></code>
             </div>
             
         </h4>
@@ -143,7 +234,7 @@
 
     
     <div class="description">
-        Gets the number of a frame from an image sequence<br />The number must be right before the extension.
+        Compresses the content of a folder
     </div>
     
 
@@ -167,7 +258,11 @@
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -179,7 +274,42 @@
 
         <tr>
             
-                <td class="name"><code>path</code></td>
+                <td class="name"><code>folder</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Folder</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The folder to zip</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>archiveName</code></td>
             
 
             <td class="type">
@@ -192,10 +322,65 @@
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last">The path of the frame</td>
+            
+                <td class="default">
+                
+                    folder.name + ".zip"
+                
+                </td>
+            
+
+            <td class="description last">The archive name</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>wipeFolder</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">Set to true to remove the original folder as soon as the zip is ready</td>
         </tr>
 
     
@@ -215,6 +400,27 @@
 
     
 
+    
+    <div class="container-returns">
+        <h5>Returns:</h5>
+        
+                
+
+
+
+<span class="param-type">File</span>
+
+
+
+
+
+- The zip file
+
+
+
+
+            
+    </div>
     
 
     
@@ -283,7 +489,7 @@
 <script src="scripts/linenumber.js"></script>
 
     <script>
-        var id = 'DuAEF.DuJS.Fs.ImageSequence_sub'.replace(/"/g, '_');
+        var id = 'DuAEF.Zip_sub'.replace(/"/g, '_');
         var selectedApi = document.getElementById(id); // do not use jquery selector
         var $selectedApi = $(selectedApi);
 
