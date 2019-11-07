@@ -6,15 +6,10 @@
  */
 function isPosition(prop) {
 	if (typeof prop === "undefined") prop = thisProperty;
-	if (!(thisProperty.value instanceof Array)) return false;
-	if (thisProperty.value.length > 3) return false;
-	//compare the value to world with the anchor point to world
-	var apWorld = thisLayer.toWorld(thisLayer.anchorPoint.valueAtTime(0), 0);
-	var posWorld = thisProperty.valueAtTime(0);
-	if (thisLayer.hasParent) posWorld = thisLayer.parent.toWorld(posWorld, 0);
-	var result = true;
-	for (var i = 0, num = thisProperty.value.length; i < num; i++) {
-		if (posWorld[i] != apWorld[i]) return false;
-	}
-	return true;
+	if (!(prop.value instanceof Array)) return false;
+	if (prop.value.length > 3) return false;
+	//compare the name, index and value with the real position
+	if ( prop === transform.position ) return true;
+	if ( prop === position ) return true;
+	return false;
 }
