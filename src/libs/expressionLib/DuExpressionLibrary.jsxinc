@@ -34,14 +34,14 @@ DuAEF.DuExpression.Library.addNoise = ['',
 
 /**
  * Interpolates a value with a bezier curve.<br />
- * This method can replace <code>linear()</code> and <code>ease()</code> with a custom bézier interpolation.
+ * This method can replace <code>linear()</code> and <code>ease()</code> with a custom bï¿½zier interpolation.
  * @function
  * @param {number} t The value to interpolate
  * @param {number} tMin The minimum the value can take
  * @param {number} tMax The maximum the value can take
  * @param {number} value1 The minimum for the interpolated value
  * @param {number} value2 The maximum for the interpolated value
- * @return {number[]} bezierPoints an Array of 4 coordinates wihtin the 0.0 ... 1.0 range which describes the Bézier interpolation.<br />
+ * @return {number[]} bezierPoints an Array of 4 coordinates wihtin the 0.0 ... 1.0 range which describes the Bï¿½zier interpolation.<br />
  * [ outTangentX, outTangentY, inTangentX, inTangentY ]
  */
 DuAEF.DuExpression.Library.bezier = ['',
@@ -397,17 +397,31 @@ DuAEF.DuExpression.Library.isAfterLastKey = ['',
 DuAEF.DuExpression.Library.isPosition = ['',
 	'function isPosition(prop) {',
 	'	if (typeof prop === "undefined") prop = thisProperty;',
-	'	if (!(thisProperty.value instanceof Array)) return false;',
-	'	if (thisProperty.value.length > 3) return false;',
-	'	//compare the value to world with the anchor point to world',
-	'	var apWorld = thisLayer.toWorld(thisLayer.anchorPoint.valueAtTime(0), 0);',
-	'	var posWorld = thisProperty.valueAtTime(0);',
-	'	if (thisLayer.hasParent) posWorld = thisLayer.parent.toWorld(posWorld, 0);',
-	'	var result = true;',
-	'	for (var i = 0, num = thisProperty.value.length; i < num; i++) {',
-	'		if (posWorld[i] != apWorld[i]) return false;',
+	'	if (!(prop.value instanceof Array)) return false;',
+	'	if (prop.value.length > 3) return false;',
+	'	//compare the name, index and value with the real position',
+	'	if ( prop === transform.position ) return true;',
+	'	if ( prop === position ) return true;',
+	'	return false;',
+	'}'
+	].join('\n');
+
+/**
+ * Checks if a property is spatial
+ * @param {Property} prop The property to check
+ * @return {boolean} true if the property is spatial.
+ */
+DuAEF.DuExpression.Library.isSpatial = ['',
+	'function isSpatial(prop) {',
+	'	if (typeof prop === \'undefined\') prop = thisProperty;',
+	'	if (!(prop.value instanceof Array)) return false;',
+	'	if (prop.value.length != 2 && prop.length != 3) return false;',
+	'	try {',
+	'		sp = prop.speed;',
+	'		return true;',
+	'	} catch (e) {',
+	'		return false;',
 	'	}',
-	'	return true;',
 	'}'
 	].join('\n');
 
