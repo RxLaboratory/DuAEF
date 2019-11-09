@@ -2639,10 +2639,7 @@ DuAEF.DuScriptUI.addLayerSelector = function( container )
 /**
  * The panel where the help is displayed
  */
-DuAEF.DuScriptUI.helpPanel = new Window( 'palette', "Help panel", undefined,
-{
-    resizeable: true
-} );
+DuAEF.DuScriptUI.helpPanel = DuAEF.DuScriptUI.createPopup( "Help" );
 
 //low-level undocumented flag. true if the help panel has been initialized (happens on first display)
 DuAEF.DuScriptUI.helpPanel.initialized = false;
@@ -2650,8 +2647,9 @@ DuAEF.DuScriptUI.helpPanel.initialized = false;
 //Initializes the help panel
 DuAEF.DuScriptUI.initHelpPanel = function()
 {
-
     if ( DuAEF.DuScriptUI.helpPanel.initialized ) return;
+
+    DuAEF.DuScriptUI.helpPanel.pin(true);
 
     DuAEF.DuScriptUI.helpPanel.initialized = true;
 
@@ -2662,17 +2660,17 @@ DuAEF.DuScriptUI.initHelpPanel = function()
     DuAEF.DuScriptUI.helpPanel.newsItems = [];
     DuAEF.DuScriptUI.helpPanel.currentNewsItem = -1;
 
-    DuAEF.DuScriptUI.helpPanel.margins = 2;
-    DuAEF.DuScriptUI.helpPanel.spacing = 0;
-    DuAEF.DuScriptUI.helpPanel.maximumSize.height = 500;
-    DuAEF.DuScriptUI.helpPanel.alignChildren = [ 'fill', 'fill' ];
+    DuAEF.DuScriptUI.helpPanel.contents.margins = 2;
+    DuAEF.DuScriptUI.helpPanel.contents.spacing = 0;
+    DuAEF.DuScriptUI.helpPanel.contents.maximumSize.height = 500;
+    DuAEF.DuScriptUI.helpPanel.contents.alignChildren = [ 'fill', 'fill' ];
     //DuAEF.DuScriptUI.setBackgroundColor(popup,DuAEF.DuJS.Color.Colors.VERY_DARK_GREY);
 
     //add buttons for help/news/about tabs
     DuAEF.DuScriptUI.uiStrings.push( "Help" );
     DuAEF.DuScriptUI.uiStrings.push( "News" );
     DuAEF.DuScriptUI.uiStrings.push( "About" );
-    var tabsGroup = DuAEF.DuScriptUI.addGroup( DuAEF.DuScriptUI.helpPanel, 'row' );
+    var tabsGroup = DuAEF.DuScriptUI.addGroup( DuAEF.DuScriptUI.helpPanel.contents, 'row' );
     tabsGroup.alignment = [ 'fill', 'top' ];
     DuAEF.DuScriptUI.helpPanel.helpButton = DuAEF.DuScriptUI.addCheckBox(
         tabsGroup,
@@ -2706,7 +2704,7 @@ DuAEF.DuScriptUI.initHelpPanel = function()
     );
 
     //add main panel
-    var mainGroup = DuAEF.DuScriptUI.addGroup( DuAEF.DuScriptUI.helpPanel, 'stack' );
+    var mainGroup = DuAEF.DuScriptUI.addGroup( DuAEF.DuScriptUI.helpPanel.contents, 'stack' );
 
     //help panel
     var helpGroup = DuAEF.DuScriptUI.addGroup( mainGroup, 'column' );
@@ -2782,7 +2780,7 @@ DuAEF.DuScriptUI.initHelpPanel = function()
 
     //add buttons
 
-    DuAEF.DuScriptUI.helpPanel.moreButton = DuAEF.DuScriptUI.addButton( DuAEF.DuScriptUI.helpPanel, "More...", DuAEF.DuBinary.toFile( w14_url_m ), "Read more details online", DuAEF.DuBinary.toFile( w14_url_l ) );
+    DuAEF.DuScriptUI.helpPanel.moreButton = DuAEF.DuScriptUI.addButton( DuAEF.DuScriptUI.helpPanel.contents, "More...", DuAEF.DuBinary.toFile( w14_url_m ), "Read more details online", DuAEF.DuBinary.toFile( w14_url_l ) );
     DuAEF.DuScriptUI.helpPanel.moreButton.alignment = ['fill','bottom'];
     DuAEF.DuScriptUI.helpPanel.moreButton.addEventListener( 'click', function( e )
     {
@@ -2794,7 +2792,7 @@ DuAEF.DuScriptUI.initHelpPanel = function()
         DuAEF.DuSystem.openURL( link );
     }, true );
 
-    var urlButtonsGroup = DuAEF.DuScriptUI.addGroup( DuAEF.DuScriptUI.helpPanel, 'row' );
+    var urlButtonsGroup = DuAEF.DuScriptUI.addGroup( DuAEF.DuScriptUI.helpPanel.contents, 'row' );
     urlButtonsGroup.alignment = [ 'fill', 'bottom' ];
 
     var socialButtonsGroup1 = DuAEF.DuScriptUI.addGroup( urlButtonsGroup, 'column' );
@@ -2834,14 +2832,7 @@ DuAEF.DuScriptUI.initHelpPanel = function()
             DuAEF.DuSystem.openURL( DuAEF.bugReportURL );
         }
     }
-    
-    DuAEF.DuScriptUI.helpPanel.closeButton = DuAEF.DuScriptUI.addButton( DuAEF.DuScriptUI.helpPanel, "Close", DuAEF.DuBinary.toFile( w14_cancel_m ), "Close this window", DuAEF.DuBinary.toFile( w14_cancel_l ) );
-    DuAEF.DuScriptUI.helpPanel.closeButton.alignment = ['fill','bottom'];
-    DuAEF.DuScriptUI.helpPanel.closeButton.onClick = function()
-    {
-        DuAEF.DuScriptUI.helpPanel.hide();
-    };
-    
+       
 
     DuAEF.DuScriptUI.helpPanel.setPanel = function( panel )
     {
@@ -2943,11 +2934,6 @@ DuAEF.DuScriptUI.initHelpPanel = function()
     DuAEF.DuScriptUI.helpPanel.aboutButton.onClick = function()
     {
         DuAEF.DuScriptUI.helpPanel.setPanel( 2 );
-    };
-
-    DuAEF.DuScriptUI.helpPanel.onResizing = DuAEF.DuScriptUI.helpPanel.onResize = function()
-    {
-        DuAEF.DuScriptUI.helpPanel.layout.resize();
     };
 }
 
