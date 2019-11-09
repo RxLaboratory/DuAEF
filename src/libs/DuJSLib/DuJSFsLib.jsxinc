@@ -1,0 +1,417 @@
+﻿/**
+	* JavaScript File System related methods
+	* @namespace
+	* @memberof DuAEF.DuJS
+*/
+DuAEF.DuJS.Fs = {};
+
+/**
+ * The default user data.<br />
+ * Replaces the Folder.userData provided by ESTK which does not work properly with mac network sessions.<br />
+ * In windows, the value of %APPDATA% ("C:\Documents and Settings\username\Application Data")<br />
+ * In Mac OS, "~/Library/Application Support"
+ * @type {Folder}
+ */
+DuAEF.DuJS.Fs.userData = Folder.userData;
+
+if (DuAEF.mac) DuAEF.DuJS.Fs.userData = new Folder('~/Library/Application Support');
+
+/**
+ * The folder where DuAEF stores its data, a "DuAEF" subfolder of DuAEF.DuJS.Fs.userData
+ * @type {Folder}
+ */
+DuAEF.DuJS.Fs.duaefData = new Folder(DuAEF.DuJS.Fs.userData.absoluteURI + '/DuAEF/');
+
+/**
+ * Recursively remove all content from folder and the folder itself. Warning, this does not move files to the recycle bin and can not be undone.
+ * @param {string|Folder} folder - the path or Folder object to wipe.
+ */
+DuAEF.DuJS.Fs.wipeFolder = function(folder)
+{
+	if (DuAEF.DuJS.typeof(folder) == 'string' && folder != '') folder = new Folder(folder);
+	if (!folder.exists) return;
+
+	//get content and remove 
+	var files = folder.getFiles();
+	var it = new Iterator(files);
+	it.do(function (file)
+	{
+		if (DuAEF.DuJS.typeof(file) == 'Folder') DuAEF.DuJS.Fs.wipeFolder(file);
+		else file.remove();
+	});
+	folder.remove();
+}
+
+/**
+	* Recursively gets all files in a folder using a name filter
+	* Returns an array of File objects.
+	* @memberof DuAEF.DuJS.Fs
+	* @param {Folder}	folder	- The Folder
+	* @param {string|function}	[filter="*"]	- A search mask for file names, specified as a string or a function.
+	* A mask string can contain question mark (?) and asterisk (*) wild cards. Default is "*", which matches all file names.
+	* Can also be the name of a function that takes a File or Folder object as its argument. It is called for each file or folder found in the search; if it returns true, the object is added to the return array.
+	* @return {Array}	The files found.
+*/
+DuAEF.DuJS.Fs.getFilesInFolder = function (folder,filter)
+{
+	if (typeof folder === 'undefined') return [];
+	if (!(folder instanceof Folder)) return [];
+
+	var files = folder.getFiles(filter);
+	if (files === null) files = [];
+
+	var folders = folder.getFiles(DuAEF.DuJS.Fs.isFolder);
+
+	for (var i = 0, num = folders.length ; i < num ; i++)
+	{
+		files = files.concat(DuAEF.DuJS.Fs.getFilesInFolder(folders[i],filter));
+	}
+	return files;
+}
+
+/**
+	* Checks if an object is a Folder
+	* @memberof DuAEF.DuJS.Fs
+	* @param {*}	file	- The object to check
+	* @return {boolean}	true if this object is an instance of Folder
+*/
+DuAEF.DuJS.Fs.isFolder = function (file)
+{
+	return file instanceof Folder;
+}
+
+/**
+	* Checks if an object is a File
+	* @memberof DuAEF.DuJS.Fs
+	* @param {*}	file	- The object to check
+	* @return {boolean}	true if this object is an instance of Folder
+*/
+DuAEF.DuJS.Fs.isFile = function (file)
+{
+	return file instanceof File;
+}
+
+
+/**
+	* Returns the name of the given path or file, as displayed by the filesystem
+	* @memberof DuAEF.DuJS.Fs
+	* @example
+	* DuAEF.DuJS.Fs.getName(new File("D:\\code\\open\\Duik\\shape test.test")) // "shape test.test"
+	* DuAEF.DuJS.Fs.getName("D:/code/open/Duik/other shape.test") // "other shape.test"
+	* @param {String|File|Folder}  [pathOrFile]	- The file or the path
+	* @return {String} The basename
+*/
+DuAEF.DuJS.Fs.getName = function(pathOrFile)
+{
+    if (pathOrFile instanceof File || pathOrFile instanceof Folder) pathOrFile = pathOrFile.fsName;
+	else {
+		//make sure it's the fsName we use
+		pathOrFile = new File(pathOrFile).fsName;
+	}
+    var name = pathOrFile.split("/").pop();
+    name = name.split("\\").pop();
+    return name;
+}
+
+/**
+	* Returns the basename of the given path or file
+	* @memberof DuAEF.DuJS.Fs
+	* @example
+	* DuAEF.DuJS.Fs.getBasename(new File("D:/code/open/Duik/shape.test")) // "shape"
+	* DuAEF.DuJS.Fs.getBasename("D:/code/open/Duik/shape.test") // "shape"
+	* @param {String|File}	 [pathOrFile]	- The file or the path
+	* @return {String} The basename
+*/
+DuAEF.DuJS.Fs.getBasename = function(pathOrFile)
+{
+    if (pathOrFile instanceof File) pathOrFile = pathOrFile.fsName;
+	else {
+		//make sure it's the fsName we use
+		pathOrFile = new File(pathOrFile).fsName;
+	}
+    var name = pathOrFile.split("/").pop();
+    name = name.split("\\").pop();
+    if(name.lastIndexOf(".") > 0) return name.slice(0, name.lastIndexOf("."));
+    return name;
+}
+
+/**
+	* Returns the extension of the given path or file
+	* @memberof DuAEF.DuJS.Fs
+	* @example
+	* DuAEF.DuJS.Fs.getExtension(new File("D:/code/open/Duik/shape.other.test")) // "test"
+	* DuAEF.DuJS.Fs.getExtension("D:/code/open/Duik/shape.test") // "test"
+	* @param {String|File}	 [pathOrFile]	- The file or the path
+	* @return {String} The extension
+*/
+DuAEF.DuJS.Fs.getExtension = function(pathOrFile)
+{
+    if (pathOrFile instanceof File) pathOrFile = pathOrFile.absoluteURI;
+    var name = pathOrFile.split("/").pop();
+    name = name.split("\\").pop();
+    if(name.indexOf(".") > 0) return name.split(".").pop();
+    return '';
+}
+
+/**
+	* Switch the extension of the given path. Create a new path from a given path and a given extension.
+	* @memberof DuAEF.DuJS.Fs
+	* @param {String|File}	 [pathOrFile]	- The file or the path
+	* @param {String}	     [newExtension]	- The new extension
+	* @return {String}  The new path
+*/
+DuAEF.DuJS.Fs.switchExtension = function(pathOrFile, newExtension)
+{
+    if (pathOrFile instanceof File) pathOrFile = pathOrFile.absoluteURI;
+    var point = pathOrFile.lastIndexOf(".");
+    if (point == -1) return pathOrFile + "." + newExtension;
+    return pathOrFile.slice(0, point) + "." + newExtension;
+}
+
+/**
+	* Checks if the given path exists
+	* @memberof DuAEF.DuJS.Fs
+	* @param {string}	 [path]	- The file path
+	* @return {boolean} True or false
+*/
+DuAEF.DuJS.Fs.fileExists = function(path)
+{
+	var file;
+	if (path instanceof File) file = path;
+  else file = new File(path);
+  return file.exists;
+}
+
+/**
+	* Reads the first line of a file and return its content
+	* @memberof DuAEF.DuJS.Fs
+	* @param {File}	 file	- The file
+	* @return {string} The content
+*/
+DuAEF.DuJS.Fs.readFirstLine = function(file)
+{
+	//open and parse file
+	if (!file.open('r')) return '';
+	var data = file.readln();
+	file.close();
+	return data;
+}
+
+/**
+	* Reads a whole file and return its content
+	* @memberof DuAEF.DuJS.Fs
+	* @param {File}	 file	- The file
+	* @param {string}	 [encoding='UTF-8']	- The text encoding
+	* @return {string} The content
+*/
+DuAEF.DuJS.Fs.readFile = function(file,encoding)
+{
+	if (typeof encoding === 'undefined') encoding = 'UTF-8';
+	//open and parse file
+	file.encoding = encoding;
+	if (!file.open('r')) return '';
+	var data = file.read();
+	file.close();
+	return data;
+}
+
+/**
+	* Writes a text file
+	* @memberof DuAEF.DuJS.Fs
+	* @param {File}	 file	- The file
+	* @param {string}	 content	- The content to write
+	* @param {boolean}	 [append=false]	- Appends instead of replacing
+	* @param {string}	 [encoding='UTF-8']	- The text encoding
+*/
+DuAEF.DuJS.Fs.writeTextFile = function(file, content, append, encoding)
+{
+	append = def(append, false);
+	encoding = def(encoding, 'UTF-8');
+	//open and parse file
+	file.encoding = encoding;
+	var mode = 'w';
+	if (append) mode = 'a';
+	if (!file.open(mode)) return;
+	file.write(content);
+	file.close();
+}
+
+/**
+	* Parses a JSON file
+	* @memberof DuAEF.DuJS.Fs
+	* @param {File}	 file	- The file
+	* @return {Object|null} The content or null if the file couldn't be parsed
+*/
+DuAEF.DuJS.Fs.parseJSON = function(file)
+{
+	//open and parse file
+	var json = DuAEF.DuJS.Fs.readFile(file);
+	if (json == '') return null;
+	var data = {};
+
+	try { data = DuAEF.JSON.parse(json); } catch (e) { if (DuAEF.debug) alert(e.description + '\n\nJSON DATA:\n\n' + json); }
+	return data;
+}
+
+/**
+	* Saves a js object to a JSON file
+	* @memberof DuAEF.DuJS.Fs
+	* @param {Object} obj - The object to save
+	* @param {File|string} file - The file or URI
+	* @return {boolean} true if the file has been correctly written
+*/
+DuAEF.DuJS.Fs.saveJSON = function (obj,file)
+{
+	if (!DuAEF.DuAE.App.hasFilesAndNetworkAccess) return false;
+	if (!(file instanceof File)) file = new File(file);
+	var data = DuAEF.JSON.stringify(obj,null,4);
+	//save to file
+	file.encoding = 'UTF-8';
+	if (file.open('w'))
+	{
+		file.write(data);
+		file.close();
+		return true;
+	}
+	return false;
+}
+
+/**
+	* Parses a CSV file
+	* @memberof DuAEF.DuJS.Fs
+	* @param {File}	 file	- The file
+	* @param {string}	 [delimiter=',']	- The delimiter used
+	* @param {string}	 [textSeparator='"']	- The separator for texts
+	* @return {string[]|null} The content (a two-dimensionnal Array) or null if the file couldn't be parsed
+*/
+DuAEF.DuJS.Fs.parseCSV = function(file,delimiter,textSeparator)
+{
+	if (typeof delimiter === 'undefined') delimiter = ',';
+	if (typeof textSeparator === 'undefined') textSeparator = '"';
+	var reQuoted = new RegExp("(" + textSeparator + ")((?:\\\\\\1|(?:(?!\\1).))*)\\1");
+	//open and parse file
+	var data = DuAEF.DuJS.Fs.readFile(file);
+	if (data == '') return null;
+	data = data.split('\n');
+	for (var i = 0, num = data.length; i < num; i++)
+	{
+		//get quoted values
+		var quotedValues = [];
+		var line = data[i];
+		var quoted = reQuoted.exec(line);
+		while (quoted)
+		{
+			quotedValues.push(quoted[2]);
+			line = line.replace(quoted[0],'%%');
+			quoted = reQuoted.exec(line);
+		}
+		data[i] = line.split(delimiter);
+		for (var j = 0, numJ = data[i].length; j < numJ; j++)
+		{
+			data[i][j] = DuAEF.DuJS.String.trim(data[i][j]);
+			if (data[i][j] == '%%')
+			{
+				data[i][j] = quotedValues.shift();
+			}
+		}
+	}
+	return data;
+}
+
+/**
+	* Shows the default save file dialog and returns the file selected by the user.<r />
+	* If the user ommits the extension, the default extension will be appended (Mac OS fix).
+	* @memberof DuAEF.DuJS.Fs
+	* @param {string}	 prompt	- The prompt text, displayed if the dialog allows a prompt.
+	* @param {string}	 [filter='']	- The file type filter (windows only)
+	* @param {string}	 [defaultExtension='']	- The default extension
+	* @return {File|null} The file or null if the user cancels
+*/
+DuAEF.DuJS.Fs.saveFileDialog = function(prompt, filter, defaultExtension)
+{
+	if (typeof defaultExtension === 'undefined') defaultExtension = '';
+
+	var saveFile = File.saveDialog(prompt, filter);
+	if (!saveFile) return null;
+
+	if (saveFile.name.indexOf('.') < 1 && defaultExtension != '')
+	{
+		if (defaultExtension.indexOf('.') != 0) defaultExtension = '.' + defaultExtension;
+		saveFile = new File(saveFile.parent.absoluteURI + '/' + saveFile.name + defaultExtension);
+	}
+
+	return saveFile;
+}
+
+/**
+ * Generates a new unique name for a file
+ * @param {string} newName	- The wanted new name
+ * @param {Folder} folder 	- The folder
+ * @param {boolean} [increment=true] - true to automatically increment the new name if it already ends with a digit
+ * @return {string}	The unique name, with a new number at the end if needed.
+ */
+DuAEF.DuJS.Fs.newUniqueFileName = function ( newName, folder ) {   
+	var file = new File(folder.absoluteURI + "/" + newName);
+	while (file.exists)
+	{
+		file = new File(folder.absoluteURI + "/" + DuAEF.DuJS.Fs.incrementFileName(file) );
+	}
+	return DuAEF.DuJS.Fs.getName(file);
+}
+
+/**
+ * Increments the last number before the extension in a filename
+ * @param {File} file The file
+ * @return {string} The incremented fileName
+ */
+DuAEF.DuJS.Fs.incrementFileName = function (file) {
+
+	var ext = DuAEF.DuJS.Fs.getExtension(file);
+	var baseName = DuAEF.DuJS.Fs.getBasename(file);
+
+	var regex = /(\d*)$/
+	var match = baseName.match(regex);
+	var num = '_01';
+	var numDigits = 0;
+	if (match) {
+		var n = match[0];
+		numDigits = n.length;
+		var n = parseInt(n);
+		if (!isNaN(n)) {
+			n++;
+			num = DuAEF.DuJS.Number.convertToString(n,numDigits);
+		}
+	}
+
+	return baseName.substring(0, baseName.length - numDigits) + num + '.' + ext;
+
+}
+
+/**
+	* Image sequences tools
+	* @namespace
+	* @memberof DuAEF.DuJS.Fs
+*/
+DuAEF.DuJS.Fs.ImageSequence  ={};
+
+/**
+	* Gets the number of a frame from an image sequence<br />
+	* The number must be right before the extension.
+	* @param {string}	path	- The path of the frame
+*/
+DuAEF.DuJS.Fs.ImageSequence.getNumber = function(path)
+{
+	var string_noExt = path.substring(0,path.lastIndexOf('.'));
+	var numberi = 0;
+	var namei = 0;
+	for(var i = string_noExt.length-1;i>=0;i--)
+	{
+		if(isNaN(parseInt(string_noExt.charAt(i))))
+		{
+			numberi = i+1;
+			break;
+		}
+	}
+	number = string_noExt.substring(numberi,string_noExt.length);
+	return number;
+}

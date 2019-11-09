@@ -1,0 +1,24 @@
+﻿/**
+	* Number related methods
+	* @namespace
+	* @memberof DuAEF.DuJS
+*/
+DuAEF.DuJS.Number = {};
+
+/**
+ * Converts a number to a string, adding optionnal leading zeroes
+ * @param {Number} num	- The number
+ * @param {int} numDigits 	- The number of digits in the string. Adds leading zeroes
+ * @param {int} [base=10]	- The conversion base
+ * @return {string}	The number as a string
+ */
+DuAEF.DuJS.Number.convertToString = function (num, numDigits, base)
+{
+	if (base == undefined) base = 10;
+	var result = num.toString(base);
+	while(numDigits > result.length)
+	{
+		result  = "0" + result ;
+	}
+	return result;
+}

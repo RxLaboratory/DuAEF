@@ -1,0 +1,17 @@
+﻿/**
+	* JavaScript Regular Expression related methods
+	* @namespace
+	* @memberof DuAEF.DuJS
+*/
+DuAEF.DuJS.RegExp = {};
+
+/**
+	* Escape reg exp reserved characters from a string to build a regular expression compatible string
+	* @memberof DuAEF.DuJS.RegExp
+	* @param {string}	string		- The string to escape
+	* @return	{string}	The escaped string
+*/
+DuAEF.DuJS.RegExp.escapeRegExp = function (string)
+{
+	return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+}

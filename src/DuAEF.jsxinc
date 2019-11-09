@@ -8,7 +8,7 @@
 #include "libs/DuAELib/DuAECoreLib.jsxinc"
 #include "libs/DuBinaryLib.jsxinc"
 #include "libs/DuFFMpegLib.jsxinc"
-#include "libs/DuJSLib.jsxinc"
+#include "libs/DuJSLib/DuJSLib.jsxinc"
 #include "libs/DuProcessLib.jsxinc"
 #include "libs/DuQuantLib.jsxinc"
 #include "libs/DuRendererLib.jsxinc"

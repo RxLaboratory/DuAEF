@@ -1,0 +1,30 @@
+﻿/**
+	* Date related methods
+	* @namespace
+	* @memberof DuAEF.DuJS
+*/
+DuAEF.DuJS.Date = {};
+
+/**
+	* Gets the month number from a literal name
+	* @memberof DuAEF.DuJS.Date
+	* @param {string} string - The month name
+	* @return {int} The month number
+*/
+DuAEF.DuJS.Date.getMonth = function (string)
+{
+	var month = 0;
+	if (string.toLowerCase().indexOf('feb') == 0) month = 1;
+	if (string.toLowerCase().indexOf('mar') == 0) month = 2;
+	if (string.toLowerCase().indexOf('apr') == 0) month = 3;
+	if (string.toLowerCase().indexOf('may') == 0) month = 4;
+	if (string.toLowerCase().indexOf('jun') == 0) month = 5;
+	if (string.toLowerCase().indexOf('jul') == 0) month = 6;
+	if (string.toLowerCase().indexOf('aug') == 0) month = 7;
+	if (string.toLowerCase().indexOf('sep') == 0) month = 8;
+	if (string.toLowerCase().indexOf('oct') == 0) month = 9;
+	if (string.toLowerCase().indexOf('nov') == 0) month = 10;
+	if (string.toLowerCase().indexOf('dec') == 0) month = 11;
+
+	return month;
+}

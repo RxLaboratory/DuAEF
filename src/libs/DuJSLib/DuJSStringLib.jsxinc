@@ -1,0 +1,220 @@
+﻿/**
+	* JavaScript String related methods
+	* @namespace
+	* @memberof DuAEF.DuJS
+*/
+DuAEF.DuJS.String = {};
+
+/**
+ * Counts the number of occurences of item in string
+ * @param {string} string - The string where to count
+ * @param {string} item - the string to search
+ * @return {int} the number of occurences
+ */
+DuAEF.DuJS.String.occurences = function (string, item)
+{
+	return (string.split(item).length -1);
+}
+
+/**
+	* Parses the string as a boolean.<br />
+	* The following strings are falsy:<br />
+	* 'false', '0', '', 'null', 'undefined', 'NaN'.<br />
+	* Note that any string consisiting only in any number of 0 will be falsy.
+	* @memberof DuAEF.DuJS.String
+	* @param {string} string - The string to parse
+	* @param {boolean} [caseSensitive=true] - When false, 'FALSE', 'nan', 'UNdefined'... for example will be falsy too.
+	* @return {boolean} The resulting boolean
+*/
+DuAEF.DuJS.String.parseBool = function (string, caseSensitive)
+{
+	if (typeof caseSensitive === 'undefined') caseSensitive = true;
+
+	if (!caseSensitive) string = string.toLowerCase();
+	var nan = 'NaN';
+	if (!caseSensitive) nan = 'nan';
+
+	// test if string is only zeroes
+	var reZeroes = /^0+$/g;
+	if (reZeroes.test(string)) return false;
+
+	return string === 'false' || string === 'null' || string === '' || string === 'undefined' || string === nan;
+}
+
+/**
+	* Replaces all occurences of a substring by another and returns the new string.
+	* @memberof DuAEF.DuJS.String
+	* @param {string}	string			- The original string
+	* @param {string}	find			- The substring to replace
+	* @param {string}	replace			- The new substring to insert
+	* @param {boolean}	[caseSensitive=true]	- Optionnal. Do a case sensitive search of substring.
+	* @return	{string}	The new string
+	*/
+DuAEF.DuJS.String.replace = function (string, find, replace, caseSensitive)
+{
+	if (caseSensitive == undefined) caseSensitive = true;
+	var re = new RegExp(DuAEF.DuJS.RegExp.escapeRegExp(find),caseSensitive ? 'g' : 'gi');
+	return string.replace(re, replace);
+}
+
+/**
+	* Replaces all occurences of "{#}" in the string by the args. Uses "?" if there are less args than occurences of "{#}".
+	* @memberof DuAEF.DuJS.String
+	* @param {string}	string			- The original string
+	* @param {string[]}	args			- The arguments
+	* @return {string}	The new string
+	*/
+DuAEF.DuJS.String.args = function (string, args)
+{
+    var str = string;
+    while(str.indexOf("{#}") !== -1)
+	{
+		// While there is stuff to format
+		if(args.length < 1)
+		{ // If no more args, replace with ?
+			str = str.replace("{#}", "?"); // Will replace the first occurence
+		}
+		else
+		{
+			var arg = args.shift(); // Take the first arg and remove it
+			str = str.replace("{#}", arg);
+		}
+	}
+    return str;
+}
+
+/**
+ * Checks if a string ends with a given suffix
+ * @memberof DuAEF.DuJS.String
+ * @param {string}	str 	The string to check
+ * @param {string}	suffix	The suffix
+ * @return {bool}	Wether the string ends with the given suffix or not
+ */
+DuAEF.DuJS.String.endsWith = function (str, suffix)
+{
+	return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+
+/**
+ * Generates a new unique string (numbered)
+ * @param {string} newString	- The wanted new string
+ * @param {string[]} stringList 	- The list of strings where the new one must be generateUnique
+ * @param {boolean} [increment=true] - true to automatically increment the new name if it already ends with a digit
+ * @param {boolean} [isFile=false] - when generating name for files, setting this to true will add the increment before the extension
+ * @return {string}	The unique string, with a new number at the end if needed.
+ */
+DuAEF.DuJS.String.generateUnique = function ( newString , stringList , increment )
+{
+	increment =def(increment, true);
+	if (!increment) newString += ' ';
+
+    //detect digits
+    var reg = "( *)(\\d+)([.,]?\\d*)$";
+    //clean input
+    var regexClean = new RegExp(reg);
+    newString = newString.replace(regexClean,"");
+    //go!
+    var regex = new RegExp( DuAEF.DuJS.RegExp.escapeRegExp(newString) + reg);
+    //The greatest number found
+    var greatestNumber = 0;
+    //The number of digits for the number as string
+    var numDigits = 0;
+    var spaceString = "";
+    for ( var i =0 ; i < stringList.length ; i ++)
+    {
+        var currentNumberMatch = stringList[i].match(regex);
+        if (stringList[i] === newString && greatestNumber == 0) greatestNumber++;
+        else if (currentNumberMatch !== null)
+        {
+            //if its a decimal number, keep only the integer part
+            var numberAsString = currentNumberMatch[2];
+            //convert to int
+            var numberAsInt = parseInt(currentNumberMatch[2],10);
+			if (isNaN(numberAsInt)) continue;
+            if(numberAsInt >= greatestNumber ){
+                greatestNumber = numberAsInt  + 1;
+                spaceString = currentNumberMatch[1];
+            }
+            //check if there are zeroes before the number, count the digits
+            if(numberAsInt.toString().length < numberAsString.length && numDigits < numberAsString.length) numDigits = numberAsString.length;
+        }
+    }
+
+    //add leading 0 if needed
+    if (greatestNumber > 0)
+    {
+            //convert to string with leading zeroes
+            if (greatestNumber == 1) {
+                greatestNumber++;
+                spaceString = " ";
+            }
+            newString += spaceString;
+            greatestNumber = DuAEF.DuJS.Number.convertToString(greatestNumber,numDigits);
+            newString += greatestNumber;
+    }
+
+	if (!increment) newString = newString.substr(0,newString.length-1);
+
+    return newString;
+}
+
+/**
+	* Join multiple paths togetther.
+	* @param {string[]}	 [parts]	- The parts to join togehter
+	* @param {String}	[sep=/]	- The separator to use. If not defined, will look for the first sep in the path.
+	* @return {String} The final path
+*/
+DuAEF.DuJS.String.pathJoin = function(parts, sep)
+{
+   var separator = sep || false;
+   if(!separator)
+   {
+       // Find first /
+       if(parts[0].indexOf('/') != -1) separator = '/';
+       if(parts[0].indexOf('\\') != -1) separator = '\\';
+   }
+   if(!separator) separator = '/';
+   var replace   = new RegExp(separator+'{1,}', 'g');  // Replace ///// with /
+   return parts.join(separator).replace(replace, separator);
+}
+
+/**
+	* Returns a copy of the string without leading and trailing white spaces.
+	* @param {string}	 str	- The string to trim
+	* @return {String} The trimmed string
+*/
+DuAEF.DuJS.String.trim = function(str)
+{
+	return str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+}
+
+/**
+	* Returns a copy of the string without leading white spaces.
+	* @param {string}	 str	- The string to trim
+	* @return {String} The trimmed string
+*/
+DuAEF.DuJS.String.leftTrim = function(str)
+{
+	return str.replace(/^[\s\uFEFF\xA0]+/, '');
+}
+
+/**
+	* Returns a copy of the string without trailing white spaces.
+	* @param {string}	 str	- The string to trim
+	* @return {String} The trimmed string
+*/
+DuAEF.DuJS.String.rightTrim = function(str)
+{
+	return str.replace(/[\s\uFEFF\xA0]+$/, '');
+}
+
+/**
+	* Returns a copy of the string without leading and trailing white spaces, and without any new line, leaving only standard spaces.
+	* @param {string}	 str	- The string to trim
+	* @return {String} The trimmed string
+*/
+DuAEF.DuJS.String.fullTrim = function(str)
+{
+	var newStr = str.replace(/[\s\uFEFF\xA0]+/g,' ');
+	return DuAEF.DuJS.String.trim(newStr);
+}

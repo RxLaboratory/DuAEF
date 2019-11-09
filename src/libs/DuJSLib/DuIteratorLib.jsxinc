@@ -1,0 +1,226 @@
+﻿/*
+	DuJSLib
+	Library javascript tools
+	Copyright (c) 2017 Nicolas Dufresne, Rainbox Productions
+	https://rainboxprod.coop
+
+	_Contributors:_
+	Nicolas Dufresne - Lead developer
+
+	This file is part of DuAEF.
+
+	DuAEF is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	DuAEF is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+/**
+	* Constructs an iterator
+	* @example
+	* //When iterating through the whole list,
+	* //using the function do() has the best performance
+	* //but you can not break the loop.
+	* //If you need it, instead of using the word 'continue',
+	* //just make the function return.
+	* var it = new Iterator(layers);
+	* it.do(function doSomething(layer) {
+	* 	layer.name = something;
+	*	//If we need to continue to the next item, return.
+	*	if (dontWantThis) return;
+	*	//else do something here
+	* });
+	* @example
+	* //If you need to break the loop at one time,
+	* //like if you're searching for something,
+	* //you can use this method instead, which is a bit less quick than using the function do()
+	* var it = new Iterator(layers);
+	* while (layer = it.next())
+	* {
+	*	//do something with the layer
+		layer.name = something;
+		//when found what we're looking for
+		if (found) break;
+	* }
+	* @class Iterator
+	* @classdesc An iterator object to use for easier loops
+	* @property {Array|Collection} list - An array or an After Effects Collection
+	* @param {Array|Collection} list - An array or an After Effects Collection
+	* @property {int} min - The minimum value (inclusive)
+	* @property {int} max - The maximum (inclusive)
+	* @property {int} length - The number of items
+	* @property {int} current - The current item number
+	* @property {boolean} atEnd - true if the iterator has reached the end
+	* @property {boolean} atStart - true if the iterator is at the start
+	* @property {boolean} valid - true if the iterator is between min and max. false until next() or previous() has been called at least once
+	* @property {boolean} isCollection - true if the list is a Collection, false if it's a controller
+*/
+function Iterator(list)
+{
+	//check if list is an Array, a collection, or something else.
+	//if something else, store it in a one-item array
+	this.isCollection = DuAEF.DuAE.isCollection(list);
+	if (!(list instanceof Array) && !this.isCollection)
+	{
+		list = [list];
+	}
+
+	this.min = 0;
+	this.max = list.length -1;
+	this.length = list.length;
+	if (list.length == 0) return;
+	if (this.isCollection)
+	{
+		this.min = 1;
+		this.max = this.length;
+	}
+	this.current = -1;
+	this.atStart = false;
+	this.atEnd = false;
+	this.valid = false;
+	this.list = list;
+}
+
+/**
+	* Increments the Iterator<br />
+	* Must be called at least once to validate the iterator
+	* @return {Object} The next item, or null if there isn't
+*/
+Iterator.prototype.next = function ()
+{
+	if (this.length == 0) return null;
+
+	if (!this.valid)
+	{
+		return this.goToStart();
+	}
+	if (this.current < this.max)
+	{
+		return this.goTo(this.current + 1);
+	}
+
+	return null;
+}
+
+/**
+	* Decrements the Iterator
+	* if it's called while valid is false, goes to the end
+	* @return {Object} The previous item, or null if there isn't
+*/
+Iterator.prototype.previous = function ()
+{
+	if (this.length == 0) return null;
+	if (!this.valid)
+	{
+		return this.goToEnd();
+	}
+	if (this.current > this.min)
+	{
+		return this.goTo(this.current - 1);
+	}
+
+	return null;
+}
+
+/**
+	* Goes to the end of the Iterator
+	* @return {Object} The item at the end, or null if length is 0
+*/
+Iterator.prototype.goToEnd = function ()
+{
+	if (this.length == 0) return null;
+	return this.goTo(this.max);
+}
+
+/**
+	* Goes to the start of the Iterator
+	* @return {Object} The item at the start, or null if length is 0
+*/
+Iterator.prototype.goToStart = function ()
+{
+	if (this.length == 0) return null;
+	return this.goTo(this.min);
+}
+
+/**
+	* Sets the iterator on the index
+	* @param {int} index - The index
+	* @return {Object} The item at index, or null if there isn't
+*/
+Iterator.prototype.goTo = function(index)
+{
+	if (this.length == 0) return;
+	this.current = index;
+	if (this.current < this.min || this.current > this.max) this.valid = false;
+	else this.valid = true;
+	if (this.current == this.min) this.atStart = true;
+	else this.atStart = false;
+	if (this.current == this.max) this.atEnd = true;
+	else this.atEnd = false;
+
+	if (this.valid) return this.list[this.current];
+	else return null;
+}
+
+/**
+	* Executes a function on each item of the List
+	* @param {function} callBack - The function to execute, which takes one parameter: an item of the list
+*/
+Iterator.prototype.do = function (callBack)
+{
+	if (this.length == 0) return;
+	var current = this.current;
+
+	for (var i = this.min ; i <= this.max ; i++)
+	{
+		this.valid = true;
+		this.current = i;
+		callBack(this.list[i]);
+	}
+
+	this.goTo(current);
+}
+
+/**
+	* Gets the item at an index,<br />
+	* without changing the current iterator index.
+	* @param {int} index - The index of the item
+	* @return {Object} The item at index, or null if there isn't one
+*/
+Iterator.prototype.itemAt = function (index)
+{
+	if (index < this.min) return null;
+	if (index > this.max) return null;
+	else return this.list[index];
+}
+
+/**
+	* Gets the first item,<br />
+	* without changing the current iterator index.
+	* @return {Object} The first item, or null if there isn't one
+*/
+Iterator.prototype.firstItem = function ()
+{
+	if (this.list.length == 0) return null;
+	else return this.list[this.min];
+}
+
+/**
+	* Gets the last item,<br />
+	* without changing the current iterator index.
+	* @return {Object} The last item, or null if there isn't one
+*/
+Iterator.prototype.lastItem = function ()
+{
+	if (this.list.length == 0) return null;
+	else return this.list[this.max];
+}

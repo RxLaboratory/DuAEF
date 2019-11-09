@@ -1,0 +1,179 @@
+﻿/**
+	* JavaScript Math related methods
+	* @namespace
+	* @memberof DuAEF.DuJS
+*/
+DuAEF.DuJS.Math = {};
+
+/**
+	* Generates a random integer between minimum and maximum
+	* @memberof DuAEF.DuJS.Math
+	* @param {int}	[min=0]	- The minimum value
+	* @param {int}	[max=1]	- The maximum value
+	* @return {int}	The randomly generated integer
+*/
+DuAEF.DuJS.Math.random = function (min, max)
+{
+	if (min == undefined) min = 0;
+	if (max == undefined) max = 1;
+	var rng = null;
+	$.sleep(1);
+	var date = new Date();
+	var rng = new Math.seedrandom(date.getTime())();
+	//rng = Math.random();
+
+	if (!rng) return 0;
+	return rng * (max - min) + min;
+}
+
+/**
+	* Measures the vector length between two points
+	* @param {int[]} value1 - The first value
+	* @param {int[]} value2 - The second value
+	* @return {float} The length
+*/
+DuAEF.DuJS.Math.getLength = function (value1,value2)
+{
+	if (typeof value1 !== typeof value2)
+	{
+		return null;
+	}
+	if (value1.length > 0)
+	{
+		var result = 0;
+		for (var dim = 0;dim<value1.length;dim++)
+		{
+			result += (value1[dim]-value2[dim])*(value1[dim]-value2[dim]);
+		}
+		result = Math.sqrt(result);
+		return result;
+	}
+	else return Math.abs(value1 - value2) ;
+}
+
+/**
+	* Compares two numbers
+	* @memberof DuAEF.DuJS.Array
+	* @param {Number} value1 - The first value
+	* @param {Number} value2 - The second value
+	* @param {int} [floatPrecision=-1] - The precision for (float) number comparison, number of decimals. Set to -1 to not use.
+	* @return {boolean} true if the two values are equal
+*/
+DuAEF.DuJS.Math.compare = function (value1,value2,floatPrecision)
+{
+	if (typeof value1 != 'number') return false;
+	if (typeof value2 != 'number') return false;
+	if (floatPrecision >= 0)
+	{
+		var mul = Math.pow(10,floatPrecision);
+		var num1 = Math.round(value1*mul)/mul;
+		var num2 = Math.round(value2*mul)/mul;
+		return num1 == num2;
+	}
+	else return value1 == value2;
+}
+
+/**
+	* Calculates the log10 of a number
+	* @memberof DuAEF.DuJS.Math
+	* @param {float}	w	- The number
+	* @return {float}	The result of log10(x)<br />
+	* i.e. Math.log(x)/Math.LN10
+*/
+DuAEF.DuJS.Math.log10 = function (x)
+{
+	return Math.log(x)/Math.LN10;
+}
+
+/**
+	* Calculates the average value in a list
+	* @memberof DuAEF.DuJS.Math
+	* @param {Number|Number[]}	values	- values
+	* @return {float}	The average value
+*/
+DuAEF.DuJS.Math.average = function (values)
+{
+	if (!(values instanceof Array)) return values;
+	var sum = 0;
+	var total = values.length;
+	if (total == 0) return 0;
+	for (var i = 0; i < total; i++)
+	{
+		sum += values[i];
+	}
+	return sum/total;
+}
+
+/**
+	* Clamps the value
+	* @memberof DuAEF.DuJS.Math
+	* @param {Number|Number[]}	values	- values
+	* @param {Number}	[min=0] - The minimum value
+	* @param {Number}	[max=1] - The maximum value
+	* @return {Number|Number[]}	The clamped values
+*/
+DuAEF.DuJS.Math.clamp = function (values, min, max)
+{
+	if (typeof min === 'undefined') min = 0;
+	if (typeof max === 'undefined') max = 1;
+	var isArray = true;
+	var result = [];
+	if (!(values instanceof Array))
+	{
+		isArray = false;
+		values = [values];
+	}
+	for (var i = 0, num = values.length; i < num; i++)
+	{
+		var v = values[i];
+		if (v < min) v = min;
+		if (v > max) v = max;
+		result.push(v);
+	}
+	if (isArray) return result;
+	else return result[0];
+}
+
+/**
+	* Converts the number from degrees to radians
+	* @memberof DuAEF.DuJS.Math
+	* @param {number} value - the value
+	* @return {float} The value in radians
+*/
+DuAEF.DuJS.Math.toRadians = function (value)
+{
+	return value * Math.PI / 180;
+}
+
+/**
+	* Converts the number from radians to degrees
+	* @memberof DuAEF.DuJS.Math
+	* @param {number} value - the value
+	* @return {float} The value in degrees
+*/
+DuAEF.DuJS.Math.toDegrees = function (value)
+{
+	return value * 180 / Math.PI;
+}
+
+/**
+	* Converts the number from degrees to radians
+	* @memberof DuAEF.DuJS.Math
+	* @param {number} value - the value
+	* @return {float} The value in radians
+*/
+DuAEF.DuJS.Math.toRadians = function (value)
+{
+	return value * Math.PI / 180;
+}
+
+/**
+	* Converts the number from radians to degrees
+	* @memberof DuAEF.DuJS.Math
+	* @param {number} value - the value
+	* @return {float} The value in degrees
+*/
+DuAEF.DuJS.Math.toDegrees = function (value)
+{
+	return value * 180 / Math.PI;
+}
