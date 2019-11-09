@@ -1345,12 +1345,14 @@ DuAEF.DuAE.Property.getMaximumSpeed = function ( props ) {
  * Gets the speed of a property at a given time
  * @param {Property|PropertyInfo} prop - The property
  * @param {float} [time=composition.time] - The time.
+ * @param {boolean} [preExpression=true] - true to get the pre-expression speed.
  * @return {float} The speed
  */
 DuAEF.DuAE.Property.getSpeed = function ( prop, time, preExpression ) {
+    preExpression = def (preExpression, true);
     if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
     if ( prop.propertyType != PropertyType.PROPERTY ) return 0;
-    if ( prop.numKeys == 0 ) return 0;
+    if ( prop.numKeys == 0 && preExpression ) return 0;
     var comp = DuAEF.DuAE.Property.getComp( prop );
     if ( time == undefined ) time = comp.time;
 
