@@ -92,6 +92,8 @@ along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
 #include 'icons/w18_featurerequest_l.png.jsxinc'
 #include 'icons/w14_folder_r.png.jsxinc'
 #include 'icons/w14_folder_m.png.jsxinc'
+#include 'icons/w14_pin_r.png.jsxinc'
+#include 'icons/w14_pin_m.png.jsxinc'
 
 /**
  * ScriptUI tools
@@ -467,6 +469,7 @@ DuAEF.DuScriptUI.createUI = function( container, scriptName, contentAlignment, b
  * Use {@link DuAEF.DuScriptUI.createPopup} to create a Popup.<br />
  * The DuPopup inherits the Window object from ScriptUI and has all of its properties and methods.
  * @property {Group} contents - The ScriptUI group where the new controls must be added. Do not add any control directly inside the DuPopup.
+ * @property {boolean} pinned - true if this popup is "pinned", which means it won't hide when the user clicks outside of the window.
  */
 
 /**
@@ -479,8 +482,17 @@ DuAEF.DuScriptUI.createUI = function( container, scriptName, contentAlignment, b
  */
 
 /**
+ * Pins the popup (it won't be hidden anymore when deactivated).
+ * @method
+ * @memberof DuPopup
+ * @name pin
+ * @param {boolean} [pinned=true] - true to pin the popup, false to un-pin it.
+ */
+
+/**
  * Creates a borderless popup
  * @memberof DuAEF.DuScriptUI
+ * @param {string} title The title of the popup
  * @param {string[]} [alignment=DuAEF.DuScriptUI.defaultColumnAlignment] The alignement of this window
  * @return {DuPopup} The popup, a ScriptUI Window which is borderless, with a 'tieTo(control)' method.
  * @example
@@ -488,11 +500,18 @@ DuAEF.DuScriptUI.createUI = function( container, scriptName, contentAlignment, b
  * var popupButton = DuAEF.DuScriptUI.addButton( myUI, "My Buttton for the popup" );
  * popup.tieTo( popupButton ); // will show the popup when the button is clicked, just above it.
  */
-DuAEF.DuScriptUI.createPopup = function( alignment )
+DuAEF.DuScriptUI.createPopup = function( title, alignment )
 {
     alignment = def( alignment, DuAEF.DuScriptUI.defaultColumnAlignment );
+    title = def (title, "");
 
-    var popup = new Window( 'palette', "", undefined,
+    if (title != "")
+    {
+        DuAEF.DuScriptUI.uiStrings.push( title );
+        title = tr( title );
+    }
+    
+    var popup = new Window( 'palette', title, undefined,
     {
         resizeable: false,
         borderless: true
@@ -500,6 +519,7 @@ DuAEF.DuScriptUI.createPopup = function( alignment )
 
     popup.margins = 0;
     popup.spacing = 0;
+    popup.pinned = false;
 
     //add stroke around
     function drawBorder ( drawState ) {
@@ -536,9 +556,9 @@ DuAEF.DuScriptUI.createPopup = function( alignment )
     topMargin.side = 0;
     topMargin.minimumSize.height = DuAEF.DuScriptUI.defaultMargins;
     topMargin.alignment = [ 'fill', 'top' ];
-    topMargin.maximumSize.height = topMargin.minimumSize.height = topMargin.preferredSize.height = DuAEF.DuScriptUI.defaultMargins;
-    //DuAEF.DuScriptUI.setBackgroundColor( topMargin, DuAEF.DuJS.Color.Colors.DARK_GREY );
-
+    topMargin.maximumSize.height = topMargin.minimumSize.height = topMargin.preferredSize.height = 1;
+    DuAEF.DuScriptUI.setBackgroundColor( topMargin, DuAEF.DuJS.Color.Colors.DARK_GREY );
+    
     var mainRow = popup.add( 'group' );
     mainRow.alignment = alignment;
     mainRow.alignChildren = alignment;
@@ -548,10 +568,31 @@ DuAEF.DuScriptUI.createPopup = function( alignment )
     var leftMargin = mainRow.add( 'button' );
     leftMargin.onDraw = drawBorder;
     leftMargin.side = 1;
-    leftMargin.maximumSize.width = leftMargin.minimumSize.width = leftMargin.preferredSize.width = DuAEF.DuScriptUI.defaultMargins;
+    leftMargin.maximumSize.width = leftMargin.minimumSize.width = leftMargin.preferredSize.width = 1;
     leftMargin.alignment = [ 'left', 'fill' ];
 
-    popup.contents = mainRow.add( 'group' );
+    var mainColumn = mainRow.add( 'group' );
+    mainColumn.orientation = 'column';
+    mainColumn.spacing = DuAEF.DuScriptUI.defaultMargins;
+    mainColumn.margins = 0;
+    mainColumn.alignment = ['fill','fill'];
+
+    var titleBar = mainColumn.add( 'group' );
+    titleBar.margins = 0;
+    titleBar.spacing = 0;
+    titleBar.alignment = ['fill','top'];
+    DuAEF.DuScriptUI.setBackgroundColor( titleBar, DuAEF.DuJS.Color.Colors.DARK_GREY );
+    //add pin
+    var pinButton = DuAEF.DuScriptUI.addCheckBox(titleBar, '', DuAEF.DuBinary.toFile(w14_pin_m), 'Pin window', DuAEF.DuBinary.toFile(w14_pin_r));
+    pinButton.alignment = [ 'left', 'top' ];
+    //add title
+    var titleLabel = titleBar.add('statictext', undefined,  title);
+    titleLabel.alignment = [ 'center', 'top' ];
+    //add close button
+    var closeButton = DuAEF.DuScriptUI.addButton(titleBar, '', DuAEF.DuBinary.toFile(w14_cancel_m), 'Close', DuAEF.DuBinary.toFile(w14_cancel_l));
+    closeButton.alignment = [ 'right', 'top' ];
+
+    popup.contents = mainColumn.add( 'group' );
     popup.contents.margins = 0;
     popup.contents.spacing = DuAEF.DuScriptUI.defaultSpacing;
     popup.contents.alignChildren = alignment;
@@ -560,13 +601,13 @@ DuAEF.DuScriptUI.createPopup = function( alignment )
     var rightMargin = mainRow.add( 'button' );
     rightMargin.onDraw = drawBorder;
     rightMargin.side = 2;
-    rightMargin.maximumSize.width = rightMargin.minimumSize.width = rightMargin.preferredSize.width = DuAEF.DuScriptUI.defaultMargins;
+    rightMargin.maximumSize.width = rightMargin.minimumSize.width = rightMargin.preferredSize.width = 1;
     rightMargin.alignment = [ 'right', 'fill' ];
 
     var bottomMargin = popup.add( 'button' );
     bottomMargin.onDraw = drawBorder;
     bottomMargin.side = 3;
-    bottomMargin.maximumSize.height = bottomMargin.minimumSize.height = bottomMargin.preferredSize.height = DuAEF.DuScriptUI.defaultMargins;
+    bottomMargin.maximumSize.height = bottomMargin.minimumSize.height = bottomMargin.preferredSize.height = 1;
     bottomMargin.alignment = [ 'fill', 'bottom' ];
 
     popup.tieTo = function (control)
@@ -579,16 +620,82 @@ DuAEF.DuScriptUI.createPopup = function( alignment )
         }, true);
     }
 
-    popup.onDeactivate = function()
+    popup.pin = function(p)
     {
-        popup.hide();
-    };
+        p = def (p, true);
+        popup.pinned = p;
+        pinButton.setChecked(p);
+    }
+
+    var movingTitle = false;
+    var movingPopup = false;
+    var startMouseLocation = [0,0];
+    var startPopupLocation = [0,0];
+
+    function enterTitleMoveState(e)
+    {
+        movingTitle = true;
+        startMouseLocation = [e.screenX, e.screenY];
+        startPopupLocation = [popup.location[0], popup.location[1]];
+    }
+
+    function enterPopupMoveState(e)
+    {
+        movingPopup = true;
+        startMouseLocation = [e.screenX, e.screenY];
+        startPopupLocation = [popup.location[0], popup.location[1]];
+    }
+
+    function movePopup(e)
+    {
+        if (!movingPopup) return;
+        if (movingTitle) return;
+        var x = e.screenX - startMouseLocation[0];
+        var y = e.screenY - startMouseLocation[1];
+        popup.location = [ x, y ] + startPopupLocation;
+    }
+
+    function moveTitle(e)
+    {
+        if (!movingTitle) return;
+        var x = e.screenX - startMouseLocation[0];
+        var y = e.screenY - startMouseLocation[1];
+        popup.location = [ x, y ] + startPopupLocation;
+    }
+
+    function endMoveState(e)
+    {
+        movingTitle = false;
+        movingPopup = false;
+    }
+
+    function esc(e)
+    {
+        if ( e.keyName == "Escape") popup.hide();
+    }
+
+    popup.onDeactivate = function () { if (!popup.pinned) popup.hide(); };
+    closeButton.onClick = function () { popup.hide(); };
+
+    pinButton.onClick = function () { popup.pin(pinButton.checked); };
 
     popup.addEventListener( "mouseover", DuAEF.DuScriptUI.dimControls );
+    popup.addEventListener( "keydown", esc );
     topMargin.addEventListener( "mouseover", DuAEF.DuScriptUI.dimControls );
     leftMargin.addEventListener( "mouseover", DuAEF.DuScriptUI.dimControls );
     rightMargin.addEventListener( "mouseover", DuAEF.DuScriptUI.dimControls );
     bottomMargin.addEventListener( "mouseover", DuAEF.DuScriptUI.dimControls );
+    titleBar.addEventListener( "mouseover", DuAEF.DuScriptUI.dimControls );
+
+    titleBar.addEventListener( "mousedown", enterPopupMoveState );
+    titleBar.addEventListener( "mousemove", movePopup);
+    titleBar.addEventListener( "mouseup", endMoveState );
+    titleBar.addEventListener( "mouseout", endMoveState );
+
+    titleLabel.addEventListener( "mousedown", enterTitleMoveState );
+    titleLabel.addEventListener( "mousemove", moveTitle );
+    titleLabel.addEventListener( "mouseup", endMoveState );
+    titleLabel.addEventListener( "mouseout", endMoveState );
 
     return popup;
 }
