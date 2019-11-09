@@ -328,24 +328,31 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 
 	if (layer != null && type != DuAEF.Duik.Controller.Types.SLIDER && type != DuAEF.Duik.Controller.Types.DOUBLE_SLIDER && type != DuAEF.Duik.Controller.Types.ANGLE)
 	{
+		var topLayer = layer;
+		if (layer instanceof Array) 
+		{
+			layer = DuAEF.DuAE.Layer.sortByIndex(layer);
+			topLayer = layer[0];
+		}
 		// if it's a null, switch to 3D if the layer is 3D
 		// and move it just above the layer
-		if (type == DuAEF.Duik.Controller.Types.NULL && !(layer instanceof Array))
+		if (type == DuAEF.Duik.Controller.Types.NULL)
 		{
-			if (layer.threeDLayer) ctrl.threeDLayer = true;
-			ctrl.moveBefore(layer);
+			if (topLayer.threeDLayer) ctrl.threeDLayer = true;
+			ctrl.moveBefore(topLayer);
 		}
 
 		//center the controller and name it after the layer(s)
 		var pos = [0,0];
 		var layerName = 'name';
-		if (layer.length)
+		if (layer instanceof Array)
 		{
 			new Iterator(layer).do(function (l)
 			{
 				pos = pos + DuAEF.DuAE.Layer.getWorldPos(l);
 			});
 			pos = pos / layer.length;
+			layerName = topLayer.name;
 		}
 		else
 		{
