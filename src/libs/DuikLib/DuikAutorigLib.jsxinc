@@ -434,8 +434,6 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 	var tailsCtrl = [];
 
 	//Sort layers, load data
-	//TODO: do not check all layers, but get by autorig_id in the comp
-	//this way, one has only one layer for each limb to select and can forget some.
 	var it = new Iterator(layers);
 	it.do(function (layer){
 		var params = DuAEF.Duik.getDuikMarkerParameters(layer);
@@ -709,12 +707,16 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 			bigHipsCtrl = DuAEF.Duik.Autorig.getCreateController(spine.spine[0], comp, useNull ? defaultType : DuAEF.Duik.Controller.Types.BODY, customControllers);
 			hipsCtrl = DuAEF.Duik.Controller.create(comp,useNull ? defaultType : DuAEF.Duik.Controller.Types.HIPS,spine.spine[0]);
 		}
-		//name
-		bigHipsCtrl.layer.name = bigHipsCtrlName;
-		hipsCtrl.layer.name = hipsCtrlName;
-		//re-set type in case of the controller being a null
-		DuAEF.Duik.setDuikMarkerParameter(bigHipsCtrl,DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE,DuAEF.Duik.Controller.Types.BODY);
-		DuAEF.Duik.setDuikMarkerParameter(hipsCtrl,DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE,DuAEF.Duik.Controller.Types.HIPS);
+		if (bigHipsCtrl)
+		{
+			//name
+			bigHipsCtrl.layer.name = bigHipsCtrlName;
+			hipsCtrl.layer.name = hipsCtrlName;
+			//re-set type in case of the controller being a null
+			DuAEF.Duik.setDuikMarkerParameter(bigHipsCtrl,DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE,DuAEF.Duik.Controller.Types.BODY);
+			DuAEF.Duik.setDuikMarkerParameter(hipsCtrl,DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE,DuAEF.Duik.Controller.Types.HIPS);
+		}
+		
 
 		//shoulders controller
 		if (spine.neck.length > 0)
