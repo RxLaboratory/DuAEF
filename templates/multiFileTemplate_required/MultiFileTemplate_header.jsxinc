@@ -1,0 +1,12 @@
+#include 'MultiFileTemplate_license.jsxinc'
+
+//Encapsulate everything to avoid global variables
+(function(thisObj) {
+
+    //init DuAEF
+    #include '../DuAEF.jsxinc'
+    DuAEF.init("Your Script Name","1.0.2");
+
+    // _______ UI SETUP _______
+	var ui = DuAEF.DuScriptUI.createUI(thisObj);
+    var contents = ui_panel.contents;

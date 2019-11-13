@@ -7,10 +7,8 @@ The script can be launched both from ScriptUI Panels or the File/Scripts/Run Scr
 (function (thisObj) {
 
 	//================
-	var version = '0.0.0';
-	var scriptName = "The Script Name";
-	//================
 	#include DuAEF.jsxinc
+	DuAEF.init("Your Script Name", "1.0.2");
 
 	// ================ FUNCTIONS =============
 	//MAIN
@@ -20,12 +18,14 @@ The script can be launched both from ScriptUI Panels or the File/Scripts/Run Scr
 
 
 	// _______ UI SETUP _______
-	var ui = DuAEF.DuScriptUI.createUI(thisObj,scriptName);
+	var ui = DuAEF.DuScriptUI.createUI(thisObj);
 
 	// ============ UI CONTENT =================
+	var contents = ui.contents;
+	DuAEF.DuScriptUI.addStaticText(contents, "Welcome to " + DuAEF.scriptName);
 
 
 	//Show UI
 	DuAEF.DuScriptUI.showUI(ui);
-
+	DuAEF.enterRunTime();
 })(this);
