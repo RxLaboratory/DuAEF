@@ -1171,8 +1171,8 @@ DuAEF.Duik.Animation.switchIkFk = function (controller)
 */
 DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMasterProperties)
 {
-	if (DuAEF.DuAE.App.version < 15.1) useMasterProperties = false;
-	if (DuAEF.DuAE.App.version < 17.0) useMasterProperties = def( useMasterProperties, false );
+	if (DuAEF.DuAE.App.version.version < 15.1) useMasterProperties = false;
+	if (DuAEF.DuAE.App.version.version < 17.0) useMasterProperties = def( useMasterProperties, false );
 	else useMasterProperties = def( useMasterProperties, true );
 
 	var comp = preComposition.containingComp;
@@ -1269,7 +1269,7 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 			//effects
 			numProps += DuAEF.DuAE.Property.addToEGP(ctrlLayer('ADBE Effect Parade'));
 			//if Ae >= 16.1 just use all master properties (as numProps is 0 if they were already there)
-			if ( DuAEF.DuAE.App.version >= 16.1 ) {
+			if ( DuAEF.DuAE.App.version.version >= 16.1 ) {
 				numProps = preComp.motionGraphicsTemplateControllerCount;
 			}
 			//links
@@ -1288,7 +1288,11 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 				catch (e) { continue; }
 				
 				//link
-				if (newProp) DuAEF.DuAE.Property.pickWhip(mp,newProp,true);
+				if (newProp) {
+					DuAEF.DuAE.Property.pickWhip(mp,newProp,true);
+					//AE 17.0.0 bug workaround: need a keyframe on the master property to be sure it's not ignored.
+
+				}
 			}
 		}
 		else
@@ -1349,7 +1353,7 @@ DuAEF.Duik.Animation.unExtractControllersFromComp = function( preComposition )
 		if (params) {
 			useMP = params[DuAEF.Duik.MarkerParameters.LINKED_THROUGH_MP] == 'true';
 		}
-		if (useMP && DuAEF.DuAE.App.version >= 16.1) {
+		if (useMP && DuAEF.DuAE.App.version.version >= 16.1) {
 			//remove expressions from master properties
 			var numMPs = preComp.motionGraphicsTemplateControllerCount;
 			for (var i = 1; i <= numMPs; i++)
@@ -1477,7 +1481,7 @@ DuAEF.Duik.AnimationBlender.setup = function(setupComp,controlComp,selectedPrope
 		'var animStartTime = ctrl.marker.key(ind).time;\n' +
 		'var animName = ctrl.marker.key(ind).comment;\n' +
 		'var animMarker = null;\n';
-		if (DuAEF.DuAE.App.version >= 14.0) exp += 'try { animMarker = thisComp.marker.key(animName); } catch(e) {}\n';
+		if (DuAEF.DuAE.App.version.version >= 14.0) exp += 'try { animMarker = thisComp.marker.key(animName); } catch(e) {}\n';
 		else exp += 'try { animMarker = thisComp.layer("Duik | Animation blender").marker.key(animName); } catch(e) {}\n';
 		exp += 'if (animMarker)\n' +
 		'{\n' +
@@ -1564,7 +1568,7 @@ DuAEF.Duik.AnimationBlender.getAnimMarkers = function (comp)
 	if (typeof comp === 'undefined') comp = DuAEF.DuAE.Project.getActiveComp();
 	if (!comp) return null;
 
-	if (DuAEF.DuAE.App.version >= 14.0)
+	if (DuAEF.DuAE.App.version.version >= 14.0)
 	{
 		return comp.markerProperty;
 	}

@@ -1575,7 +1575,7 @@ DuAEF.DuAE.Property.addToEGP = function ( prop ) {
             //get the name 
             var mPropName = layer.name + ' / ' + DuAEF.DuAE.Property.getExpressionLink( prop, true, false );
             //add with name
-            if ( DuAEF.DuAE.App.version >= 16.1 ) {
+            if ( DuAEF.DuAE.App.version.version >= 16.1 ) {
                 prop.addToMotionGraphicsTemplateAs( comp, mPropName);
             }
             else {
@@ -1583,7 +1583,7 @@ DuAEF.DuAE.Property.addToEGP = function ( prop ) {
             }
 
             //rename the master property if >=15.1 and < 16.1
-            if ( DuAEF.DuAE.App.version >= 15.1 && DuAEF.DuAE.App.version < 16.1 ) {
+            if ( DuAEF.DuAE.App.version.version >= 15.1 && DuAEF.DuAE.App.version.version < 16.1 ) {
                 var it = new Iterator( comp.usedIn );
                 it.do( function ( mainComp ) {
                     //search the layer of the precomp

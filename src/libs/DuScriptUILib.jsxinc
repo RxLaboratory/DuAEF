@@ -1034,7 +1034,7 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
         imageButton.fillerR.addEventListener( "mouseover", imageButton.highlight );
     }
     // Hack - CS6 Bug on mouseover with images
-    if ( DuAEF.DuAE.App.version > 11 && icon )
+    if ( DuAEF.DuAE.App.version.version > 11 && icon )
     {
         imageButton.icon.addEventListener( "mouseover", imageButton.highlight );
     }
@@ -1457,7 +1457,7 @@ DuAEF.DuScriptUI.addCheckBox = function( container, text, image, helpTip, imageC
         else duCheckBox.clicked(e);
     }, true );
     // Hack - CS6 Bug on mouseover with images
-    if ( DuAEF.DuAE.App.version >= 11 && DuAEF.DuAE.App.version < 12 )
+    if ( DuAEF.DuAE.App.version.version >= 11 && DuAEF.DuAE.App.version.version < 12 )
     {
         if ( duCheckBox.label ) duCheckBox.label.addEventListener( "mouseover", duCheckBox.highlight );
     }
@@ -2234,7 +2234,7 @@ DuAEF.DuScriptUI.addSelector = function( container )
     selector.label.alignment = [ 'fill', 'center' ];
 
     //if not CS6, add fillers to be able to click anywhere on the button
-    if ( DuAEF.DuAE.App.version > 11 )
+    if ( DuAEF.DuAE.App.version.version > 11 )
     {
         selector.fillerR = selector.add( 'statictext', undefined, "" );
         selector.fillerR.alignment = [ 'fill', 'fill' ];
@@ -2285,7 +2285,7 @@ DuAEF.DuScriptUI.addSelector = function( container )
 
         if ( popup )
         {
-            if ( DuAEF.DuAE.App.version < 11 || DuAEF.DuAE.App.version >= 12 )
+            if ( DuAEF.DuAE.App.version.version < 11 || DuAEF.DuAE.App.version.version >= 12 )
             {
                 var x = e.screenX - e.clientX;
                 var y = e.screenY - e.clientY;
@@ -2323,7 +2323,7 @@ DuAEF.DuScriptUI.addSelector = function( container )
     }
 
     // Hack - CS6 Bugs on mouseover with images
-    if ( DuAEF.DuAE.App.version >= 11 && DuAEF.DuAE.App.version < 12 )
+    if ( DuAEF.DuAE.App.version.version >= 11 && DuAEF.DuAE.App.version.version < 12 )
     {
         selector.label.addEventListener( "mouseover", selector.highlight );
     }
@@ -2405,7 +2405,7 @@ DuAEF.DuScriptUI.addLayerSelector = function( container )
     selector.selectedOnly = false;
     selector.pauseRefresh = false;
 
-    var cs6 = DuAEF.DuAE.App.version < 12;
+    var cs6 = DuAEF.DuAE.App.version.version < 12;
 
     //CS6
     if ( cs6 )
@@ -2617,7 +2617,7 @@ DuAEF.DuScriptUI.addLayerSelector = function( container )
     }
 
     // Hack - CS6 Bugs on mouseover with images
-    if ( DuAEF.DuAE.App.version >= 11 && DuAEF.DuAE.App.version < 12 )
+    if ( DuAEF.DuAE.App.version.version >= 11 && DuAEF.DuAE.App.version.version < 12 )
     {
         selector.refreshButton.addEventListener( "mousedown", selector.refresh, false );
     }
@@ -3130,7 +3130,7 @@ DuAEF.DuScriptUI.addCompSelector = function( container )
     selector.selectedOnly = false;
     selector.pauseRefresh = false;
 
-    var cs6 = DuAEF.DuAE.App.version >= 11 && DuAEF.DuAE.App.version < 12;
+    var cs6 = DuAEF.DuAE.App.version.version >= 11 && DuAEF.DuAE.App.version.version < 12;
 
     //CS6
     if ( cs6 )
@@ -3333,7 +3333,7 @@ DuAEF.DuScriptUI.addCompSelector = function( container )
     }
 
     // Hack - CS6 Bugs on mouseover with images
-    if ( DuAEF.DuAE.App.version >= 11 && DuAEF.DuAE.App.version < 12 )
+    if ( DuAEF.DuAE.App.version.version >= 11 && DuAEF.DuAE.App.version.version < 12 )
     {
         //selector.label.addEventListener("mouseover",selector.highlight);
     }

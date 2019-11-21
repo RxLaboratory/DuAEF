@@ -597,7 +597,7 @@ DuAEF.Duik.Structure.addStructureToPath = function( pathProperty, num, forceNum,
     }
 
     //add bones to the path
-    if ( link && DuAEF.DuAE.App.version >= 15 )
+    if ( link && DuAEF.DuAE.App.version.version >= 15 )
     {
         DuAEF.Duik.Bone.rigShape( pathProperty, undefined, true, false );
         //set effects to use structure

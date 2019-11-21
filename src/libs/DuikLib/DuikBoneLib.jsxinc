@@ -440,7 +440,7 @@ DuAEF.Duik.Bone.rigShape = function (prop,size,tangents,createBones)
 	if (typeof createBones === 'undefined') createBones = true;
 	if (typeof tangents === 'undefined') tangents = true;
 
-	if (DuAEF.DuAE.App.version < 15) return bones;
+	if (DuAEF.DuAE.App.version.version < 15) return bones;
 
 	if (!Object.isValid(prop)) return bones;
 
@@ -791,7 +791,7 @@ DuAEF.Duik.Bone.addBone = function (prop,size,tangents)
 	//Shape
 	if (prop.propertyValueType == PropertyValueType.SHAPE)
 	{
-		if ( DuAEF.DuAE.App.version < 15) return bones;
+		if ( DuAEF.DuAE.App.version.version < 15) return bones;
 		return DuAEF.Duik.Bone.rigShape(prop,size,tangents,true);
 	}
 

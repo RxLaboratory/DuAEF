@@ -718,7 +718,7 @@ DuAEF.DuAE.Layer.addNull = function ( layer ) {
  */
 DuAEF.DuAE.Layer.lockScale = function ( layer, allAEVersions ) {
     if ( typeof allAEVersions == "undefined" ) allAEVersions = false;
-    if ( allAEVersions || DuAEF.DuAE.App.version > 12 ) DuAEF.DuAE.Property.lock( layer.transform.scale );
+    if ( allAEVersions || DuAEF.DuAE.App.version.version > 12 ) DuAEF.DuAE.Property.lock( layer.transform.scale );
 }
 
 /**
@@ -730,7 +730,7 @@ DuAEF.DuAE.Layer.lockScale = function ( layer, allAEVersions ) {
  * @return {Layer[]} The new layers
  */
 DuAEF.DuAE.Layer.copyToComp = function ( layers, destinationComp, withPropertyLinks ) {
-    if ( DuAEF.DuAE.App.version < 12.0 ) withPropertyLinks = false;
+    if ( DuAEF.DuAE.App.version.version < 12.0 ) withPropertyLinks = false;
     if ( typeof withPropertyLinks === 'undefined' ) withPropertyLinks = false;
 
     if ( layers.length == 0 ) return;

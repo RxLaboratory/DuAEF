@@ -1100,7 +1100,7 @@ DuAEF.Duik.Rigging.oneLayerIK = function( layer, goal, controller )
     if ( right ) ikEffect( 6 ).setValue( 1 );
     ikEffect( 9 ).setValue( layer.index );
 
-    if ( DuAEF.DuAE.App.version >= 15 && controller.layer instanceof ShapeLayer && drawGuides )
+    if ( DuAEF.DuAE.App.version.version >= 15 && controller.layer instanceof ShapeLayer && drawGuides )
     {
         var lineGroup = controller.layer( "ADBE Root Vectors Group" ).property( 'IK Line' );
         if ( !lineGroup )
@@ -1438,7 +1438,7 @@ DuAEF.Duik.Rigging.twoLayerIK = function( layer1, layer2, goal, controller )
         ikGroup.transform.position.expression = 'effect("Controller")(3)';
         ikGroup.transform.opacity.expression = 'effect("Controller")(6)';
 
-        if ( DuAEF.DuAE.App.version >= 15 )
+        if ( DuAEF.DuAE.App.version.version >= 15 )
         {
             var lineGroup = controller.layer( "ADBE Root Vectors Group" ).property( 'IK Line' );
             if ( !lineGroup )
@@ -1973,7 +1973,7 @@ DuAEF.Duik.Rigging.threeLayerIK = function( layer1, layer2, layer3, goal, contro
         ikGroup.transform.position.expression = 'effect("Controller")(3)';
         ikGroup.transform.opacity.expression = 'effect("Controller")(6)';
 
-        if ( DuAEF.DuAE.App.version >= 15 )
+        if ( DuAEF.DuAE.App.version.version >= 15 )
         {
             var lineGroup = controller.layer( "ADBE Root Vectors Group" ).property( 'IK Line' );
             if ( !lineGroup )
@@ -2555,7 +2555,7 @@ DuAEF.Duik.Rigging.bezierIK = function( layers, goal, controller )
         'fx(' + DuAEF.Duik.PseudoEffects.BEZIER_IK_CURVE.showHandlesCheckbox + ').value*100';
 
     //add line
-    if ( DuAEF.DuAE.App.version >= 15 )
+    if ( DuAEF.DuAE.App.version.version >= 15 )
     {
         var lineGroup = curveController.layer( "ADBE Root Vectors Group" ).addProperty( "ADBE Vector Group" );
         lineGroup.name = 'IK Line';

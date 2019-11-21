@@ -79,7 +79,7 @@ DuAEF.DuRSS.get = function (url, subfolder, userAgentVersion, port)
 
 	var reply = '';
 
-	var userAgent = 'User-Agent: ' + userAgentVersion + ' (' + $.os + ')' + ' AE/' + DuAEF.DuAE.App.version;
+	var userAgent = 'User-Agent: ' + userAgentVersion + ' (' + $.os + ')' + ' AE/' + DuAEF.DuAE.App.version.version;
 
 	if (conn.writeln('GET /' + subfolder + '  HTTP/1.0\n' + userAgent + '\nHost: ' + url + '\n'))
 	{

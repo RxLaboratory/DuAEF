@@ -1,4 +1,73 @@
 ﻿/**
+ * Constructs a new version object
+ * @class
+ * @name DuVersion
+ * @classdesc Informations about the version of an application.<br />
+ * The version is in the form: Major.Minor.Patch#Build. Example: <code>17.0.0x557</code> or <code>17.0.0-Alpha1</code> or <code>17.4</code><br />
+ * The only required part is the Major version.
+ * @param {string} [version='1.0.0'] The version in the form Major.Minor.Patch
+ * @property {string} fullVersion The complete version name
+ * @property {string} versionString The Major.Minor part as a string
+ * @property {float} version The Major.Minor part as a float
+ * @property {int} major
+ * @property {int} minor
+ * @property {int} patch
+ * @property {int} build The build is -1 if it cannot be parsed as an int, like "alpha".
+ * @property {string} buildString The build as a string
+ */
+function DuVersion( version )
+{
+	version = def( version, '');
+	
+	var reV = /^(\d+)\.?(\d*)\.?(\d*)\D?(\S*)/i;
+    var v = version.match( reV );
+
+	if (version == '' || !v)
+	{
+		this.fullVersion = '1.0.0';
+		this.versionString = '1.0';
+		this.version = 1;
+		this.major = 1;
+		this.minor = 0;
+		this.patch = 0;
+		this.build = -1;
+		this.buildString = "";
+		return;
+	}
+
+	if (!v[ 1 ]) v[ 1 ]  = '1';
+	if (!v[ 2 ]) v[ 2 ]  = '0';
+	if (!v[ 3 ]) v[ 3 ]  = '0';
+	if (!v[ 4 ]) v[ 4 ]  = '';
+
+	this.fullVersion = version;
+	this.versionString = v[ 1 ] + '.' + v[ 2 ];
+	this.version = parseFloat(this.versionString);
+	if ( isNaN(this.version) ) this.version = parseFloat(v[ 1 ]);
+	if ( isNaN(this.version) ) this.version = 0;
+	this.major = parseInt( v[ 1 ] );
+	if ( isNaN(this.major) ) this.major = 0;
+	this.minor = parseInt( v[ 2 ] );
+	if ( isNaN(this.minor) ) this.minor = 0;
+	this.patch = parseInt( v[ 3 ] );
+	if ( isNaN(this.patch) ) this.patch = 0;
+	this.build = parseInt( v[ 4 ] );
+	if ( isNaN(this.build) ) this.build = -1;
+	this.buildString = v[ 4 ];
+}
+
+/**
+ * Checks if this version is higher than another.
+ * @memberof DuVersion
+ * @param {DuVersion|string} otherVersion The version to compare with.
+ * @return {bool} true if this version is more recent than otherVersion
+*/
+DuVersion.prototype.isHigherThan = function( otherVersion )
+{
+	return DuAEF.DuJS.Version.compare(this, otherVersion);
+}
+
+/**
 	* Version handling
 	* @namespace
 	* @memberof DuAEF.DuJS
@@ -6,72 +75,75 @@
 DuAEF.DuJS.Version = {};
 
 /**
- * Compares two versions in the standard form AA.BB.CC-BetaX
- * @param {string} vA - The first version
- * @param {string} [vB=DuAEF.scriptVersion] - The other version
- * @return {boolean} True if vA is more recent than vB
+ * Compares two versions of an application
+ * @param {string|DuVersion} vA - The first version
+ * @param {string|DuVersion} [vB=DuAEF.scriptVersion] - The other version
+ * @return {boolean} True if vA is more recent than vB (strict, if they're equal it will return false)
 */
 DuAEF.DuJS.Version.compare = function (vA, vB)
 {
-	vB = def(vB, DuAEF.scriptVersion, false);
+	vB = def(vB, DuAEF.scriptVersion);
 	if (vA === vB) return false;
 
-	var vAArray = vA.split('.');
-	var vBArray = vB.split('.');
+	if (! (vA instanceof DuVersion) ) vA = new DuVersion( vA );
+	if (! (vB instanceof DuVersion) ) vA = new DuVersion( vB );
 
-	for (var i = 0; i < 3; i++)
+	//compare major version
+	if ( vA.major > vB.major ) return true;
+	if ( vA.major < vB.major ) return false;
+
+	//minor
+	if ( vA.minor > vB.minor ) return true;
+	if ( vA.minor < vB.minor ) return false;
+
+	//patch
+	if ( vA.patch > vB.patch ) return true;
+	if ( vA.patch < vB.patch ) return false;
+
+	//build 
+	if ( vA.build >= 0 && vB.build >= 0 )
 	{
-		if (i >= vBArray.length) return true;
-		if (i >= vAArray.length) return false;
-
-		var a = parseInt(vAArray[i]);
-		var b = parseInt(vBArray[i]);
-
-		//remove "alpha" or "beta" if needed
-		if (i == 2)
-		{
-			if (isNaN(a)) a = vAArray[i].split("-")[0];
-			a = parseInt(a);
-			if (isNaN(b)) b = vBArray[i].split("-")[0];
-			b = parseInt(b);
-		}
-
-		if (isNaN(a) && isNaN(b)) continue;
-		else if (isNaN(a)) return false;
-		else if (isNaN(b)) return true;
-
-		if (a == b)
-		{
-			if (i == 0 || i == 1) continue;
-			else 
-			{
-				//get the "alpha" or "beta" part
-				var aa = vAArray[i].split("-");
-				if (aa.length == 2) aa = aa[1].toLowerCase();
-				else aa = "";
-				var bb = vBArray[i].split("-");
-				if (bb.length == 2) bb = bb[1].toLowerCase();
-				else bb = "";
-
-				if (aa == bb) continue;
-
-				if (bb == "" && aa == "") return true;
-				if (bb == "" && aa != "") return false;
-				if (bb != "" && aa == "") return true;
-
-				if (bb.indexOf("beta") >= 0 && aa.indexOf("beta") >= 0 ) return true;
-				if (bb.indexOf("beta") >= 0 && aa.indexOf("beta") < 0 ) return false;
-				if (bb.indexOf("beta") < 0 && aa.indexOf("beta") >= 0 ) return true;
-
-				if (bb.indexOf("alpha") >= 0 && aa.indexOf("alpha") >= 0 ) return true;
-				if (bb.indexOf("alpha") >= 0 && aa.indexOf("alpha") < 0 ) return false;
-				if (bb.indexOf("alpha") < 0 && aa.indexOf("alpha") >= 0 ) return true;
-			}
-
-		}
-		else return a > b;
-		
+		if ( vA.build > vB.build ) return true;
+		if ( vA.build < vB.build ) return false;
 	}
 
-	return true;
+	//build as a string
+	if ( vA.buildString == vB.buildString ) return false;
+	if ( vA.buildString == '' && vB.buildString != '') return true;
+	if ( vA.buildString != '' && vB.buildString == '') return false;
+
+	var vABuildString = vA.buildString.toLowerCase();
+	var vBBuildString = vB.buildString.toLowerCase();
+
+	if ( vABuildString.indexOf('rc') >= 0 )
+	{
+		if ( vBBuildString.indexOf('rc') < 0 ) return true;
+		return vABuildString > vBBuildString ;
+	}
+
+	if ( vABuildString.indexOf('gamma') >= 0 )
+	{
+		if ( vBBuildString.indexOf('rc') >= 0 ) return false;
+		if ( vBBuildString.indexOf('gamma') < 0 ) return true;
+		return vABuildString > vBBuildString ;
+	}
+
+	if ( vABuildString.indexOf('beta') >= 0 )
+	{
+		if ( vBBuildString.indexOf('rc') >= 0 ) return false;
+		if ( vBBuildString.indexOf('gamma') >= 0 ) return false;
+		if ( vBBuildString.indexOf('beta') < 0 ) return true;
+		return vABuildString > vBBuildString ;
+	}
+
+	if ( vABuildString.indexOf('alpha') >= 0 )
+	{
+		if ( vBBuildString.indexOf('rc') >= 0 ) return false;
+		if ( vBBuildString.indexOf('gamma') >= 0 ) return false;
+		if ( vBBuildString.indexOf('beta') >= 0 ) return false;
+		if ( vBBuildString.indexOf('alpha') < 0 ) return true;
+		return vABuildString > vBBuildString ;
+	}
+
+	return vABuildString > vBBuildString;
 }

@@ -5,28 +5,19 @@
  */
 DuAEF.DuAE.App = {};
 
-//App Properties
-( function () {
-    //detect AE Version
-    var reV = /^(\d+\.?\d*)/i;
-    var v = app.version.match( reV );
+/**
+ * Informations about the version of after effects.
+ * @type {DuVersion}
+ * @readonly
+ */
+DuAEF.DuAE.App.version = new DuVersion( app.version );
 
-    /**
-     * The After Effects version
-     * @memberof DuAEF.DuAE.App
-     * @readonly
-     * @type {float}
-     */
-    DuAEF.DuAE.App.versionAsString = v[ 1 ];
-    DuAEF.DuAE.App.version = parseFloat( v[ 1 ] );
-
-    /**
-     * Has scripting file and network authorization
-     * @readonly
-     * @type {boolean}
-     */
-    DuAEF.DuAE.App.hasFilesAndNetworkAccess = app.preferences.getPrefAsLong( "Main Pref Section", "Pref_SCRIPTING_FILE_NETWORK_SECURITY" ) == 1;
-} )();
+/**
+ * Has scripting file and network authorization
+ * @readonly
+ * @type {boolean}
+ */
+DuAEF.DuAE.App.hasFilesAndNetworkAccess = app.preferences.getPrefAsLong( "Main Pref Section", "Pref_SCRIPTING_FILE_NETWORK_SECURITY" ) == 1;
 
 /**
  * Asks the user to check the file and network security pref if not already set.
@@ -41,7 +32,7 @@ DuAEF.DuAE.App.askFilesAndNetworkAccess = function ( showAlert, message ) {
     if ( message == undefined ) message = "The Duduf After Effects framework needs to be allowed to write files\nPlease, check the box called 'Allow Scripts to write files...' in the general preferences of After Effects.";
     if ( !DuAEF.DuAE.App.hasFilesAndNetworkAccess ) {
         if ( showAlert ) alert( message );
-        if ( DuAEF.DuAE.App.version < 16.1 ) app.executeCommand( 2359 );
+        if ( DuAEF.DuAE.App.version.version < 16.1 ) app.executeCommand( 2359 );
         else app.executeCommand( 3131 );
         DuAEF.DuAE.App.hasFilesAndNetworkAccess = app.preferences.getPrefAsLong( "Main Pref Section", "Pref_SCRIPTING_FILE_NETWORK_SECURITY" ) == 1;
     }
@@ -54,7 +45,7 @@ DuAEF.DuAE.App.askFilesAndNetworkAccess = function ( showAlert, message ) {
  * @return {string}	The version name.
  */
 DuAEF.DuAE.App.getAEVersionName = function ( versionAsFloat ) {
-    if ( versionAsFloat == undefined ) versionAsFloat = DuAEF.DuAE.App.version;
+    if ( versionAsFloat == undefined ) versionAsFloat = DuAEF.DuAE.App.version.version;
     if ( versionAsFloat < 8 ) return "" + versionAsFloat;
     if ( versionAsFloat >= 8 && versionAsFloat < 9 ) return "CS3";
     if ( versionAsFloat >= 9 && versionAsFloat < 10 ) return "CS4";
@@ -143,7 +134,7 @@ DuAEF.DuAE.App.openScriptUIPanel = function ( panelScriptName ) {
     if ( panelScriptName == "" ) return;
     var scriptUIFile = new File( Folder.appPackage.absoluteURI + '/Scripts/ScriptUI Panels/' + panelScriptName );
     if ( !scriptUIFile.exists ) {
-        scriptUIFile = new File( Folder.userData.absoluteURI + '/Adobe/After Effects/' + DuAEF.DuAE.App.versionAsString + '/Scripts/ScriptUI Panels/' + panelScriptName );
+        scriptUIFile = new File( Folder.userData.absoluteURI + '/Adobe/After Effects/' + DuAEF.DuAE.App.version.versionString + '/Scripts/ScriptUI Panels/' + panelScriptName );
     }
     if ( !scriptUIFile.exists ) {
         alert( "The panel " + panelScriptName + " is not installed." );
