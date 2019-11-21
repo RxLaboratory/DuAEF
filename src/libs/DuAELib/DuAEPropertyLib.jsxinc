@@ -421,7 +421,7 @@ DuAEF.DuAE.Property.setKey = function ( prop, key, timeOffset ) {
     if ( prop.isSeparationLeader )
         if ( prop.dimensionsSeparated ) return;
 
-    if ( timeOffset == undefined ) timeOffset = DuAEF.DuAE.Property.getPropertyComp( prop ).time;
+    if ( timeOffset == undefined ) timeOffset = DuAEF.DuAE.Property.getComp( prop ).time;
     var time = key._time + timeOffset;
     var propDimensions = DuAEF.DuAE.Property.getDimensions( prop );
     var val = key.value;
@@ -577,7 +577,7 @@ DuAEF.DuAE.Property.setAnim = function ( prop, anim, time, setExpression, replac
  */
 DuAEF.DuAE.Property.setGroupAnim = function ( prop, anim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, set ) {
     if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
-    if ( typeof time === 'undefined' ) time = DuAEF.DuAE.Property.getPropertyComp( prop ).time;
+    if ( typeof time === 'undefined' ) time = DuAEF.DuAE.Property.getComp( prop ).time;
     if ( typeof ignoreName === 'undefined' ) ignoreName = false;
     if ( typeof setExpression === 'undefined' ) setExpression = false;
     if ( typeof onlyKeyframes === 'undefined' ) onlyKeyframes = false;
