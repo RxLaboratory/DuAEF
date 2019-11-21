@@ -2767,7 +2767,7 @@ DuAEF.DuScriptUI.initHelpPanel = function()
     aboutGroup.alignment = [ 'fill', 'fill' ];
 
     //add title
-    DuAEF.DuScriptUI.helpPanel.about.title = aboutGroup.add( 'statictext', undefined, DuAEF.scriptName + " (v" + DuAEF.scriptVersion + ")" );
+    DuAEF.DuScriptUI.helpPanel.about.title = aboutGroup.add( 'statictext', undefined, DuAEF.scriptName + " (v" + DuAEF.scriptVersion.fullVersion + ")" );
     DuAEF.DuScriptUI.helpPanel.about.title.alignment = [ 'fill', 'top' ];
     DuAEF.DuScriptUI.setTextColor( DuAEF.DuScriptUI.helpPanel.about.title, DuAEF.DuJS.Color.Colors.VERY_LIGHT_GREY );
 

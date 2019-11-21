@@ -59,10 +59,10 @@ DuAEF.scriptName = "DuAEF";
 /**
  * The version of the script using this instance of DuAEF. Must be set by {@link  DuAEF.init}.
  * @memberof DuAEF
- * @type {string}
+ * @type {DuVersion}
  * @readonly
  */
-DuAEF.scriptVersion = "0.0.0";
+DuAEF.scriptVersion = new DuVersion('0.0.0');
 /**
  * True if the script is run for the first time (new or the version has changed since last run)
  * @memberof DuAEF
@@ -153,14 +153,14 @@ DuAEF.init = function( scriptName, scriptVersion )
     scriptName = def( scriptName, "DuAEF" );
     scriptVersion = def( scriptVersion, "0.0.0" );
     DuAEF.scriptName = scriptName;
-    DuAEF.scriptVersion = scriptVersion;
+    DuAEF.scriptVersion = new DuVersion(scriptVersion);
 
     //check if this script has already been run once
     // Check the version from latest run
     if ( app.settings.haveSetting( DuAEF.scriptName, "version" ) )
     {
         var prevVersion = app.settings.getSetting( DuAEF.scriptName, "version" );
-        if ( prevVersion == DuAEF.scriptVersion ) DuAEF.scriptFirstRun = false;
+        if ( prevVersion == scriptVersion ) DuAEF.scriptFirstRun = false;
     }
 }
 

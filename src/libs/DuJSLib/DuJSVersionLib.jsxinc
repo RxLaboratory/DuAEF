@@ -83,10 +83,9 @@ DuAEF.DuJS.Version = {};
 DuAEF.DuJS.Version.compare = function (vA, vB)
 {
 	vB = def(vB, DuAEF.scriptVersion);
-	if (vA === vB) return false;
 
 	if (! (vA instanceof DuVersion) ) vA = new DuVersion( vA );
-	if (! (vB instanceof DuVersion) ) vA = new DuVersion( vB );
+	if (! (vB instanceof DuVersion) ) vB = new DuVersion( vB );
 
 	//compare major version
 	if ( vA.major > vB.major ) return true;
