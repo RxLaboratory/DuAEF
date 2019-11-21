@@ -1291,7 +1291,10 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 				if (newProp) {
 					DuAEF.DuAE.Property.pickWhip(mp,newProp,true);
 					//AE 17.0.0 bug workaround: need a keyframe on the master property to be sure it's not ignored.
-
+					if (DuAEF.DuAE.App.version.version == 17 && DuAEF.DuAE.App.version.patch == 0)
+					{
+						mp.setValueAtTime(0, mp.value);
+					}
 				}
 			}
 		}
