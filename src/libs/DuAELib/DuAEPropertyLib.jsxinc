@@ -1277,54 +1277,6 @@ DuAEF.DuAE.Property.cleanKeyframes = function ( property ) {
 }
 
 /**
- * Gets the average speed of the animated propreties
- * @param {Property[]|PropertyInfo[]} props - The Properties
- * @param {bool}	 [preExpression=true]	- True to get the velocity from keyframes instead of the result of the exression
- * @return {float} The average speed in unit per second
- */
-DuAEF.DuAE.Property.getAverageSpeed = function ( props, preExpression ) {
-    if ( typeof preExpression === 'undefined' ) preExpression = true;
-
-    var averageSpeed = 0;
-    var count = 0;
-
-    for ( var i = 0; i < props.length; i++ ) {
-        var prop = props[ i ];
-        if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
-        if ( prop.propertyType != PropertyType.PROPERTY ) continue;
-        if ( !prop.canVaryOverTime ) continue;
-        if ( prop.numKeys < 1 ) continue;
-
-        var comp = DuAEF.DuAE.Property.getComp( prop );
-        var frames = comp.duration / comp.frameDuration;
-        var lastTime = comp.duration;
-        var firstTime = 0;
-        if ( preExpression ) {
-            lastTime = prop.keyTime( prop.numKeys );
-            firstTime = prop.keyTime( 1 );
-        }
-        var lastFrame = lastTime / comp.frameDuration;
-        var firstFrame = firstTime / comp.frameDuration;
-        if ( lastFrame > frames ) lastFrames = frames;
-        if ( firstFrame < 1 ) firstFrame = 1;
-        var sum = 0;
-        for ( var frame = firstFrame; frame < lastFrame; frame++ ) {
-            var time = frame * comp.frameDuration;
-            sum += DuAEF.DuAE.Property.getSpeed( prop, time, preExpression );
-        }
-        var speed = sum / ( lastFrame - firstFrame );
-
-        if ( speed > 0 ) {
-            averageSpeed += speed;
-            count++;
-        }
-    }
-
-    averageSpeed = averageSpeed / count;
-    return averageSpeed;
-}
-
-/**
  * Gets the maximum speed of the animated propreties
  * @param {Property[]|PropertyInfo[]} props - The Properties
  * @param {bool}	 [preExpression=true]	- True to get the velocity from keyframes instead of the result of the exression
@@ -1765,12 +1717,14 @@ DuAEF.DuAE.Property.isNumerical = function ( prop ) {
  * @param {Property|PropertyInfo}	 prop	- The property
  * @param {int}	 [axis=0]	- The axis (or the color channel) to get the range
  * @param {bool}	 [preExpression=true]	- True to get the range from keyframes instead of the result of the exression
+ * @param {bool}	 [fastMode=true]	- True to check the range with values only at keyframe times. False to check the range with all values, at each frame of the comp.
  * @return {float[]} The minimum and maximum value.<br />
  * The first item in the Array is not necesarily the lowest value, it is the first in time.
  */
-DuAEF.DuAE.Property.getRange = function ( prop, axis, preExpression ) {
-    if ( typeof axis === 'undefined' ) axis = 0;
-    if ( typeof preExpression === 'undefined' ) preExpression = true;
+DuAEF.DuAE.Property.getRange = function ( prop, axis, preExpression, fastMode ) {
+    axis = def(axis, 0);
+    preExpression = def(preExpression, true);
+    fastMode = def(fastMode, true);
 
     var propInfo = new PropertyInfo( prop );
     prop = propInfo.getProperty();
@@ -1791,8 +1745,15 @@ DuAEF.DuAE.Property.getRange = function ( prop, axis, preExpression ) {
         min = min[ axis ];
     }
 
-    for ( var i = 1; i < frames; i++ ) {
-        var val = prop.valueAtTime( i * comp.frameDuration, preExpression );
+    var count = frames-1;
+    if ( fastMode ) count = prop.numKeys;
+
+    if (count == 0) return [min, max];
+
+    for ( var i = 1; i <= count; i++ ) {
+        var iTime = i*comp.frameDuration;
+        if (fastMode) iTime = prop.keyTime(i);
+        var val = prop.valueAtTime( iTime, preExpression );
         if ( propInfo.dimensions > 1 ) val = val[ axis ];
         if ( val < min ) {
             min = val;
@@ -1814,10 +1775,14 @@ DuAEF.DuAE.Property.getRange = function ( prop, axis, preExpression ) {
  * If the property is not one of these types, returns 0.
  * @param {Property|PropertyInfo}	 prop	- The property
  * @param {bool}	 [preExpression=true]	- True to get the velocity from keyframes instead of the result of the exression
+ * @param {bool}	 [fastMode=true]	- True to limit the number of samples used to compute the velocity and make the process faster.<br />
+ * The number of samples is automatically adapted from the duration of the composition.<br />
+ * When true and if there are more than one keyframe, the velocity is sampled only between keyframes.
  * @return {float} The velocity.
  */
-DuAEF.DuAE.Property.getMaxVelocity = function ( prop, preExpression ) {
-    if ( typeof preExpression === 'undefined' ) preExpression = true;
+DuAEF.DuAE.Property.getMaxVelocity = function ( prop, preExpression, fastMode ) {
+    preExpression = def(preExpression, true);
+    fastMode = def(fastMode, true);
 
     var propInfo = prop;
     if ( !( prop instanceof PropertyInfo ) ) {
@@ -1834,9 +1799,25 @@ DuAEF.DuAE.Property.getMaxVelocity = function ( prop, preExpression ) {
     var comp = propInfo.comp;
     var frames = comp.duration / comp.frameDuration;
 
-    var prevVal = prop.valueAtTime( 0, preExpression );
+    var startFrame = 0;
+    var endFrame = frames;
+    var step = 1;
+    if (fastMode) {
 
-    for ( var i = 1; i < frames; i++ ) {
+        if (prop.numKeys > 1) {
+            startFrame = prop.keyTime(1) / comp.frameDuration;
+            endFrame = prop.keyTime(prop.numKeys) / comp.frameDuration;
+        }
+
+        var numFrames = endFrame - startFrame;
+        if (numFrames > 1000) {
+            step = Math.floor( numFrames/500 );
+        }
+    }
+
+    var prevVal = prop.valueAtTime( startFrame * comp.frameDuration, preExpression );
+
+    for ( var i = startFrame + 1; i < endFrame; i = i+step ) {
         var val = prop.valueAtTime( i * comp.frameDuration, preExpression );
         var vel = DuAEF.DuJS.Math.getLength( val, prevVal );
         if ( vel > velocity ) velocity = vel;
@@ -1846,6 +1827,66 @@ DuAEF.DuAE.Property.getMaxVelocity = function ( prop, preExpression ) {
     return velocity / comp.frameDuration;
 
 }
+
+/**
+ * Gets the average speed of the animated propreties
+ * @param {Property[]|PropertyInfo[]} props - The Properties
+ * @param {bool}	 [preExpression=true]	- True to get the velocity from keyframes instead of the result of the exression
+ * @param {bool}	 [fastMode=true]	- True to limit the number of samples used to compute the velocity and make the process faster.
+ * @return {float} The average speed in unit per second
+ */
+DuAEF.DuAE.Property.getAverageSpeed = function ( props, preExpression, fastMode ) {
+    preExpression = def(preExpression, true);
+    fastMode = def(fastMode, true);
+
+    var averageSpeed = 0;
+    var count = 0;
+
+    for ( var i = 0; i < props.length; i++ ) {
+        var prop = props[ i ];
+        if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+        if ( prop.propertyType != PropertyType.PROPERTY ) continue;
+        if ( !prop.canVaryOverTime ) continue;
+        if ( prop.numKeys < 1 && !preExpression ) continue;
+
+        var comp = DuAEF.DuAE.Property.getComp( prop );
+        var frames = comp.duration / comp.frameDuration;
+        var lastTime = comp.duration;
+        var firstTime = 0;
+        if ( preExpression || (fastMode && prop.numKeys > 1) ) {
+            lastTime = prop.keyTime( prop.numKeys );
+            firstTime = prop.keyTime( 1 );
+        }
+        var lastFrame = lastTime / comp.frameDuration;
+        var firstFrame = firstTime / comp.frameDuration;
+        if ( lastFrame > frames ) lastFrames = frames;
+        if ( firstFrame < 1 ) firstFrame = 1;
+
+        var step = 1;
+        if (fastMode) {
+            var numFrames = lastFrame - firstFrame;
+            if (numFrames > 1000) {
+                step = Math.floor( numFrames/500 );
+            }
+        }
+        
+        var sum = 0;
+        for ( var frame = firstFrame; frame < lastFrame; frame = frame + step ) {
+            var time = frame * comp.frameDuration;
+            sum += DuAEF.DuAE.Property.getSpeed( prop, time, preExpression );
+        }
+        var speed = sum / ( lastFrame - firstFrame );
+
+        if ( speed > 0 ) {
+            averageSpeed += speed;
+            count++;
+        }
+    }
+
+    averageSpeed = averageSpeed / count;
+    return averageSpeed;
+}
+
 
 /**
  * Converts the expression as a string which can be copy/pasted and included in a script.
