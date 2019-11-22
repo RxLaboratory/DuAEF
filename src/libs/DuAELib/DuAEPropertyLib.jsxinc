@@ -1808,23 +1808,20 @@ DuAEF.DuAE.Property.getMaxVelocity = function ( prop, preExpression, fastMode ) 
             startFrame = prop.keyTime(1) / comp.frameDuration;
             endFrame = prop.keyTime(prop.numKeys) / comp.frameDuration;
         }
-
-        var numFrames = endFrame - startFrame;
-        if (numFrames > 1000) {
-            step = Math.floor( numFrames/500 );
-        }
     }
 
-    var prevVal = prop.valueAtTime( startFrame * comp.frameDuration, preExpression );
+    var numFrames = endFrame - startFrame;
 
-    for ( var i = startFrame + 1; i < endFrame; i = i+step ) {
-        var val = prop.valueAtTime( i * comp.frameDuration, preExpression );
-        var vel = DuAEF.DuJS.Math.getLength( val, prevVal );
+    if (numFrames > 1000 && fastMode) {
+        step = Math.floor( numFrames/500 );
+    }
+
+    for ( var i = startFrame; i < endFrame; i = i+step ) {
+        var vel = DuAEF.DuAE.Property.getSpeed( prop, i * comp.frameDuration, preExpression );
         if ( vel > velocity ) velocity = vel;
-        prevVal = val;
     }
 
-    return velocity / comp.frameDuration;
+    return velocity;
 
 }
 
