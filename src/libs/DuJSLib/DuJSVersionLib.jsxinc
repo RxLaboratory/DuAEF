@@ -17,7 +17,7 @@
  */
 function DuVersion( version )
 {
-	version = def( version, '');
+	if (typeof version === 'undefined') version = '';
 	
 	var reV = /^(\d+)\.?(\d*)\.?(\d*)\D?(\S*)/i;
     var v = version.match( reV );
