@@ -1337,3 +1337,20 @@ DuAEF.Duik.Controller.getControllers = function (comp,selectedOnly)
 	})
 	return ctrls;
 }
+
+/**
+ * Tags some layers to be recognized as controllers by DuAEF/Duik
+ * @param {Layer|Layer[]} [layers=DuAEF.DuAE.Comp.getSelectedLayers()] - The layers to tag.
+ */
+DuAEF.Duik.Controller.tag = function (layers)
+{
+	layers = def (layers, DuAEF.DuAE.Comp.getSelectedLayers() );
+	if ( !layers instanceof Array ) layers = [layers];
+
+	if (layers.length == 0) return;
+
+	new Iterator(layers).do( function(layer) {
+		DuAEF.Duik.setDuikMarker(layer, "Controller", DuAEF.Duik.LayerTypes.CONTROLLER);
+        DuAEF.Duik.setDuikMarkerParameter( layer, DuAEF.Duik.MarkerParameters.CONTROLLER_ID, new Date().getTime() );
+	});
+}
