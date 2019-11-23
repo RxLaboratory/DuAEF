@@ -103,6 +103,11 @@ DuAEF.Duik.Animation.kleaner = function (prop,useExpression,easeStart,easeEnd,ef
 		{
 			effect = DuAEF.Duik.PseudoEffects.KLEANER.apply(propInfo.layer);
 		}
+		else if ( DuAEF.DuAE.Property.getLayer(effect).index != propInfo.layer.index )
+		{
+			effect = DuAEF.Duik.PseudoEffects.KLEANER.apply(propInfo.layer);
+		}
+
 		var index = DuAEF.Duik.PseudoEffects.KLEANER.index;
 		prop = propInfo.getProperty();
 		prop.expression = [DuAEF.Duik.expressionIds.KLEANER,
