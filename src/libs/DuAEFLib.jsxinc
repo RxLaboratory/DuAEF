@@ -11,8 +11,8 @@
  *
  *       DuAEF.forumURL = 'https://forum.rainboxlab.org';
  *       DuAEF.chatURL = 'http://chat.rainboxlab.org';
- *       DuAEF.bugReportURL = 'https://github.com/Rainbox-dev/DuAEF_Duik/issues/new?template=bug_report.md';
- *       DuAEF.featureRequestURL = 'https://github.com/Rainbox-dev/DuAEF_Duik/issues/new?template=feature_request.md';
+ *       DuAEF.bugReportURL = 'https://github.com/Rainbox-dev/DuAEF/issues/new?template=bug_report.md';
+ *       DuAEF.featureRequestURL = 'https://github.com/Rainbox-dev/DuAEF/issues/new?template=feature_request.md';
  *       DuAEF.aboutURL = 'https://rainboxlab.org/tools/duik/';
  *       DuAEF.scriptAbout = 'The Duduf After Effects Framework\nDeveloped by Nicolas Dufresne and Contributors.\n\nLicensed under the GNU General Public License v3.';
  *       DuAEF.newsServer = 'rainboxprod.net'
