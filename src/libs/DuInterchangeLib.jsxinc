@@ -65,7 +65,7 @@ DuAEF.Interchange.animation.exportAnimToJson = function (file,layers,selectedKey
 {
 	var data = {};
 	data.duaef = {};
-	data.duaef.version = DuAEF.version;
+	data.duaef.version = DuAEF.version.fullVersion;
 	data.duaef.animation = true;
 	data.duaef.rig = false;
 	data.layers = [];

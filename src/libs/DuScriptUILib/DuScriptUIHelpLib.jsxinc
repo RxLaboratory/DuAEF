@@ -69,7 +69,14 @@ DuAEF.DuScriptUI.initHelpPanel = function()
     }
 
     newsTab.build = function ( newsGroup ) {
-        DuAEF.DuScriptUI.helpPanel.newsPanel = DuAEF.DuScriptUI.addRSSPanel( newsGroup );
+        DuAEF.DuScriptUI.helpPanel.newsPanel = DuAEF.DuScriptUI.addRSSPanel(
+            newsGroup,
+            3600*24,
+            DuAEF.newsServer,
+            DuAEF.DuJS.Color.Colors.VERY_LIGHT_GRAY,
+            DuAEF.newsArgs,
+            DuAEF.newsUserAgentVersion
+            );
     }
 
     aboutTab.build = function ( aboutGroup ) {
@@ -183,33 +190,6 @@ DuAEF.DuScriptUI.updateHelpPopup = function( title, text, link )
 }
 
 /**
- * Gets the RSS content from a feed url, and set the news in the Help popup
- * @memberof DuAEF.DuRSS
- * @param {string} url - The url of the server.
- * @param {string} [subfolder='feed'] - The subdirectory of the feed (without a leading '/')
- * @param {int} [port=80] - The server port.
- * @return {RSSItem[]} The news items
- */
-DuAEF.DuScriptUI.getNews = function( url, subfolder, userAgentVersion, port )
-{
-    if ( !DuAEF.DuAE.App.hasFilesAndNetworkAccess ) return;
-    DuAEF.DuScriptUI.initHelpPanel();
-
-    DuAEF.DuScriptUI.helpPanel.newsPanel.updateRSS( url, subfolder, userAgentVersion, port )
-}
-
-/**
- * Sets the news in the help popup
- * @memberof DuAEF.DuRSS
- * @param {RSSItem[]} items - The items.
- */
-DuAEF.DuScriptUI.setNews = function( items )
-{
-    DuAEF.DuScriptUI.initHelpPanel();
-   //TODO new RSS Panel set items from offline
-}
-
-/**
  * Shows the help popup
  * @memberof DuAEF.DuScriptUI
  */
@@ -228,6 +208,7 @@ DuAEF.DuScriptUI.showNews = function()
 {
     DuAEF.DuScriptUI.initHelpPanel();
     DuAEF.DuScriptUI.helpPanel.setPanel( 1 );
+    DuAEF.DuScriptUI.helpPanel.newsPanel.updateRSS();
     DuAEF.DuScriptUI.helpPanel.show();
 }
 

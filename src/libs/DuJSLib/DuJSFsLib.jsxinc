@@ -244,6 +244,7 @@ DuAEF.DuJS.Fs.writeTextFile = function(file, content, append, encoding)
 */
 DuAEF.DuJS.Fs.parseJSON = function(file)
 {
+	if (!file.exists) return {};
 	//open and parse file
 	var json = DuAEF.DuJS.Fs.readFile(file);
 	if (json == '') return null;
@@ -385,6 +386,18 @@ DuAEF.DuJS.Fs.incrementFileName = function (file) {
 
 	return baseName.substring(0, baseName.length - numDigits) + num + '.' + ext;
 
+}
+
+/**
+ * Removes all forbidden characters from a string to be used as a filename
+ * @param {string} name - The filename to fix
+ * @param {string} [placeholder='.'] - The string used to replace the forbidden characters
+ * @return {string} The fixed filename
+ */
+DuAEF.DuJS.Fs.fixFileName = function (name, placeholder ) {
+	placeholder = def( placeholder, '.');
+	
+	return name.replace( /([\/\\:*?"<>|])/g, placeholder);
 }
 
 /**

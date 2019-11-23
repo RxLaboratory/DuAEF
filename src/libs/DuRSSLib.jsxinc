@@ -56,20 +56,34 @@ along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
 DuAEF.DuRSS = {};
 
 /**
-* Gets the RSS content from a feed url, and returns it as a JS object
+* Gets the RSS content from a feed url, and returns it as a JS object.<br />
+* DuRSS uses a cache system and gets the content online only if more time than a given interval has passed, otherwise it gets the contents from cache.
 * @memberof DuAEF.DuRSS
 * @param {string} url - The url of the server.
 * @param {string} [subfolder='feed'] - The subdirectory of the feed (without a leading '/')
 * @param {string} [userAgentVersion='DUAEF/0.0.0'] - Your script version name and number to be used as a user agent to connect to the server
 * @param {int} [port=80] - The server port.
+* @param {float} [updateInterval=3600] - The minimum interval between two updates of the feed (in seconds).
 * @return {DuRSSChannel|null}	The content of the RSS feed
 */
-DuAEF.DuRSS.get = function ( url, subfolder, userAgentVersion, port ) {
+DuAEF.DuRSS.get = function ( url, subfolder, userAgentVersion, port, updateInterval ) {
     if ( !DuAEF.DuAE.App.hasFilesAndNetworkAccess ) return null;
 
-    if ( typeof port === 'undefined' ) port = 80;
-    if ( typeof subfolder === 'undefined' ) subfolder = 'feed';
-    if ( typeof userAgentVersion === 'undefined' ) userAgentVersion = 'DuAEF/' + DuAEF.version;
+    userAgentVersion = def (userAgentVersion, 'DuAEF/' + DuAEF.version.fullVersion);
+    subfolder = def (subfolder, 'feed');
+    port = def (port, 80);
+    updateInterval = def (updateInterval, 3600);
+
+    //get cache
+    var rssCacheFolder = new Folder( DuAEF.DuJS.Fs.duaefData.absoluteURI + '/RSSCache/');
+    if ( !rssCacheFolder.exists ) rssCacheFolder.create();
+    var rssCacheFile = new File( rssCacheFolder.absoluteURI + '/' + DuAEF.DuJS.Fs.fixFileName(url + '.' + subfolder + '.json') );
+    var now = new Date().getTime();
+    var DuRSSChannel = DuAEF.DuJS.Fs.parseJSON( rssCacheFile );
+
+    if ( DuRSSChannel.lastCheck ) {
+        if ( now - DuRSSChannel.lastCheck < updateInterval*1000 ) return DuRSSChannel;
+    }
 
     //socket
     conn = new Socket;
@@ -94,6 +108,7 @@ DuAEF.DuRSS.get = function ( url, subfolder, userAgentVersion, port ) {
     DuRSSChannel.link = "";
     DuRSSChannel.description = "";
     DuRSSChannel.items = [];
+    DuRSSChannel.lastCheck = new Date().getTime();
 
     try {
         reply = new XML( reply );
@@ -119,6 +134,8 @@ DuAEF.DuRSS.get = function ( url, subfolder, userAgentVersion, port ) {
         item.pubDate = DuAEF.DuXML.getValue( xmlItem.pubDate, 'date' );
         DuRSSChannel.items.push( item );
     }
+
+    DuAEF.DuJS.Fs.saveJSON(DuRSSChannel, rssCacheFile);
 
     return DuRSSChannel;
 }

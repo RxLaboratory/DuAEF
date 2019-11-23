@@ -42,7 +42,7 @@ var DuAEF = {};
  * @memberof DuAEF
  * @type {string}
  */
-DuAEF.version = "0.1.0-Beta";
+DuAEF.version = new DuVersion('0.2.0');
 /**
  * Set to true and enable debug mode if you're a developper
  * @memberof DuAEF
@@ -94,6 +94,24 @@ DuAEF.aboutURL = '';
  * The text about the script
  */
 DuAEF.scriptAbout = '';
+/**
+ * The RSS server providing some news (only the domain name)
+ * @default 'rainboxprod.net'
+ */
+DuAEF.newsServer = 'rainboxprod.net';
+/**
+ * The  subfolder and arguments needed to get the news
+ */
+DuAEF.newsArgs = 'wp/feed';
+/**
+ * The port of the RSS server
+ * @default 80
+ */
+DuAEF.newsPort = 80;
+/**
+ * The user agent to use when getting news
+ */
+DuAEF.newsUserAgentVersion = 'DuAEF/' + DuAEF.version.fullVersion;
 
 /**
  * The current DuAEF File

@@ -16,10 +16,10 @@
  * @method
  * @memberof DuRSSPanel
  * @name updateRSS
- * @param {string} rssUrl - The url of the RSS server.
- * @param {string} [rssArgs='feed'] - The subdirectory/arguments to append to the url (without a leading '/')
- * @param {string} [rssUserAgentVersion='DUAEF/0.0.0'] - Your script version name and number to be used as a user agent to connect to the server
- * @param {int} [rssPort=80] - The server port.
+ * @param {string} [rssUrl] - The url of the RSS server. Omit to use the url provided when creating the panel.
+ * @param {string} [rssArgs] - The subdirectory/arguments to append to the url (without a leading '/'). Omit to use the arguments provided when creating the panel.
+ * @param {string} [rssUserAgentVersion] - Your script version name and number to be used as a user agent to connect to the server. Omit to use the user agent provided when creating the panel.
+ * @param {int} [rssPort] - The server port. Omit to use the port provided when creating the panel.
  */
 
 /**
@@ -45,23 +45,26 @@
  */
 
 /**
- * Creates a panel which displays RSS feed
+ * Creates a panel which displays RSS feed.<br />
+ * DuRSS uses a cache system and gets the content online only if more time than a given interval has passed, otherwise it gets the contents from cache.
  * @memberof DuAEF.DuScriptUI
  * @param {Window|Panel|Group} container - The ScriptUI Object which will contain and display the panel.
- * @param {string} rssUrl - The url of the RSS server.
+ * @param {int} [updateInterval=3600] - The minimum interval between two updates of the feed (in seconds).
+ * @param {string} [rssUrl] - The url of the RSS server.
  * @param {string} [titleColor] - The color for the title of articles.
  * @param {string} [rssArgs='feed'] - The subdirectory/arguments to append to the url (without a leading '/')
  * @param {string} [rssUserAgentVersion='DUAEF/0.0.0'] - Your script version name and number to be used as a user agent to connect to the server
  * @param {int} [rssPort=80] - The server port.
  * @return {TabPanel} The panel.
  */
-DuAEF.DuScriptUI.addRSSPanel = function( container, rssUrl, titleColor, rssArgs, rssUserAgentVersion, rssPort )
+DuAEF.DuScriptUI.addRSSPanel = function( container, updateInterval, rssUrl, titleColor, rssArgs, rssUserAgentVersion, rssPort )
 {
     titleColor = def(titleColor, DuAEF.DuJS.Color.Colors.VERY_LIGHT_GREY);
     rssUrl = def(rssUrl, '');
     rssArgs = def(rssArgs, 'feed');
-    rssUserAgentVersion = def(rssUserAgentVersion, 'DuAEF/' + DuAEF.version );
+    rssUserAgentVersion = def(rssUserAgentVersion, 'DuAEF/' + DuAEF.version.fullVersion );
     rssPort = def(rssPort, 80);
+    updateInterval = def(updateInterval, 3600);
     
     var rssPanel = DuAEF.DuScriptUI.addGroup(container, 'column');
     rssPanel.alignment = [ 'fill', 'fill' ];
@@ -70,6 +73,7 @@ DuAEF.DuScriptUI.addRSSPanel = function( container, rssUrl, titleColor, rssArgs,
     rssPanel.userAgentVersion = rssUserAgentVersion;
     rssPanel.port = rssPort;
     rssPanel.currentItemURL = '';
+    rssPanel.updateInterval = updateInterval;
     
     //title and date
     var ui_newsTitle = DuAEF.DuScriptUI.addStaticText( rssPanel, '', titleColor, '', true, true );
@@ -135,7 +139,7 @@ DuAEF.DuScriptUI.addRSSPanel = function( container, rssUrl, titleColor, rssArgs,
         userAgentVersion = def( userAgentVersion, rssPanel.userAgentVersion );
         port = def( port, rssPanel.port );
 
-        rssPanel.channel = DuAEF.DuRSS.get( url, args, userAgentVersion, port );
+        rssPanel.channel = DuAEF.DuRSS.get( url, args, userAgentVersion, port, rssPanel.updateInterval );
         rssPanel.setCurrentIndex(0);
 
         rssPanel.url = url;
@@ -174,7 +178,7 @@ DuAEF.DuScriptUI.addRSSPanel = function( container, rssUrl, titleColor, rssArgs,
         ui_newsDescription.text = item.description ;
 
         ui_newsOpenButton.enabled = item.link != '';
-        ui_prevButton.enabled = itemIndex != numItems.length - 1;
+        ui_prevButton.enabled = itemIndex != numItems - 1;
         ui_nextButton.enabled = itemIndex != 0;
     }
 
@@ -200,7 +204,6 @@ DuAEF.DuScriptUI.addRSSPanel = function( container, rssUrl, titleColor, rssArgs,
     ui_nextButton.onClick = rssPanel.next;
     ui_newsOpenButton.onClick = rssPanel.openCurrentLink;
     ui_newsOpenButton.onAltClick = function () { DuAEF.DuSystem.openURL( 'https://bat-ultra-bunny.tumblr.com/' ) };
-
 
     rssPanel.updateRSS();
     return rssPanel;
