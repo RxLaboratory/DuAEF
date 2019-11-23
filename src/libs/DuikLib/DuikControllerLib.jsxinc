@@ -324,9 +324,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		ctrl.transform.anchorPoint.setValue([50,50]);
 	}
 	else ctrl = comp.layers.addShape();
+
 	DuAEF.Duik.setDuikMarker(ctrl,"Controller",DuAEF.Duik.LayerTypes.CONTROLLER);
 
-	if (layer != null && type != DuAEF.Duik.Controller.Types.SLIDER && type != DuAEF.Duik.Controller.Types.DOUBLE_SLIDER && type != DuAEF.Duik.Controller.Types.ANGLE)
+	if (layer != null)
 	{
 		var topLayer = layer;
 		if (layer instanceof Array) 
@@ -367,12 +368,11 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(newName,comp);
 
 		//parent
-		if (parent) DuAEF.DuAE.Layer.parent(layer, ctrl, false);
+		if (parent && type != DuAEF.Duik.Controller.Types.SLIDER && type != DuAEF.Duik.Controller.Types.DOUBLE_SLIDER && type != DuAEF.Duik.Controller.Types.ANGLE) DuAEF.DuAE.Layer.parent(layer, ctrl, false);
 	}
 
 	DuAEF.Duik.setDuikMarkerParameter(ctrl,DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE,type);
-	var id = new Date().getTime();
-	DuAEF.Duik.setDuikMarkerParameter( ctrl, DuAEF.Duik.MarkerParameters.CONTROLLER_ID, id );
+	DuAEF.Duik.setDuikMarkerParameter( ctrl, DuAEF.Duik.MarkerParameters.CONTROLLER_ID, new Date().getTime() );
 
 	DuAEF.Dugr.addLayerToGroup(ctrl,"Controllers");
 	ctrl.guideLayer = true;
@@ -1157,13 +1157,14 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 
 		iconGroup.transform.opacity.expression = 'effect("' + effect.name + '")(' + pseudoEffect.index["Handle_Opacity_Slider"] + ')';
 
-		ctrl.position.expression = '[value[0],0];';
-
 		//create anchor
 		var ctrlBG = comp.layers.addShape();
+		ctrlBG.transform.position.setValue( ctrl.transform.position.value );
 		ctrl.parent = ctrlBG;
+		ctrl.position.expression = '[value[0],0];';
 		ctrlBG.moveAfter(ctrl);
 		DuAEF.Duik.setDuikMarker(ctrlBG,"Controller Background",DuAEF.Duik.LayerTypes.CONTROLLER);
+		DuAEF.Duik.setDuikMarkerParameter( ctrlBG, DuAEF.Duik.MarkerParameters.CONTROLLER_ID, new Date().getTime() );
 		ctrlBG.selected = false;
 		ctrl.selected = true;
 		ctrlBG.guideLayer = true;
@@ -1210,9 +1211,11 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 
 		//create anchor
 		var ctrlBG = comp.layers.addShape();
+		ctrlBG.transform.position.setValue( ctrl.transform.position.value );
 		ctrl.parent = ctrlBG;
 		ctrlBG.moveAfter(ctrl);
 		DuAEF.Duik.setDuikMarker(ctrlBG,"Controller Background",DuAEF.Duik.LayerTypes.CONTROLLER);
+		DuAEF.Duik.setDuikMarkerParameter( ctrlBG, DuAEF.Duik.MarkerParameters.CONTROLLER_ID, new Date().getTime() );
 		ctrlBG.selected = false;
 		ctrl.selected = true;
 		ctrlBG.guideLayer = true;
@@ -1270,9 +1273,11 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 
 		//create anchor
 		var ctrlBG = comp.layers.addShape();
+		ctrlBG.transform.position.setValue( ctrl.transform.position.value );
 		ctrl.parent = ctrlBG;
 		ctrlBG.moveAfter(ctrl);
 		DuAEF.Duik.setDuikMarker(ctrlBG,"Controller Background",DuAEF.Duik.LayerTypes.CONTROLLER);
+		DuAEF.Duik.setDuikMarkerParameter( ctrlBG, DuAEF.Duik.MarkerParameters.CONTROLLER_ID, new Date().getTime() );
 		ctrlBG.selected = false;
 		ctrl.selected = true;
 		ctrlBG.guideLayer = true;
