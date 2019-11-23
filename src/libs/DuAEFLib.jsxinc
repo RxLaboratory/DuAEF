@@ -169,7 +169,7 @@ DuAEF.init = function( scriptName, scriptVersion )
  */
 DuAEF.enterRunTime = function()
 {
-    app.settings.saveSetting( DuAEF.scriptName, "version", DuAEF.scriptVersion );
+    app.settings.saveSetting( DuAEF.scriptName, "version", DuAEF.scriptVersion.fullVersion );
     DuAEF.state = DuAEF.States.RUNTIME;
 
     //do post init methods
