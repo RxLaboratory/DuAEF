@@ -1259,7 +1259,16 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 				break;
 			}
 		}
-		if (!newCtrlLayer) return;
+
+		//try by name (older rigs)
+		if (!newCtrlLayer) {
+			for (var i = 0, num = newCtrls.length; i < num; i++) {
+				if ( newCtrls[i].layer.name == controller.layer.name ) {
+					newCtrlLayer = newCtrls[i].layer;
+					break;
+				}
+			}
+		}
 
 		//use locators for all controllers parented to something else than a controller or nothing
 		if (ctrlLayer.reparent) DuAEF.Duik.Rigging.parent(newCtrlLayer, ctrlLayer.parent);
