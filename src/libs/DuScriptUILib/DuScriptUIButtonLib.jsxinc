@@ -1,0 +1,368 @@
+
+/**
+ * @class
+ * @name DuButton
+ * @classdesc For use with {@link DuAEF.DuScriptUI}.<br />
+ * An Image Button.<br />
+ * This is not a real class, and cannot be instanciated.<br />
+ * Use {@link DuAEF.DuScriptUI.addButton} to create an Image Button.<br />
+ * The Image Button inherits the Group object from ScriptUI and has all of its properties and methods.
+ * @property {string} standardImage - The path to the image (or a PNG as a string representation)
+ * @property {string} imageOver - The path to the image (or a PNG as a string representation) to display when mouseover
+ * @property {Image} image - The scriptui object representing the image
+ * @property {StaticText} label - The label
+ * @property {DuButton~onClick} onClick - The function to execute when the button is clicked
+ * @property {DuButton~onAltClick} onClick - The function to execute when the button is Alt + clicked
+ * @property {DuButton~onCtrlClick} onClick - The function to execute when the button is Ctrl + clicked
+ * @property {DuButton~onCtrlAltClick} onClick - The function to execute when the button is Ctrl + Alt + clicked
+ */
+
+/**
+ * The function to execute when the button is clicked.
+ * @callback DuButton~onClick
+ * @memberof DuButton
+ */
+
+/**
+ * The function to execute when the button is Alt + clicked.
+ * @callback DuButton~onAltClick
+ * @memberof DuButton
+ */
+
+/**
+ * The function to execute when the button is Ctrl + clicked.
+ * @callback DuButton~onCtrlClick
+ * @memberof DuButton
+ */
+
+/**
+ * The function to execute when the button is Ctrl + Alt + clicked.
+ * @callback DuButton~onCtrlAltClick
+ * @memberof DuButton
+ */
+
+/**
+ * Creates a button with an optionnal icon. Must have at least an icon or a text, or both.
+ * @memberof DuAEF.DuScriptUI
+ * @param {Panel|Window|Group}			container	- The ScriptUI Object which will contain and display the button.
+ * @param {string}					[text]		- The label of the button. Default: empty string
+ * @param {string}					[image]		- The path to the icon. Default: empty string
+ * @param {string}					[helpTip]		- The helptip. Default: empty string
+ * @param {string}					[imageOver=image]	- The path to an icon displayed when the mouse is over the button.
+ * @param {string}					[imageDisabled=image]	- The path to an icon displayed when the button is disabled.
+ * @return {DuButton}			The image button created.
+ */
+DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOver )
+{
+    if (DuAEF.DuJS.typeof(container) != 'Group' && DuAEF.DuJS.typeof(container) != 'Panel' && DuAEF.DuJS.typeof(container) != 'Window' )
+    {
+        throw 'DuScriptUI: DuAEF.DuScriptUI.addButton(container, text, image, helpTip, imageOver):\nTypeError.\n\ncontainer has to be a Group/Panel/Window.\n\ncontainer is ' + DuAEF.DuJS.typeof(container) + ' with value ' + container.toString();
+    }
+
+    if ( typeof text === 'undefined' ) text = '';
+    if ( typeof image === 'undefined' ) image = '';
+    if ( typeof helpTip === 'undefined' ) helpTip = '';
+    if ( typeof imageOver === 'undefined' ) imageOver = '';
+    if ( typeof imageDisabled === 'undefined' ) imageDisabled = '';
+    if ( imageOver != '' && !DuAEF.DuJS.Fs.fileExists( imageOver ) ) imageOver = '';
+    if ( image != '' && !DuAEF.DuJS.Fs.fileExists( image ) ) image = '';
+    if ( imageDisabled != '' && !DuAEF.DuJS.Fs.fileExists( imageDisabled ) ) imageDisabled = '';
+
+    if ( text != '' )
+    {
+        DuAEF.DuScriptUI.uiStrings.push( text );
+        text = tr( text );
+    }
+    if ( helpTip != '' )
+    {
+        DuAEF.DuScriptUI.uiStrings.push( helpTip );
+        helpTip = tr( helpTip );
+    }
+
+    if ( image == '' && text == '' ) text = 'o';
+
+    var imageButton = container.add( 'group' );
+    imageButton.orientation = 'row';
+    imageButton.margins = 2;
+    if ( image == '' ) imageButton.margins = 5;
+    imageButton.alignment = [ 'fill', 'fill' ];
+    imageButton.spacing = 0;
+    imageButton.group = imageButton;
+
+    imageButton.standardImage = image;
+    imageButton.imageOver = imageOver;
+    imageButton.onClick = function() {};
+    imageButton.onAltClick = function() {};
+    imageButton.onCtrlAltClick = function() {};
+    imageButton.onCtrlClick = function() {};
+    imageButton.image = null;
+    imageButton.label = null;
+
+    //Add fillers to be able to click anywhere on the button
+    if ( text != '' )
+    {
+        imageButton.fillerL = imageButton.add( 'statictext', undefined, "" );
+        imageButton.fillerL.alignment = [ 'fill', 'fill' ];
+    }
+
+    if ( image != '' )
+    {
+        var icon = imageButton.add( 'image', undefined, imageButton.standardImage );
+        icon.alignment = [ 'center', 'center' ];
+        icon.helpTip = helpTip;
+        imageButton.image = icon;
+        imageButton.icon = icon;
+    }
+
+    if ( text != '' )
+    {
+        var label = imageButton.add( 'statictext', undefined, text );
+        label.helpTip = helpTip;
+        if ( image == '' ) label.alignment = [ 'left', 'center' ];
+        imageButton.label = label;
+        DuAEF.DuScriptUI.setBackgroundColor( imageButton, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+        imageButton.alignment = [ 'fill', 'top' ];
+    }
+
+    //Add fillers to be able to click anywhere on the button
+    if ( text != '' )
+    {
+        imageButton.fillerR = imageButton.add( 'statictext', undefined, "" );
+        imageButton.fillerR.alignment = [ 'fill', 'fill' ];
+    }
+
+    //events
+    imageButton.clicked = function()
+    {
+        DuAEF.Debug.safeRun(imageButton.onClick);
+    }
+
+    imageButton.shiftClicked = function()
+    {
+        DuAEF.DuScriptUI.updateHelpPopup( imageButton.help.title, imageButton.help.text, imageButton.help.link );
+
+        if ( imageButton.help.text != '' )
+        {
+            DuAEF.DuScriptUI.showHelp();
+        }
+    }
+
+    imageButton.altClicked = function()
+    {
+        DuAEF.Debug.safeRun(imageButton.onAltClick);
+    }
+
+    imageButton.ctrlAltClicked = function()
+    {
+        DuAEF.Debug.safeRun(imageButton.onCtrlAltClick);
+    }
+
+    imageButton.ctrlClicked = function()
+    {
+        DuAEF.Debug.safeRun(imageButton.onCtrlClick);
+    }
+
+    imageButton.highlight = function( e )
+    {
+        e.stopPropagation();
+        DuAEF.DuScriptUI.dimControls();
+        if ( icon )
+            if ( imageButton.imageOver != '' ) icon.image = imageButton.imageOver;
+        if ( label )
+        {
+            DuAEF.DuScriptUI.setTextColor( imageButton.label, DuAEF.DuJS.Color.Colors.VERY_LIGHT_GREY );
+            DuAEF.DuScriptUI.setBackgroundColor( imageButton.group, DuAEF.DuJS.Color.Colors.DARK_GREY );
+        }
+        DuAEF.DuScriptUI.highlightedControls.push( imageButton );
+    }
+
+    imageButton.dim = function()
+    {
+        if ( icon )
+            if ( imageButton.standardImage != '' ) icon.image = imageButton.standardImage;
+        if ( label )
+        {
+            DuAEF.DuScriptUI.setTextColor( imageButton.label, DuAEF.DuJS.Color.Colors.LIGHT_GREY );
+            DuAEF.DuScriptUI.setBackgroundColor( imageButton.group, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+        }
+    }
+
+    //add events
+    imageButton.addEventListener( 'click', function( e )
+    {
+        if ( e.shiftKey ) imageButton.shiftClicked();
+        else if ( e.altKey && e.ctrlKey ) imageButton.ctrlAltClicked();
+        else if ( e.altKey ) imageButton.altClicked();
+        else if ( e.ctrlKey ) imageButton.ctrlClicked();
+        else imageButton.clicked();
+    }, true );
+
+    if ( label )
+    {
+        imageButton.label.addEventListener( "mouseover", imageButton.highlight );
+        imageButton.fillerL.addEventListener( "mouseover", imageButton.highlight );
+        imageButton.fillerR.addEventListener( "mouseover", imageButton.highlight );
+    }
+    // Hack - CS6 Bug on mouseover with images
+    if ( DuAEF.DuAE.App.version.version > 11 && icon )
+    {
+        imageButton.icon.addEventListener( "mouseover", imageButton.highlight );
+    }
+
+    imageButton.help = {};
+    imageButton.help.title = '';
+    imageButton.help.text = '';
+    imageButton.help.link = '';
+
+    //help popup
+    imageButton.setHelp = function( title, text, link )
+    {
+        if ( text != '' ) DuAEF.DuScriptUI.uiStrings.push( title );
+        title = tr( title );
+        imageButton.help.title = title;
+        imageButton.help.text = text;
+        imageButton.help.link = link;
+    }
+
+    return imageButton;
+}
+
+/**
+ * @class
+ * @name DuSmallButton
+ * @classdesc For use with {@link DuAEF.DuScriptUI}.<br />
+ * An Small Button.<br />
+ * This is not a real class, and cannot be instanciated.<br />
+ * Use {@link DuAEF.DuScriptUI.addSmallButton} to create a Small Button.<br />
+ * The Small Button inherits the Group object from ScriptUI and has all of its properties and methods.
+ * @property {StaticText} label - The label
+ * @property {any} value - A user value stored in the button, which is passed to the onClick method
+ * @property {DuSmallButton~onClick} onClick - The function to execute when the button is clicked
+ */
+
+/**
+ * The function to execute when the button is clicked.<br />
+ * The implementation of this function can take one parameter which is the used defined value of the button.
+ * @callback DuSmallButton~onClick
+ * @memberof DuSmallButton
+ * @param {any} value - The used defined value of the button
+ */
+
+/**
+ * Creates a small button.
+ * @memberof DuAEF.DuScriptUI
+ * @param {Panel|Window|Group}			container	- The ScriptUI Object which will contain and display the button.
+ * @param {string}					text		- The label of the button. Default: empty string
+ * @param {string}					[helpTip]		- The helptip. Default: empty string
+ * @param {any}					[value]		- A user value stored in the button, which is passed to the onClick method
+ * @return {DuButton}			The image button created.
+ */
+DuAEF.DuScriptUI.addSmallButton = function( container, text, helpTip, value )
+{
+    if ( typeof helpTip === 'undefined' ) helpTip = '';
+
+    DuAEF.DuScriptUI.uiStrings.push( text );
+    text = tr( text );
+    if ( helpTip != '' )
+    {
+        DuAEF.DuScriptUI.uiStrings.push( helpTip );
+        helpTip = tr( helpTip );
+    }
+
+    var smallButton = container.add( 'group' );
+    smallButton.orientation = 'row';
+    smallButton.margins = 0;
+    smallButton.alignment = [ 'fill', 'top' ];
+    smallButton.alignChildren = [ 'fill', 'fill' ];
+    smallButton.spacing = 0;
+
+    smallButton.onClick = function() {};
+    smallButton.onAltClick = function() {};
+    smallButton.onCtrlAltClick = function() {};
+    smallButton.onCtrlClick = function() {};
+    smallButton.label = smallButton.add( 'statictext', undefined, text );
+    smallButton.label.helpTip = helpTip;
+    smallButton.label.justify = 'center';
+    DuAEF.DuScriptUI.setBackgroundColor( smallButton, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+
+    smallButton.value = value;
+
+    //events
+    smallButton.clicked = function()
+    {
+        DuAEF.Debug.safeRun(smallButton.onClick, smallButton.value);
+    }
+
+    smallButton.shiftClicked = function()
+    {
+        DuAEF.DuScriptUI.updateHelpPopup( smallButton.help.title, smallButton.help.text, smallButton.help.link );
+
+        if ( smallButton.help.text != '' )
+        {
+            DuAEF.DuScriptUI.showHelp();
+        }
+    }
+
+    smallButton.altClicked = function()
+    {
+        DuAEF.Debug.safeRun(smallButton.onAltClick);
+    }
+
+    smallButton.ctrlAltClicked = function()
+    {
+        DuAEF.Debug.safeRun(smallButton.onCtrlAltClick);
+    }
+
+    smallButton.ctrlClicked = function()
+    {
+        DuAEF.Debug.safeRun(smallButton.onCtrlClick);
+    }
+
+    smallButton.highlight = function( e )
+    {
+        e.stopPropagation();
+        DuAEF.DuScriptUI.dimControls();
+
+        DuAEF.DuScriptUI.setTextColor( smallButton.label, DuAEF.DuJS.Color.Colors.VERY_LIGHT_GREY );
+        DuAEF.DuScriptUI.setBackgroundColor( smallButton, DuAEF.DuJS.Color.Colors.DARK_GREY );
+
+        DuAEF.DuScriptUI.highlightedControls.push( smallButton );
+    }
+
+    smallButton.dim = function()
+    {
+        DuAEF.DuScriptUI.setTextColor( smallButton.label, DuAEF.DuJS.Color.Colors.LIGHT_GREY );
+        DuAEF.DuScriptUI.setBackgroundColor( smallButton, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+    }
+
+    //add events
+    smallButton.addEventListener( 'click', function( e )
+    {
+        if ( e.shiftKey ) smallButton.shiftClicked();
+        else if ( e.altKey && e.ctrlKey ) smallButton.ctrlAltClicked();
+        else if ( e.altKey ) smallButton.altClicked();
+        else if ( e.ctrlKey ) smallButton.ctrlClicked();
+        else smallButton.clicked();
+    }, true );
+
+
+    smallButton.addEventListener( "mouseover", smallButton.highlight );
+
+
+    smallButton.help = {};
+    smallButton.help.title = '';
+    smallButton.help.text = '';
+    smallButton.help.link = '';
+
+    //help popup
+    smallButton.setHelp = function( title, text, link )
+    {
+        if ( text != '' ) DuAEF.DuScriptUI.uiStrings.push( title );
+        title = tr( title );
+        smallButton.help.title = title;
+        smallButton.help.text = text;
+        smallButton.help.link = link;
+    }
+
+    return smallButton;
+}

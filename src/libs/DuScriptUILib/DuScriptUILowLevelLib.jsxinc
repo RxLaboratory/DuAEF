@@ -1,0 +1,27 @@
+
+//low-level undocumented list: keeps the currently highlighted controls
+DuAEF.DuScriptUI.highlightedControls = [];
+
+//low-level undocumented list: keeps all the tabs, used in the buildAllTabs method
+DuAEF.DuScriptUI.allTabs = [];
+
+//low-level undocumented flag: set to true when showUI has been called. Before this, there's no need to set layout for childre, this will improve performance greatly.
+DuAEF.DuScriptUI.uiShown = false;
+
+
+//low-level undocumented function: dims all currently highlighted controls
+DuAEF.DuScriptUI.dimControls = function( e )
+{
+    if ( DuAEF.DuScriptUI.highlightedControls.length == 0 ) return;
+    for ( var i = DuAEF.DuScriptUI.highlightedControls.length - 1; i >= 0; i-- )
+    {
+        try
+        {
+            DuAEF.DuScriptUI.highlightedControls[ i ].dim();
+        }
+        catch ( e )
+        {};
+        DuAEF.DuScriptUI.highlightedControls.pop();
+    }
+}
+

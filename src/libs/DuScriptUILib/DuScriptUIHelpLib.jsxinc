@@ -1,0 +1,243 @@
+
+/**
+ * The panel where the help is displayed
+ */
+DuAEF.DuScriptUI.helpPanel = DuAEF.DuScriptUI.createPopup( "Help" );
+
+//low-level undocumented flag. true if the help panel has been initialized (happens on first display)
+DuAEF.DuScriptUI.helpPanel.initialized = false;
+
+//Initializes the help panel
+DuAEF.DuScriptUI.initHelpPanel = function()
+{
+    if ( DuAEF.DuScriptUI.helpPanel.initialized ) return;
+
+    DuAEF.DuScriptUI.helpPanel.pin(true);
+
+    DuAEF.DuScriptUI.helpPanel.initialized = true;
+
+    DuAEF.DuScriptUI.helpPanel.link = '';
+    DuAEF.DuScriptUI.helpPanel.news = {};
+    DuAEF.DuScriptUI.helpPanel.about = {};
+
+    DuAEF.DuScriptUI.helpPanel.contents.margins = 2;
+    DuAEF.DuScriptUI.helpPanel.contents.spacing = 0;
+    DuAEF.DuScriptUI.helpPanel.contents.maximumSize.height = 500;
+    DuAEF.DuScriptUI.helpPanel.contents.alignChildren = [ 'fill', 'fill' ];
+
+    //add the tab panel
+    var tabPanel = DuAEF.DuScriptUI.addTabPanel( DuAEF.DuScriptUI.helpPanel.contents );
+
+    //add tabs
+    var helpTab = tabPanel.addTab(
+        "Help",
+        DuAEF.DuBinary.toFile( w14_help_m ),
+        '',
+        DuAEF.DuBinary.toFile( w14_help_l )
+    );
+    var newsTab = tabPanel.addTab(
+        "News",
+        DuAEF.DuBinary.toFile( w14_news_m ),
+        '',
+        DuAEF.DuBinary.toFile( w14_news_l )
+    );
+    var aboutTab = tabPanel.addTab(
+        "About",
+        DuAEF.DuBinary.toFile( w14_help_m ),
+        '',
+        DuAEF.DuBinary.toFile( w14_help_l )
+    );
+
+    helpTab.build = function ( helpGroup ) {
+        //add title
+        DuAEF.DuScriptUI.helpPanel.title = DuAEF.DuScriptUI.addStaticText( helpGroup, '', DuAEF.DuJS.Color.Colors.VERY_LIGHT_GREY );
+        DuAEF.DuScriptUI.helpPanel.title.alignment = [ 'fill', 'top' ];
+
+        //add text
+        DuAEF.DuScriptUI.helpPanel.help = helpGroup.add( 'edittext', undefined, '',
+        {
+            multiline: true
+        } );
+        DuAEF.DuScriptUI.helpPanel.help.alignment = [ 'fill', 'fill' ];
+
+        //more button
+        DuAEF.DuScriptUI.helpPanel.helpMoreButton = DuAEF.DuScriptUI.addButton( helpGroup, "More...", DuAEF.DuBinary.toFile( w14_url_m ), "Read more details online", DuAEF.DuBinary.toFile( w14_url_l ) );
+        DuAEF.DuScriptUI.helpPanel.helpMoreButton.alignment = ['fill','bottom'];
+
+        DuAEF.DuScriptUI.helpPanel.helpMoreButton.onClick = function () { DuAEF.DuSystem.openURL( DuAEF.DuScriptUI.helpPanel.link ); };
+        DuAEF.DuScriptUI.helpPanel.helpMoreButton.onAltClick = function () { DuAEF.DuSystem.openURL( 'https://bat-ultra-bunny.tumblr.com/' ); };
+    }
+
+    newsTab.build = function ( newsGroup ) {
+        DuAEF.DuScriptUI.helpPanel.newsPanel = DuAEF.DuScriptUI.addRSSPanel( newsGroup );
+    }
+
+    aboutTab.build = function ( aboutGroup ) {
+        //add title
+        DuAEF.DuScriptUI.helpPanel.title = DuAEF.DuScriptUI.addStaticText( aboutGroup, DuAEF.scriptName + " (v" + DuAEF.scriptVersion.fullVersion + ")", DuAEF.DuJS.Color.Colors.VERY_LIGHT_GREY );
+        DuAEF.DuScriptUI.helpPanel.title.alignment = [ 'fill', 'top' ];
+
+        //add text
+        DuAEF.DuScriptUI.helpPanel.about.help = aboutGroup.add( 'edittext', undefined, DuAEF.scriptAbout,
+        {
+            multiline: true
+        } );
+        DuAEF.DuScriptUI.helpPanel.about.help.alignment = [ 'fill', 'fill' ];
+
+        //more button
+        DuAEF.DuScriptUI.helpPanel.moreButton = DuAEF.DuScriptUI.addButton( aboutGroup, "More...", DuAEF.DuBinary.toFile( w14_url_m ), "Read more details online", DuAEF.DuBinary.toFile( w14_url_l ) );
+        DuAEF.DuScriptUI.helpPanel.moreButton.alignment = ['fill','bottom'];
+
+        DuAEF.DuScriptUI.helpPanel.moreButton.onClick = function () { DuAEF.DuSystem.openURL( DuAEF.aboutURL ); };
+        DuAEF.DuScriptUI.helpPanel.moreButton.onAltClick = function () { DuAEF.DuSystem.openURL( 'https://bat-ultra-bunny.tumblr.com/' ); };
+    }
+
+    var urlButtonsGroup = DuAEF.DuScriptUI.addGroup( DuAEF.DuScriptUI.helpPanel.contents, 'row' );
+    urlButtonsGroup.alignment = [ 'fill', 'bottom' ];
+
+    var socialButtonsGroup1 = DuAEF.DuScriptUI.addGroup( urlButtonsGroup, 'column' );
+    socialButtonsGroup1.alignment= ['fill','bottom'];
+    if (DuAEF.forumURL != '')
+    {
+        DuAEF.DuScriptUI.helpPanel.forumButton = DuAEF.DuScriptUI.addButton( socialButtonsGroup1, "Forum", DuAEF.DuBinary.toFile( w18_forum_l ), "Visit our forum", DuAEF.DuBinary.toFile( w18_forum_r ) );
+        DuAEF.DuScriptUI.helpPanel.forumButton.onClick = function ()
+        {
+            DuAEF.DuSystem.openURL( DuAEF.forumURL );
+        }
+    }
+    if (DuAEF.featureRequestURL != '')
+    {
+        DuAEF.DuScriptUI.helpPanel.featureRequestURL = DuAEF.DuScriptUI.addButton( socialButtonsGroup1, "Feature Request", DuAEF.DuBinary.toFile( w18_featurerequest_l ), "Request something new", DuAEF.DuBinary.toFile( w18_featurerequest_r ) );
+        DuAEF.DuScriptUI.helpPanel.featureRequestURL.onClick = function ()
+        {
+            DuAEF.DuSystem.openURL( DuAEF.featureRequestURL );
+        }
+    }
+
+    var socialButtonsGroup2 = DuAEF.DuScriptUI.addGroup( urlButtonsGroup, 'column' );
+    socialButtonsGroup2.alignment= ['fill','bottom'];
+    if (DuAEF.chatURL != '')
+    {
+        DuAEF.DuScriptUI.helpPanel.discordButton = DuAEF.DuScriptUI.addButton( socialButtonsGroup2, "Live chat", DuAEF.DuBinary.toFile( w18_discord_l ), "Come and have a chat!", DuAEF.DuBinary.toFile( w18_discord_r ) );
+        DuAEF.DuScriptUI.helpPanel.discordButton.onClick = function ()
+        {
+            DuAEF.DuSystem.openURL( DuAEF.chatURL );
+        }
+    }
+    if (DuAEF.bugReportURL != '')
+    {
+        DuAEF.DuScriptUI.helpPanel.bugReportButton = DuAEF.DuScriptUI.addButton( socialButtonsGroup2, "Bug Report", DuAEF.DuBinary.toFile( w18_bugreport_l ), "Tell us what's wrong", DuAEF.DuBinary.toFile( w18_bugreport_r ) );
+        DuAEF.DuScriptUI.helpPanel.bugReportButton.onClick = function ()
+        {
+            DuAEF.DuSystem.openURL( DuAEF.bugReportURL );
+        }
+    }
+       
+
+    DuAEF.DuScriptUI.helpPanel.setPanel = function( panel )
+    {
+        if ( typeof panel === 'undefined' ) panel = 0;
+
+        tabPanel.setCurrentIndex( panel )
+
+        if ( panel == 0 )
+        {
+            if ( DuAEF.DuScriptUI.helpPanel.link != '' ) DuAEF.DuScriptUI.helpPanel.helpMoreButton.show();
+            else DuAEF.DuScriptUI.helpPanel.helpMoreButton.hide();
+        }
+        else if ( panel == 2 )
+        {
+            if ( DuAEF.aboutURL != '' ) DuAEF.DuScriptUI.helpPanel.moreButton.show();
+            else DuAEF.DuScriptUI.helpPanel.moreButton.hide();
+        }
+    }
+}
+
+/**
+ * Updates the helpPopup with new information
+ * @memberof DuAEF.DuScriptUI
+ * @param {string} title - A title.
+ * @param {string} text - The help text.
+ * @param {string} link - The http link to a webpage
+ */
+DuAEF.DuScriptUI.updateHelpPopup = function( title, text, link )
+{
+    DuAEF.DuScriptUI.initHelpPanel();
+    if ( typeof link === 'undefined' ) link = '';
+
+    if ( text == '' ) return;
+
+    if ( text != '' ) DuAEF.DuScriptUI.uiStrings.push( text );
+    if ( title != '' ) DuAEF.DuScriptUI.uiStrings.push( title );
+    text = tr( text );
+    title = tr( title );
+
+    DuAEF.DuScriptUI.helpPanel.setPanel( 0 );
+
+    DuAEF.DuScriptUI.helpPanel.title.text = title;
+    DuAEF.DuScriptUI.helpPanel.help.text = text;
+    DuAEF.DuScriptUI.helpPanel.link = link;
+
+    DuAEF.DuScriptUI.helpPanel.layout.layout( true );
+    DuAEF.DuScriptUI.helpPanel.layout.resize();
+}
+
+/**
+ * Gets the RSS content from a feed url, and set the news in the Help popup
+ * @memberof DuAEF.DuRSS
+ * @param {string} url - The url of the server.
+ * @param {string} [subfolder='feed'] - The subdirectory of the feed (without a leading '/')
+ * @param {int} [port=80] - The server port.
+ * @return {RSSItem[]} The news items
+ */
+DuAEF.DuScriptUI.getNews = function( url, subfolder, userAgentVersion, port )
+{
+    if ( !DuAEF.DuAE.App.hasFilesAndNetworkAccess ) return;
+    DuAEF.DuScriptUI.initHelpPanel();
+
+    DuAEF.DuScriptUI.helpPanel.newsPanel.updateRSS( url, subfolder, userAgentVersion, port )
+}
+
+/**
+ * Sets the news in the help popup
+ * @memberof DuAEF.DuRSS
+ * @param {RSSItem[]} items - The items.
+ */
+DuAEF.DuScriptUI.setNews = function( items )
+{
+    DuAEF.DuScriptUI.initHelpPanel();
+   //TODO new RSS Panel set items from offline
+}
+
+/**
+ * Shows the help popup
+ * @memberof DuAEF.DuScriptUI
+ */
+DuAEF.DuScriptUI.showHelp = function()
+{
+    DuAEF.DuScriptUI.initHelpPanel();
+    DuAEF.DuScriptUI.helpPanel.setPanel( 0 );
+    DuAEF.DuScriptUI.helpPanel.show();
+}
+
+/**
+ * Shows the news popup
+ * @memberof DuAEF.DuScriptUI
+ */
+DuAEF.DuScriptUI.showNews = function()
+{
+    DuAEF.DuScriptUI.initHelpPanel();
+    DuAEF.DuScriptUI.helpPanel.setPanel( 1 );
+    DuAEF.DuScriptUI.helpPanel.show();
+}
+
+/**
+ * Shows the about popup
+ * @memberof DuAEF.DuScriptUI
+ */
+DuAEF.DuScriptUI.showAbout = function()
+{
+    DuAEF.DuScriptUI.initHelpPanel();
+    DuAEF.DuScriptUI.helpPanel.setPanel( 2 );
+    DuAEF.DuScriptUI.helpPanel.show();
+}
