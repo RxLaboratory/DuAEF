@@ -854,7 +854,8 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 			DuAEF.Duik.Rigging.goal(spine.head,headCtrl);
 			if (shoulderCtrl)
 			{
-				var exp = [ 'var ctrlLayer = ' + DuAEF.DuAE.Property.getExpressionLink(headCtrl.layer) + ';',
+				var exp = [ DuAEF.Duik.expressionIds.AUTORIG_HEAD,
+					'var ctrlLayer = ' + DuAEF.DuAE.Property.getExpressionLink(headCtrl.layer, true) + ';',
 					'var result = ctrlLayer.toWorld( ctrlLayer.anchorPoint );',
 					'if ( hasParent ) result = parent.fromWorld(result);',
 					'result;'

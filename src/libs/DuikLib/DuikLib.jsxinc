@@ -629,7 +629,8 @@ DuAEF.Duik.expressionIds = {
     POSITION: '//Duik.positionConstraint',
     ORIENTATION: '//Duik.orientationConstraint',
     STRUCTURE: '//Duik.structure',
-    MOTION_TRAIL: '//Duik.motionTrail'
+    MOTION_TRAIL: '//Duik.motionTrail',
+    AUTORIG_HEAD: '//Duik.autorig.head',
 }
 
 //undocumented low-level function used by Duik
