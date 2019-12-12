@@ -9,5 +9,5 @@
  */
 function getPropWorldVelocity(t, prop) {
 	if (typeof t === "undefined") t = time;
-	return (getPropWorldValue(t, prop) - getPropWorldValue(t - 0.01, prop)) * 100;
+	return (getPropWorldValue(t + 0.005, prop) - getPropWorldValue(t - 0.005, prop)) * 100;
 }
