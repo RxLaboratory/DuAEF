@@ -1665,49 +1665,53 @@ DuAEF.Duik.Rigging.twoLayerIK = function( layer1, layer2, goal, controller )
         var goalData = DuAEF.DuAE.Layer.addPseudoEffect( goal, DuAEF.Duik.PseudoEffects.IK, DuAEF.Duik.PseudoEffectsMatchNames.IK, "IK" );
         goalData( 1 ).setValue( controller.layer.index );
 
-        var rotExpr = '//Duik.goal\n' +
-            'var ctrl = null;\n' +
-            'try { ctrl = effect("' + goalData.name + '")(1); } catch (e){};\n' +
-            'if (ctrl != null)\n' +
-            '{\n' +
-            'var fx = ctrl.effect("' + ikEffect.name + '");\n' +
-            'var ikfk = fx(' + DuAEF.Duik.PseudoEffects.TWOLAYER_IK.ikCheckbox + ').value;\n' +
-            'function ik()\n' +
-            '{\n' +
-            'var IK = ctrl.rotation.value;\n' +
-            'var layer = thisLayer;\n' +
-            'while (layer.hasParent)\n' +
-            '{\n' +
-            'layer = layer.parent;\n' +
-            'IK = IK - layer.rotation;\n' +
-            '}\n' +
-            'return IK;\n' +
-            '}\n' +
-            'function fk()\n' +
-            '{\n' +
-            'var FK = value;\n' +
-            'var parentRot = parent.transform.rotation ;\n' +
-            'var delay = fx(' + DuAEF.Duik.PseudoEffects.TWOLAYER_IK.resistanceSlider + ').value ;\n' +
-            'var amp = fx(' + DuAEF.Duik.PseudoEffects.TWOLAYER_IK.flexibilitySlider + ').value ;\n' +
-            'var ftEnabled = fx(' + DuAEF.Duik.PseudoEffects.TWOLAYER_IK.followThroughCheckbox + ').value;\n' +
-            'if (!ftEnabled)\n' +
-            '{\n' +
-            'amp = 0;\n' +
-            'delay = 0;\n' +
-            '}\n' +
-            'else\n' +
-            '{\n' +
-            'delay = delay / 100;\n' +
-            'amp = amp / 100 ;\n' +
-            '}\n' +
-            'FK = parentRot.valueAtTime(time-delay);\n' +
-            'FK = FK * amp;\n' +
-            'FK = FK + value + fx(' + DuAEF.Duik.PseudoEffects.TWOLAYER_IK.goalAngle + ') - parentRot.valueAtTime(0);\n' +
-            'return FK;\n' +
-            '}\n' +
-            'ikfk ? ik() : fk();\n' +
-            '}\n' +
-            'else value;\n';
+        var rotExpr = [DuAEF.Duik.expressionIds.IK_GOAL,
+            'var ctrl = null;',
+            'try {',
+            '    ctrl = effect( "' + goalData.name + '" )( 1 );',
+            '} catch ( e ) {};',
+            'if ( ctrl != null ) {',
+            '    var fx = ctrl.effect( "' + ikEffect.name + '" );',
+            '    var ikfk = fx( ' + DuAEF.Duik.PseudoEffects.TWOLAYER_IK.ikCheckbox + ' ).value;',
+            '',
+            '    function ik() {',
+            '        var IK = ctrl.rotation.value;',
+            '        var layer = thisLayer;',
+            '        while ( layer.hasParent ) {',
+            '            layer = layer.parent;',
+            '            IK = IK - layer.rotation;',
+            '        }',
+            '        return IK;',
+            '    }',
+            '',
+            '    function fk() {',
+            '        var FK = value;',
+            '        var parentRot = parent.transform.rotation;',
+            '        var delay = fx( ' + DuAEF.Duik.PseudoEffects.TWOLAYER_IK.resistanceSlider + ' ).value;',
+            '        var amp = fx( ' + DuAEF.Duik.PseudoEffects.TWOLAYER_IK.flexibilitySlider + ' ).value;',
+            '        var ftEnabled = fx( ' + DuAEF.Duik.PseudoEffects.TWOLAYER_IK.followThroughCheckbox + ' ).value;',
+            '',
+            '        delay = delay / 100;',
+            '        amp = amp / 100;',
+            '',
+            '        if (ftEnabled)',
+            '        {',
+            '            FK = parentRot.valueAtTime( time - delay );',
+            '            FK = FK * amp;',
+            '        }',
+            '        ',
+            '        FK = FK + value + fx( ' + DuAEF.Duik.PseudoEffects.TWOLAYER_IK.goalAngle + ' );',
+            '',
+            '        if (ftEnabled)',
+            '        {',
+            '            FK = FK - parentRot.valueAtTime( 0 )',
+            '        }',
+            '        ',
+            '        return FK;',
+            '    }',
+            '    ikfk ? ik() : fk();',
+            '} else value;'
+            ].join('\n');
 
 
         DuAEF.DuAE.Property.setExpression( goal.transform.rotation, rotExpr );
