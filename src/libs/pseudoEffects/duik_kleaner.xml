@@ -1,4 +1,4 @@
-<Effect matchname="Pseudo/Duik Kleaner v3.1" name="$$$/AE/Preset/DuikKleanerv3.1=Kleaner">
+<Effect matchname="Pseudo/Duik Kleaner v3.2" name="$$$/AE/Preset/DuikKleanerv3.2=Kleaner">
 	<Checkbox name="$$$/AE/Preset/Anticipation=Anticipation" hold="true" default="true" />
 	<Checkbox name="$$$/AE/Preset/SmartInterpolation=Smart Interpolation" hold="true" default="true" />
 	<Checkbox name="$$$/AE/Preset/FollowThrough=Follow Through" hold="true" default="true" />
@@ -29,6 +29,6 @@
 			<Checkbox name="$$$/AE/Preset/SoftBody=Soft Body" hold="true" default="true" />
 			<Slider name="$$$/AE/Preset/Soft-BodyFlexibility=Soft-Body Flexibility" default="200" slider_min="0" slider_max="1000" valid_min="0" valid_max="10000" precision="1" DISPLAY_PERCENT="true" />
 		</Group>
-		<Slider name="$$$/AE/Preset/M-BlurPrecision(simulation)=M-Blur Precision (simulation)" default="1" slider_min="1" slider_max="100" valid_min="1" valid_max="100" precision="0" />
 	</Group>
+	<Slider name="$$$/AE/Preset/Precision=Precision" default="1" slider_min="1" slider_max="100" valid_min="1" valid_max="1000" precision="0" />
 </Effect>

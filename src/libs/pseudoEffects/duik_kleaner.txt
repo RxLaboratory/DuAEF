@@ -1,4 +1,4 @@
-Pseudo Effect: Kleaner | matchName: Pseudo/Duik Kleaner v3.1
+Pseudo Effect: Kleaner | matchName: Pseudo/Duik Kleaner v3.2
 index['Anticipation_Checkbox'] = 1
 index['Smart Interpolation_Checkbox'] = 2
 index['Follow Through_Checkbox'] = 3
@@ -18,4 +18,4 @@ index['Overlap (simulation)_Delay (s)_Slider'] = 24
 index['Overlap (simulation)_Overlap random_Slider'] = 25
 index['Soft Body (simulation)_Soft Body_Checkbox'] = 28
 index['Soft Body (simulation)_Soft-Body Flexibility_Slider'] = 29
-index['Spatial Options_M-Blur Precision (simulation)_Slider'] = 31
+index['Precision_Slider'] = 32
