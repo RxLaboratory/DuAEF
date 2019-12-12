@@ -1746,13 +1746,15 @@ DuAEF.DuAE.Property.getRange = function ( prop, axis, preExpression, fastMode ) 
     }
 
     var count = frames-1;
-    if ( fastMode ) count = prop.numKeys;
+    if ( fastMode && prop.numKeys > 1 ) count = prop.numKeys;
+    else count = comp.duration/4;
 
     if (count == 0) return [min, max];
+    if (prop.numKeys < 2 && preExpression) return [min,max];
 
-    for ( var i = 1; i <= count; i++ ) {
-        var iTime = i*comp.frameDuration;
-        if (fastMode) iTime = prop.keyTime(i);
+    for ( var i = 0; i < count; i++ ) {
+        var iTime = i*0.25;
+        if (fastMode && prop.numKeys > 1) iTime = prop.keyTime(i+1);
         var val = prop.valueAtTime( iTime, preExpression );
         if ( propInfo.dimensions > 1 ) val = val[ axis ];
         if ( val < min ) {
