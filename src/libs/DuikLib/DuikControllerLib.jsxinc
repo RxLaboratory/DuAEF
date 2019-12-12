@@ -21,7 +21,7 @@ function Controller(layer)
 		this.effectInfo = new PropertyInfo(effect);
 	}
 	else this.effect = null;
-	this.id = 0;
+	this.id = -1;
 	this.type = DuAEF.Duik.Controller.Types.TRANSFORM;
 	var params = DuAEF.Duik.getDuikMarkerParameters( layer );
 	if (params) {
@@ -372,7 +372,6 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 	}
 
 	DuAEF.Duik.setDuikMarkerParameter(ctrl,DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE,type);
-	DuAEF.Duik.setDuikMarkerParameter( ctrl, DuAEF.Duik.MarkerParameters.CONTROLLER_ID, new Date().getTime() );
 
 	DuAEF.Dugr.addLayerToGroup(ctrl,"Controllers");
 	ctrl.guideLayer = true;
@@ -1333,7 +1332,7 @@ DuAEF.Duik.Controller.getControllers = function (comp,selectedOnly)
 	//convert layers to Controller
 	var it = new Iterator(ctrlLayers);
 	it.do(function(layer){
-		ctrls.push(new Controller(layer));
+		if (layer) ctrls.push(new Controller(layer));
 	})
 	return ctrls;
 }
@@ -1351,6 +1350,5 @@ DuAEF.Duik.Controller.tag = function (layers)
 
 	new Iterator(layers).do( function(layer) {
 		DuAEF.Duik.setDuikMarker(layer, "Controller", DuAEF.Duik.LayerTypes.CONTROLLER);
-        DuAEF.Duik.setDuikMarkerParameter( layer, DuAEF.Duik.MarkerParameters.CONTROLLER_ID, new Date().getTime() );
 	});
 }

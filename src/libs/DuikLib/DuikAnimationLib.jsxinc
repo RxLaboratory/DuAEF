@@ -1221,7 +1221,7 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 	{
 		//check if it's already extracted
 		for (var i = 0, num = currentControllers.length; i < num; i++) {
-			if ( currentControllers[i].id == controller.id ) {
+			if ( currentControllers[i].id == controller.id && currentControllers[i].id != -1) {
 				var newCtrlLayer = currentControllers[i].layer;
 				newCtrlLayer.reparent = false;
 				newCtrlLayers.push( newCtrlLayer );
@@ -1236,7 +1236,11 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 		if (DuAEF.Duik.isLayerType(ctrlParent, DuAEF.Duik.LayerTypes.CONTROLLER)) layer.reparent = false;
 		ctrlLayers.push(layer);
 		controller.bakeAppearance();
+		//add an id if it does not have one yet
+		if (controller.id == -1) DuAEF.Duik.setDuikMarkerParameter( layer, DuAEF.Duik.MarkerParameters.CONTROLLER_ID, new Date().getTime() );
 	});
+
+	if (ctrlLayers.length == 0) return;
 
 	//copy controllers
 	newCtrlLayers = newCtrlLayers.concat( DuAEF.DuAE.Layer.copyToComp(ctrlLayers, comp) );
