@@ -28,6 +28,13 @@ function Controller(layer)
 		if (params[DuAEF.Duik.MarkerParameters.CONTROLLER_ID]) this.id = params[DuAEF.Duik.MarkerParameters.CONTROLLER_ID];
 		if (params[DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE]) this.type = params[DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE];
 	}
+
+	//check/assign the id
+	if (this.id == -1)
+	{
+		DuAEF.Duik.Controller.assignID(layer);
+	}
+	
 }
 
 /**
@@ -1313,6 +1320,16 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 	return ctrl;
 }
 
+//low-level undocumented function
+//assigns a new controller id to the layer
+//returns the new id
+DuAEF.Duik.Controller.assignID = function (layer)
+{
+	var newId = new Date().getTime();
+	DuAEF.Duik.setDuikMarkerParameter( layer, DuAEF.Duik.MarkerParameters.CONTROLLER_ID, newId );
+	return newId;
+}
+
 /**
  * Gets Controllers in the comp or the selection.
  * @param {CompItem}	[comp]	- The composition where to get the controllers
@@ -1331,9 +1348,24 @@ DuAEF.Duik.Controller.getControllers = function (comp,selectedOnly)
 	if (ctrlLayers.length == 0) return ctrls;
 	//convert layers to Controller
 	var it = new Iterator(ctrlLayers);
+	var ids = [];
 	it.do(function(layer){
-		if (layer) ctrls.push(new Controller(layer));
-	})
+
+		var ctrl = new Controller(layer);
+		
+		//get and check the id
+		for (var i = 0, n = ids.length; i < n; i++)
+		{
+			if (ids[i] == ctrl.id)
+			{
+				ctrl.id = DuAEF.Duik.Controller.assignID(layer);
+				break;
+			}
+		}
+
+		ids.push(ctrl.id);
+		ctrls.push(ctrl);
+	});
 	return ctrls;
 }
 
