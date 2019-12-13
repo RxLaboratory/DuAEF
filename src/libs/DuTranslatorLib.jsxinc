@@ -374,7 +374,7 @@ DuAEF.Dutranslator.generateTranslations = function (strings)
  * Translate a given string based on the current seted language<br />
  * see {@link DuAEF.Dutranslator} for more details about the translation framework.
  * @function
- * @param {string} s - 		The text to be translated
+ * @param {string} str - 		The text to be translated
  * @param {int} or {string} context - 	Can be an integer or a string which is related to contextId or context in a translation file
  * @param {string[]} args -	Args to format into the translated string, default is []<br />
  * For example, when calling tr("Welcome {#}", -1, "Paul"), the output will be "Welcome Paul"<br />
@@ -382,11 +382,15 @@ DuAEF.Dutranslator.generateTranslations = function (strings)
  * If not enough args are given, the {#} are replaced with ?
  * @return {string} The translated text or s if nothing is set or available
  */
-function tr(s, context, args)
+function tr(str, context, args)
 {
 	// Default args
 	var useContextId = true;
-	if (DuAEF.DuJS.typeof(s) != 'string') throw 'DuTranslator: tr(s, context, args): Error.\ns has to be a string.\ns is ' + DuAEF.DuJS.typeof(s) + ' with value ' + s.toString();
+	if (DuAEF.DuJS.typeof(str) != 'string')
+	{
+		if (DuAEF.Debug) throw 'DuTranslator: tr(str, context, args): Error.\nstr has to be a string.\nstr is ' + DuAEF.DuJS.typeof(str) + ' with value ' + str.toString();
+		else return str;
+	}
 	if (typeof context === 'string' || context instanceof String) useContextId = false;
 	if (typeof context === 'undefined') context = -1;
 	else if (context < 0) context = -1;
@@ -394,10 +398,10 @@ function tr(s, context, args)
 	if (typeof args === 'string' || args instanceof String) args = [args];
 
 	var languageNumber = -1;
-	var res = s;
+	var res = str;
 
 	//a function to get the translation id from a given string
-	function getTranslationId( str, noCapsNorSpaces )
+	function getTranslationId( stri, noCapsNorSpaces )
 	{
 		noCapsNorSpaces = def (noCapsNorSpaces, false);
 
@@ -406,7 +410,7 @@ function tr(s, context, args)
 			var localizedString = DuAEF.Dutranslator.localizedStrings[i];
 			var testString = localizedString["source"];
 			if (noCapsNorSpaces) testString = testString.replace(/[\s\n\r]+/g,'');
-			if( testString == str)
+			if( testString == stri)
 			{
 				// Check context
 				if (useContextId && context > -1)
@@ -436,12 +440,12 @@ function tr(s, context, args)
 	if (DuAEF.Dutranslator.current != DuAEF.Dutranslator.Settings.originalLanguageId)
 	{
 		// Get the translation
-		var stringNumber = getTranslationId( s )
+		var stringNumber = getTranslationId( str )
 		
 		// If a translation is found, set it to res
 		if (stringNumber > -1) res = DuAEF.Dutranslator.localizedStrings[stringNumber]["translation"];
-		if (!res) res = s;
-		if (res == "") res = s;
+		if (!res) res = str;
+		if (res == "") res = str;
 	}
 
 	// Args process
