@@ -18,7 +18,6 @@ function Structure ( elements )
         if ( !params ) return;
         if ( params[ DuAEF.Duik.MarkerParameters.STRUCTURE_ID ] ) this.structureId = params[ DuAEF.Duik.MarkerParameters.STRUCTURE_ID ];
     }
-    this.pE = DuAEF.Duik.PseudoEffects.STRUCTURE;
 }
 
 /**
@@ -41,7 +40,7 @@ Structure.prototype.setSize = function( size )
     for ( var i = 0; i < this.elements.length; i++ )
     {
         var layer = this.elements[ i ];
-        layer.effect( this.pE.matchName )( this.pE.index['Display options_Size_Slider'] ).setValue( size );
+        layer.effect( DuAEF.Duik.PseudoEffects.STRUCTURE.matchName )( DuAEF.Duik.PseudoEffects.STRUCTURE.index['Display options_Size_Slider'] ).setValue( size );
     }
 }
 
@@ -61,7 +60,7 @@ Structure.prototype.setColor = function( color )
     for ( var i = 0; i < this.elements.length; i++ )
     {
         var layer = this.elements[ i ];
-        layer.effect( this.pE.matchName )( this.pE.index['Display options_Color_Color'] ).setValue( color );
+        layer.effect( DuAEF.Duik.PseudoEffects.STRUCTURE.matchName )( DuAEF.Duik.PseudoEffects.STRUCTURE.index['Display options_Color_Color'] ).setValue( color );
     }
 }
 
@@ -177,11 +176,12 @@ Structure.prototype.duplicate = function()
     {
         layer.moveBefore( comp.layer( topIndex ) );
         //set display link
-        var effect = layer.effect( this.pE.matchName );
-        var oldLinkIndex = DuAEF.DuJS.Array.indexOf( oldLayers, effect( this.pE.index['Display options_Target_Layer'] ).value, layerInArray );
+        var pE = DuAEF.Duik.PseudoEffects.STRUCTURE;
+        var effect = layer.effect( pE.matchName );
+        var oldLinkIndex = DuAEF.DuJS.Array.indexOf( oldLayers, effect( pE.index['Display options_Target_Layer'] ).value, layerInArray );
         if ( oldLinkIndex >= 0 )
         {
-            effect( this.pE.index['Display options_Target_Layer'] ).setValue( newLayers[ oldLinkIndex ].index );
+            effect( pE.index['Display options_Target_Layer'] ).setValue( newLayers[ oldLinkIndex ].index );
         }
         //set id
         DuAEF.Duik.setDuikMarkerParameter( layer, DuAEF.Duik.MarkerParameters.STRUCTURE_ID, id );
