@@ -388,8 +388,8 @@ function tr(str, context, args)
 	var useContextId = true;
 	if (DuAEF.DuJS.typeof(str) != 'string')
 	{
-		if (DuAEF.Debug) throw 'DuTranslator: tr(str, context, args): Error.\nstr has to be a string.\nstr is ' + DuAEF.DuJS.typeof(str) + ' with value ' + str.toString();
-		else return str;
+		DuAEF.Debug.throwTypeError( str, "str", "String", "DuTranslator::tr()");
+		return str;
 	}
 	if (typeof context === 'string' || context instanceof String) useContextId = false;
 	if (typeof context === 'undefined') context = -1;
