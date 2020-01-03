@@ -2,7 +2,7 @@
     "plugins": [],
     "recurseDepth": 1,
     "source": {
-		"include": [ "../0.2.1/DuAEF.jsxinc" ],
+		"include": [ "../0.2.2/DuAEF.jsxinc" ],
         "includePattern": ".+\\.jsxinc$",
         "excludePattern": "(^|\\/|\\\\)_"
     },
@@ -14,7 +14,7 @@
     "templates": {
         "cleverLinks": false,
         "monospaceLinks": true,
-        "copyright"             : "Copyright (c) 2017-2019 Nicolas Dufresne and contributors",
+        "copyright"             : "Copyright (c) 2017-2020 Nicolas Dufresne and contributors",
         "includeDate"           : true,
         "theme"                 : "slate",
         "collapseSymbols"       : "false",
