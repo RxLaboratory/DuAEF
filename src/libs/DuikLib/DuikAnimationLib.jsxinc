@@ -1272,7 +1272,10 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 	{
 		//check if it's already extracted
 		for (var i = 0, num = currentControllers.length; i < num; i++) {
-			if ( currentControllers[i].id == controller.id && currentControllers[i].id != -1) {
+			var extracted = currentControllers[i].id == controller.id && currentControllers[i].id != -1;
+			if (extracted) extracted = currentControllers[i].linkedToComp == preComp.id; 
+
+			if ( extracted ) {
 				var newCtrlLayer = currentControllers[i].layer;
 				newCtrlLayer.reparent = false;
 				newCtrlLayers.push( newCtrlLayer );
@@ -1288,6 +1291,30 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 		ctrlLayers.push(layer);
 		controller.bakeAppearance();
 	});
+
+	// if this is a new extraction using MPs from an aloready extraced precomp,
+	// this will be set to true to update the expressions in the MPs
+	var reLink = false;
+
+	if (ctrlLayers.length == 0) 
+	{
+		//Let's ask if the user wants to extract them all once again.
+		if (!useMasterProperties) return;
+		var ok = confirm(tr("No new controller was found to extract.\nDo you want to extract all controllers from this pre-composition anyway?", false, "Nothing new!"));
+		if (!ok) return;
+		reLink = true;
+		newCtrlLayers = [];
+		itCtrls.do(function(controller)
+		{
+			var layer = controller.layer;
+			var ctrlParent = layer.parent;
+			layer.reparent = true;
+			if (!ctrlParent) layer.reparent = false;
+			if (DuAEF.Duik.isLayerType(ctrlParent, DuAEF.Duik.LayerTypes.CONTROLLER)) layer.reparent = false;
+			ctrlLayers.push(layer);
+			controller.bakeAppearance();
+		});
+	}
 
 	if (ctrlLayers.length == 0) return;
 
@@ -1347,8 +1374,9 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 			var numProps = DuAEF.DuAE.Property.addToEGP(ctrlLayer.transform);
 			//effects
 			numProps += DuAEF.DuAE.Property.addToEGP(ctrlLayer('ADBE Effect Parade'));
-			//if Ae >= 16.1 just use all master properties (as numProps is 0 if they were already there)
-			if ( DuAEF.DuAE.App.version.version >= 16.1 ) {
+			// if Ae >= 16.1 just use all master properties (as numProps is 0 if they were already there)
+			// or if we're extracting again from an already extracted comp
+			if ( DuAEF.DuAE.App.version.version >= 16.1 || reLink ) {
 				numProps = preComp.motionGraphicsTemplateControllerCount;
 			}
 			//links

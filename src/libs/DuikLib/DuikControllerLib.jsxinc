@@ -22,19 +22,20 @@ function Controller(layer)
 	}
 	else this.effect = null;
 	this.id = -1;
+	this.linkedToComp = -1;
 	this.type = DuAEF.Duik.Controller.Types.TRANSFORM;
 	var params = DuAEF.Duik.getDuikMarkerParameters( layer );
 	if (params) {
 		if (params[DuAEF.Duik.MarkerParameters.CONTROLLER_ID]) this.id = params[DuAEF.Duik.MarkerParameters.CONTROLLER_ID];
 		if (params[DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE]) this.type = params[DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE];
+		if (params[DuAEF.Duik.MarkerParameters.LINKEDTOCOMP]) this.linkedToComp = params[DuAEF.Duik.MarkerParameters.LINKEDTOCOMP];
 	}
 
 	//check/assign the id
-	if (this.id == -1)
+	if (this.id == -1 )
 	{
 		DuAEF.Duik.Controller.assignID(layer);
 	}
-	
 }
 
 /**
