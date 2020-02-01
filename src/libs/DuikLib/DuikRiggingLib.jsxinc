@@ -308,9 +308,10 @@ DuAEF.Duik.Rigging.addLocator = function( layerOrComp )
 /**
  * Extracts locators from a precomposition
  * @param {AVLayer} [preCompLayer] - The precomposition layer
+ * @param {boolean} [useMasterProperties=false] - true to extract using master properties instead of expressions (only in Ae > 15.1 CC2018)
  * @return {AVLayer[]} The extracted locators
  */
-DuAEF.Duik.Rigging.extractLocators = function( preCompLayer )
+DuAEF.Duik.Rigging.extractLocators = function( preCompLayer, useMasterProperties )
 {
     var preComp = preCompLayer.source;
     if ( !preComp instanceof CompItem ) return;
@@ -323,7 +324,7 @@ DuAEF.Duik.Rigging.extractLocators = function( preCompLayer )
     var it = new Iterator( preCompLocs );
     it.do( function( preCompLoc )
     {
-        locs.push( DuAEF.Duik.Rigging.extractLocator( preCompLoc, preCompLayer ) );
+        locs.push( DuAEF.Duik.Rigging.extractLocator( preCompLoc, preCompLayer, useMasterProperties ) );
     } );
 
     return locs;
@@ -331,12 +332,17 @@ DuAEF.Duik.Rigging.extractLocators = function( preCompLayer )
 
 /**
  * Extracts one locator from a precomposition
- * @param {AVLayer} [preCompLayer] - The precomposition layer
  * @param {AVLayer} [locator] - The locator to extract
+ * @param {AVLayer} [preCompLayer] - The precomposition layer
+ * @param {boolean} [useMasterProperties=true] - true to extract using master properties instead of expressions (ignored in Ae < 15.1, false by default if 15.1 <= Ae < 17 and true by default in Ae >= 17)
  * @return {AVLayer} The extracted locator
  */
-DuAEF.Duik.Rigging.extractLocator = function( locator, preCompLayer )
+DuAEF.Duik.Rigging.extractLocator = function( locator, preCompLayer, useMasterProperties )
 {
+    if (DuAEF.DuAE.App.version.version < 15.1) useMasterProperties = false;
+	if (DuAEF.DuAE.App.version.version < 17.0) useMasterProperties = def( useMasterProperties, false );
+	else useMasterProperties = def( useMasterProperties, true );
+
     var comp = preCompLayer.containingComp;
     //comp names
     DuAEF.DuAE.Comp.setUniqueCompName( comp );
@@ -347,7 +353,36 @@ DuAEF.Duik.Rigging.extractLocator = function( locator, preCompLayer )
     loc.parent = preCompLayer;
     DuAEF.Dugr.addLayerToGroup( loc, "Locators" );
     DuAEF.Duik.setDuikMarker( loc, "Locator", DuAEF.Duik.LayerTypes.LOCATOR );
-    DuAEF.DuAE.Property.linkProperties( loc.transform, locator.transform );
+    if (useMasterProperties) {
+        //transform
+		var numProps = DuAEF.DuAE.Property.addToEGP(locator.transform);
+        // if Ae >= 16.1 just use all master properties (as numProps is 0 if they were already there)
+        if ( DuAEF.DuAE.App.version.version >= 16.1 ) {
+            numProps = preCompLayer.source.motionGraphicsTemplateControllerCount;
+        }
+        //links
+        for (var p = 1; p <= numProps; p++)
+        {
+            var mp = preCompLayer('ADBE Layer Overrides')(p);
+            if (!mp) continue;
+            //get prop name
+            var nameArray = mp.name.split(' / ');
+            if ( nameArray.length != 2 ) continue;
+            var pLink = nameArray[1];
+            var layerName = nameArray[0];
+            if ( layerName != locator.name ) continue;
+            try {
+                var newProp = eval('loc' + pLink);
+            }
+            catch (e) { continue; }
+            //link
+            if (newProp) {
+                DuAEF.DuAE.Property.pickWhip(newProp, mp, true);
+            }
+        }
+    } else {
+        DuAEF.DuAE.Property.linkProperties( loc.transform, locator.transform );
+    }
     return loc;
 }
 
@@ -355,8 +390,9 @@ DuAEF.Duik.Rigging.extractLocator = function( locator, preCompLayer )
  * Parents two layers even if the parent is in the parent comp or a precomp.
  * @param {Layer[]} children - The child layer(s)
  * @param {Layer} parent - The parent layer
+ * @param {boolean} [useMasterProperties=true] - Only when the parent is in the precomposition (and not a "parent" composition), true to use master properties instead of expressions (ignored in Ae < 15.1, false by default if 15.1 <= Ae < 17 and true by default in Ae >= 17)
  */
-DuAEF.Duik.Rigging.parent = function( children, parent )
+DuAEF.Duik.Rigging.parent = function( children, parent, useMasterProperties )
 {
     if ( typeof children === 'undefined' ) throw "You must provide children to parent.";
     if ( typeof children.length === 'undefined' ) children = [ children ];
@@ -407,7 +443,7 @@ DuAEF.Duik.Rigging.parent = function( children, parent )
             if ( !childLocator )
             {
                 //create a locator and extract it
-                var childLocator = DuAEF.Duik.Rigging.extractLocator( locator, precompLayer );
+                var childLocator = DuAEF.Duik.Rigging.extractLocator( locator, precompLayer, useMasterProperties );
                 childLocator.selected = false;
                 childLocator.enabled = false;
                 childLocator.shy = true;

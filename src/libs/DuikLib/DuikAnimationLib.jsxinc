@@ -1363,7 +1363,7 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 		}
 
 		//use locators for all controllers parented to something else than a controller or nothing
-		if (ctrlLayer.reparent) DuAEF.Duik.Rigging.parent(newCtrlLayer, ctrlLayer.parent);
+		if (ctrlLayer.reparent) DuAEF.Duik.Rigging.parent(newCtrlLayer, ctrlLayer.parent, useMasterProperties);
 
 		//remove expressions in the data of the child effect 
 		DuAEF.DuAE.Property.removeDataExpressions(newCtrlLayer('ADBE Effect Parade'));
@@ -1386,6 +1386,7 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 				if (!mp) continue;
 				//get prop name
 				var nameArray = mp.name.split(' / ');
+				if ( nameArray.length != 2 ) continue;
 				var pLink = nameArray[1];
 				var layerName = nameArray[0];
 				if ( layerName != ctrlLayer.name ) continue;
