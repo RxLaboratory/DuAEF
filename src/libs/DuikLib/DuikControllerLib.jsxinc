@@ -376,7 +376,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(newName,comp);
 
 		//parent
-		if (parent && type != DuAEF.Duik.Controller.Types.SLIDER && type != DuAEF.Duik.Controller.Types.DOUBLE_SLIDER && type != DuAEF.Duik.Controller.Types.ANGLE) DuAEF.DuAE.Layer.parent(layer, ctrl, false);
+		if (parent && type != DuAEF.Duik.Controller.Types.SLIDER && type != DuAEF.Duik.Controller.Types.DOUBLE_SLIDER && type != DuAEF.Duik.Controller.Types.ANGLE)
+		{
+			DuAEF.DuAE.Layer.parent(layer, ctrl, false, true);
+		}
 	}
 
 	DuAEF.Duik.setDuikMarkerParameter(ctrl,DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE,type);
