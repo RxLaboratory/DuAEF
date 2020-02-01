@@ -535,9 +535,35 @@ DuAEF.Duik.Bone.rigShape = function (prop,size,tangents,createBones)
 		}
 	}
 
+	var exp = "";
+	if (layer instanceof ShapeLayer) exp = [DuAEF.Duik.expressionIds.SHAPE_LINKER,
+		'var origPath = thisProperty;',
+		'var origPoints = origPath.points();',
+		'var origInTang = origPath.inTangents();',
+		'var origOutTang = origPath.outTangents();',
+		'var closed = origPath.isClosed();',
+		'var fxName = "B | " + origPath.propertyGroup().name;',
+		'var numPoints = 0;',
+		DuAEF.DuExpression.Library.Matrix,
+		DuAEF.DuExpression.Library.isLayer,
+		DuAEF.DuExpression.Library.getGroupTransformMatrix,
+		'var matrix = getGroupTransformMatrix().inverse();',
+		'',
+		'for (var i = 1, num = thisLayer("Effects").numProperties ; i <= num; i++)',
+		'{',
+		'    var fx = effect(i);',
+		'    if (fx.name.indexOf(fxName) == 0)',
+		'    {',
+		'        origPoints[numPoints] = matrix.applyToPoint( fromWorld(fx( ' + DuAEF.Duik.PseudoEffects.SHAPE_LINKER.vertexPoint + ' )) );',
+		'        origInTang[numPoints] = fx( ' + DuAEF.Duik.PseudoEffects.SHAPE_LINKER.inTangentPoint + ' )-fx( ' + DuAEF.Duik.PseudoEffects.SHAPE_LINKER.vertexPoint + ' );',
+		'        origOutTang[numPoints] = fx( ' + DuAEF.Duik.PseudoEffects.SHAPE_LINKER.outTangentPoint + ' )-fx( ' + DuAEF.Duik.PseudoEffects.SHAPE_LINKER.vertexPoint + ' );',
+		'        numPoints++;',
+		'    }',
+		'}',
+		'createPath(origPoints,origInTang,origOutTang,closed);'
+		].join('\n');
 
-
-	var exp = '//Duik.shapeLinker\n' +
+	else exp = '//Duik.shapeLinker\n' +
 		'var origPath = thisProperty;\n' +
 		'var origPoints = origPath.points();\n' +
 		'var origInTang = origPath.inTangents();\n' +
@@ -549,10 +575,9 @@ DuAEF.Duik.Bone.rigShape = function (prop,size,tangents,createBones)
 		'{\n' +
 		'var fx = effect(i);\n' +
 		'if (fx.name.indexOf(fxName) == 0)\n' +
-		'{\n';
-	if (layer instanceof ShapeLayer) exp += 'origPoints[numPoints] = fromWorld(fx(' + DuAEF.Duik.PseudoEffects.SHAPE_LINKER.vertexPoint + '));\n';
-	else exp += 'origPoints[numPoints] = fx(' + DuAEF.Duik.PseudoEffects.SHAPE_LINKER.vertexPoint + ');\n';
-	exp += 'origInTang[numPoints] = fx(' + DuAEF.Duik.PseudoEffects.SHAPE_LINKER.inTangentPoint + ')-fx(1);\n' +
+		'{\n' +
+		'origPoints[numPoints] = fx(' + DuAEF.Duik.PseudoEffects.SHAPE_LINKER.vertexPoint + ');\n' +
+		'origInTang[numPoints] = fx(' + DuAEF.Duik.PseudoEffects.SHAPE_LINKER.inTangentPoint + ')-fx(1);\n' +
 		'origOutTang[numPoints] = fx(' + DuAEF.Duik.PseudoEffects.SHAPE_LINKER.outTangentPoint + ')-fx(1);\n' +
 		'numPoints++;\n' +
 		'}\n' +
