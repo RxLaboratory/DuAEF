@@ -705,13 +705,23 @@ DuAEF.DuAE.Property.getExpressionLink = function ( prop, useThisComp, fromLayer 
     var exprCode = "";
     var name;
     while ( prop.parentProperty !== null ) {
-        if ( prop.propertyType == PropertyType.PROPERTY ) name = prop.propertyIndex;
-        else if ( prop.parentProperty.propertyType == PropertyType.INDEXED_GROUP ) {
-            name = "\"" + prop.name + "\"";
-        } else name = "\"" + prop.matchName + "\"";
-        compactName = getCompactExpression( prop.matchName, name );
-        exprCode = compactName + exprCode;
-
+        //do not translate master properties
+        if (prop.parentProperty.matchName != "ADBE Layer Overrides")
+        {
+            if ( prop.propertyType == PropertyType.PROPERTY ) name = prop.propertyIndex;
+            else if ( prop.parentProperty.propertyType == PropertyType.INDEXED_GROUP ) {
+                name = "\"" + prop.name + "\"";
+            } else {
+                name = "\"" + prop.matchName + "\"";
+            }
+            compactName = getCompactExpression( prop.matchName, name );
+            exprCode = compactName + exprCode;
+        }
+        else
+        {
+            exprCode = '("' + prop.name + '")';
+        }
+        
         // Traverse up the property tree
         prop = prop.parentProperty;
     }
