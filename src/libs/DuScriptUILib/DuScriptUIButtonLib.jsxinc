@@ -102,23 +102,32 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
     if ( text != '' )
     {
         imageButton.fillerL = imageButton.add( 'statictext', undefined, "" );
-        imageButton.fillerL.alignment = [ 'fill', 'fill' ];
+        imageButton.fillerL.alignment = [ 'left', 'fill' ];
+        imageButton.fillerL.size = [ 20, 0];
     }
 
     if ( image != '' )
     {
         var icon = imageButton.add( 'image', undefined, imageButton.standardImage );
-        icon.alignment = [ 'center', 'center' ];
+        icon.alignment = [ 'left', 'center' ];
         icon.helpTip = helpTip;
         imageButton.image = icon;
         imageButton.icon = icon;
+    }
+
+    //Add fillers to be able to click anywhere on the button
+    if ( text != '' )
+    {
+        imageButton.fillerM = imageButton.add( 'statictext', undefined, "" );
+        imageButton.fillerM.alignment = [ 'left', 'fill' ];
+        imageButton.fillerM.size = [ 20, 0];
     }
 
     if ( text != '' )
     {
         var label = imageButton.add( 'statictext', undefined, text );
         label.helpTip = helpTip;
-        if ( image == '' ) label.alignment = [ 'left', 'center' ];
+        label.alignment = [ 'left', 'center' ];
         imageButton.label = label;
         DuAEF.DuScriptUI.setBackgroundColor( imageButton, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
         imageButton.alignment = [ 'fill', 'top' ];
@@ -202,7 +211,9 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
         imageButton.label.addEventListener( "mouseover", imageButton.highlight );
         imageButton.fillerL.addEventListener( "mouseover", imageButton.highlight );
         imageButton.fillerR.addEventListener( "mouseover", imageButton.highlight );
+        imageButton.fillerM.addEventListener( "mouseover", imageButton.highlight );
     }
+    
     // Hack - CS6 Bug on mouseover with images
     if ( DuAEF.DuAE.App.version.version > 11 && icon )
     {
@@ -222,6 +233,12 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
         imageButton.help.title = title;
         imageButton.help.text = text;
         imageButton.help.link = link;
+    }
+
+    // Align icons
+    imageButton.resize = function()
+    {
+        imageButton.fillerL.size = [ imageButton.size.width / 4, imageButton.size.height ];
     }
 
     return imageButton;

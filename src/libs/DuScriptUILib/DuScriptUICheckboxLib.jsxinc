@@ -92,7 +92,7 @@ DuAEF.DuScriptUI.addCheckBox = function( container, text, image, helpTip, imageC
     duCheckBox.group = duCheckBox.add( 'group' );
     duCheckBox.group.orientation = 'row';
     duCheckBox.group.margins = 0;
-    duCheckBox.group.spacing = 0;
+    duCheckBox.group.spacing = 3;
 
     var outLine;
     if ( isTab && text != '' )
