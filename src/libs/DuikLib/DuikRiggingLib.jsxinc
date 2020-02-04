@@ -1163,8 +1163,9 @@ DuAEF.Duik.Rigging.oneLayerIK = function( layer, goal, controller )
             'createPath(result,[],[],false);\n' +
             '} else value;';
         var stroke = lineContent.property( "ADBE Vector Graphic - Stroke" );
+        var ctrlEffect = controller.layer.effect( DuAEF.Duik.PseudoEffects.CONTROLLER.matchName );
         if ( !stroke ) stroke = lineContent.addProperty( "ADBE Vector Graphic - Stroke" );
-        stroke( "ADBE Vector Stroke Color" ).expression = 'effect("Controller")(2)-[0.2,0.2,0.2,0]';
+        if (ctrlEffect) stroke( "ADBE Vector Stroke Color" ).expression = 'effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Color_Color'] + ')-[0.2,0.2,0.2,0]';
         stroke( "ADBE Vector Stroke Width" ).setValue( 2 );
         stroke( "ADBE Vector Stroke Line Cap" ).setValue( 2 );
         stroke( "ADBE Vector Stroke Dashes" ).addProperty( "ADBE Vector Stroke Dash 1" );
@@ -1462,17 +1463,20 @@ DuAEF.Duik.Rigging.twoLayerIK = function( layer1, layer2, goal, controller )
             [ 0, 0 ]
         ];
         ikShape.closed = false;
+
+        var ctrlEffect = controller.layer.effect( DuAEF.Duik.PseudoEffects.CONTROLLER.matchName );
+
         shape( 'ADBE Vector Shape' ).setValue( ikShape );
         var stroke = ikContent.addProperty( "ADBE Vector Graphic - Stroke" );
-        stroke( "ADBE Vector Stroke Color" ).expression = 'effect("Controller")(2)-[0.2,0.2,0.2,0]';
+        if (ctrlEffect) stroke( "ADBE Vector Stroke Color" ).expression = 'effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Color_Color'] + ')-[0.2,0.2,0.2,0]';
         stroke( "ADBE Vector Stroke Width" ).setValue( 2 );
         stroke( "ADBE Vector Stroke Line Cap" ).setValue( 2 );
         stroke( "ADBE Vector Stroke Opacity" ).expression = 'var fx = effect("' + ikEffect.name + '");\n' +
             'if (fx(' + DuAEF.Duik.PseudoEffects.TWOLAYER_IK.drawGuidesCheckbox + ').value) fx(' + DuAEF.Duik.PseudoEffects.TWOLAYER_IK.straightCheckbox + ').value*100; else 0;';
 
-        ikGroup.transform.scale.expression = '[effect("Controller")(4)*2,effect("Controller")(4)*2]';
-        ikGroup.transform.position.expression = 'effect("Controller")(3)';
-        ikGroup.transform.opacity.expression = 'effect("Controller")(6)';
+        if (ctrlEffect) ikGroup.transform.scale.expression = '[effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Size_Slider'] + ')*2,effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Size_Slider'] + ')*2]';
+        if (ctrlEffect) ikGroup.transform.position.expression = 'effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Position_Point'] + ')';
+        if (ctrlEffect) ikGroup.transform.opacity.expression = 'effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Opacity_Slider'] + ')';
 
         if ( DuAEF.DuAE.App.version.version >= 15 )
         {
@@ -1502,7 +1506,7 @@ DuAEF.Duik.Rigging.twoLayerIK = function( layer1, layer2, goal, controller )
                 '} else value;';
             var stroke = lineContent.property( "ADBE Vector Graphic - Stroke" );
             if ( !stroke ) stroke = lineContent.addProperty( "ADBE Vector Graphic - Stroke" );
-            stroke( "ADBE Vector Stroke Color" ).expression = 'effect("Controller")(2)-[0.2,0.2,0.2,0]';
+            if (ctrlEffect) stroke( "ADBE Vector Stroke Color" ).expression = 'effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Color_Color'] + ')-[0.2,0.2,0.2,0]';
             stroke( "ADBE Vector Stroke Width" ).setValue( 2 );
             stroke( "ADBE Vector Stroke Line Cap" ).setValue( 2 );
             stroke( "ADBE Vector Stroke Dashes" ).addProperty( "ADBE Vector Stroke Dash 1" );
@@ -2003,15 +2007,18 @@ DuAEF.Duik.Rigging.threeLayerIK = function( layer1, layer2, layer3, goal, contro
         ikShape.closed = false;
         shape( 'ADBE Vector Shape' ).setValue( ikShape );
         var stroke = ikContent.addProperty( "ADBE Vector Graphic - Stroke" );
-        stroke( "ADBE Vector Stroke Color" ).expression = 'effect("Controller")(2)-[0.2,0.2,0.2,0]';
+
+        var ctrlEffect = controller.layer.effect( DuAEF.Duik.PseudoEffects.CONTROLLER.matchName );
+
+        if (ctrlEffect) stroke( "ADBE Vector Stroke Color" ).expression = 'effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Color_Color'] + ')-[0.2,0.2,0.2,0]';
         stroke( "ADBE Vector Stroke Width" ).setValue( 2 );
         stroke( "ADBE Vector Stroke Line Cap" ).setValue( 2 );
         stroke( "ADBE Vector Stroke Opacity" ).expression = 'var fx = effect("' + ikEffect.name + '");\n' +
             'if (fx(' + DuAEF.Duik.PseudoEffects.THREELAYER_IK.drawGuidesCheckbox + ').value) fx(' + DuAEF.Duik.PseudoEffects.THREELAYER_IK.straightCheckbox + ').value*100; else 0;';
 
-        ikGroup.transform.scale.expression = '[effect("Controller")(4)*2,effect("Controller")(4)*2]';
-        ikGroup.transform.position.expression = 'effect("Controller")(3)';
-        ikGroup.transform.opacity.expression = 'effect("Controller")(6)';
+        if (ctrlEffect) ikGroup.transform.scale.expression = '[effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Size_Slider'] + ')*2,effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Size_Slider'] + ')*2]';
+        if (ctrlEffect) ikGroup.transform.position.expression = 'effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Position_Point'] + ')';
+        if (ctrlEffect) ikGroup.transform.opacity.expression = 'effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Opacity_Slider'] + ')';
 
         if ( DuAEF.DuAE.App.version.version >= 15 )
         {
@@ -2041,7 +2048,7 @@ DuAEF.Duik.Rigging.threeLayerIK = function( layer1, layer2, layer3, goal, contro
                 '} else value;';
             var stroke = lineContent.property( "ADBE Vector Graphic - Stroke" );
             if ( !stroke ) stroke = lineContent.addProperty( "ADBE Vector Graphic - Stroke" );
-            stroke( "ADBE Vector Stroke Color" ).expression = 'effect("Controller")(2)-[0.2,0.2,0.2,0]';
+            if (ctrlEffect) stroke( "ADBE Vector Stroke Color" ).expression = 'effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Color_Color'] + ')-[0.2,0.2,0.2,0]';
             stroke( "ADBE Vector Stroke Width" ).setValue( 2 );
             stroke( "ADBE Vector Stroke Line Cap" ).setValue( 2 );
             stroke( "ADBE Vector Stroke Dashes" ).addProperty( "ADBE Vector Stroke Dash 1" );
@@ -2545,8 +2552,11 @@ DuAEF.Duik.Rigging.bezierIK = function( layers, goal, controller )
     var circle = handleInContent.addProperty( "ADBE Vector Shape - Ellipse" );
     circle( "ADBE Vector Ellipse Size" ).setValue( [ 25, 25 ] );
     var fill = handleInContent.addProperty( "ADBE Vector Graphic - Fill" );
-    fill( "ADBE Vector Fill Color" ).expression = 'effect("Controller")(2)-[0.2,0.2,0.2,0]\n';
-    handleInGroup.transform.scale.expression = '[effect("Controller")(4),effect("Controller")(4)]';
+
+    var ctrlEffect = controller.layer.effect( DuAEF.Duik.PseudoEffects.CONTROLLER.matchName );
+
+    if (ctrlEffect) fill( "ADBE Vector Fill Color" ).expression = 'effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Color_Color'] + ')-[0.2,0.2,0.2,0]\n';
+    handleInGroup.transform.scale.expression = '[effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Size_Slider'] + '),effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Size_Slider'] + ')]';
 
     handleInGroup.transform.position.expression = 'var fx = effect("' + curveEffect.name + '");\n' +
         'var root = null;\n' +
@@ -2572,8 +2582,8 @@ DuAEF.Duik.Rigging.bezierIK = function( layers, goal, controller )
     var circle = handleOutContent.addProperty( "ADBE Vector Shape - Ellipse" );
     circle( "ADBE Vector Ellipse Size" ).setValue( [ 25, 25 ] );
     var fill = handleOutContent.addProperty( "ADBE Vector Graphic - Fill" );
-    fill( "ADBE Vector Fill Color" ).expression = 'effect("Controller")(2)-[0.2,0.2,0.2,0]\n';
-    handleOutGroup.transform.scale.expression = '[effect("Controller")(4),effect("Controller")(4)]';
+    if (ctrlEffect) fill( "ADBE Vector Fill Color" ).expression = 'effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Color_Color'] + ')-[0.2,0.2,0.2,0]\n';
+    if (ctrlEffect) handleOutGroup.transform.scale.expression = '[effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Size_Slider'] + '),effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Size_Slider'] + ')]';
 
     //Auto handle position disabled as it mess up the order of the evaluation of the expressions
     handleOutGroup.transform.position.expression = 'var fx = effect("' + curveEffect.name + '");\n' +
@@ -2622,7 +2632,7 @@ DuAEF.Duik.Rigging.bezierIK = function( layers, goal, controller )
             '}\n' +
             'createPath(result,[],[],false);';
         var stroke = lineContent.addProperty( "ADBE Vector Graphic - Stroke" );
-        stroke( "ADBE Vector Stroke Color" ).expression = 'effect("Controller")(2)-[0.2,0.2,0.2,0]';
+        if (ctrlEffect) stroke( "ADBE Vector Stroke Color" ).expression = 'effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Color_Color'] + ')-[0.2,0.2,0.2,0]';
         stroke( "ADBE Vector Stroke Width" ).setValue( 2 );
         stroke( "ADBE Vector Stroke Line Cap" ).setValue( 2 );
         stroke( "ADBE Vector Stroke Dashes" ).addProperty( "ADBE Vector Stroke Dash 1" );

@@ -279,10 +279,10 @@ DuAEF.Duik.Controller.Strings = {
 DuAEF.Duik.Controller.postInit = function()
 {
     //translate strings
-    DuAEF.DuScriptUI.uiStrings = DuAEF.DuScriptUI.uiStrings.concat( DuAEF.Duik.Controller.Strings );
     for ( i in DuAEF.Duik.Controller.Strings )
     {
         var str = DuAEF.Duik.Controller.Strings[ i ];
+		DuAEF.DuScriptUI.uiStrings.push( str );
         DuAEF.Duik.Controller.Strings[ i ] = tr( str );
     }
 }
@@ -400,7 +400,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 	}
 	else ctrl = comp.layers.addShape();
 
-	DuAEF.Duik.setDuikMarker(ctrl,"Controller",DuAEF.Duik.LayerTypes.CONTROLLER);
+	DuAEF.Duik.setDuikMarker(ctrl,tr("Controller"),DuAEF.Duik.LayerTypes.CONTROLLER);
 
 	if (layer != null)
 	{
@@ -490,12 +490,12 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 			star("ADBE Vector Star Inner Radius").setValue(0);
 			star("ADBE Vector Star Outer Radius").setValue(10);
 			var stroke = anchorContent.addProperty("ADBE Vector Graphic - Stroke");
-			stroke("ADBE Vector Stroke Color").expression = 'effect("Controller")(' + pseudoEffect.index['Anchor_Color_Color'] + ')';
+			stroke("ADBE Vector Stroke Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Anchor_Color_Color'] + ')';
 			stroke("ADBE Vector Stroke Width").expression = 'var s = content("Anchor").transform.scale[0];\n' + 
 				'if (s == 0) 0;\n' +
 				'else 100/s;';
 			stroke("ADBE Vector Stroke Line Cap").setValue(2);
-			anchorGroup.transform.scale.expression = '[effect("Controller")(' + pseudoEffect.index['Anchor_Size_Slider'] + '),effect("Controller")(' + pseudoEffect.index['Anchor_Size_Slider'] + ')]';
+			anchorGroup.transform.scale.expression = '[effect("' + effect.name + '")(' + pseudoEffect.index['Anchor_Size_Slider'] + '),effect("' + effect.name + '")(' + pseudoEffect.index['Anchor_Size_Slider'] + ')]';
 		}
 
 	}
@@ -524,13 +524,13 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 
 	if (type != DuAEF.Duik.Controller.Types.SQUARE && type != DuAEF.Duik.Controller.Types.SLIDER && type != DuAEF.Duik.Controller.Types.DOUBLE_SLIDER && type != DuAEF.Duik.Controller.Types.ANGLE)
 	{
-		iconGroup.transform.scale.expression = ['var flip = effect("Controller")(' + pseudoEffect.index['Icon_Flip_Checkbox'] + ').value;',
+		iconGroup.transform.scale.expression = ['var flip = effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Flip_Checkbox'] + ').value;',
 			'flip ? flip = -1 : flip = 1;',
-			'[flip * effect("Controller")(' + pseudoEffect.index['Icon_Size_Slider'] + ')*2,effect("Controller")(' + pseudoEffect.index['Icon_Size_Slider'] + ')*2]'
+			'[flip * effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Size_Slider'] + ')*2,effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Size_Slider'] + ')*2]'
 			].join('\n');
-		iconGroup.transform.position.expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Position_Point'] + ')';
-		iconGroup.transform.rotation.expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Orientation_Angle'] + ')';
-		iconGroup.transform.opacity.expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Opacity_Slider'] + ')';
+		iconGroup.transform.position.expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Position_Point'] + ')';
+		iconGroup.transform.rotation.expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Orientation_Angle'] + ')';
+		iconGroup.transform.opacity.expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Opacity_Slider'] + ')';
 	}
 
 	if (type == DuAEF.Duik.Controller.Types.ROTATION)
@@ -543,7 +543,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		rotationShape.closed = false;
 		shape('ADBE Vector Shape').setValue(rotationShape);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Stroke");
-		stroke("ADBE Vector Stroke Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Stroke Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 		stroke("ADBE Vector Stroke Width").setValue(1.5);
 		stroke("ADBE Vector Stroke Line Cap").setValue(2);
 
@@ -560,7 +560,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		xPosShape.closed = true;
 		shape('ADBE Vector Shape').setValue(xPosShape);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.X_POSITION );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -575,7 +575,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		yPosShape.closed = true;
 		shape('ADBE Vector Shape').setValue(yPosShape);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.Y_POSITION );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -590,7 +590,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		posShape.closed = true;
 		shape('ADBE Vector Shape').setValue(posShape);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.POSITION );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -619,7 +619,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		transformShape3.closed = false;
 		shape3('ADBE Vector Shape').setValue(transformShape3);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Stroke");
-		stroke("ADBE Vector Stroke Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Stroke Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 		stroke("ADBE Vector Stroke Width").setValue(1.5);
 		stroke("ADBE Vector Stroke Line Cap").setValue(2);
 
@@ -650,7 +650,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape.closed = true;
 		shape3('ADBE Vector Shape').setValue(shape);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.EYE );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -665,7 +665,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		camShape.closed = true;
 		shape1('ADBE Vector Shape').setValue(camShape);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.CAMERA );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -680,7 +680,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		handShape.closed = true;
 		shape1('ADBE Vector Shape').setValue(handShape);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.HAND );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -709,7 +709,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		headShape3.closed = true;
 		shape3('ADBE Vector Shape').setValue(headShape3);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.HEAD );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -752,7 +752,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		hipsShape5.closed = true;
 		shape5('ADBE Vector Shape').setValue(hipsShape5);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.HIPS );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -810,7 +810,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape('ADBE Vector Shape').setValue(bodyShape);
 
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.BODY );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -861,7 +861,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape('ADBE Vector Shape').setValue(shouldersShape);
 
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.SHOULDERS );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -884,7 +884,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape('ADBE Vector Shape').setValue(tailShape);
 
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.TAIL );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -900,7 +900,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape('ADBE Vector Shape').setValue(penisShape);
 
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.PENIS );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -937,7 +937,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape('ADBE Vector Shape').setValue(vulvaShape);
 
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.VULVA );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -980,7 +980,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		footShape5.closed = true;
 		shape5('ADBE Vector Shape').setValue(footShape5);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.FOOT );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -1003,7 +1003,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape2('ADBE Vector Shape').setValue(shape);
 		
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.EAR );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -1019,7 +1019,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape1('ADBE Vector Shape').setValue(shape);
 		
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.HAIR );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -1043,7 +1043,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape2('ADBE Vector Shape').setValue(shape);
 		
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.MOUTH );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -1059,7 +1059,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape1('ADBE Vector Shape').setValue(shape);
 		
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.NOSE );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -1075,7 +1075,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape1('ADBE Vector Shape').setValue(shape);
 		
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.EYEBROW );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -1091,7 +1091,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape1('ADBE Vector Shape').setValue(shape);
 		
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.PONEYTAIL );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -1153,7 +1153,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		walkCycleShape.closed = true;
 		shape7('ADBE Vector Shape').setValue(walkCycleShape);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.WALK_CYCLE );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -1187,7 +1187,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape1('ADBE Vector Shape').setValue(blenderShape);
 
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.BLENDER );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -1233,7 +1233,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape1('ADBE Vector Shape').setValue(ConnectorShape);
 
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.CONNECTOR );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -1276,7 +1276,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		clawsShape5.closed = true;
 		shape5('ADBE Vector Shape').setValue(clawsShape5);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.CLAWS );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -1333,7 +1333,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		hoofShape7.closed = true;
 		shape7('ADBE Vector Shape').setValue(hoofShape7);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.HOOF );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -1364,7 +1364,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shapeProp('ADBE Vector Shape').setValue(shape2);
 		
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+		stroke("ADBE Vector Fill Color").expression = 'effect("' + effect.name + '")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
 		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.EXPOSE_TRANSFORM );
 		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
@@ -1602,6 +1602,6 @@ DuAEF.Duik.Controller.tag = function (layers)
 	if (layers.length == 0) return;
 
 	new Iterator(layers).do( function(layer) {
-		DuAEF.Duik.setDuikMarker(layer, "Controller", DuAEF.Duik.LayerTypes.CONTROLLER);
+		DuAEF.Duik.setDuikMarker(layer, tr("Controller"), DuAEF.Duik.LayerTypes.CONTROLLER);
 	});
 }
