@@ -11,10 +11,10 @@
 function Controller(layer)
 {
 	this.layer = layer;
-	var effect = this.layer.effect(DuAEF.Duik.PseudoEffectsMatchNames.CONTROLLER_SLIDER);
-	if (!effect) effect = this.layer.effect(DuAEF.Duik.PseudoEffectsMatchNames.CONTROLLER_DOUBLE_SLIDER);
-	if (!effect) effect = this.layer.effect(DuAEF.Duik.PseudoEffectsMatchNames.CONTROLLER_ANGLE);
-	if (!effect) effect = this.layer.effect(DuAEF.Duik.PseudoEffectsMatchNames.CONTROLLER);
+	var effect = this.layer.effect(DuAEF.Duik.PseudoEffects.CONTROLLER_SLIDER.matchName);
+	if (!effect) effect = this.layer.effect(DuAEF.Duik.PseudoEffects.CONTROLLER_DOUBLE_SLIDER.matchName);
+	if (!effect) effect = this.layer.effect(DuAEF.Duik.PseudoEffects.CONTROLLER_ANGLE.matchName);
+	if (!effect) effect = this.layer.effect(DuAEF.Duik.PseudoEffects.CONTROLLER.matchName);
 	if (effect)
 	{
 		this.effect = effect;
@@ -59,17 +59,24 @@ Controller.prototype.setSize = function (size)
 		else if (DuAEF.Duik.Controller.sizeHint == DuAEF.Duik.Sizes.LARGE) size = Math.floor(size*200/1500);
 		else if (DuAEF.Duik.Controller.sizeHint == DuAEF.Duik.Sizes.CUSTOM) size = DuAEF.Duik.Controller.size;
 	}
-	var index1 = 4;
-	var index2 = 10;
 
-	if (this.effect.matchName == DuAEF.Duik.PseudoEffectsMatchNames.CONTROLLER_SLIDER || this.effect.matchName == DuAEF.Duik.PseudoEffectsMatchNames.CONTROLLER_DOUBLE_SLIDER || this.effect.matchName == DuAEF.Duik.PseudoEffectsMatchNames.CONTROLLER_ANGLE)
+	var pseudoEffect = DuAEF.Duik.PseudoEffects.CONTROLLER;
+	var size1Name = 'Icon_Size_Slider';
+	var size2Name = 'Anchor_Size_Slider';
+
+	if ( this.effect.matchName != DuAEF.Duik.PseudoEffects.CONTROLLER.matchName )
 	{
-		index1 = 3;
-		index2 = 8;
-	}
+		if (this.effect.matchName == DuAEF.Duik.PseudoEffects.CONTROLLER_SLIDER.matchName) pseudoEffect = DuAEF.Duik.PseudoEffects.CONTROLLER_SLIDER;
+		if (this.effect.matchName == DuAEF.Duik.PseudoEffects.CONTROLLER_DOUBLE_SLIDER.matchName) pseudoEffect = DuAEF.Duik.PseudoEffects.CONTROLLER_DOUBLE_SLIDER;
+		if (this.effect.matchName == DuAEF.Duik.PseudoEffects.CONTROLLER_ANGLE.matchName) pseudoEffect = DuAEF.Duik.PseudoEffects.CONTROLLER_ANGLE;
 
-	this.effect(index1).setValue(size);
-	this.effect(index2).setValue(size);
+		size1Name = 'Handle_Size_Slider';
+		size2Name = 'Slider_Size_Slider';
+	}
+	
+
+	this.effect( pseudoEffect.index[ size1Name ] ).setValue(size);
+	this.effect( pseudoEffect.index[ size2Name ] ).setValue(size);
 }
 
 /**
@@ -216,7 +223,7 @@ Controller.prototype.bakeAppearance = function ()
 	if ( this.effect && this.effectInfo.isEffect )
 	{
 		this.effect = this.effectInfo.getProperty();
-		try { if (this.effect.matchName == DuAEF.Duik.PseudoEffectsMatchNames.CONTROLLER) this.effect.remove() } catch (e) { if (DuAEF.debug) alert(e); };
+		try { if (this.effect.matchName == DuAEF.Duik.PseudoEffects.CONTROLLER.matchName) this.effect.remove() } catch (e) { if (DuAEF.debug) alert(e); };
 	}
 }
 
@@ -226,6 +233,60 @@ Controller.prototype.bakeAppearance = function ()
 	* @memberof DuAEF.Duik
 */
 DuAEF.Duik.Controller = {};
+
+/**
+ * Translatable strings used to name layers and effects<br />
+ * These strings are translated at init time using the {@link tr} function from {@link DuAEF.Dutranslator}.
+ * @enum {string}
+ * @readonly
+ */
+DuAEF.Duik.Controller.Strings = {
+	ROTATION: "Rotation",
+	X_POSITION: "X",
+	Y_POSITION: "Y",
+	POSITION: "Position",
+	TRANSFORM: "Transform",
+	EYE: "Eye",
+	CAMERA: "Camera",
+	HAND: "Hand",
+	HEAD: "Head",
+	HIPS: "Hips",
+	BODY: "Body",
+	SHOULDERS: "Shoulders",
+	TAIL: "Tail",
+	VULVA: "Vulva",
+	PENIS: "Penis",
+	FOOT: "Foot",
+	EAR: "Ear",
+	HAIR: "Hair",
+	MOUTH: "Mouth",
+	NOSE: "Nose",
+	EYEBROW: "Eyebrow",
+	PONEYTAIL: "Hair",
+	WALK_CYCLE: "Walk Cycle",
+	BLENDER: "Blender",
+	CONNECTOR: "Connector",
+	CLAWS: "Claws",
+	HOOF: "Hoof",
+	EXPOSE_TRANSFORM: "Expose Transform",
+	SLIDER: "Slider",
+	DOUBLE_SLIDER: "2D Slider",
+	ANGLE: "Angle"
+};
+
+//low-level undocumented function
+//this function has to be called once at runtime.
+DuAEF.Duik.Controller.postInit = function()
+{
+    //translate strings
+    DuAEF.DuScriptUI.uiStrings = DuAEF.DuScriptUI.uiStrings.concat( DuAEF.Duik.Controller.Strings );
+    for ( i in DuAEF.Duik.Controller.Strings )
+    {
+        var str = DuAEF.Duik.Controller.Strings[ i ];
+        DuAEF.Duik.Controller.Strings[ i ] = tr( str );
+    }
+}
+
 
 /**
  * The shapes/type/icon of the controllers
@@ -262,7 +323,13 @@ DuAEF.Duik.Controller.Types =
 	BLENDER: 26,
 	NULL: 27,
 	CONNECTOR: 28,
-	EXPOSE_TRANSFORM: 29
+	EXPOSE_TRANSFORM: 29,
+	EAR: 30,
+	HAIR: 31,
+	MOUTH: 32,
+	NOSE: 33,
+	EYEBROW: 34,
+	PONEYTAIL: 35
 }
 
 /**
@@ -404,8 +471,9 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 
 	if (type != DuAEF.Duik.Controller.Types.SQUARE && type != DuAEF.Duik.Controller.Types.SLIDER && type != DuAEF.Duik.Controller.Types.DOUBLE_SLIDER && type != DuAEF.Duik.Controller.Types.ANGLE)
 	{
+		pseudoEffect = DuAEF.Duik.PseudoEffects.CONTROLLER;
 		//add effect
-		effect = DuAEF.DuAE.Layer.addPseudoEffect(ctrl,DuAEF.Duik.PseudoEffects.CONTROLLER,DuAEF.Duik.PseudoEffectsMatchNames.CONTROLLER,'Controller');
+		effect = pseudoEffect.apply( ctrl );
 
 		if (type != DuAEF.Duik.Controller.Types.WALK_CYCLE && type != DuAEF.Duik.Controller.Types.BLENDER && type != DuAEF.Duik.Controller.Types.CONNECTOR)
 		{
@@ -422,12 +490,12 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 			star("ADBE Vector Star Inner Radius").setValue(0);
 			star("ADBE Vector Star Outer Radius").setValue(10);
 			var stroke = anchorContent.addProperty("ADBE Vector Graphic - Stroke");
-			stroke("ADBE Vector Stroke Color").expression = 'effect("Controller")(9)';
+			stroke("ADBE Vector Stroke Color").expression = 'effect("Controller")(' + pseudoEffect.index['Anchor_Color_Color'] + ')';
 			stroke("ADBE Vector Stroke Width").expression = 'var s = content("Anchor").transform.scale[0];\n' + 
 				'if (s == 0) 0;\n' +
 				'else 100/s;';
 			stroke("ADBE Vector Stroke Line Cap").setValue(2);
-			anchorGroup.transform.scale.expression = '[effect("Controller")(10),effect("Controller")(10)]';
+			anchorGroup.transform.scale.expression = '[effect("Controller")(' + pseudoEffect.index['Anchor_Size_Slider'] + '),effect("Controller")(' + pseudoEffect.index['Anchor_Size_Slider'] + ')]';
 		}
 
 	}
@@ -456,10 +524,13 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 
 	if (type != DuAEF.Duik.Controller.Types.SQUARE && type != DuAEF.Duik.Controller.Types.SLIDER && type != DuAEF.Duik.Controller.Types.DOUBLE_SLIDER && type != DuAEF.Duik.Controller.Types.ANGLE)
 	{
-		iconGroup.transform.scale.expression = '[effect("Controller")(4)*2,effect("Controller")(4)*2]';
-		iconGroup.transform.position.expression = 'effect("Controller")(3)';
-		iconGroup.transform.rotation.expression = 'effect("Controller")(5)';
-		iconGroup.transform.opacity.expression = 'effect("Controller")(6)';
+		iconGroup.transform.scale.expression = ['var flip = effect("Controller")(' + pseudoEffect.index['Icon_Flip_Checkbox'] + ').value;',
+			'flip ? flip = -1 : flip = 1;',
+			'[flip * effect("Controller")(' + pseudoEffect.index['Icon_Size_Slider'] + ')*2,effect("Controller")(' + pseudoEffect.index['Icon_Size_Slider'] + ')*2]'
+			].join('\n');
+		iconGroup.transform.position.expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Position_Point'] + ')';
+		iconGroup.transform.rotation.expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Orientation_Angle'] + ')';
+		iconGroup.transform.opacity.expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Opacity_Slider'] + ')';
 	}
 
 	if (type == DuAEF.Duik.Controller.Types.ROTATION)
@@ -472,11 +543,12 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		rotationShape.closed = false;
 		shape('ADBE Vector Shape').setValue(rotationShape);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Stroke");
-		stroke("ADBE Vector Stroke Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Stroke Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 		stroke("ADBE Vector Stroke Width").setValue(1.5);
 		stroke("ADBE Vector Stroke Line Cap").setValue(2);
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Rotation',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.ROTATION );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.X_POSITION)
 	{
@@ -488,9 +560,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		xPosShape.closed = true;
 		shape('ADBE Vector Shape').setValue(xPosShape);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | X',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.X_POSITION );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.Y_POSITION)
 	{
@@ -502,9 +575,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		yPosShape.closed = true;
 		shape('ADBE Vector Shape').setValue(yPosShape);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Y',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.Y_POSITION );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.POSITION)
 	{
@@ -516,9 +590,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		posShape.closed = true;
 		shape('ADBE Vector Shape').setValue(posShape);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Position',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.POSITION );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	if (type == DuAEF.Duik.Controller.Types.TRANSFORM)
 	{
@@ -544,32 +619,41 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		transformShape3.closed = false;
 		shape3('ADBE Vector Shape').setValue(transformShape3);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Stroke");
-		stroke("ADBE Vector Stroke Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Stroke Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 		stroke("ADBE Vector Stroke Width").setValue(1.5);
 		stroke("ADBE Vector Stroke Line Cap").setValue(2);
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | transform',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.TRANSFORM );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.EYE)
 	{
 		var shape1 = iconContent.addProperty("ADBE Vector Shape - Group");
-		var eyeShape1 = new Shape();
-		eyeShape1.vertices = [[-16.5059204101563, 0.3309326171875], [16.5059509277344, 0.3309326171875]];
-		eyeShape1.inTangents = [[9.71759033203125, -9.3309326171875], [-6.15141296386719, 8.6690673828125]];
-		eyeShape1.outTangents = [[7.75308227539063, 7.74267578125], [-7.94126892089844, -8.66920471191406]];
-		eyeShape1.closed = true;
-		shape1('ADBE Vector Shape').setValue(eyeShape1);
+		var shape = new Shape();
+		shape.vertices = [[15.8135528564453, -0.81146240234375], [0.00001525878906, -10.6712951660156], [-15.8135223388672, -0.8109130859375], [-15.8135223388672, 0.81146240234375], [0.00001525878906, 10.6712951660156], [15.8135528564453, 0.8109130859375]];
+		shape.inTangents = [[0.25784301757813, 0.51005554199219], [6.83241271972656, 0], [3.01242065429688, -5.878662109375], [-0.25785827636719, -0.51005554199219], [-6.83241271972656, 0], [-3.01242065429688, 5.878662109375]];
+		shape.outTangents = [[-3.01409912109375, -5.88088989257813], [-6.83241271972656, 0], [-0.25785827636719, 0.51005554199219], [3.01408386230469, 5.88088989257813], [6.83241271972656, 0], [0.25784301757813, -0.51005554199219]];
+		shape.closed = true;
+		shape1('ADBE Vector Shape').setValue(shape);
 		var shape2 = iconContent.addProperty("ADBE Vector Shape - Group");
-		var eyeShape2 = new Shape();
-		eyeShape2.vertices = [[2.90478515625, 2.90478515625], [-2.90478515625, 2.90478515625], [-2.90478515625, -2.9046630859375], [2.90478515625, -2.9046630859375]];
-		eyeShape2.inTangents = [[1.60421752929688, -1.604248046875], [1.60427856445313, 1.6043701171875], [-1.60421752929688, 1.604248046875], [-1.60427856445313, -1.6043701171875]];
-		eyeShape2.outTangents = [[-1.60427856445313, 1.6043701171875], [-1.60421752929688, -1.604248046875], [1.60427856445313, -1.6043701171875], [1.60421752929688, 1.604248046875]];
-		eyeShape2.closed = true;
-		shape2('ADBE Vector Shape').setValue(eyeShape2);
+		var shape = new Shape();
+		shape.vertices = [[8.00241088867188, 0], [0.0067138671875, 8.00347900390625], [-0.00106811523438, 8.00347900390625], [-8.00454711914063, 0], [-0.00106811523438, -8.00347900390625]];
+		shape.inTangents = [[-0.00215148925781, -4.42019653320313], [4.41806030273438, -0.00215148925781], [0.00259399414063, 0], [0, 4.42019653320313], [-4.42019653320313, 0]];
+		shape.outTangents = [[0.00215148925781, 4.41804504394531], [-0.00257873535156, 0], [-4.42019653320313, 0], [0, -4.42019653320313], [4.42019653320313, 0]];
+		shape.closed = true;
+		shape2('ADBE Vector Shape').setValue(shape);
+		var shape3 = iconContent.addProperty("ADBE Vector Shape - Group");
+		var shape = new Shape();
+		shape.vertices = [[-0.01252746582031, -5.614990234375], [-1.41923522949219, -5.40434265136719], [-1.98504638671875, -1.68606567382813], [-5.13752746582031, -1.68606567382813], [-1.39447021484375, 4.84596252441406], [5.13754272460938, 1.1029052734375], [1.39448547363281, -5.42910766601563]];
+		shape.inTangents = [[0.47520446777344, -0.00111389160156], [0.45729064941406, -0.13313293457031], [1.18301391601563, -0.87052917480469], [0.93757629394531, 0.68992614746094], [-2.83738708496094, -0.77015686035156], [-0.7701416015625, 2.83737182617188], [2.83738708496094, 0.7701416015625]];
+		shape.outTangents = [[-0.47624206542969, 0.00665283203125], [0.87052917480469, 1.18301391601563], [-0.93757629394531, 0.68992614746094], [-0.7701416015625, 2.83738708496094], [2.83738708496094, 0.7701416015625], [0.77015686035156, -2.83738708496094], [-0.45860290527344, -0.12448120117188]];
+		shape.closed = true;
+		shape3('ADBE Vector Shape').setValue(shape);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Eye',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.EYE );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.CAMERA)
 	{
@@ -581,9 +665,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		camShape.closed = true;
 		shape1('ADBE Vector Shape').setValue(camShape);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Camera',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.CAMERA );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.HAND)
 	{
@@ -595,9 +680,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		handShape.closed = true;
 		shape1('ADBE Vector Shape').setValue(handShape);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Hand',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.HAND );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.HEAD)
 	{
@@ -623,9 +709,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		headShape3.closed = true;
 		shape3('ADBE Vector Shape').setValue(headShape3);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Head',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.HEAD );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.HIPS)
 	{
@@ -665,9 +752,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		hipsShape5.closed = true;
 		shape5('ADBE Vector Shape').setValue(hipsShape5);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Hips',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.HIPS );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.BODY)
 	{
@@ -722,9 +810,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape('ADBE Vector Shape').setValue(bodyShape);
 
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Body',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.BODY );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.SHOULDERS)
 	{
@@ -772,9 +861,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape('ADBE Vector Shape').setValue(shouldersShape);
 
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Shoulders',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.SHOULDERS );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.TAIL)
 	{
@@ -794,9 +884,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape('ADBE Vector Shape').setValue(tailShape);
 
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Tail',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.TAIL );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.PENIS)
 	{
@@ -809,9 +900,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape('ADBE Vector Shape').setValue(penisShape);
 
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Penis',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.PENIS );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.VULVA)
 	{
@@ -845,9 +937,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape('ADBE Vector Shape').setValue(vulvaShape);
 
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Vulva',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.VULVA );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.FOOT)
 	{
@@ -887,9 +980,121 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		footShape5.closed = true;
 		shape5('ADBE Vector Shape').setValue(footShape5);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Foot',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.FOOT );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
+	}
+	else if (type == DuAEF.Duik.Controller.Types.EAR)
+	{
+		var shape1 = iconContent.addProperty("ADBE Vector Shape - Group");
+		var shape = new Shape();
+		shape.vertices = [[-11.2035827636719, -7.28010559082031], [-14.4191436767578, -0.95159912109375], [-6.58012390136719, 6.06765747070313], [-4.05198669433594, 3.38728332519531], [-6.795654296875, 0.93049621582031], [-9.14724731445313, -1.17527770996094], [-6.98028564453125, -3.47280883789063], [-4.45204162597656, -6.15324401855469], [-7.19570922851563, -8.61001586914063]];
+		shape.inTangents = [[1.14080810546875, -0.78231811523438], [-0.10873413085938, -2.59234619140625], [-4.15272521972656, 0.17623901367188], [0.05947875976563, 1.41859436035156], [1.45579528808594, -0.06179809570313], [0.05093383789063, 1.21392822265625], [-1.24586486816406, 0.05287170410156], [0.05949401855469, 1.41859436035156], [1.45579528808594, -0.06178283691406]];
+		shape.outTangents = [[-2.03359985351563, 1.39454650878906], [0.16970825195313, 4.046630859375], [1.45578002929688, -0.061767578125], [-0.05949401855469, -1.41859436035156], [-1.245849609375, 0.05287170410156], [-0.05091857910156, -1.21392822265625], [1.45576477050781, -0.061767578125], [-0.05949401855469, -1.41859436035156], [-1.49238586425781, 0.06332397460938]];
+		shape.closed = true;
+		shape1('ADBE Vector Shape').setValue(shape);
+		var shape2 = iconContent.addProperty("ADBE Vector Shape - Group");
+		shape = new Shape();
+		shape.vertices = [[-17.4223937988281, -11.1869354248047], [-1.17724609375, -8.38504028320313], [0.08221435546875, 2.53520202636719], [-1.00065612792969, 11.3311767578125], [-10.960693359375, 9.62380981445313], [-20.3409118652344, 4.65254211425781]];
+		shape.inTangents = [[-5.28346252441406, 3.594482421875], [-3.67416381835938, -5.13946533203125], [-0.51219177246094, -4.71830749511719], [3.50065612792969, -2.53875732421875], [2.25736999511719, 3.14356994628906], [3.63400268554688, 5.08326721191406]];
+		shape.outTangents = [[5.283447265625, -3.594482421875], [2.19996643066406, 3.07734680175781], [0.51219177246094, 4.71829223632813], [-3.23796081542969, 2.20285034179688], [-1.33584594726563, -1.80123901367188], [-3.6741943359375, -5.13948059082031]];
+		shape.closed = true;
+		shape2('ADBE Vector Shape').setValue(shape);
+		
+		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.EAR );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
+	}
+	else if (type == DuAEF.Duik.Controller.Types.HAIR)
+	{
+		var shape1 = iconContent.addProperty("ADBE Vector Shape - Group");
+		var shape = new Shape();
+		shape.vertices = [[3.95327758789063, 11.7785034179688], [5.92825317382813, 8.66191101074219], [6.91983032226563, 4.85456848144531], [6.21087646484375, 0.68038940429688], [5.90966796875, -0.44117736816406], [5.02009582519531, -0.35601806640625], [0.21919250488281, -0.07183837890625], [-1.40025329589844, -0.07183837890625], [-1.48060607910156, -0.38079833984375], [-1.74070739746094, -4.80072021484375], [-1.59147644042969, -5.90594482421875], [-1.64898681640625, -5.96597290039063], [-2.30477905273438, -4.38075256347656], [-2.69815063476563, -1.20198059082031], [-2.75140380859375, 0.02815246582031], [-3.54148864746094, -0.02668762207031], [-6.90888977050781, -0.39088439941406], [-7.37673950195313, -0.406982421875], [-7.55918884277344, 0.38444519042969], [-7.51724243164063, 5.35432434082031], [-4.91836547851563, 11.9218139648438], [-6.58195495605469, 11.1731872558594], [-6.15634155273438, 12.0989074707031], [-7.98185729980469, 10.7629547119141], [-8.286376953125, 10.5569610595703], [-7.55923461914063, 11.9069519042969], [-7.2783203125, 12.2048492431641], [-7.50143432617188, 12.2048492431641], [-9.29127502441406, 11.7233123779297], [-12.2391815185547, 7.97306823730469], [-12.9859313964844, 1.57551574707031], [-9.99797058105469, -7.61088562011719], [-4.92758178710938, -12.5542144775391], [-2.06576538085938, -13.2080993652344], [0.18687438964844, -12.6696929931641], [0.42085266113281, -12.4974517822266], [0.88720703125, -12.7051696777344], [4.69052124023438, -13.0552062988281], [11.78173828125, -5.96298217773438], [13.5132598876953, 2.60595703125], [12.1827087402344, 8.58636474609375], [8.4730224609375, 11.6068267822266], [7.98629760742188, 11.6064910888672], [8.19145202636719, 11.1212921142578], [8.39744567871094, 10.3642272949219], [8.39826965332031, 10.0479583740234], [7.67732238769531, 10.7841491699219], [5.96266174316406, 11.8604431152344], [5.74525451660156, 11.8340759277344], [6.009033203125, 11.5045013427734], [6.50198364257813, 10.7217407226563], [7.150146484375, 8.91365051269531], [3.95327758789063, 11.7784881591797]];
+		shape.inTangents = [[0, 0], [-1.24452209472656, 2.36982727050781], [0.13247680664063, 1.49855041503906], [0.3492431640625, 1.3897705078125], [0.01344299316406, 0.01094055175781], [0.475830078125, -0.05780029296875], [1.64460754394531, 0], [0, 0], [0, 0], [-0.14901733398438, 1.443603515625], [-0.02644348144531, 0.06890869140625], [0.07322692871094, -0.04527282714844], [0.18339538574219, -0.726806640625], [0.06195068359375, -1.43104553222656], [0, 0], [0, 0], [0.67022705078125, 0.10649108886719], [0.01799011230469, -0.02915954589844], [0.08232116699219, -0.4061279296875], [-0.25047302246094, -1.15556335449219], [-0.87689208984375, -1.04896545410156], [0, 0], [-0.27473449707031, -0.30982971191406], [0.40945434570313, 0.55320739746094], [-0.05892944335938, -0.27691650390625], [-0.32083129882813, -0.34016418457031], [0, 0], [0, 0], [0.36634826660156, 0.1868896484375], [0.74742126464844, 1.90386962890625], [-0.28031921386719, 2.39268493652344], [-1.637939453125, 2.70066833496094], [-1.95228576660156, 0.92060852050781], [-1.20822143554688, 0.00042724609375], [-0.52946472167969, -0.38980102539063], [0, 0], [0, 0], [-1.12411499023438, -0.30084228515625], [-1.86964416503906, -3.82069396972656], [0.23674011230469, -3.24903869628906], [0.74288940429688, -1.48802185058594], [1.22061157226563, -0.11067199707031], [0, 0.02445983886719], [-0.11285400390625, 0.24240112304688], [-0.00042724609375, 0.17398071289063], [0, 0], [0, 0], [0.3944091796875, 0.0478515625], [0, 0], [0, 0], [-0.12602233886719, 0.249267578125], [0.03987121582031, 0.11962890625], [1.68150329589844, -0.41744995117188]];
+		shape.outTangents = [[0.50749206542969, -0.53427124023438], [1.03713989257813, -1.97492980957031], [-0.12289428710938, -1.39002990722656], [-0.15223693847656, -0.60589599609375], [-0.01344299316406, -0.01092529296875], [-1.56338500976563, 0.18989562988281], [0, 0], [0, 0], [-0.30242919921875, -1.16311645507813], [0.05563354492188, -0.53897094726563], [0.03335571289063, -0.0869140625], [-0.15756225585938, 0.09738159179688], [-0.2259521484375, 0.89543151855469], [0, 0], [0, 0], [-0.87870788574219, -0.06105041503906], [-0.23928833007813, -0.03799438476563], [-0.01800537109375, 0.02915954589844], [-0.23110961914063, 1.14004516601563], [0.65116882324219, 3.00398254394531], [-1.23927307128906, -0.23719787597656], [0.04731750488281, 0.3809814453125], [-0.40414428710938, 0.02911376953125], [-0.35134887695313, -0.47474670410156], [0.08990478515625, 0.42236328125], [0, 0], [0, 0], [-0.32833862304688, 0], [-1.25065612792969, -0.63804626464844], [-0.79640197753906, -2.02861022949219], [0.4276123046875, -3.64971923828125], [1.45834350585938, -2.40458679199219], [1.13372802734375, -0.53462219238281], [1.09945678710938, -0.00039672851563], [0, 0], [0, 0], [1.14411926269531, -0.50958251953125], [2.66307067871094, 0.71270751953125], [1.52159118652344, 3.10943603515625], [-0.20057678222656, 2.75260925292969], [-0.74287414550781, 1.48802185058594], [-0.26771545410156, 0.02427673339844], [0, -0.02444458007813], [0.11285400390625, -0.24241638183594], [0, 0], [0, 0], [-0.75091552734375, 0.76678466796875], [0, 0], [0, 0], [0.14509582519531, -0.18125915527344], [0.28436279296875, -0.56239318847656], [0, 0], [0, 0]];
+		shape.closed = true;
+		shape1('ADBE Vector Shape').setValue(shape);
+		
+		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.HAIR );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
+	}
+	else if (type == DuAEF.Duik.Controller.Types.MOUTH)
+	{
+		var shape1 = iconContent.addProperty("ADBE Vector Shape - Group");
+		var shape = new Shape();
+		shape.vertices = [[10.1204071044922, -3.04928588867188], [8.62428283691406, -3.32676696777344], [3.832763671875, -2.82511901855469], [-0.39810180664063, -2.26419067382813], [-3.93487548828125, -2.83198547363281], [-8.45246887207031, -3.36831665039063], [-10.1246490478516, -3.04208374023438], [-15.8379364013672, -2.59835815429688], [-11.7276153564453, -7.17483520507813], [-7.54383850097656, -10.3538818359375], [-0.34552001953125, -9.30564880371094], [0.28776550292969, -8.95564270019531], [0.97257995605469, -9.33740234375], [8.0870361328125, -9.93109130859375], [15.9242858886719, -4.397216796875], [16.3403778076172, -2.32160949707031]];
+		shape.inTangents = [[1.17121887207031, 0.26181030273438], [0.65501403808594, 0.07843017578125], [2.35920715332031, -0.71517944335938], [1.71775817871094, 0.04728698730469], [1.12069702148438, 0.39158630371094], [2.05729675292969, -0.26531982421875], [0.4766845703125, -0.14697265625], [0.53153991699219, 1.73155212402344], [-4.06021118164063, 3.15971374511719], [-0.21832275390625, 0.12767028808594], [-2.52590942382813, -1.96650695800781], [-0.10977172851563, 0], [-0.30145263671875, 0.22967529296875], [-2.37533569335938, -1.51657104492188], [-0.42919921875, -0.33456420898438], [0.66383361816406, -1.03153991699219]];
+		shape.outTangents = [[-0.62911987304688, -0.140625], [-2.08619689941406, -0.249755859375], [-1.61244201660156, 0.48881530761719], [-1.59133911132813, -0.04379272460938], [-2.20893859863281, -0.77182006835938], [-0.79747009277344, 0.10284423828125], [-0.4766845703125, 0.14697265625], [-0.53153991699219, -1.73155212402344], [2.08274841308594, -1.62080383300781], [2.18888854980469, -1.27993774414063], [0.26863098144531, 0.20913696289063], [0.11053466796875, 0], [2.527587890625, -1.92572021484375], [0.4659423828125, 0.29750061035156], [0.52354431152344, 0.40809631347656], [-0.66383361816406, 1.03152465820313]];
+		shape.closed = true;
+		shape1('ADBE Vector Shape').setValue(shape);
+
+		var shape2 = iconContent.addProperty("ADBE Vector Shape - Group");
+		shape = new Shape();
+		shape.vertices = [[-7.86006164550781, 0.35256958007813], [-8.91279602050781, 1.33296203613281], [-8.10165405273438, 2.36538696289063], [7.91690063476563, 2.43284606933594], [8.6802978515625, 1.21353149414063], [7.46095275878906, 0.45011901855469], [7.45880126953125, 0.45063781738281], [-7.65925598144531, 0.38003540039063], [-7.86006164550781, 0.35255432128906]];
+		shape.inTangents = [[0, 0], [0.01997375488281, -0.56143188476563], [-0.48602294921875, -0.1002197265625], [-6.77970886230469, 1.56715393066406], [0.12588500976563, 0.54753112792969], [0.54753112792969, -0.12590026855469], [0.000732421875, -0.00018310546875], [6.23516845703125, 1.38888549804688], [0.06768798828125, 0.00244140625]];
+		shape.outTangents = [[-0.56143188476563, -0.01997375488281], [-0.01765441894531, 0.49592590332031], [6.30674743652344, 1.40483093261719], [0.54751586914063, -0.12590026855469], [-0.12590026855469, -0.54754638671875], [-0.00070190429688, 0.00016784667969], [-6.6259765625, 1.53160095214844], [-0.06585693359375, -0.01582336425781], [0, 0]];
+		shape.closed = true;
+		shape2('ADBE Vector Shape').setValue(shape);
+		
+		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.MOUTH );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
+	}
+	else if (type == DuAEF.Duik.Controller.Types.NOSE)
+	{
+		var shape1 = iconContent.addProperty("ADBE Vector Shape - Group");
+		var shape = new Shape();
+		shape.vertices = [[-6.46260070800781, 12.2239837646484], [-9.39894104003906, 7.95298767089844], [-2.00477600097656, -6.19207763671875], [3.02940368652344, -12.5000152587891], [3.95552062988281, -4.00509643554688], [5.19744873046875, 0.8634033203125], [4.9923095703125, 1.77397155761719], [1.38804626464844, 4.26882934570313], [2.468994140625, 4.01683044433594], [4.62249755859375, 3.59574890136719], [6.8046875, 4.04876708984375], [9.25947570800781, 8.895263671875], [7.35031127929688, 11.7371215820313], [4.77847290039063, 12.2019653320313], [0.95956420898438, 12.0669097900391], [-2.66447448730469, 12.1865844726563], [-6.46260070800781, 12.2239990234375]];
+		shape.inTangents = [[0, 0], [0.01463317871094, 2.09361267089844], [-5.51371765136719, 8.22421264648438], [-0.7584228515625, 0], [-0.23158264160156, -2.78741455078125], [-0.19718933105469, -1.65763854980469], [0.25180053710938, -0.08169555664063], [-0.32363891601563, -0.32363891601563], [-0.54145812988281, 0.19166564941406], [-0.64295959472656, 0.03993225097656], [-0.94764709472656, -0.49162292480469], [0.15547180175781, -2.17282104492188], [1.2977294921875, -0.64802551269531], [1.50830078125, 0.00196838378906], [1.2001953125, 0.0731201171875], [1.16744995117188, -0.20452880859375], [0.77243041992188, 0.2760009765625]];
+		shape.outTangents = [[-1.88877868652344, -0.67497253417969], [-0.01602172851563, -2.29289245605469], [3.98345947265625, -5.94168090820313], [1.71720886230469, 2.50161743164063], [0.23159790039063, 2.78741455078125], [0.0748291015625, 0.703857421875], [-1.48918151855469, 0.483154296875], [0.05307006835938, 0.05307006835938], [0.54147338867188, -0.19166564941406], [1.09341430664063, -0.06790161132813], [1.70368957519531, 0.88383483886719], [-0.10279846191406, 1.43666076660156], [-0.86174011230469, 0.43032836914063], [-0.90020751953125, -0.00099182128906], [-1.76687622070313, -0.10765075683594], [-1.7154541015625, 0.30052185058594], [0, 0]];
+		shape.closed = true;
+		shape1('ADBE Vector Shape').setValue(shape);
+		
+		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.NOSE );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
+	}
+	else if (type == DuAEF.Duik.Controller.Types.EYEBROW)
+	{
+		var shape1 = iconContent.addProperty("ADBE Vector Shape - Group");
+		var shape = new Shape();
+		shape.vertices = [[10.1772766113281, 2.11111450195313], [10.8638763427734, 1.607177734375], [11.216796875, 0.99777221679688], [12.1530303955078, -2.34382629394531], [10.9419708251953, -4.08218383789063], [6.38369750976563, -4.43907165527344], [-6.4140625, -2.63078308105469], [-10.4725494384766, -1.00006103515625], [-16.1371459960938, 2.61564636230469], [-17.0513153076172, 3.69334411621094], [-16.6710662841797, 4.3135986328125], [-15.1748809814453, 3.96379089355469], [-5.21853637695313, 0.94285583496094], [8.25563049316406, 2.05857849121094], [9.11537170410156, 2.28373718261719], [10.1772918701172, 2.11125183105469]];
+		shape.inTangents = [[0, 0], [-0.21897888183594, 0.24169921875], [-0.07522583007813, 0.21292114257813], [-0.04017639160156, 0.30952453613281], [0.78221130371094, 0.23619079589844], [1.95594787597656, 0.03794860839844], [3.918212890625, -1.26560974121094], [1.48985290527344, -0.72000122070313], [1.59536743164063, -1.36907958984375], [0.0257568359375, -0.23382568359375], [-0.22344970703125, -0.11801147460938], [-0.91390991210938, 0.43507385253906], [-3.23196411132813, 0.45069885253906], [-4.12435913085938, -1.40676879882813], [-0.15704345703125, -0.01611328125], [-0.25279235839844, 0.13436889648438]];
+		shape.outTangents = [[0.40132141113281, -0.21359252929688], [0.1331787109375, -0.14695739746094], [0.22470092773438, -0.63578796386719], [0.09696960449219, -0.74740600585938], [-0.51509094238281, -0.15553283691406], [-4.43049621582031, -0.08592224121094], [-1.53988647460938, 0.49739074707031], [-2.26231384277344, 1.09329223632813], [-0.63438415527344, 0.54438781738281], [-0.02301025390625, 0.20890808105469], [0.29058837890625, 0.15345764160156], [3.06961059570313, -1.46133422851563], [4.79295349121094, -0.66836547851563], [0.31582641601563, 0.10772705078125], [0.35226440429688, 0.03616333007813], [0, 0]];
+		shape.closed = true;
+		shape1('ADBE Vector Shape').setValue(shape);
+		
+		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.EYEBROW );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
+	}
+	else if (type == DuAEF.Duik.Controller.Types.PONEYTAIL)
+	{
+		var shape1 = iconContent.addProperty("ADBE Vector Shape - Group");
+		var shape = new Shape();
+		shape.vertices = [[-3.13081359863281, 2.16334533691406], [-4.58222961425781, 2.18527221679688], [-6.23530578613281, 2.62739562988281], [-7.39346313476563, 5.17549133300781], [-6.0003662109375, 9.27003479003906], [-4.38101196289063, 14.2840881347656], [-7.779541015625, 18.3483734130859], [-8.66006469726563, 18.405029296875], [-8.13099670410156, 18.1845397949219], [-5.44625854492188, 15.9203643798828], [-6.18205261230469, 16.3827667236328], [-8.82548522949219, 17.8225708007813], [-10.7431182861328, 17.6982421875], [-12.6650238037109, 16.9036407470703], [-14.3605041503906, 14.4037628173828], [-14.0888824462891, 12.9703063964844], [-13.5592651367188, 12.5405120849609], [-12.1765289306641, 14.8315124511719], [-10.3360900878906, 14.1039276123047], [-9.814697265625, 12.8911437988281], [-11.6474761962891, 9.16523742675781], [-13.8496246337891, 4.48345947265625], [-13.2044677734375, -0.02711486816406], [-11.0790557861328, -2.70147705078125], [-11.4477691650391, -2.68722534179688], [-14.8353881835938, 4.08740234375], [-14.9830932617188, 5.33285522460938], [-14.8838653564453, 1.91366577148438], [-13.2752075195313, -2.07405090332031], [-11.4825134277344, -3.56103515625], [-8.99029541015625, -4.52151489257813], [-3.95883178710938, -4.59062194824219], [-1.16218566894531, -3.66799926757813], [1.1324462890625, 0.30441284179688], [-3.13081359863281, 2.16334533691406]];
+		shape.inTangents = [[0, 0], [0.54008483886719, -0.032470703125], [0.53961181640625, -0.30799865722656], [-0.12051391601563, -1.326171875], [-1.04237365722656, -2.27743530273438], [-0.04753112792969, -1.18191528320313], [2.20332336425781, -0.29916381835938], [0.02297973632813, 0.03150939941406], [-0.31396484375, 0.08979797363281], [-0.47001647949219, 1.00856018066406], [0.8984375, -0.83659362792969], [0.96893310546875, -0.1844482421875], [1.03684997558594, 0.22749328613281], [0.67649841308594, 0.49513244628906], [0.12760925292969, 0.87208557128906], [-0.34210205078125, 0.75677490234375], [0.13803100585938, -0.73600769042969], [-0.99504089355469, -0.22044372558594], [-0.54621887207031, 0.63697814941406], [-0.06222534179688, 0.59669494628906], [1.7008056640625, 2.26704406738281], [0.28689575195313, 1.90461730957031], [-0.59541320800781, 1.21151733398438], [-0.830322265625, 0.66015625], [0.89167785644531, -0.64860534667969], [0.23921203613281, -2.92347717285156], [0.02647399902344, -0.01565551757813], [-0.19270324707031, 1.31707763671875], [-0.97183227539063, 1.20872497558594], [-0.90989685058594, 0.53829956054688], [-1.13882446289063, 0.24130249023438], [-2.30555725097656, -0.49374389648438], [-0.55104064941406, -0.30369567871094], [0.02056884765625, -1.87379455566406], [1.78071594238281, 0.15243530273438]];
+		shape.outTangents = [[-0.25820922851563, -0.02043151855469], [-0.78956604003906, 0.04750061035156], [-0.97666931152344, 0.55744934082031], [0.09747314453125, 1.07276916503906], [1.13520812988281, 2.48025512695313], [0.08964538574219, 2.22857666015625], [-0.46131896972656, 0.0626220703125], [-0.02297973632813, -0.031494140625], [1.09843444824219, -0.31419372558594], [0.17924499511719, -0.38465881347656], [-0.88821411132813, 0.82708740234375], [-0.6280517578125, 0.11955261230469], [-1.11024475097656, -0.24360656738281], [-0.92108154296875, -0.67416381835938], [-0.08659362792969, -0.59178161621094], [0.44549560546875, -0.98551940917969], [-0.204345703125, 1.08966064453125], [0.68255615234375, 0.15115356445313], [0.38972473144531, -0.45454406738281], [0.10243225097656, -0.98236083984375], [-1.63246154785156, -2.17596435546875], [-0.21653747558594, -1.43746948242188], [0.49539184570313, -1.00799560546875], [0.81192016601563, -0.64552307128906], [-1.921630859375, 1.39781188964844], [-0.05476379394531, 0.66932678222656], [-0.15718078613281, 0.09298706054688], [0.27558898925781, -1.88356018066406], [0.52244567871094, -0.6497802734375], [0.958251953125, -0.56689453125], [2.02101135253906, -0.42823791503906], [1.58851623535156, 0.34017944335938], [1.21009826660156, 0.66693115234375], [-0.02058410644531, 1.87380981445313], [0, 0]];
+		shape.closed = true;
+		shape1('ADBE Vector Shape').setValue(shape);
+		
+		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
+
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.PONEYTAIL );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.WALK_CYCLE)
 	{
@@ -948,9 +1153,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		walkCycleShape.closed = true;
 		shape7('ADBE Vector Shape').setValue(walkCycleShape);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Walk Cycle',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.WALK_CYCLE );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.BLENDER)
 	{
@@ -981,9 +1187,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape1('ADBE Vector Shape').setValue(blenderShape);
 
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Blender',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.BLENDER );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.CONNECTOR)
 	{
@@ -1026,9 +1233,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shape1('ADBE Vector Shape').setValue(ConnectorShape);
 
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Connector',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.CONNECTOR );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.CLAWS)
 	{
@@ -1068,9 +1276,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		clawsShape5.closed = true;
 		shape5('ADBE Vector Shape').setValue(clawsShape5);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Claws',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.CLAWS );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.HOOF)
 	{
@@ -1124,9 +1333,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		hoofShape7.closed = true;
 		shape7('ADBE Vector Shape').setValue(hoofShape7);
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Hoof',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.HOOF );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.EXPOSE_TRANSFORM)
 	{
@@ -1154,9 +1364,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		shapeProp('ADBE Vector Shape').setValue(shape2);
 		
 		var stroke = iconContent.addProperty("ADBE Vector Graphic - Fill");
-		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(2)';
+		stroke("ADBE Vector Fill Color").expression = 'effect("Controller")(' + pseudoEffect.index['Icon_Color_Color'] + ')';
 
-		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Expose Transform',comp);
+		var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.EXPOSE_TRANSFORM );
+		if (!layer) ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 	}
 	else if (type == DuAEF.Duik.Controller.Types.SLIDER)
 	{
@@ -1182,8 +1393,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		//name
 		if (!layer)
 		{
-			ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Slider',comp);
-			ctrlBG.name = DuAEF.DuAE.Comp.newUniqueLayerName('CBG | Slider',comp);
+			var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.SLIDER );
+			ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
+			name = DuAEF.Duik.generateName( "CBG", DuAEF.Duik.Controller.Strings.SLIDER );
+			ctrlBG.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 		}
 		else
 		{
@@ -1233,8 +1446,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		//name
 		if (!layer)
 		{
-			ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | 2D Slider',comp);
-			ctrlBG.name = DuAEF.DuAE.Comp.newUniqueLayerName('CBG | 2D Slider',comp);
+			var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.DOUBLE_SLIDER );
+			ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
+			name = DuAEF.Duik.generateName( "CBG", DuAEF.Duik.Controller.Strings.DOUBLE_SLIDER );
+			ctrlBG.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 		}
 		else
 		{
@@ -1295,8 +1510,10 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		//name
 		if (!layer)
 		{
-			ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName('C | Angle',comp);
-			ctrlBG.name = DuAEF.DuAE.Comp.newUniqueLayerName('CBG | Angle',comp);
+			var name = DuAEF.Duik.generateName( "C", DuAEF.Duik.Controller.Strings.ANGLE );
+			ctrl.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
+			name = DuAEF.Duik.generateName( "CBG", DuAEF.Duik.Controller.Strings.ANGLE );
+			ctrlBG.name = DuAEF.DuAE.Comp.newUniqueLayerName(name,comp);
 		}
 		else
 		{

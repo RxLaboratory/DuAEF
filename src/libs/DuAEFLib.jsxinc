@@ -193,7 +193,7 @@ DuAEF.init = function( scriptName, scriptVersion )
     DuAEF.scriptName = scriptName;
     DuAEF.scriptVersion = new DuVersion(scriptVersion);
 
-    //check if this script has already been run once
+    // check if this script has already been run once
     // Check the version from latest run
     if ( app.settings.haveSetting( DuAEF.scriptName, "version" ) )
     {
@@ -210,8 +210,7 @@ DuAEF.enterRunTime = function()
     app.settings.saveSetting( DuAEF.scriptName, "version", DuAEF.scriptVersion.fullVersion );
     DuAEF.state = DuAEF.States.RUNTIME;
 
-    //do post init methods
-    DuAEF.DuAE.postInit();
-    DuAEF.Duik.postInit();
-    DuAEF.Duik.Structure.postInit();
+    //do post init methods if modules are included
+    if (DuAEF.DuAE) DuAEF.DuAE.postInit();
+    if (DuAEF.Duik) DuAEF.Duik.postInit();
 }

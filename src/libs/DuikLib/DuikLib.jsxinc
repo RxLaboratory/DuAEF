@@ -97,7 +97,7 @@ DuAEF.Duik.postInit = function ()
         duik_x_sheet = DuAEF.DuBinary.toFile( duik_x_sheet );
         //Controller
         #include "../pseudoEffects/duik_controller.ffx.jsxinc"
-        duik_controller = DuAEF.DuBinary.toFile( duik_controller );
+        duik_controller = new PseudoEffect( duik_controller );
 		#include "../pseudoEffects/duik_ctrl_slider.ffx.jsxinc"
         duik_ctrl_slider = new PseudoEffect( duik_ctrl_slider );
 		#include "../pseudoEffects/duik_ctrl_2dslider.ffx.jsxinc"
@@ -528,11 +528,6 @@ DuAEF.Duik.postInit = function ()
         //constraints
         ATTACHMENT_OPTIONS: "Pseudo/DUIK attachment options",
         ATTACHMENT: "Pseudo/DUIK attachment",
-        //Controller
-        CONTROLLER: "Pseudo/DUIK controller",
-        CONTROLLER_SLIDER: "Pseudo/DUIK controller slider",
-        CONTROLLER_DOUBLE_SLIDER: "Pseudo/DUIK controller dslider",
-        CONTROLLER_ANGLE: "Pseudo/DUIK controller angle",
         //X-Sheet
         X_SHEET: "Pseudo/DUIK x sheet",
         //Paint Rig
@@ -570,6 +565,9 @@ DuAEF.Duik.postInit = function ()
     DuAEF.Duik.Presets = {
         FRAME: duframe
     }
+
+    if ( DuAEF.Duik.Structure ) DuAEF.Duik.Structure.postInit();
+    if ( DuAEF.Duik.Controller ) DuAEF.Duik.Controller.postInit();
 }
 
 /**
