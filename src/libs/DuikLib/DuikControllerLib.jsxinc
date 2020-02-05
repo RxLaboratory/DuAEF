@@ -1603,5 +1603,6 @@ DuAEF.Duik.Controller.tag = function (layers)
 
 	new Iterator(layers).do( function(layer) {
 		DuAEF.Duik.setDuikMarker(layer, tr("Controller"), DuAEF.Duik.LayerTypes.CONTROLLER);
+		layer.guideLayer = true;
 	});
 }
