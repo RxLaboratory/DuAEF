@@ -14,7 +14,9 @@ function getGroupTransformMatrix( ) {
 	var parentProp = thisProperty.propertyGroup(1);
 	while( parentProp && !isLayer(parentProp) )
 	{
-		if ( parentProp.transform ) shapeGroups.push( parentProp.transform );
+		//try catch is needed for the legacy expression engine
+		try { if ( parentProp.transform ) shapeGroups.push( parentProp.transform ); }
+		catch (e) {}
 		parentProp = parentProp.propertyGroup(1);
 	}
 	

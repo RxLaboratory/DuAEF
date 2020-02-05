@@ -351,8 +351,10 @@ Matrix.prototype = {
 
 	 var me = this;
 
-	 if (me.context)
+	 //try catch is needed for the legacy expression engine
+	 try { if (me.context)
 		me.context.setTransform(me.a, me.b, me.c, me.d, me.e, me.f);
+	 } catch(e) {}
 
 	 return me
 	}

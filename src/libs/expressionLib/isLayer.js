@@ -5,6 +5,7 @@
  * @return {boolean} true if the prop is a layer
  */
 function isLayer( prop ) {
-	if ( prop.index ) return true;
-	else return false;
+	//try catch is needed for the legacy expression engine
+	try { if ( prop.index ) return true; }
+	catch (e) { return false; }
 }
