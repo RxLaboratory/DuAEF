@@ -1463,7 +1463,8 @@ DuAEF.DuAE.Property.linkProperties = function ( childProp, parentProp, useThisCo
             }
         } else {
             for ( var p = 1, num = childProp.numProperties; p <= num; p++ ) {
-                DuAEF.DuAE.Property.linkProperties( childProp( p ), parentProp( p ), useThisComp, timeLayer );
+                try { DuAEF.DuAE.Property.linkProperties( childProp( p ), parentProp( p ), useThisComp, timeLayer ); }
+                catch(e) { if (DuAEF.debug) alert (chilProp.name + ' could not be linked.')};
             }
         }
     }

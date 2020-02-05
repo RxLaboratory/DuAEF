@@ -790,7 +790,7 @@ DuAEF.DuAE.Layer.parent = function ( layers, parent, unparentedOnly, insert ) {
 
     if ( !layers.length ) layers = [layers];
 
-    parent.parent = layers[0].parent;
+    if (insert) parent.parent = layers[0].parent;
     
     var it = new Iterator( layers );
     it.do( function ( layer ) {
