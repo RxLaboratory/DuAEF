@@ -37,11 +37,17 @@ DuAEF.DuAE.Property.getProps = function ( property, filter, strict, caseSensitiv
     else if ( !strict && typeof filter === "string" ) {
         if ( name.indexOf( filter ) >= 0 ) props.push( prop );
         else if ( matchName.indexOf( filter ) >= 0 ) props.push( prop );
-    } else if ( typeof filter === "function" )
+    }
+    else if ( typeof filter === "function" ) {
         if ( filter( prop ) ) props.push( prop );
-        else if ( prop.propertyType == PropertyType.PROPERTY )
+    }
+    else if ( prop.propertyType == filter ) {
+        props.push( prop );
+    }
+    else if ( prop.propertyType == PropertyType.PROPERTY ) {
         if ( prop.propertyValueType == filter ) props.push( prop );
-        else if ( prop.propertyType == filter ) props.push( prop );
+    }    
+    
 
     if ( prop.numProperties > 0 ) {
         for ( var k = 1; k <= prop.numProperties; k++ ) {
@@ -1391,6 +1397,8 @@ DuAEF.DuAE.Property.replaceInExpressions = function ( prop, oldString, newString
  * @param {bool} useThisComp - Wether to begin the expression by 'thisComp' or 'comp("name")', default: will detect if the properties are in the same comp
  */
 DuAEF.DuAE.Property.pickWhip = function ( childProp, parentProp, useThisComp ) {
+    if (childProp instanceof PropertyInfo) childProp = childProp.getProperty();
+    if (parentProp instanceof PropertyInfo) parentProp = parentProp.getProperty();
     if ( !childProp.canSetExpression ) return;
     if ( typeof useThisComp === 'undefined' ) {
         var parentComp = DuAEF.DuAE.Property.getComp( parentProp );

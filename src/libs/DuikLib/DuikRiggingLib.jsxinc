@@ -354,32 +354,29 @@ DuAEF.Duik.Rigging.extractLocator = function( locator, preCompLayer, useMasterPr
     DuAEF.Dugr.addLayerToGroup( loc, "Locators" );
     DuAEF.Duik.setDuikMarker( loc, "Locator", DuAEF.Duik.LayerTypes.LOCATOR );
     if (useMasterProperties) {
-        //transform
-		var numProps = DuAEF.DuAE.Property.addToEGP(locator.transform);
-        // if Ae >= 16.1 just use all master properties (as numProps is 0 if they were already there)
-        if ( DuAEF.DuAE.App.version.version >= 16.1 ) {
-            numProps = preCompLayer.source.motionGraphicsTemplateControllerCount;
-        }
+        DuAEF.DuAE.Property.addToEGP(locator.transform);
+        // get master properties
+        var mps = DuAEF.DuAE.Property.getProps(preCompLayer('ADBE Layer Overrides'), PropertyType.PROPERTY );
+        var it = new Iterator(mps);
         //links
-        for (var p = 1; p <= numProps; p++)
-        {
-            var mp = preCompLayer('ADBE Layer Overrides')(p);
-            if (!mp) continue;
+        it.do( function(mp) {
             //get prop name
             var nameArray = mp.name.split(' / ');
-            if ( nameArray.length != 2 ) continue;
+            if ( nameArray.length != 2 ) return;
             var pLink = nameArray[1];
             var layerName = nameArray[0];
-            if ( layerName != locator.name ) continue;
+            if ( layerName != locator.name ) return;
+            var newProp = null;
             try {
-                var newProp = eval('loc' + pLink);
+                newProp = eval('loc' + pLink);
             }
-            catch (e) { continue; }
+            catch (e) { return; }
+
             //link
             if (newProp) {
                 DuAEF.DuAE.Property.pickWhip(newProp, mp, true);
             }
-        }
+        });
     } else {
         DuAEF.DuAE.Property.linkProperties( loc.transform, locator.transform );
     }

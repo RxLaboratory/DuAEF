@@ -1370,30 +1370,24 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 
 		if (useMasterProperties)
 		{
-			//transform
-			var numProps = DuAEF.DuAE.Property.addToEGP(ctrlLayer.transform);
-			//effects
-			numProps += DuAEF.DuAE.Property.addToEGP(ctrlLayer('ADBE Effect Parade'));
-			// if Ae >= 16.1 just use all master properties (as numProps is 0 if they were already there)
-			// or if we're extracting again from an already extracted comp
-			if ( DuAEF.DuAE.App.version.version >= 16.1 || reLink ) {
-				numProps = preComp.motionGraphicsTemplateControllerCount;
-			}
+			DuAEF.DuAE.Property.addToEGP(ctrlLayer.transform);
+			DuAEF.DuAE.Property.addToEGP(ctrlLayer('ADBE Effect Parade'));
+			// get master properties
+			var mps = DuAEF.DuAE.Property.getProps( preComposition('ADBE Layer Overrides'), PropertyType.PROPERTY );
+			var it = new Iterator(mps);
 			//links
-			for (var p = 1; p <= numProps; p++)
-			{
-				var mp = preComposition('ADBE Layer Overrides')(p);
-				if (!mp) continue;
+			it.do( function(mp) {
 				//get prop name
 				var nameArray = mp.name.split(' / ');
-				if ( nameArray.length != 2 ) continue;
+				if ( nameArray.length != 2 ) return;
 				var pLink = nameArray[1];
-				var layerName = nameArray[0];
-				if ( layerName != ctrlLayer.name ) continue;
+				var layerName = nameArray[0];				
+				if ( layerName != ctrlLayer.name ) return;
+				var newProp = null;
 				try {
-					var newProp = eval('newCtrlLayer' + pLink);
+					newProp = eval('newCtrlLayer' + pLink);
 				}
-				catch (e) { continue; }
+				catch (e) { return; }
 				
 				//link
 				if (newProp) {
@@ -1404,7 +1398,7 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 						mp.setValueAtTime(0, mp.value);
 					}
 				}
-			}
+			});
 		}
 		else
 		{
