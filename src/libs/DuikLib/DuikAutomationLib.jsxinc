@@ -925,17 +925,25 @@ DuAEF.Duik.Automation.blink = function (prop)
 	effect.name = DuAEF.DuAE.Layer.newUniqueEffectName(prop.getProperty().name + ' Blink',layer);
 	DuAEF.DuAE.Property.setValue(effect(1),prop.getProperty().value);
 
-	prop.getProperty().expression = "//Duik.blink\n" +
+	prop.getProperty().expression = [DuAEF.Duik.expressionIds.BLINK,
 		'var fx = effect("' + effect.name + '")\n' +
-		"var phase = fx(3).value;\n" +
-		"var timeOn = fx(4).value;\n" +
-		"var offset = fx(5).value;\n" +
-		"var valueA = fx(1).value;\n" +
-		"var valueB = fx(2).value;\n" +
-		"freq= timeToFrames(1)/phase;\n" +
-		"var currentFrame = timeToFrames(time+offset/phase/100);\n" +
-		"if (currentFrame%freq > freq*timeOn/100) valueB;\n" +
-		"else valueA;";
+		"var phase = fx(3).value;",
+		"var timeOn = fx(4).value;",
+		"var offset = fx(5).value;",
+		"var valueA = fx(1).value;",
+		"var valueB = fx(2).value;",
+		'var result = value;',
+		'if (phase > 0) {',
+		'	freq= timeToFrames(1)/phase;',
+		'	var currentFrame = timeToFrames(time+offset/phase/100);',
+		'	if (currentFrame%freq > freq*timeOn/100) result = valueB;',
+		'	else result = valueA;',
+		'}',
+		'else {',
+		'	result = valueA;',
+		'}',
+		'result;'
+		].join('\n');
 }
 
 /**

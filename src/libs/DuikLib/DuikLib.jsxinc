@@ -630,7 +630,8 @@ DuAEF.Duik.expressionIds = {
     MOTION_TRAIL: '//Duik.motionTrail',
     AUTORIG_HEAD: '//Duik.autorig.head',
     IK_GOAL: '//Duik.goal',
-    SHAPE_LINKER: '//Duik.shapeLinker'
+    SHAPE_LINKER: '//Duik.shapeLinker',
+    BLINK: '//Duik.blink'
 }
 
 //undocumented low-level function used by Duik
