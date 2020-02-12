@@ -1509,13 +1509,14 @@ DuAEF.DuAE.Property.removeDataExpressions = function ( prop ) {
  * @memberof DuAEF.DuAE.Property
  * @param {PropertyBase} prop - The property
  * @param {function} filter - A function which takes a string as a parameter (the expression). Returns true if the expression has to be removed.
+ * @param {bool} [keepPostExpressionValue=true] Set to false to just remove the expressions and get back the pre expression value
  */
-DuAEF.DuAE.Property.removeExpressions = function ( prop, filter ) {
+DuAEF.DuAE.Property.removeExpressions = function ( prop, filter, keepPostExpressionValue ) {
     if ( prop.propertyType == PropertyType.PROPERTY ) {
-        DuAEF.DuAE.Property.removeExpression( prop, filter );
+        DuAEF.DuAE.Property.removeExpression( prop, filter, keepPostExpressionValue );
     } else {
         for ( var p = 1, num = prop.numProperties; p <= num; p++ ) {
-            DuAEF.DuAE.Property.removeExpressions( prop( p ), filter );
+            DuAEF.DuAE.Property.removeExpressions( prop( p ), filter, keepPostExpressionValue );
         }
     }
 }
@@ -1624,9 +1625,11 @@ DuAEF.DuAE.Property.lock = function ( properties ) {
  * @memberof DuAEF.DuAE.Property
  * @param {Property|PropertyInfo} prop - The property
  * @param {function} filter - A function which takes a string as a parameter (the expression). Returns true if the expression has to be removed.
+ * @param {bool} [keepPostExpressionValue=true] Set to false to just remove the expressions and get back the pre expression value
  */
-DuAEF.DuAE.Property.removeExpression = function ( prop, filter ) {
+DuAEF.DuAE.Property.removeExpression = function ( prop, filter, keepPostExpressionValue ) {
     if ( typeof ( prop ) === 'undefined' ) return;
+    keepPostExpressionValue = def (keepPostExpressionValue, true);
 
     var propInfo = new PropertyInfo( prop );
     prop = propInfo.getProperty();
@@ -1638,7 +1641,7 @@ DuAEF.DuAE.Property.removeExpression = function ( prop, filter ) {
         if (!filter(expression )) return;
     }
     if ( propInfo.riggable ) {
-        DuAEF.DuAE.Property.setValue( prop, prop.value );
+        if (keepPostExpressionValue) DuAEF.DuAE.Property.setValue( prop, prop.value );
         prop.expression = '';
     }
 }
