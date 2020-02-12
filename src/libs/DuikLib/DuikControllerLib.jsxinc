@@ -414,7 +414,7 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 		// and move it just above the layer
 		if (type == DuAEF.Duik.Controller.Types.NULL)
 		{
-			if (topLayer.threeDLayer) ctrl.threeDLayer = true;
+			if (DuAEF.DuAE.Layer.isThreeD( topLayer )) ctrl.threeDLayer = true;
 			ctrl.moveBefore(topLayer);
 		}
 
