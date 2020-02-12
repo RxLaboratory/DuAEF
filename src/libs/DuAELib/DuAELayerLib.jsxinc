@@ -1092,3 +1092,15 @@ DuAEF.DuAE.Layer.autoDuration = function ( layer, preExpression ) {
     if ( inPoint != layer.inPoint ) layer.inPoint = inPoint;
     if ( outPoint != layer.outPoint ) layer.outPoint = outPoint;
 }
+
+/**
+ * Checks if a layer is 3D (ie is a threeDLayer or a camera or a light)
+ * @param {Layer} layer - The layer
+ * @return {bool} true if the layer is a 3D layer
+ */
+DuAEF.DuAE.Layer.isThreeD = function ( layer ) {
+    if (layer.threeDLayer) return true;
+    if (layer instanceof CameraLayer) return true;
+    if (layer instanceof LightLayer) return true;
+    return false;
+}

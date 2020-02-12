@@ -1285,14 +1285,30 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 		else if (arm.type == DuAEF.Duik.Autorig.AnimalTypes.UNGULATE) ctrlType = DuAEF.Duik.Controller.Types.HOOF;
 		var ctrl = null;
 
-		if (arm.hand && ((arm.humerus || arm.radius || arm.shoulder) || (!arm.claws && !arm.tip)) && arm.type != DuAEF.Duik.Autorig.AnimalTypes.UNGULATE) ctrl = DuAEF.Duik.Autorig.getCreateController(arm.hand, comp, useNull ? defaultType : ctrlType, customControllers);
-		else if (arm.claws && ((arm.humerus || arm.radius || arm.shoulder) || !arm.tip)) ctrl = DuAEF.Duik.Autorig.getCreateController(arm.claws, comp, useNull ? defaultType : ctrlType, arm.claws, customControllers);
-		else if (arm.hand && arm.type == DuAEF.Duik.Autorig.AnimalTypes.UNGULATE) ctrl = DuAEF.Duik.Autorig.getCreateController(arm.hand, comp, useNull ? defaultType : ctrlType, arm.hand, customControllers);
-		else if (arm.tip) ctrl = DuAEF.Duik.Autorig.getCreateController(arm.tip, comp, useNull ? defaultType : ctrlType, customControllers);
-		else if (arm.palm) ctrl = DuAEF.Duik.Autorig.getCreateController(arm.palm, comp, useNull ? defaultType : ctrlType, customControllers);
-		else if (arm.radius) ctrl = DuAEF.Duik.Autorig.getCreateController(arm.radius, comp, useNull ? defaultType : ctrlType, customControllers);
-		else if (arm.humerus) ctrl = DuAEF.Duik.Autorig.getCreateController(arm.humerus, comp, useNull ? defaultType : ctrlType, customControllers);
-		else if (arm.shoulder) ctrl = DuAEF.Duik.Autorig.getCreateController(arm.shoulder, comp, useNull ? defaultType : ctrlType, customControllers);
+		if (arm.hand && ((arm.humerus || arm.radius || arm.shoulder) || (!arm.claws && !arm.tip)) && arm.type != DuAEF.Duik.Autorig.AnimalTypes.UNGULATE) {
+			ctrl = DuAEF.Duik.Autorig.getCreateController(arm.hand, comp, useNull ? defaultType : ctrlType, customControllers);
+		}
+		else if (arm.claws && ((arm.humerus || arm.radius || arm.shoulder) || !arm.tip)) {
+			ctrl = DuAEF.Duik.Autorig.getCreateController(arm.claws, comp, useNull ? defaultType : ctrlType, customControllers);
+		}
+		else if (arm.hand && arm.type == DuAEF.Duik.Autorig.AnimalTypes.UNGULATE) {
+			ctrl = DuAEF.Duik.Autorig.getCreateController(arm.hand, comp, useNull ? defaultType : ctrlType, customControllers);
+		}
+		else if (arm.tip) {
+			ctrl = DuAEF.Duik.Autorig.getCreateController(arm.tip, comp, useNull ? defaultType : ctrlType, customControllers);
+		}
+		else if (arm.palm) {
+			ctrl = DuAEF.Duik.Autorig.getCreateController(arm.palm, comp, useNull ? defaultType : ctrlType, customControllers);
+		}
+		else if (arm.radius) {
+			ctrl = DuAEF.Duik.Autorig.getCreateController(arm.radius, comp, useNull ? defaultType : ctrlType, customControllers);
+		}
+		else if (arm.humerus) {
+			ctrl = DuAEF.Duik.Autorig.getCreateController(arm.humerus, comp, useNull ? defaultType : ctrlType, customControllers);
+		}
+		else if (arm.shoulder) {
+			ctrl = DuAEF.Duik.Autorig.getCreateController(arm.shoulder, comp, useNull ? defaultType : ctrlType, customControllers);
+		}
 
 		//re-set type in case of the controller being a null
 		DuAEF.Duik.setDuikMarkerParameter(ctrl,DuAEF.Duik.MarkerParameters.CONTROLLER_TYPE,ctrlType);
