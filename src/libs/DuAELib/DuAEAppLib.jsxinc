@@ -182,6 +182,13 @@ DuAEF.DuAE.App.paste = function () {
 }
 
 /**
+ * Undoes (runs the undo command)
+ */
+DuAEF.DuAE.App.undo = function () {
+    DuAEF.DuAE.App.executeCommand( DuAEF.DuAE.menuCommandID.UNDO );
+}
+
+/**
  * Checks if the Folder is an Auto-Save folder
  * @param {Folder|string} folder The folder or path to check
  * @return {boolean} true if the folder is an auto-save folder 

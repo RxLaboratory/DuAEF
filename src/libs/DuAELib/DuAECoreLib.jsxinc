@@ -191,8 +191,8 @@ function PropertyInfo(property)
 	else this.effect = property;
 
 	this.riggable = DuAEF.DuAE.Property.isRiggable(property);
-	this.editable = DuAEF.DuAE.Property.isEditable(property);
 	this.numerical = DuAEF.DuAE.Property.isNumerical(property);
+	this.editable = DuAEF.DuAE.Property.isEditable(property);
 	this.layer = DuAEF.DuAE.Property.getLayer(property);
 	this.comp = this.layer.containingComp;
 	this.dimensions = DuAEF.DuAE.Property.getDimensions(property);
@@ -674,7 +674,8 @@ DuAEF.DuAE.menuCommandID =
 	COPY: 19,
 	COPY_WITH_PROPERTY_LINKS: 10310,
 	PASTE: 20,
-	DUPLICATE: 2080
+	DUPLICATE: 2080,
+	UNDO: 16
 }
 
 /**

@@ -1292,7 +1292,7 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 		controller.bakeAppearance();
 	});
 
-	// if this is a new extraction using MPs from an aloready extraced precomp,
+	// if this is a new extraction using MPs from an aloready extracted precomp,
 	// this will be set to true to update the expressions in the MPs
 	var reLink = false;
 
