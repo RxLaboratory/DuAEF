@@ -2550,8 +2550,7 @@ DuAEF.Duik.Rigging.bezierIK = function( layers, goal, controller )
     circle( "ADBE Vector Ellipse Size" ).setValue( [ 25, 25 ] );
     var fill = handleInContent.addProperty( "ADBE Vector Graphic - Fill" );
 
-    var ctrlEffect = controller.layer.effect( DuAEF.Duik.PseudoEffects.CONTROLLER.matchName );
-
+    var ctrlEffect = curveController.layer.effect( DuAEF.Duik.PseudoEffects.CONTROLLER.matchName );
     if (ctrlEffect) fill( "ADBE Vector Fill Color" ).expression = 'effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Color_Color'] + ')-[0.2,0.2,0.2,0]\n';
     handleInGroup.transform.scale.expression = '[effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Size_Slider'] + '),effect("' + ctrlEffect.name + '")(' + DuAEF.Duik.PseudoEffects.CONTROLLER.index['Icon_Size_Slider'] + ')]';
 
