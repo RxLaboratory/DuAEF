@@ -826,3 +826,4 @@ DuAEF.DuAE.convertCollectionToArray = function (collection)
 #include "DuAELayerLib.jsxinc"
 #include "DuAEPropertyLib.jsxinc"
 #include "DuAEShapeLib.jsxinc"
+#include "DuAERenderQueueLib.jsxinc"
