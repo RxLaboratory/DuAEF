@@ -5,6 +5,19 @@
 */
 DuAEF.DuJS.Date = {};
 
+DuAEF.DuJS.Date.MonthNames = [ tr("January"),
+	tr("February"),
+	tr("March"),
+	tr("April"),
+	tr("May"),
+	tr("June"),
+	tr("July"),
+	tr("August"),
+	tr("September"),
+	tr("October"),
+	tr("November"),
+	tr("December"),];
+
 /**
 	* Gets the month number from a literal name
 	* @memberof DuAEF.DuJS.Date
@@ -13,18 +26,42 @@ DuAEF.DuJS.Date = {};
 */
 DuAEF.DuJS.Date.getMonth = function (string)
 {
-	var month = 0;
-	if (string.toLowerCase().indexOf('feb') == 0) month = 1;
-	if (string.toLowerCase().indexOf('mar') == 0) month = 2;
-	if (string.toLowerCase().indexOf('apr') == 0) month = 3;
-	if (string.toLowerCase().indexOf('may') == 0) month = 4;
-	if (string.toLowerCase().indexOf('jun') == 0) month = 5;
-	if (string.toLowerCase().indexOf('jul') == 0) month = 6;
-	if (string.toLowerCase().indexOf('aug') == 0) month = 7;
-	if (string.toLowerCase().indexOf('sep') == 0) month = 8;
-	if (string.toLowerCase().indexOf('oct') == 0) month = 9;
-	if (string.toLowerCase().indexOf('nov') == 0) month = 10;
-	if (string.toLowerCase().indexOf('dec') == 0) month = 11;
+	string = string.toLowerCase();
+	for (var i = 0; i < 12; i++)
+	{
+		if ( DuAEF.DuJS.Date.MonthNames[i].toLowerCase().indexof(string) >= 0 ) return i;
+	}
 
-	return month;
+	return 0;
+}
+
+/**
+	* Gets the month name from an index
+	* @memberof DuAEF.DuJS.Date
+	* @param {int} string - The month index
+	* @return {string} The month name
+*/
+DuAEF.DuJS.Date.getMonthName = function (index)
+{
+	if (index >= 0 && index < 12) return DuAEF.DuJS.Date.MonthNames[i];
+
+	return "";
+}
+
+/**
+	* Returns a pretty formatted string representing the date
+	* @memberof DuAEF.DuJS.Date
+	* @param {Date} date - The date
+	* @return {string} The date
+*/
+DuAEF.DuJS.Date.toString = function (date)
+{
+	var hour = date.getHours();
+	var minute = date.getMinutes();
+	var second = date.getSeconds();
+	var day = date.getDate();
+	var month = date.getMonth();
+	var year = date.getFullYear();
+
+	return hour + "-" + minute + "-" + second + " " + day + "-" + (month+1) + "-" + year;
 }
