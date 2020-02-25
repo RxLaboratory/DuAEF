@@ -29,7 +29,7 @@ DuAEF.DuJS.Date.getMonth = function (string)
 	string = string.toLowerCase();
 	for (var i = 0; i < 12; i++)
 	{
-		if ( DuAEF.DuJS.Date.MonthNames[i].toLowerCase().indexof(string) >= 0 ) return i;
+		if ( DuAEF.DuJS.Date.MonthNames[i].toLowerCase().indexOf(string) >= 0 ) return i;
 	}
 
 	return 0;
