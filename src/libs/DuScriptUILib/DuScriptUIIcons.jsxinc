@@ -36,6 +36,8 @@
 #include 'icons/w18_bugreport_r.png.jsxinc'
 #include 'icons/w18_featurerequest_r.png.jsxinc'
 #include 'icons/w18_featurerequest_l.png.jsxinc'
+#include 'icons/w18_settings_l.png.jsxinc'
+#include 'icons/w18_settings_r.png.jsxinc'
 #include 'icons/w14_folder_r.png.jsxinc'
 #include 'icons/w14_folder_m.png.jsxinc'
 #include 'icons/w14_pin_r.png.jsxinc'
