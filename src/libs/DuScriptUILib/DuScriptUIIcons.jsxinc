@@ -24,6 +24,8 @@
 #include "icons/w14_news_m.png.jsxinc"
 #include "icons/w14_help_m.png.jsxinc"
 #include "icons/w14_help_l.png.jsxinc"
+#include "icons/w14_options_m.png.jsxinc"
+#include "icons/w14_options_r.png.jsxinc"
 #include 'icons/w25_back_r.jsxinc'
 #include 'icons/w25_back_m.jsxinc'
 #include 'icons/w25_check_r.jsxinc'
