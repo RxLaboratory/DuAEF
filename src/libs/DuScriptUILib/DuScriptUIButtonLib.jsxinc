@@ -87,7 +87,9 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
 
     if ( image == '' && text == '' ) text = 'o';
 
-    var imageButton = container.add( 'group' );
+    var rootGroup = container.add( 'group' );
+    var imageButton = rootGroup;
+    imageButton.group = rootGroup; // needed for retro-compatibility
     if (optionsButtonUnder) imageButton.orientation = 'column';
     else imageButton.orientation = 'row';
 
@@ -104,6 +106,7 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
     mainGroup.spacing = 0;
 
     var optionsButton;
+    var optionsValidButton;
     if (addOptionsPanel) {
         optionsButton = DuAEF.DuScriptUI.addButton(
             imageButton,
@@ -117,7 +120,15 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
 
         var optionsPanel = DuAEF.DuScriptUI.createPopup(text == '' ? 'Options' : text);
         optionsPanel.tieTo(optionsButton);
-        imageButton.optionsPanel = optionsPanel.contents;
+        imageButton.optionsPanel = DuAEF.DuScriptUI.addGroup( optionsPanel.contents, 'column');
+
+        optionsValidButton = DuAEF.DuScriptUI.addButton(
+            optionsPanel.contents,
+            text,
+            DuAEF.DuBinary.toFile(w25_check_g),
+            text,
+            DuAEF.DuBinary.toFile(w25_check_r)
+        )
     }
 
     imageButton.standardImage = image;
@@ -237,6 +248,14 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
         else imageButton.clicked();
     }, true );
 
+    if (addOptionsPanel) {
+        optionsValidButton.onClick = imageButton.clicked;
+        optionsValidButton.shiftClicked = imageButton.shiftClicked;
+        optionsValidButton.altClicked = imageButton.altClicked;
+        optionsValidButton.ctrlAltClicked = imageButton.ctrlAltClicked;
+        optionsValidButton.ctrlClicked = imageButton.ctrlClicked;
+    }
+    
     if ( label )
     {
         imageButton.label.addEventListener( "mouseover", imageButton.highlight );
