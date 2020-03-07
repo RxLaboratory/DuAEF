@@ -240,7 +240,9 @@ DuAEF.DuScriptUI.addVersionButton = function( container, image, imageOver )
         image ? '' : 'v' + DuAEF.scriptVersion.fullVersion,
         image,
         DuAEF.companyName + '\n' + DuAEF.scriptName + ' v' + DuAEF.scriptVersion.fullVersion,
-        imageOver
+        imageOver,
+        false,
+        false
     )
 
     if (image) button.add('statictext', undefined, 'v' + DuAEF.scriptVersion.fullVersion);
