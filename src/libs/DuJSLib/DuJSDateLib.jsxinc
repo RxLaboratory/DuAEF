@@ -63,5 +63,5 @@ DuAEF.DuJS.Date.toString = function (date)
 	var month = date.getMonth();
 	var year = date.getFullYear();
 
-	return hour + "-" + minute + "-" + second + " " + day + "-" + (month+1) + "-" + year;
+	return year + "-" + (month+1) + "-" + day + " " + hour + "-" + minute + "-" + second;
 }
