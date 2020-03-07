@@ -91,6 +91,14 @@ DuAEF.scriptVersion = new DuVersion('0.0.0');
  */
 DuAEF.scriptFirstRun = true;
 /**
+ * An icon for this script
+ */
+DuAEF.scriptIcon = '';
+/**
+ * A mouseover icon for this script
+ */
+DuAEF.scriptIconOver = '';
+/**
  * The url for the forum about the script
  */
 DuAEF.forumURL = '';
@@ -132,6 +140,22 @@ DuAEF.newsPort = 80;
  * The user agent to use when getting news
  */
 DuAEF.newsUserAgentVersion = 'DuAEF/' + DuAEF.version.fullVersion;
+/**
+ * The name of the company/organisation/individual developping this tool
+ */
+DuAEF.companyName = 'Rainbox Laboratory';
+/**
+ * The URL to the company's website
+ */
+DuAEF.companyURL = 'https://rainboxlab.org';
+/**
+ * An icon for this company
+ */
+DuAEF.companyIcon = '';
+/**
+ * A mouseover icon for this company
+ */
+DuAEF.companyIconOver = '';
 
 /**
  * The current DuAEF File
