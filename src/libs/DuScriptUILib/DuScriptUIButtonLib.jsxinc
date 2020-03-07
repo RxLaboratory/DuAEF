@@ -103,7 +103,7 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
     {
         imageButton.fillerL = imageButton.add( 'statictext', undefined, "" );
         imageButton.fillerL.alignment = [ 'left', 'fill' ];
-        imageButton.fillerL.size = [ 20, 0];
+        if ( image != '' ) imageButton.fillerL.size = [ 20, 0];
     }
 
     if ( image != '' )
@@ -120,7 +120,7 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
     {
         imageButton.fillerM = imageButton.add( 'statictext', undefined, "" );
         imageButton.fillerM.alignment = [ 'left', 'fill' ];
-        imageButton.fillerM.size = [ 20, 0];
+        if ( image != '' ) imageButton.fillerM.size = [ 20, 0];
     }
 
     if ( text != '' )
