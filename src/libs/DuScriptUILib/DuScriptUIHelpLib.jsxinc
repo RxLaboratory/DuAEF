@@ -290,7 +290,7 @@ DuAEF.DuScriptUI.addBugButton = function( container, showLabel )
  * @memberof DuAEF.DuScriptUI
  * @param {Panel|Window|Group} container - The ScriptUI Object which will contain and display the button.
  * @param {bool} [showLabel=false] - When true, the button includes a "Feature Request" label.
- * @return {DuButton} The bfeature requestug button created.
+ * @return {DuButton} The feature request button created.
  */
 DuAEF.DuScriptUI.addFeatureRequestButton = function( container, showLabel )
 {
@@ -312,6 +312,42 @@ DuAEF.DuScriptUI.addFeatureRequestButton = function( container, showLabel )
     button.onClick = function ()
     {
         DuAEF.DuSystem.openURL( DuAEF.featureRequestURL );
+    }
+    return button;
+}
+
+/**
+ * Creates a button opening the help panel.
+ * @memberof DuAEF.DuScriptUI
+ * @param {Panel|Window|Group} container - The ScriptUI Object which will contain and display the button.
+ * @param {bool} [showLabel=false] - When true, the button includes a "Help" label.
+ * @param {bool} [opensPanel=false] - The help button opens a help panel instead of the link to the documentation
+ * @return {DuButton} The help button created.
+ */
+DuAEF.DuScriptUI.addHelpButton = function( container, showLabel, opensPanel )
+{
+    showLabel = def(showLabel, false);
+    opensPanel = def(opensPanel, false);
+
+    var label = "Help";
+    var helpTip = "Get Help";
+    DuAEF.DuScriptUI.uiStrings.push(label);
+    DuAEF.DuScriptUI.uiStrings.push(helpTip);
+    label = tr(label);
+    helpTip = tr(helpTip);
+
+    var button = DuAEF.DuScriptUI.helpPanel.bugReportButton = DuAEF.DuScriptUI.addButton(
+        container,
+        showLabel ? label : "",
+        DuAEF.DuBinary.toFile( w18_help_l ),
+        helpTip,
+        DuAEF.DuBinary.toFile( w18_help_r )
+    );
+
+    button.onClick = function ()
+    {
+        if (opensPanel) DuAEF.DuScriptUI.showAbout();
+        else DuAEF.DuSystem.openURL( DuAEF.docURL );
     }
     return button;
 }

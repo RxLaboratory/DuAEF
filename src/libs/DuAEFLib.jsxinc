@@ -119,6 +119,10 @@ DuAEF.featureRequestURL = '';
  */
 DuAEF.aboutURL = '';
 /**
+ * The url to the documentation of the script
+ */
+DuAEF.docURL = '';
+/**
  * The text about the script
  */
 DuAEF.scriptAbout = '';

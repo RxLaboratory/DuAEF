@@ -455,6 +455,7 @@ DuAEF.DuScriptUI.showUI = function( ui, enterRunTime )
  * @param {Panel|null} container - The container ('this' in the root of the calling script), either a Panel (when launched from the 'Window' menu) or null (when launched from 'file/scripts/run...')
  * @param {bool} [addSettingsButton=true] - Wether to create a button to open the settings or not
  * @param {bool} [addHelpButton=false] - Wether to create a button to open the help panel or not
+ * @param {bool} [helpButtonOpensPanel=false] - The help button opens a help panel instead of the link to the documentation
  * @return {DuMainPanel} The panel created, either a ScriptUI Panel or a ScriptUI Window.
  * @example
  * var ui = DuAEF.DuScriptUI.createUI(this,"Test Script");
@@ -462,10 +463,11 @@ DuAEF.DuScriptUI.showUI = function( ui, enterRunTime )
  * refreshButton.onClick = function() { ui.refreshUI( new File($.fileName) ); }; //reloads the current script
  * DuAEF.DuScriptUI.showUI(ui);
  */
-DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHelpButton )
+DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHelpButton, helpButtonOpensPanel )
 {
     addSettingsButton = def(addSettingsButton, true);
     addHelpButton = def(addHelpButton, false);
+    helpButtonOpensPanel = def(helpButtonOpensPanel, false);
 
     var panel = DuAEF.DuScriptUI.createUI( container, undefined, ['fill','fill'] );
     panel.contents.orientation = 'stack';
@@ -541,6 +543,11 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
 
     }
 
+    if (addHelpButton)
+    {
+        var helpButton = DuAEF.DuScriptUI.addHelpButton( bottomGroup, false, helpButtonOpensPanel );
+        helpButton.alignment = ['right', 'fill'];
+    }
     
     return panel;
 }
