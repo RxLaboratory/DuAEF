@@ -489,6 +489,7 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
 
     var bottomGroup = DuAEF.DuScriptUI.addGroup(panel.contents, 'row');
     bottomGroup.alignment = ['fill', 'bottom'];
+    DuAEF.DuScriptUI.setBackgroundColor(bottomGroup, DuAEF.DuJS.Color.Colors.AE_DARK_GREY, false);
 
     var versionButton = DuAEF.DuScriptUI.addVersionButton(
         bottomGroup
