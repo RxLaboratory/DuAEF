@@ -435,3 +435,111 @@ DuAEF.DuScriptUI.showUI = function( ui, enterRunTime )
 
     if (enterRunTime) DuAEF.enterRunTime();
 }
+
+/**
+ * @class
+ * @name DuMainPanel
+ * @extends DuPanel
+ * @classdesc For use with {@link DuAEF.DuScriptUI}.<br />
+ * A Panel or Window.<br />
+ * This is not a real class, and cannot be instanciated.<br />
+ * Use {@link DuAEF.DuScriptUI.createMainPanel} to create a Panel.<br />
+ * @property {Group} settingsGroup - The ScriptUI group where to add the UI for the settings of the script.
+ * @property {Group} mainGroup - The ScriptUI group where to add the main UI of the script.
+ * @property {DuPanel~refreshUI} refreshUI - A function to reload a script in this panel
+ */
+
+/**
+ * Creates the main panel of a script
+ * @memberof DuAEF.DuScriptUI
+ * @param {Panel|null} container - The container ('this' in the root of the calling script), either a Panel (when launched from the 'Window' menu) or null (when launched from 'file/scripts/run...')
+ * @param {bool} [addSettingsButton=true] - Wether to create a button to open the settings or not
+ * @param {bool} [addHelpButton=false] - Wether to create a button to open the help panel or not
+ * @return {DuMainPanel} The panel created, either a ScriptUI Panel or a ScriptUI Window.
+ * @example
+ * var ui = DuAEF.DuScriptUI.createUI(this,"Test Script");
+ * var refreshButton = ui.contents.add('button',undefined,"Refresh");
+ * refreshButton.onClick = function() { ui.refreshUI( new File($.fileName) ); }; //reloads the current script
+ * DuAEF.DuScriptUI.showUI(ui);
+ */
+DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHelpButton )
+{
+    addSettingsButton = def(addSettingsButton, true);
+    addHelpButton = def(addHelpButton, false);
+
+    var panel = DuAEF.DuScriptUI.createUI( container, undefined, ['fill','fill'] );
+    panel.contents.orientation = 'stack';
+    panel.contents.alignment = ['fill','fill'];  
+
+    panel.mainGroup = DuAEF.DuScriptUI.addGroup(panel.contents, 'column');
+    panel.mainGroup.alignment = ['fill', 'top'];
+    
+    var rootSettingsGroup = DuAEF.DuScriptUI.addGroup(panel.contents, 'column');
+    rootSettingsGroup.alignment = ['fill', 'fill'];
+    rootSettingsGroup.visible = false;
+    panel.settingsGroup = DuAEF.DuScriptUI.addGroup(rootSettingsGroup, 'column');
+    panel.settingsGroup.alignment = ['fill', 'top'];
+    var settingsBackButton = DuAEF.DuScriptUI.addButton(
+        rootSettingsGroup,
+        "Back",
+        DuAEF.DuBinary.toFile(w14_back_m),
+        "Close settings",
+        DuAEF.DuBinary.toFile(w14_back_l)
+    )
+
+    var bottomGroup = DuAEF.DuScriptUI.addGroup(panel.contents, 'row');
+    bottomGroup.alignment = ['fill', 'bottom'];
+
+    var versionButton = DuAEF.DuScriptUI.addVersionButton(
+        bottomGroup
+        );
+    versionButton.alignment = ['left', 'bottom'];
+
+    if (DuAEF.bugReportURL != '')
+    {
+        var bugButton = DuAEF.DuScriptUI.addBugButton( bottomGroup );
+        bugButton.alignment = ['right', 'fill'];
+    }
+    
+    if (DuAEF.featureRequestURL != '')
+    {
+        var featureRequestButton = DuAEF.DuScriptUI.addFeatureRequestButton( bottomGroup );
+        featureRequestButton.alignment = ['right', 'fill'];
+    }
+    
+    if (addSettingsButton)
+    {
+        var settingsButton = DuAEF.DuScriptUI.addButton(
+        bottomGroup,
+        '',
+        DuAEF.DuBinary.toFile(w18_settings_l),
+        "Change the settings",
+        DuAEF.DuBinary.toFile(w18_settings_r)
+        );
+        settingsButton.alignment = ['right', 'fill'];
+
+        settingsButton.onClick = function()
+        {
+            if (panel.mainGroup.visible)
+            {
+                panel.mainGroup.visible = false;
+                rootSettingsGroup.visible = true;
+            }
+            else
+            {
+                panel.mainGroup.visible = true;
+                rootSettingsGroup.visible = false;
+            }
+        }
+
+        settingsBackButton.onClick = function()
+        {
+            panel.mainGroup.visible = true;
+            rootSettingsGroup.visible = false;
+        }
+
+    }
+
+    
+    return panel;
+}
