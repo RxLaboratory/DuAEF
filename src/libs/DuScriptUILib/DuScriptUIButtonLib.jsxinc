@@ -11,6 +11,7 @@
  * @property {string} imageOver - The path to the image (or a PNG as a string representation) to display when mouseover
  * @property {Image} image - The scriptui object representing the image
  * @property {StaticText} label - The label
+ * @property {DuPopup} optionsPanel - A panel for options
  * @property {DuButton~onClick} onClick - The function to execute when the button is clicked
  * @property {DuButton~onAltClick} onClick - The function to execute when the button is Alt + clicked
  * @property {DuButton~onCtrlClick} onClick - The function to execute when the button is Ctrl + clicked
@@ -50,20 +51,25 @@
  * @param {string}					[helpTip]		- The helptip. Default: empty string
  * @param {string}					[imageOver=image]	- The path to an icon displayed when the mouse is over the button.
  * @param {string}					[imageDisabled=image]	- The path to an icon displayed when the button is disabled.
+ * @param {bool}					[addOptionsPanel=false]	- Adds a panel for options and a button to access it.
+ * @param {bool}					[optionsButtonUnder]	- When true, the options button appears under the button instead of next to it.
  * @return {DuButton}			The image button created.
  */
-DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOver )
+DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOver, addOptionsPanel, optionsButtonUnder )
 {
     if (DuAEF.DuJS.typeof(container) != 'Group' && DuAEF.DuJS.typeof(container) != 'Panel' && DuAEF.DuJS.typeof(container) != 'Window' )
     {
         throw 'DuScriptUI: DuAEF.DuScriptUI.addButton(container, text, image, helpTip, imageOver):\nTypeError.\n\ncontainer has to be a Group/Panel/Window.\n\ncontainer is ' + DuAEF.DuJS.typeof(container) + ' with value ' + container.toString();
     }
 
-    if ( typeof text === 'undefined' ) text = '';
-    if ( typeof image === 'undefined' ) image = '';
-    if ( typeof helpTip === 'undefined' ) helpTip = '';
-    if ( typeof imageOver === 'undefined' ) imageOver = '';
-    if ( typeof imageDisabled === 'undefined' ) imageDisabled = '';
+    text = def(text, '');
+    image = def(image, '');
+    helpTip = def(helpTip, '');
+    imageOver = def(imageOver, '');
+    imageDisabled = def(imageDisabled, '');
+    addOptionsPanel = def(addOptionsPanel, false);
+    optionsButtonUnder = def(optionsButtonUnder, text == '');
+    
     if ( imageOver != '' && !DuAEF.DuJS.Fs.fileExists( imageOver ) ) imageOver = '';
     if ( image != '' && !DuAEF.DuJS.Fs.fileExists( image ) ) image = '';
     if ( imageDisabled != '' && !DuAEF.DuJS.Fs.fileExists( imageDisabled ) ) imageDisabled = '';
@@ -82,12 +88,37 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
     if ( image == '' && text == '' ) text = 'o';
 
     var imageButton = container.add( 'group' );
-    imageButton.orientation = 'row';
-    imageButton.margins = 2;
-    if ( image == '' ) imageButton.margins = 5;
+    if (optionsButtonUnder) imageButton.orientation = 'column';
+    else imageButton.orientation = 'row';
+
+    imageButton.margins = 0;
     imageButton.alignment = [ 'fill', 'fill' ];
-    imageButton.spacing = 0;
-    imageButton.group = imageButton;
+    if (addOptionsPanel) imageButton.spacing = 2;
+    else imageButton.spacing = 0;
+
+    var mainGroup = imageButton.add( 'group' );
+    mainGroup.orientation = 'row';
+    mainGroup.margins = 2;
+    if ( image == '' ) mainGroup.margins = 5;
+    mainGroup.alignment = [ 'fill', 'fill' ];
+    mainGroup.spacing = 0;
+
+    var optionsButton;
+    if (addOptionsPanel) {
+        optionsButton = DuAEF.DuScriptUI.addButton(
+            imageButton,
+            '',
+            DuAEF.DuBinary.toFile(w14_options_m),
+            text + '\nOptions',
+            DuAEF.DuBinary.toFile(w14_options_r)
+        )
+        if (optionsButtonUnder) optionsButton.alignment = ['center', 'bottom'];
+        else optionsButton.alignment = ['right', 'center'];
+
+        var optionsPanel = DuAEF.DuScriptUI.createPopup(text == '' ? 'Options' : text);
+        optionsPanel.tieTo(optionsButton);
+        imageButton.optionsPanel = optionsPanel.contents;
+    }
 
     imageButton.standardImage = image;
     imageButton.imageOver = imageOver;
@@ -101,14 +132,14 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
     //Add fillers to be able to click anywhere on the button
     if ( text != '' )
     {
-        imageButton.fillerL = imageButton.add( 'statictext', undefined, "" );
+        imageButton.fillerL = mainGroup.add( 'statictext', undefined, "" );
         imageButton.fillerL.alignment = [ 'left', 'fill' ];
         if ( image != '' ) imageButton.fillerL.size = [ 20, 0];
     }
 
     if ( image != '' )
     {
-        var icon = imageButton.add( 'image', undefined, imageButton.standardImage );
+        var icon = mainGroup.add( 'image', undefined, imageButton.standardImage );
         icon.alignment = [ 'left', 'center' ];
         icon.helpTip = helpTip;
         imageButton.image = icon;
@@ -118,25 +149,25 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
     //Add fillers to be able to click anywhere on the button
     if ( text != '' )
     {
-        imageButton.fillerM = imageButton.add( 'statictext', undefined, "" );
+        imageButton.fillerM = mainGroup.add( 'statictext', undefined, "" );
         imageButton.fillerM.alignment = [ 'left', 'fill' ];
         if ( image != '' ) imageButton.fillerM.size = [ 20, 0];
     }
 
     if ( text != '' )
     {
-        var label = imageButton.add( 'statictext', undefined, text );
+        var label = mainGroup.add( 'statictext', undefined, text );
         label.helpTip = helpTip;
         label.alignment = [ 'left', 'center' ];
         imageButton.label = label;
-        DuAEF.DuScriptUI.setBackgroundColor( imageButton, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+        DuAEF.DuScriptUI.setBackgroundColor( mainGroup, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
         imageButton.alignment = [ 'fill', 'top' ];
     }
 
     //Add fillers to be able to click anywhere on the button
     if ( text != '' )
     {
-        imageButton.fillerR = imageButton.add( 'statictext', undefined, "" );
+        imageButton.fillerR = mainGroup.add( 'statictext', undefined, "" );
         imageButton.fillerR.alignment = [ 'fill', 'fill' ];
     }
 
@@ -180,7 +211,7 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
         if ( label )
         {
             DuAEF.DuScriptUI.setTextColor( imageButton.label, DuAEF.DuJS.Color.Colors.VERY_LIGHT_GREY );
-            DuAEF.DuScriptUI.setBackgroundColor( imageButton.group, DuAEF.DuJS.Color.Colors.DARK_GREY );
+            DuAEF.DuScriptUI.setBackgroundColor( mainGroup, DuAEF.DuJS.Color.Colors.DARK_GREY );
         }
         DuAEF.DuScriptUI.highlightedControls.push( imageButton );
     }
@@ -192,12 +223,12 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
         if ( label )
         {
             DuAEF.DuScriptUI.setTextColor( imageButton.label, DuAEF.DuJS.Color.Colors.LIGHT_GREY );
-            DuAEF.DuScriptUI.setBackgroundColor( imageButton.group, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+            DuAEF.DuScriptUI.setBackgroundColor( mainGroup, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
         }
     }
 
     //add events
-    imageButton.addEventListener( 'click', function( e )
+    mainGroup.addEventListener( 'click', function( e )
     {
         if ( e.shiftKey ) imageButton.shiftClicked();
         else if ( e.altKey && e.ctrlKey ) imageButton.ctrlAltClicked();
@@ -238,7 +269,7 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
     // Align icons
     imageButton.resize = function()
     {
-        imageButton.fillerL.size = [ imageButton.size.width / 4, imageButton.size.height ];
+        imageButton.fillerL.size = [ mainGroup.size.width / 4, mainGroup.size.height ];
     }
 
     return imageButton;
