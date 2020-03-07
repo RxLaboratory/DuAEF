@@ -112,14 +112,7 @@ DuAEF.DuScriptUI.initHelpPanel = function()
             DuAEF.DuSystem.openURL( DuAEF.forumURL );
         }
     }
-    if (DuAEF.featureRequestURL != '')
-    {
-        DuAEF.DuScriptUI.helpPanel.featureRequestURL = DuAEF.DuScriptUI.addButton( socialButtonsGroup1, "Feature Request", DuAEF.DuBinary.toFile( w18_featurerequest_l ), "Request something new", DuAEF.DuBinary.toFile( w18_featurerequest_r ) );
-        DuAEF.DuScriptUI.helpPanel.featureRequestURL.onClick = function ()
-        {
-            DuAEF.DuSystem.openURL( DuAEF.featureRequestURL );
-        }
-    }
+    if (DuAEF.featureRequestURL != '') DuAEF.DuScriptUI.addFeatureRequestButton(socialButtonsGroup1, true);
 
     var socialButtonsGroup2 = DuAEF.DuScriptUI.addGroup( urlButtonsGroup, 'column' );
     socialButtonsGroup2.alignment= ['fill','bottom'];
@@ -131,14 +124,7 @@ DuAEF.DuScriptUI.initHelpPanel = function()
             DuAEF.DuSystem.openURL( DuAEF.chatURL );
         }
     }
-    if (DuAEF.bugReportURL != '')
-    {
-        DuAEF.DuScriptUI.helpPanel.bugReportButton = DuAEF.DuScriptUI.addButton( socialButtonsGroup2, "Bug Report", DuAEF.DuBinary.toFile( w18_bugreport_l ), "Tell us what's wrong", DuAEF.DuBinary.toFile( w18_bugreport_r ) );
-        DuAEF.DuScriptUI.helpPanel.bugReportButton.onClick = function ()
-        {
-            DuAEF.DuSystem.openURL( DuAEF.bugReportURL );
-        }
-    }
+    if (DuAEF.bugReportURL != '') DuAEF.DuScriptUI.addBugButton(socialButtonsGroup2, true);
        
 
     DuAEF.DuScriptUI.helpPanel.setPanel = function( panel )
@@ -221,4 +207,109 @@ DuAEF.DuScriptUI.showAbout = function()
     DuAEF.DuScriptUI.initHelpPanel();
     DuAEF.DuScriptUI.helpPanel.setPanel( 2 );
     DuAEF.DuScriptUI.helpPanel.show();
+}
+
+/**
+ * @class
+ * @name DuVersionButton
+ * @extends DuButton
+ * @classdesc For use with {@link DuAEF.DuScriptUI}.<br />
+ * A Button displaying the version of the script and redirecting to its website.<br />
+ * This is not a real class, and cannot be instanciated.<br />
+ * Use {@link DuAEF.DuScriptUI.addVersionButton} to create a Version Button.<br />
+ */
+
+/**
+ * Creates a button displaying the version of the script and redirecting to the about url.
+ * @memberof DuAEF.DuScriptUI
+ * @param {Panel|Window|Group} container - The ScriptUI Object which will contain and display the button.
+ * @param {string} [image=DuAEF.scriptIcon] - The path to the icon. Default: empty string
+ * @param {string} [imageOver==DuAEF.scriptIconOver] - The path to an icon displayed when the mouse is over the button.
+ * @return {DuVersionButton} The version button created.
+ */
+DuAEF.DuScriptUI.addVersionButton = function( container, image, imageOver )
+{
+    image = def(image, DuAEF.scriptIcon);
+    imageOver = def(imageOver, DuAEF.scriptIconOver);
+
+    if (image == '') image = null;
+    if (imageOver == '') imageOver = null;
+
+    var button = DuAEF.DuScriptUI.addButton(
+        container,
+        image ? '' : 'v' + DuAEF.scriptVersion.fullVersion,
+        image,
+        DuAEF.companyName + '\n' + DuAEF.scriptName + ' v' + DuAEF.scriptVersion.fullVersion,
+        imageOver
+    )
+
+    if (image) button.add('statictext', undefined, 'v' + DuAEF.scriptVersion.fullVersion);
+
+    if (DuAEF.aboutURL != '') button.onClick = function() {
+        DuAEF.DuSystem.openURL(DuAEF.aboutURL);
+        };
+
+    return button;
+}
+
+/**
+ * Creates a button opening the bug report url.
+ * @memberof DuAEF.DuScriptUI
+ * @param {Panel|Window|Group} container - The ScriptUI Object which will contain and display the button.
+ * @param {bool} [showLabel=false] - When true, the button includes a "Bug Report" label.
+ * @return {DuButton} The bug button created.
+ */
+DuAEF.DuScriptUI.addBugButton = function( container, showLabel )
+{
+    showLabel = def(showLabel, false);
+
+    var label = "Bug Report";
+    var helpTip = "Bug Report\nTell us what's wrong!";
+    DuAEF.DuScriptUI.uiStrings.push(label);
+    DuAEF.DuScriptUI.uiStrings.push(helpTip);
+    label = tr(label);
+    helpTip = tr(helpTip);
+
+    var button = DuAEF.DuScriptUI.helpPanel.bugReportButton = DuAEF.DuScriptUI.addButton(
+        container,
+        showLabel ? label : "",
+        DuAEF.DuBinary.toFile( w18_bugreport_l ),
+        helpTip,
+        DuAEF.DuBinary.toFile( w18_bugreport_r ) );
+    button.onClick = function ()
+    {
+        DuAEF.DuSystem.openURL( DuAEF.bugReportURL );
+    }
+    return button;
+}
+
+/**
+ * Creates a button opening the feature request url.
+ * @memberof DuAEF.DuScriptUI
+ * @param {Panel|Window|Group} container - The ScriptUI Object which will contain and display the button.
+ * @param {bool} [showLabel=false] - When true, the button includes a "Feature Request" label.
+ * @return {DuButton} The bfeature requestug button created.
+ */
+DuAEF.DuScriptUI.addFeatureRequestButton = function( container, showLabel )
+{
+    showLabel = def(showLabel, false);
+
+    var label = "Feature Request";
+    var helpTip = "Feature Request\nRequest something new";
+    DuAEF.DuScriptUI.uiStrings.push(label);
+    DuAEF.DuScriptUI.uiStrings.push(helpTip);
+    label = tr(label);
+    helpTip = tr(helpTip);
+
+    var button = DuAEF.DuScriptUI.helpPanel.bugReportButton = DuAEF.DuScriptUI.addButton(
+        container,
+        showLabel ? label : "",
+        DuAEF.DuBinary.toFile( w18_featurerequest_l ),
+        helpTip,
+        DuAEF.DuBinary.toFile( w18_featurerequest_r ) );
+    button.onClick = function ()
+    {
+        DuAEF.DuSystem.openURL( DuAEF.featureRequestURL );
+    }
+    return button;
 }
