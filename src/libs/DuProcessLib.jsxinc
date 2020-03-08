@@ -1,44 +1,44 @@
 /*
-DuProcessLib
-Library of tools to run command line tools and processes from After Effects scripts
-Copyright (c) 2017 Nicolas Dufresne, Rainbox Productions
-https://rainboxprod.coop
+    DuProcessLib
+    Library of tools to run command line tools and processes from After Effects scripts
+    Copyright (c) 2017 Nicolas Dufresne, Rainbox Productions
+    https://rainboxprod.coop
 
-_Contributors:_
-Nicolas Dufresne - Lead developer
+    _Contributors:_
+    Nicolas Dufresne - Lead developer
 
-This file is part of DuAEF.
+    This file is part of DuAEF.
 
-DuAEF is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+    DuAEF is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-DuAEF is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    DuAEF is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
 */
 
 /**
-* Constructs a new DuProcess instance
-* @class DuProcess
-* @classdesc A class to launch and manage processes, using the system command line.
-* @param {string}	  processPath     - The path to the process executable binary
-* @param {string[]}    [args]            - The common arguments used to run the process. You can append arguments each time you run the process with start(args)
-* @param {int}      [timeout=0]         - Waiting timeout after process start, in ms, 0 to avoid waiting, -1 for infinite.
-* If the process times out, process will not be killed, the script will just stop waiting.
-* @property {string}	  processPath     - The path to the process executable binary
-* @property {array}    args            - The common arguments used to run the process. You can append arguments each time you run the process with start(args)
-* @property {int}      timeout         - Waiting timeout after process start, in ms, 0 to avoid waiting, -1 for infinite.
-* If the process times out, process will not be killed, the script will just stop waiting. Default: 0
-* @property {string[]}	queue			- An Array of arguments array.
-Arrays of arguments in the queue will be processed one after each other.
-Update the Array and launch the queue with startQueue()
-* @property {string}	latestCommand	- The latest command which has been run.
+    * Constructs a new DuProcess instance
+    * @class DuProcess
+    * @classdesc A class to launch and manage processes, using the system command line.
+    * @param {string}	  processPath     - The path to the process executable binary
+    * @param {string[]}    [args]            - The common arguments used to run the process. You can append arguments each time you run the process with start(args)
+    * @param {int}      [timeout=0]         - Waiting timeout after process start, in ms, 0 to avoid waiting, -1 for infinite.
+    * If the process times out, process will not be killed, the script will just stop waiting.
+    * @property {string}	  processPath     - The path to the process executable binary
+    * @property {array}    args            - The common arguments used to run the process. You can append arguments each time you run the process with start(args)
+    * @property {int}      timeout         - Waiting timeout after process start, in ms, 0 to avoid waiting, -1 for infinite.
+    * If the process times out, process will not be killed, the script will just stop waiting. Default: 0
+    * @property {string[]}	queue			- An Array of arguments array.
+    Arrays of arguments in the queue will be processed one after each other.
+    Update the Array and launch the queue with startQueue()
+    * @property {string}	latestCommand	- The latest command which has been run.
 */
 function DuProcess( processPath, args, timeout ) {
     if ( processPath === undefined ) processPath = "";
@@ -233,4 +233,26 @@ DuProcessQueue.prototype.start = function () {
     }
 
     this.processes[ 0 ].startCmd( cmd );
+}
+
+/**
+ * Processes tools
+ * @namespace
+ * @memberof DuAEF
+ */
+DuAEF.DuProcess = {}
+
+/**
+* Runs a command with some arguments.
+* @memberof DuAEF.DuProcess
+* @param {string|File} process - The process or a path to the process.
+* @param {string[]} [args=[]] - The arguments to pass to the command.
+* @return {string}	The output from the command.
+*/
+DuAEF.DuProcess.run = function( process, args ) {
+    var p;
+    if (process instanceof File) p = new DuProcess(process.absoluteURI);
+    else p = new DuProcess(process);
+    var cmd = p.buildCmd(args);
+    return system.callSystem( cmd );
 }
