@@ -12,15 +12,24 @@
  * @property {StaticText} label - The current text
  * @property {DuButton[]} items  - The buttons
  * @property {int} index  - The current index
+ * @property {string} text  - The current text
  * @property {Selector~onChange} onChange  - The function to execute when the index changes.<br />
  * You can set your own function here, which must take no argument.<br />
  * The method is called after the index has changed.
+ * @property {Selector~onRefresh} onRefresh  - The function to execute when the refresh button is clicked.<br />
+ * You can set your own function here, which must take no argument.
  */
 
 /**
  * The function to execute when the index changes.<br />
  * The method is called after the index has changed.
  * @callback Selector~onChange
+ * @memberof Selector
+ */
+
+/**
+ * The function to execute when the refresh button is clicked.
+ * @callback Selector~onRefresh
  * @memberof Selector
  */
 
@@ -33,13 +42,21 @@
  * @param {string} image - The icon, either a path to the file or a PNG represented as a string.
  * @param {string} helpTip - The help tip
  * @param {string} imageOver - The roll over icon, either a path to the file or a PNG represented as a string.
+ * @param {string[][]} items - The items in the selector in the form [text, image, helpTip, imageOver].
  */
 
 /**
- * Removes all buttons from the selector
+ * Removes all buttons from the selector. This is the same as {@link Selector.clear}.
  * @method
  * @memberof Selector
  * @name removeAll
+ */
+
+/**
+ * Removes all buttons from the selector. This is the same as {@link Selector.removeAll}.
+ * @method
+ * @memberof Selector
+ * @name clear
  */
 
 /**
@@ -51,12 +68,21 @@
  */
 
 /**
+ * Changes the selection and the current index of the selector, using the text of the selection
+ * @method
+ * @memberof Selector
+ * @name setCurrentText
+ * @param {string} text - The text to select
+ */
+
+/**
  * Creates a drop down selector, using image buttons
  * @memberof DuAEF.DuScriptUI
  * @param {Window|Panel|Group} container - The ScriptUI Object which will contain and display the selector.
+ * @param {bool} [addRefreshButton=false] - When true, the selector includes a refresh button. Add your function to refresh it with the onRefresh callback.
  * @return {Selector} - The selector
  */
-DuAEF.DuScriptUI.addSelector = function( container )
+DuAEF.DuScriptUI.addSelector = function( container, addRefreshButton )
 {
     //create main group
     var selector = container.add( 'group' );
@@ -65,7 +91,24 @@ DuAEF.DuScriptUI.addSelector = function( container )
     selector.spacing = 0;
     selector.alignment = [ 'fill', 'top' ];
     selector.alignChildren = [ 'center', 'center' ];
+    selector.mainGroup = selector.add( 'group' );
+    selector.mainGroup.orientation = 'row';
+    selector.mainGroup.margins = 0;
+    selector.mainGroup.spacing = 5;
+    selector.mainGroup.alignment = [ 'fill', 'fill' ];
+    selector.mainGroup.alignChildren = [ 'center', 'center' ];
     DuAEF.DuScriptUI.setBackgroundColor( selector, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+
+    //the refresh button
+    if (addRefreshButton)
+    {
+        selector.refreshImage = DuAEF.DuBinary.toFile( w14_update_m );
+        selector.refreshImageOver = DuAEF.DuBinary.toFile( w14_update_l );
+        if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.refreshButton = selector.add( 'image', undefined, selector.refreshImage );
+        else selector.refreshButton = selector.add( 'statictext', undefined, 'R' );
+        selector.refreshButton.alignment = [ 'right', 'center' ];
+    }
+
 
     selector.addButton = function( text, image, helpTip, imageOver )
     {
@@ -103,6 +146,7 @@ DuAEF.DuScriptUI.addSelector = function( container )
             selector.popup.buttons.remove( selector.popup.buttons.children[ i ] );
         }
     }
+    selector.clear = selector.removeAll;
 
     selector.setCurrentIndex = function( index )
     {
@@ -125,30 +169,44 @@ DuAEF.DuScriptUI.addSelector = function( container )
 
         selector.index = index;
 
+        selector.text = item[ 0 ];
+
         selector.onChange();
+    }
+
+    selector.setCurrentText = function( text )
+    {
+        for (var i = 0, n = selector.items.length; i < n; i++)
+        {
+            if (selector.items[i][0] == text)
+            {
+                selector.setCurrentIndex(i);
+                break;
+            }
+        }
     }
 
     //the menu button
     selector.menuImage = DuAEF.DuBinary.toFile( w14_menu_m );
     selector.menuImageOver = DuAEF.DuBinary.toFile( w14_menu_l );
-    if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.menuButton = selector.add( 'image', undefined, selector.menuImage );
-    else selector.menuButton = selector.add( 'statictext', undefined, 'M' );
+    if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.menuButton = selector.mainGroup.add( 'image', undefined, selector.menuImage );
+    else selector.menuButton = selector.mainGroup.add( 'statictext', undefined, 'M' );
     selector.menuButton.alignment = [ 'left', 'center' ];
 
     //the image
     selector.image = '';
-    selector.icon = selector.add( 'image' );
+    selector.icon = selector.mainGroup.add( 'image' );
     selector.icon.alignment = [ 'left', 'center' ];
 
     //the text
-    selector.label = selector.add( 'statictext', undefined, '' );
+    selector.label = selector.mainGroup.add( 'statictext', undefined, '' );
     selector.label.helpTip = '';
     selector.label.alignment = [ 'fill', 'center' ];
 
     //if not CS6, add fillers to be able to click anywhere on the button
     if ( DuAEF.DuAE.App.version.version > 11 )
     {
-        selector.fillerR = selector.add( 'statictext', undefined, "" );
+        selector.fillerR = selector.mainGroup.add( 'statictext', undefined, "" );
         selector.fillerR.alignment = [ 'fill', 'fill' ];
     }
 
@@ -214,6 +272,11 @@ DuAEF.DuScriptUI.addSelector = function( container )
         }
     }
 
+    selector.refreshed = function ( e )
+    {
+        selector.onRefresh();
+    }
+
     //mouse over
     selector.highlight = function( e )
     {
@@ -226,12 +289,21 @@ DuAEF.DuScriptUI.addSelector = function( container )
         DuAEF.DuScriptUI.highlightedControls.push( selector );
     }
 
+    selector.refreshHighlight = function( e )
+    {
+        e.stopPropagation();
+        DuAEF.DuScriptUI.dimControls();
+        if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.refreshButton.image = selector.refreshImageOver;
+        DuAEF.DuScriptUI.highlightedControls.push( selector );
+    }
+
     selector.dim = function( e )
     {
         selector.menuButton.image = selector.menuImage;
         DuAEF.DuScriptUI.setTextColor( selector.label, DuAEF.DuJS.Color.Colors.LIGHT_GREY );
         DuAEF.DuScriptUI.setBackgroundColor( selector, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
         if ( selector.image != '' ) selector.icon.image = selector.image;
+        if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.refreshButton.image = selector.refreshImage;
     }
 
     // Hack - CS6 Bugs on mouseover with images
@@ -241,11 +313,14 @@ DuAEF.DuScriptUI.addSelector = function( container )
     }
     else
     {
-        selector.addEventListener( "mouseover", selector.highlight );
+        selector.mainGroup.addEventListener( "mouseover", selector.highlight );
+        if (addRefreshButton) selector.refreshButton.addEventListener( "mouseover", selector.refreshHighlight );
     }
-    selector.addEventListener( "click", selector.clicked, true );
+    selector.mainGroup.addEventListener( "click", selector.clicked, true );
+    if (addRefreshButton) selector.refreshButton.addEventListener( "click", selector.refreshed );
 
     selector.onChange = function() {};
+    selector.onRefresh = function (){};
 
     return selector;
 }
