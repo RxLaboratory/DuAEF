@@ -50,12 +50,12 @@
  * @param {string}					[image]		- The path to the icon. Default: empty string
  * @param {string}					[helpTip]		- The helptip. Default: empty string
  * @param {string}					[imageOver=image]	- The path to an icon displayed when the mouse is over the button.
- * @param {string}					[imageDisabled=image]	- The path to an icon displayed when the button is disabled.
  * @param {bool}					[addOptionsPanel=false]	- Adds a panel for options and a button to access it.
  * @param {bool}					[optionsButtonUnder]	- When true, the options button appears under the button instead of next to it.
+ * @param {string}					[imageDisabled=image]	- The path to an icon displayed when the button is disabled.
  * @return {DuButton}			The image button created.
  */
-DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOver, addOptionsPanel, optionsButtonUnder )
+DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOver, addOptionsPanel, optionsButtonUnder, imageDisabled )
 {
     if (DuAEF.DuJS.typeof(container) != 'Group' && DuAEF.DuJS.typeof(container) != 'Panel' && DuAEF.DuJS.typeof(container) != 'Window' )
     {
