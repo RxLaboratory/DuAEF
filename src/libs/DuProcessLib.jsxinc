@@ -45,7 +45,7 @@ function DuProcess( processPath, args, timeout ) {
     this.processPath = processPath;
     if ( args === undefined ) args = [];
     this.args = args;
-    if ( timeout === undefined ) timeout = 0;
+    if ( timeout === undefined ) timeout = 1;
     this.timeout = timeout;
 
     this.queue = [];
@@ -60,13 +60,14 @@ function DuProcess( processPath, args, timeout ) {
  * @param {int}		[timeout] 	- Overrides the default timeout.
  */
 DuProcess.prototype.start = function ( args, timeout ) {
-    if ( timeout === undefined ) timeout = this.timeout;
+    timeout = def(timeout, this.timeout);
 
     var cmd = this.buildCmd( args );
 
     this.startCmd( cmd );
     this.latestCommand = cmd;
-    this.waitForFinished( timeout );
+
+    if (timeout > 100) this.waitForFinished( timeout );
 }
 
 /**
