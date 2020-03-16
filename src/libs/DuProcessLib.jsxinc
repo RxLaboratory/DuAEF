@@ -39,14 +39,17 @@
     Arrays of arguments in the queue will be processed one after each other.
     Update the Array and launch the queue with startQueue()
     * @property {string}	latestCommand	- The latest command which has been run.
+    * @property {bool} isAppPackage - True if the process path leads to an application package (.app folder containing at least "/Contents/MacOS") on mac. False otherwise.
 */
 function DuProcess( processPath, args, timeout ) {
-    if ( processPath === undefined ) processPath = "";
+    processPath = def( processPath, "");
+    args = def( args, []);
+    timeout = def( timeout, 0);
+
     this.processPath = processPath;
-    if ( args === undefined ) args = [];
     this.args = args;
-    if ( timeout === undefined ) timeout = 1;
     this.timeout = timeout;
+    this.isAppPackage = DuAEF.DuProcess.isAppPackage( processPath );
 
     this.queue = [];
 
@@ -135,7 +138,16 @@ DuProcess.prototype.buildCmd = function ( args ) {
             this.processPath = '"' + this.processPath + '"';
         }
     }
-    var cmd = this.processPath;
+    var cmd = "";
+    // if it's an app package, prepend "open -n -b -a" and append " --args"
+    if (this.isAppPackage)
+    {
+        cmd = "open -n -b -a " + this.processPath;
+        if (args.length > 0 || this.args.length > 0)
+        {
+            cmd += " --args";
+        }
+    }
 
     //args
     for ( var a = 0; a < this.args.length; a++ ) {
@@ -256,4 +268,19 @@ DuAEF.DuProcess.run = function( process, args ) {
     else p = new DuProcess(process);
     var cmd = p.buildCmd(args);
     return system.callSystem( cmd );
+}
+
+/**
+ * Checks if a given path leads to an Application package on Mac, i.e. it's a path ending with <code>.app</code> containing at least <code>Contents/MacOS/</code>.
+ * @memberof DuAEF.DuProcess
+ * @param {string|Folder|File} path - The path to the file or folder to check.
+ * @return {bool} true if path is an application package.
+ */
+DuAEF.DuProcess.isAppPackage = function (path) {
+    if (DuAEF.win) return false;
+
+    if (path instanceof File || path instanceof Folder) path = path.absoluteURI;
+    if (!DuAEF.DuJS.String.endsWith( path, ".app")) return false;
+    var testFolder = new Folder(path + "/Contents/MacOS/");
+    return testFolder.exists;
 }
