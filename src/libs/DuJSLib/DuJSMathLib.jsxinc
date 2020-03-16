@@ -53,7 +53,7 @@ DuAEF.DuJS.Math.getLength = function (value1,value2)
 
 /**
 	* Compares two numbers
-	* @memberof DuAEF.DuJS.Array
+	* @memberof DuAEF.DuJS.Math
 	* @param {Number} value1 - The first value
 	* @param {Number} value2 - The second value
 	* @param {int} [floatPrecision=-1] - The precision for (float) number comparison, number of decimals. Set to -1 to not use.
