@@ -1546,6 +1546,8 @@ DuAEF.Duik.Controller.create = function (comp, type, layer, size, color, parent)
 //returns the new id
 DuAEF.Duik.Controller.assignID = function (layer)
 {
+	//wait just a bit to be sure we won't have two identical ids
+	$.sleep(10);
 	var newId = new Date().getTime();
 	DuAEF.Duik.setDuikMarkerParameter( layer, DuAEF.Duik.MarkerParameters.CONTROLLER_ID, newId );
 	return newId;
@@ -1606,3 +1608,4 @@ DuAEF.Duik.Controller.tag = function (layers)
 		layer.guideLayer = true;
 	});
 }
+
