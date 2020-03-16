@@ -69,7 +69,6 @@ DuProcess.prototype.start = function ( args, timeout ) {
 
     this.startCmd( cmd );
     this.latestCommand = cmd;
-
     if (timeout > 100) this.waitForFinished( timeout );
 }
 
@@ -139,14 +138,18 @@ DuProcess.prototype.buildCmd = function ( args ) {
         }
     }
     var cmd = "";
-    // if it's an app package, prepend "open -n -b -a" and append " --args"
+    // if it's an app package, prepend "open -n " and append " --args"
     if (this.isAppPackage)
     {
-        cmd = "open -n -b -a " + this.processPath;
+        cmd = "open -n " + this.processPath;
         if (args.length > 0 || this.args.length > 0)
         {
             cmd += " --args";
         }
+    }
+    else
+    {
+        cmd = this.processPath;
     }
 
     //args
@@ -166,7 +169,7 @@ DuProcess.prototype.buildCmd = function ( args ) {
         }
         cmd += ' ' + arg;
     }
-
+    
     return cmd;
 }
 
