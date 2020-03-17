@@ -1,17 +1,19 @@
 /**
  * Gets the transformation Matrix for the current group in a shape layer, including the transformation from the ancestor groups
  * @function
+ * @param {Property} [prop=thisProperty] The property from which to get the matrix
  * @return {Matrix} The 2D Transform Matrix.
  * @requires isLayer
  * @requires Matrix
  */
-function getGroupTransformMatrix( ) {
+function getGroupTransformMatrix( prop ) {
+	if (typeof group === "undefined") prop = thisProperty;
     // A Matrix to apply group transforms
     var matrix = new Matrix();
 
 	// Get all groups from this propperty
 	var shapeGroups = [];
-	var parentProp = thisProperty.propertyGroup(1);
+	var parentProp = prop.propertyGroup(1);
 	while( parentProp && !isLayer(parentProp) )
 	{
 		//try catch is needed for the legacy expression engine

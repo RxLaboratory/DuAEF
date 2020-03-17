@@ -34,14 +34,14 @@ DuAEF.DuExpression.Library.addNoise = ['',
 
 /**
  * Interpolates a value with a bezier curve.<br />
- * This method can replace <code>linear()</code> and <code>ease()</code> with a custom bézier interpolation.
+ * This method can replace <code>linear()</code> and <code>ease()</code> with a custom bï¿½zier interpolation.
  * @function
  * @param {number} t The value to interpolate
  * @param {number} tMin The minimum the value can take
  * @param {number} tMax The maximum the value can take
  * @param {number} value1 The minimum for the interpolated value
  * @param {number} value2 The maximum for the interpolated value
- * @return {number[]} bezierPoints an Array of 4 coordinates wihtin the 0.0 ... 1.0 range which describes the Bézier interpolation.<br />
+ * @return {number[]} bezierPoints an Array of 4 coordinates wihtin the 0.0 ... 1.0 range which describes the Bï¿½zier interpolation.<br />
  * [ outTangentX, outTangentY, inTangentX, inTangentY ]
  */
 DuAEF.DuExpression.Library.bezier = ['',
@@ -228,18 +228,20 @@ DuAEF.DuExpression.Library.getEffectLayer = ['',
 /**
  * Gets the transformation Matrix for the current group in a shape layer, including the transformation from the ancestor groups
  * @function
+ * @param {Property} [prop=thisProperty] The property from which to get the matrix
  * @return {Matrix} The 2D Transform Matrix.
  * @requires isLayer
  * @requires Matrix
  */
 DuAEF.DuExpression.Library.getGroupTransformMatrix = ['',
-	'function getGroupTransformMatrix( ) {',
+	'function getGroupTransformMatrix( prop ) {',
+	'	if (typeof group === "undefined") prop = thisProperty;',
 	'    // A Matrix to apply group transforms',
 	'    var matrix = new Matrix();',
 	'',
 	'	// Get all groups from this propperty',
 	'	var shapeGroups = [];',
-	'	var parentProp = thisProperty.propertyGroup(1);',
+	'	var parentProp = prop.propertyGroup(1);',
 	'	while( parentProp && !isLayer(parentProp) )',
 	'	{',
 	'		//try catch is needed for the legacy expression engine',
