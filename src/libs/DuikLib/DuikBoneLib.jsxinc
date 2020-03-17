@@ -61,33 +61,15 @@ Bone.prototype.bakeAppearence = function ()
 
 	if (iconGroup)
 	{
-		DuAEF.DuAE.Property.removeExpression(iconGroup.transform.scale);
-
+		//reset the line of tangents
 		var iconContent = iconGroup.property("ADBE Vectors Group");
-
-		var fill = iconContent.property("ADBE Vector Graphic - Fill");
-		if (fill)
-		{
-			DuAEF.DuAE.Property.removeExpression( fill.property("ADBE Vector Fill Color") );
-		}
-
-		var circle = iconContent.property("ADBE Vector Shape - Ellipse");
-		if (circle)
-		{
-			DuAEF.DuAE.Property.removeExpression( circle.property("ADBE Vector Ellipse Size") );
-		}
-
 		var line = iconContent.property("ADBE Vector Shape - Group");
 		if (line)
 		{
 			line.property('ADBE Vector Shape').expression = '';
 		}
-
-		var stroke = iconContent.property("ADBE Vector Graphic - Stroke");
-		if (stroke)
-		{
-			DuAEF.DuAE.Property.removeExpression( stroke.property("ADBE Vector Stroke Color") );
-		}
+		//remove all expressions
+		DuAEF.DuAE.Property.removeExpressions(iconGroup);
 	}
 
 	effect.remove();
