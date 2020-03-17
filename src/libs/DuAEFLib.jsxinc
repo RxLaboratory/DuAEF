@@ -1,3 +1,41 @@
+/* License
+	DuAEF - Duduf After Effects Framework
+
+	Copyright (c) 2008 - 2020 Nicolas Dufresne, Rainbox Productions
+
+	https://rainboxlab.org
+
+	__DuAEF makes use of:__
+
+		• x2js
+		Copyright (c) 2011-2013 Abdulla Abdurakhmanov
+		Original sources are available at https://code.google.com/p/x2js/
+		Licensed under the Apache License, Version 2.0
+
+		• json2
+		See http://www.JSON.org/js.html
+		Public Domain
+
+		• seedRandom
+		Copyright (c) David Bau
+		Licensed under the MIT license
+
+	This file is part of DuAEF.
+
+		DuAEF is free software: you can redistribute it and/or modify
+		it under the terms of the GNU General Public License as published by
+		the Free Software Foundation, either version 3 of the License, or
+		(at your option) any later version.
+
+		DuAEF is distributed in the hope that it will be useful,
+		but WITHOUT ANY WARRANTY; without even the implied warranty of
+		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+		GNU General Public License for more details.
+
+		You should have received a copy of the GNU General Public License
+		along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 /**
  * The Duduf After Effects ExtendScript Framework.<br />
  * by {@link https://rainboxlab.org Rainbox Lab}.
