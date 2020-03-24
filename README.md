@@ -20,7 +20,7 @@ It is very easy to use and **[documented](https://duaef-reference.rainboxlab.org
 
 Just include the framework in your script with this simple code:
 
-    #include DuAEF.jsxinc //includes all libraries, as separated files (you'll need the complete /libs/ folder)
+    #include DuAEF.jsxinc
     
 After this, all objects and methods from DuAEF will be available, in [the DuAEF namespace](https://duaef-reference.rainboxlab.org).
 
