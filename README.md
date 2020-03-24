@@ -8,13 +8,13 @@ It is very easy to use and **[documented](https://duaef-reference.rainboxlab.org
 
 ## Links
 
-- **Contributing guide**: [wiki/Contributing-Guide](https://github.com/Rainbox-dev/DuAEF_Duik/wiki/Contributing-Guide)
-- Tools: [rainboxprod.coop/en/tools/](https://rainboxprod.coop/en/tools/)
-- User forum: [forum.rainboxprod.coop](http://forum.rainboxprod.coop)
+- **Contributing guide**: [duaef-docs.rainboxlab.org](http://duaef-docs.rainboxlab.org/contributing-guide/)
+- Tools: [rainboxlab.org/tag/after-effects](https://rainboxlab.org/tag/after-effects/)
+- User forum: [forum.rainboxlab.org](http://forum.rainboxprod.coop)
     - You can create private threads on the forum if you need.    
-- Developers and users chat: [framateam.org](https://framateam.org/signup_user_complete/?id=scystqi16t8njnwhxbiuso94he)
+- Developers and users chat: [chat.rainboxlab.org](https://chat.rainboxlab.org)
     - Feel free to come talk with us ! :smile:
-- Developers' documentation: [rainbox-dev.github.io/DuAEF_Duik/](https://duaef-reference.rainboxlab.org)    
+- Developers' documentation: [https://duaef-reference.rainboxlab.org](https://duaef-reference.rainboxlab.org)    
    
 ## How to use the framework in an After Effects script?
 
