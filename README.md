@@ -21,12 +21,8 @@ It is very easy to use and **[documented](https://duaef-reference.rainboxlab.org
 Just include the framework in your script with this simple code:
 
     #include DuAEF.jsxinc //includes all libraries, as separated files (you'll need the complete /libs/ folder)
-    //OR
-    #include DuAEF_full.jsxinc //includes the whole framework with one single file.
     
-After one of these two lines, all objects and methods from DuAEF will be available.
-
-As you can see, you can either use only the "DuAEF_full.jsxinc" file which contains the whole framework, or "DuAEF.jsxinc" file to keep every library in separated files. In most cases, you should use the "full" file. The second one might be easier to use if you plan to modify or personalize the framework.
+After this, all objects and methods from DuAEF will be available, in [the DuAEF namespace](https://duaef-reference.rainboxlab.org).
 
 ## Comprehensive reference
 
