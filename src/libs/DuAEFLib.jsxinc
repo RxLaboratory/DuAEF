@@ -5,21 +5,6 @@
 
 	https://rainboxlab.org
 
-	__DuAEF makes use of:__
-
-		• x2js
-		Copyright (c) 2011-2013 Abdulla Abdurakhmanov
-		Original sources are available at https://code.google.com/p/x2js/
-		Licensed under the Apache License, Version 2.0
-
-		• json2
-		See http://www.JSON.org/js.html
-		Public Domain
-
-		• seedRandom
-		Copyright (c) David Bau
-		Licensed under the MIT license
-
 	This file is part of DuAEF.
 
 		DuAEF is free software: you can redistribute it and/or modify
@@ -78,7 +63,7 @@
  * @namespace
  * @author Nicolas Dufresne and contributors
  * @copyright 2017 - 2020 Nicolas Dufresne, Rainbox Laboratory
- * @version 0.5.0
+ * @version 0.5.1
  * @license GPL-3.0 <br />
  * DuAEF is free software: you can redistribute it and/or modify<br />
  * it under the terms of the GNU General Public License as published by<br />
