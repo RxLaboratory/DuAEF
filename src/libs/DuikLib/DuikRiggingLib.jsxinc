@@ -447,8 +447,10 @@ DuAEF.Duik.Rigging.parent = function( children, parent, useMasterProperties )
                 childLocator.locked = true;
                 childLocators.push( childLocator );
             }
-
+            var locked = child.locked;
+            child.locked = false;
             child.parent = childLocator;
+            child.locked = locked;
             child.selected = true;
             return;
         }
