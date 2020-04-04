@@ -942,7 +942,7 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 			//parent
 			if (spineRoot)
 			{
-				tailCtrl.layer.parent = hipsCtrl.layer;
+				if (hipsCtrl) tailCtrl.layer.parent = hipsCtrl.layer;
 				tailRoot.parent = spineRoot;
 			}
 		}
