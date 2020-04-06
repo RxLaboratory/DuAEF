@@ -85,7 +85,7 @@ var DuAEF = {};
  * @memberof DuAEF
  * @type {string}
  */
-DuAEF.version = new DuVersion('0.5.0');
+DuAEF.version = new DuVersion('0.5.1');
 /**
  * Set to true and enable debug mode if you're a developper
  * @memberof DuAEF
