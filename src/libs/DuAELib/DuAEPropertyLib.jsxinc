@@ -1933,6 +1933,11 @@ DuAEF.DuAE.Property.getAverageSpeed = function ( props, preExpression, fastMode 
 DuAEF.DuAE.Property.scriptifyExpression = function ( prop, varName ) {
     varName = def( varName, '' );
 
+    function line(str)
+    {
+        return "'" + str.replace( "\r", "" ).replace(/'/g , "\\'") + "'";
+    }
+
     var propType = DuAEF.DuJS.typeof( prop );
     var exp = '';
     if ( propType.toLowerCase() === 'string' ) exp = prop;
@@ -1943,13 +1948,12 @@ DuAEF.DuAE.Property.scriptifyExpression = function ( prop, varName ) {
 
     var expArray = exp.split( '\n' );
     var expString = "";
-    if ( varName != '' ) expString += "var " + varName + " ";
-    expString += "['"
-    var nextLine = expArray[ 0 ].replace( "\r", "" );
-    nextLine = DuAEF.DuJS.String.replace( nextLine, "'", "\\'") + "'";
-    expString += nextLine;
+    if ( varName != '' ) expString += "var " + varName + " = ";
+
+    expString += "[" + line( expArray[0] );
+
     for ( var i = 1; i < expArray.length; i++ ) {
-        expString += ",\n\t'" + expArray[ i ].replace( '\r', '' ).replace("'","\\'") + "'";
+        expString += ",\n\t" + line( expArray[i] );
     }
     expString += "\n\t].join('\\n');";
 
