@@ -45,3 +45,4 @@ Your contributions are welcomed and you can improve the existing expressions or 
 
 - The file name is a short name, without any space or special character, using camelCase.
 - The expression **has to be documented**, using jsdoc, at the beginning of the file. See the existing files if you don't know how to do this.
+- **Do not use single quotes `'` at all** in the file.
