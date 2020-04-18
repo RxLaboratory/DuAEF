@@ -330,13 +330,14 @@ DuAEF.Duik.Automation.swing = function (prop)
  */
 DuAEF.Duik.Automation.wheel = function (layer,radius)
 {
-	if (!layer) throw "Missing Param 1: Wheel needs a Layer";
-	if (radius == undefined)
+	if (typeof layer === 'undefined') throw "Missing Param 1: Wheel needs a Layer";
+	if (typeof radius === 'undefined')
 	{
 		var parent = layer.parent;
 		layer.parent = null;
 		var rect = layer.sourceRectAtTime(0,false);
 		radius = rect.width/2*layer.transform.scale.value[0]/100;
+		radius = Math.abs(radius);
 		layer.parent = parent;
 	}
 	var rotation = layer.transform.rotation;
