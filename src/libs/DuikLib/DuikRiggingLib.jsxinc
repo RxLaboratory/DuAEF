@@ -254,53 +254,74 @@ DuAEF.Duik.Rigging.addLocator = function( layerOrComp )
     if ( layer ) layerfx( 1 ).setValue( layer.index );
 
     //add expressions
-    loc.transform.rotation.expression = 'var result = 0;\n' +
-        'var l = null;\n' +
-        'try{ l = effect("' + layerfx.name + '")(1) } catch(e) { }\n' +
-        'if (l)\n' +
-        '{\n' +
-        'result = l.rotation;\n' +
-        'while(l.hasParent)\n' +
-        '{\n' +
-        'l = l.parent;\n' +
-        'result += l.rotation;\n' +
-        '}\n' +
-        '}\n' +
-        'if (hasParent)\n' +
-        '{\n' +
-        'var p =thisLayer;\n' +
-        'while (p.hasParent)\n' +
-        '{\n' +
-        'p = p.parent;\n' +
-        'result -= p.rotation;\n' +
-        '}\n' +
-        '}\n' +
-        'result;';
+    loc.transform.rotation.expression = [ DuAEF.Duik.expressionIds.LOCATOR,
+        DuAEF.DuExpression.Library.dishineritRotation,
+        DuAEF.DuExpression.Library.getOrientation,
+        'var result = 0;',
+        'var l = null;',
+        'try{ l = effect("' + layerfx.name + '")(1) } catch(e) { }',
+        'if (l)',
+        '{',
+        '    var sign = getScaleMirror( );',
+        '    var flip = getScaleUTurn( );',
+        '    result = getOrientation( l ) * sign + flip;',
+        '    result += dishineritRotation();',
+        '}',
+        'result;'
+        ].join('\n');
 
-    loc.transform.position.expression = 'var result = [thisComp.width/2,thisComp.height/2];\n' +
-        'var l = null;\n' +
-        'try{ l = effect("' + layerfx.name + '")(1) } catch(e) { }\n' +
-        'if (l)\n' +
-        '{\n' +
-        'result = l.toWorld(l.anchorPoint);\n' +
-        '}\n' +
-        'if (hasParent)\n' +
-        '{\n' +
-        'result = parent.fromWorld(result);\n' +
-        '}\n' +
-        'result;';
+    loc.transform.position.expression = [ DuAEF.Duik.expressionIds.LOCATOR,
+        'var result = [thisComp.width/2,thisComp.height/2];',
+        'var l = null;',
+        'try{ l = effect("' + layerfx.name + '")(1) } catch(e) { }',
+        'if (l)',
+        '{',
+        '   result = l.toWorld(l.anchorPoint);',
+        '}',
+        'if (hasParent)',
+        '{',
+        '   result = parent.fromWorld(result);',
+        '}',
+        'result;'
+        ].join('\n');
 
-    loc.transform.anchorPoint.expression = 'var result = value;\n' +
-        'var l = null;\n' +
-        'try{ l = effect("' + layerfx.name + '")(1) } catch(e) { }\n' +
-        'if (l)\n' +
-        '{\n' +
-        'result =l.anchorPoint.value;\n' +
-        '}\n' +
-        'result;';
+    loc.transform.anchorPoint.expression = [ DuAEF.Duik.expressionIds.LOCATOR,
+        'var result = value;',
+        'var l = null;',
+        'try{ l = effect("' + layerfx.name + '")(1) } catch(e) { }',
+        'if (l)',
+        '{',
+        '   result =l.anchorPoint.value;',
+        '}',
+        'result;'
+        ].join('\n');
+
+    loc.transform.scale.expression = [ DuAEF.Duik.expressionIds.LOCATOR,
+        'var l = null;',
+        'try{ l = effect("' + layerfx.name + '")(1) } catch(e) { }',
+        DuAEF.DuExpression.Library.getScale,
+        DuAEF.DuExpression.Library.dishineritScale,
+        '',
+        'var result = dishineritScale();',
+        '',
+        'if (l)',
+        '{',
+        '    var sl = getScale( l )/100;',
+        '    if (result.length == 3 && sl.length == 3) {',
+        '        result = [ result[0]*sl[0], result[1]*sl[1], result[2]*sl[2] ];',
+        '    }',
+        '    else if (result.length == 3) {',
+        '        result = [result[0]*sl[0], result[1]*sl[1], result[2] ];',
+        '    }',
+        '    else {',
+        '        result = [result[0]*sl[0], result[1]*sl[1] ];',
+        '    }',
+        '}',
+        '',
+        'result;'
+    ].join('\n');
 
     DuAEF.Duik.setDuikMarker( loc, "Locator", DuAEF.Duik.LayerTypes.LOCATOR );
-
 
     return loc;
 }
