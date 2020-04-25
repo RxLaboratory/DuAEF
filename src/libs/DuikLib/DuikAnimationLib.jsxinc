@@ -1235,6 +1235,8 @@ DuAEF.Duik.Animation.switchIkFk = function (controller)
 	* @param {AVLayer} preComposition - The precomposition layer
 	* @param {boolean} [useMasterProperties=true] - Only in Ae v15.1 (CC2018) and up, true to use Master Properties<br />
 	* instead of expressions to link the controllers. Ignored on previous versions of After Effects.
+	* @param {boolean} [bake=true] - Bakes the appearances of the controllers before extracting them.<br />
+	* Note: this fixes some issues when extracting controllers between compositions of different sizes.
 	* @return {int} Error code:<br >
 	* -3: No controllers found in the precomp<br >
 	* -2: The layer is not a precomposition<br >
@@ -1242,11 +1244,12 @@ DuAEF.Duik.Animation.switchIkFk = function (controller)
 	* 0: Unknown error<br >
 	* 1: OK
 */
-DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMasterProperties)
+DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMasterProperties, bake)
 {
 	if (DuAEF.DuAE.App.version.version < 15.1) useMasterProperties = false;
 	if (DuAEF.DuAE.App.version.version < 17.0) useMasterProperties = def( useMasterProperties, false );
 	else useMasterProperties = def( useMasterProperties, true );
+	bake = def(bake, true);
 
 	var comp = preComposition.containingComp;
 
@@ -1303,6 +1306,9 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 			controller.id = newId;
 			ids.push( newId );
 		}
+
+		//bake them
+		if (bake) controller.bakeAppearance();
 	});
 
 	// if this is a new extraction using MPs from an already extracted precomp,
@@ -1332,7 +1338,11 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 	if (ctrlLayers.length == 0) return;
 
 	//copy controllers
+	//to apply all locators transform values in case controllers are children of locators and temporarily disable their expressions
+	DuAEF.Duik.Rigging.applyLocatorsValues( preComp, true );
 	newCtrlLayers = newCtrlLayers.concat( DuAEF.DuAE.Layer.copyToComp(ctrlLayers, comp) );
+	//enable the locators again
+	DuAEF.Duik.Rigging.disableLocators( preComp, false )
 
 	//get controller objects 
 	var newCtrls = [];

@@ -265,7 +265,7 @@ DuAEF.Duik.Rigging.addLocator = function( layerOrComp )
         '    var sign = getScaleMirror( );',
         '    var flip = getScaleUTurn( );',
         '    result = getOrientation( l ) * sign + flip;',
-        '    result += dishineritRotation();',
+        '    result += dishineritRotation() - value;',
         '}',
         'result;'
         ].join('\n');
@@ -302,7 +302,10 @@ DuAEF.Duik.Rigging.addLocator = function( layerOrComp )
         DuAEF.DuExpression.Library.getScale,
         DuAEF.DuExpression.Library.dishineritScale,
         '',
-        'var result = dishineritScale();',
+        'var threeD = value.length == 3;',
+        'var result = dishineritScale() - value;',
+        'if (threeD) result += [100,100,100];',
+        'else result += [100,100];',
         '',
         'if (l)',
         '{',
@@ -353,8 +356,8 @@ DuAEF.Duik.Rigging.extractLocators = function( preCompLayer, useMasterProperties
 
 /**
  * Extracts one locator from a precomposition
- * @param {AVLayer} [locator] - The locator to extract
- * @param {AVLayer} [preCompLayer] - The precomposition layer
+ * @param {AVLayer} locator - The locator to extract
+ * @param {AVLayer} preCompLayer - The precomposition layer
  * @param {boolean} [useMasterProperties=true] - true to extract using master properties instead of expressions (ignored in Ae < 15.1, false by default if 15.1 <= Ae < 17 and true by default in Ae >= 17)
  * @return {AVLayer} The extracted locator
  */
@@ -368,6 +371,12 @@ DuAEF.Duik.Rigging.extractLocator = function( locator, preCompLayer, useMasterPr
     //comp names
     DuAEF.DuAE.Comp.setUniqueCompName( comp );
     DuAEF.DuAE.Comp.setUniqueCompName( locator.containingComp );
+    //apply locator values to workaround all kind of bugs
+    locator.transform.anchorPoint.setValue( locator.transform.anchorPoint.valueAtTime(0, false));
+    locator.transform.position.setValue( locator.transform.position.valueAtTime(0, false));
+    locator.transform.scale.setValue( locator.transform.scale.valueAtTime(0, false));
+    locator.transform.rotation.setValue( locator.transform.rotation.valueAtTime(0, false));
+    locator.transform.opacity.setValue( locator.transform.opacity.valueAtTime(0, false));
     //create a null in the comp
     var loc = comp.layers.addNull();
     loc.name = DuAEF.DuAE.Comp.newUniqueLayerName( locator.name, comp );
@@ -402,6 +411,73 @@ DuAEF.Duik.Rigging.extractLocator = function( locator, preCompLayer, useMasterPr
         DuAEF.DuAE.Property.linkProperties( loc.transform, locator.transform );
     }
     return loc;
+}
+
+/**
+ * Sets the current values of the locator. This fixes some bugs when unparenting layers parented to the locators.
+ * @param {AVLayer} locator - The locator layer
+ * @param {boolean} [disable=true] - Wether to disable the expressions after having applied the values
+ */
+DuAEF.Duik.Rigging.applyLocatorValues = function ( locator, disable )
+{
+    disable = def(disable, true);
+    var l = locator.locked;
+    locator.transform.anchorPoint.setValue( locator.transform.anchorPoint.valueAtTime(0, false));
+    locator.transform.position.setValue( locator.transform.position.valueAtTime(0, false));
+    locator.transform.scale.setValue( locator.transform.scale.valueAtTime(0, false));
+    locator.transform.rotation.setValue( locator.transform.rotation.valueAtTime(0, false));
+    locator.transform.opacity.setValue( locator.transform.opacity.valueAtTime(0, false));
+    if (disable) DuAEF.Duik.Rigging.disableLocator( locator );
+    locator.locked = l;
+}
+
+/**
+ * Disables the locator. Disable the transform expressions
+ * @param {AVLayer} locator - The locator layer
+ * @param {boolean} [disable=true] - Wether to disable the expressions after having applied the values
+ */
+DuAEF.Duik.Rigging.disableLocator = function (locator, disable)
+{
+    disable = def(disable, true);
+    var l = locator.locked;
+    locator.transform.anchorPoint.expressionEnabled = false;
+    locator.transform.position.expressionEnabled = false;
+    locator.transform.scale.expressionEnabled = false;
+    locator.transform.rotation.expressionEnabled = false;
+    locator.transform.opacity.expressionEnabled = false;
+    locator.locked = l;
+}
+
+/**
+ * Disables the locators. Disable the transform expressions
+ * @param {CompItem} [comp] - The composition containing the locators
+ * @param {boolean} [disable=true] - Wether to disable the expressions after having applied the values
+ */
+DuAEF.Duik.Rigging.disableLocators = function (comp, disable)
+{
+    comp = def(comp, DuAEF.DuAE.Project.getActiveComp());
+    disable = def(disable, true);
+    if (!comp) return;
+    var locators = DuAEF.Duik.getLayers( DuAEF.Duik.LayerTypes.LOCATOR, false, comp );
+    new Iterator(locators).do(function(locator) {
+        DuAEF.Duik.Rigging.disableLocator(locator, disable)
+        });
+}
+
+/**
+ * Sets the current values of the locators. This fixes some bugs when unparenting layers parented to the locators.
+ * @param {CompItem} [comp] - The composition containing the locators
+ * @param {boolean} [disable=true] - Wether to disable the expressions after having applied the values
+ */
+DuAEF.Duik.Rigging.applyLocatorsValues = function ( comp, disable )
+{
+    comp = def(comp, DuAEF.DuAE.Project.getActiveComp());
+    disable = def(disable, true);
+    if (!comp) return;
+    var locators = DuAEF.Duik.getLayers( DuAEF.Duik.LayerTypes.LOCATOR, false, comp );
+    new Iterator(locators).do(function(locator) {
+        DuAEF.Duik.Rigging.applyLocatorValues(locator, disable)
+        });
 }
 
 /**
