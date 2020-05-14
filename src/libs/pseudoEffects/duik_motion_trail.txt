@@ -1,4 +1,4 @@
-Pseudo Effect: Motion trail | matchName: Pseudo/DUIK motion trail v03.2
+Pseudo Effect: Motion trail | matchName: Pseudo/DUIK motion trail v03.3
 index['Motion source_Layer'] = 1
 index['Start (frames)_Slider'] = 2
 index['End (frames)_Slider'] = 3
