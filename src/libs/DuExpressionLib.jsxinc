@@ -698,6 +698,16 @@ DuAEF.DuExpression.Library.mean = ['function mean( values )',
 	].join('\n');
 
 /**
+    * Fix for the ExtendScript engine, implements the Math.sign function.
+    * @function
+    * @name Math.sign
+    * @param {Number} x The value
+    * @return {Number} The sign, 1, -1 or 0.
+    */
+DuAEF.DuExpression.Library.sign = ['if (typeof Math.sign === \'undefined\') Math.sign = function(x) { return ((x > 0) - (x < 0)) || +x; };'
+	].join('\n');
+
+/**
  * Checks the type of a pseudo-effect used by Duik.<br />
  * This is a workaround for the missing matchName in expressions.<br />
  * Pseudo-Effects used by Duik start with a hidden property which name is the same as the matchName of the effect itself (without the 'Pseudo/' part).

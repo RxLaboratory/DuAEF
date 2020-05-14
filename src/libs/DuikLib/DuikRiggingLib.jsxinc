@@ -255,6 +255,7 @@ DuAEF.Duik.Rigging.addLocator = function( layerOrComp )
 
     //add expressions
     loc.transform.rotation.expression = [ DuAEF.Duik.expressionIds.LOCATOR,
+        DuAEF.DuExpression.Library.sign,
         DuAEF.DuExpression.Library.dishineritRotation,
         DuAEF.DuExpression.Library.getOrientation,
         'var result = 0;',
