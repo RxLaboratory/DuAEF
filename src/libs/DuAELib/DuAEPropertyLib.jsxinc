@@ -1698,7 +1698,7 @@ DuAEF.DuAE.Property.getAnimatedProps = function ( prop, filter, strict, caseSens
 
     if ( !caseSensitive && typeof filter === "string" ) filter = filter.toLowerCase();
 
-    if ( prop.propertyType == PropertyType.PROPERTY ) {
+    if ( prop.propertyType == PropertyType.PROPERTY && prop.matchName != 'ADBE Marker') {
         if ( DuAEF.DuAE.Property.isAnimated( prop ) ) {
             if ( typeof filter === 'undefined' ) {
                 props.push( prop );

@@ -179,7 +179,7 @@ DuAEF.DuAE.Comp.getAnimatedProps = function ( filter, strict, caseSensitive, sel
     if ( typeof comp === 'undefined' ) comp = DuAEF.DuAE.Project.getActiveComp();
     if ( !comp ) return props;
 
-    if ( typeof selectedLayersOnly === 'undefined' ) selectedLayersOnly = false;
+    selectedLayersOnly = def( selectedLayersOnly, false);
 
 
     var layers;
