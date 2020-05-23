@@ -178,11 +178,15 @@ Structure.prototype.duplicate = function()
         //set display link
         var pE = DuAEF.Duik.PseudoEffects.STRUCTURE;
         var effect = layer.effect( pE.matchName );
-        var oldLinkIndex = DuAEF.DuJS.Array.indexOf( oldLayers, effect( pE.index['Display options_Target_Layer'] ).value, layerInArray );
-        if ( oldLinkIndex >= 0 )
+        if (effect)
         {
-            effect( pE.index['Display options_Target_Layer'] ).setValue( newLayers[ oldLinkIndex ].index );
+            var oldLinkIndex = DuAEF.DuJS.Array.indexOf( oldLayers, effect( pE.index['Display options_Target_Layer'] ).value, layerInArray );
+            if ( oldLinkIndex >= 0 )
+            {
+                effect( pE.index['Display options_Target_Layer'] ).setValue( newLayers[ oldLinkIndex ].index );
+            }
         }
+        
         //set id
         DuAEF.Duik.setDuikMarkerParameter( layer, DuAEF.Duik.MarkerParameters.STRUCTURE_ID, id );
     } );
@@ -1803,4 +1807,6 @@ DuAEF.Duik.Structure.bakeAppearence = function( layer )
     DuAEF.DuAE.Property.removeExpression( stretchBoneContent.property( "ADBE Vector Shape - Star" )( "ADBE Vector Star Outer Roundess" ) );
     DuAEF.DuAE.Property.removeExpression( stretchBoneContent.property( "ADBE Vector Graphic - Fill" )( "ADBE Vector Fill Color" ) );
     DuAEF.DuAE.Property.removeExpression( stretchBoneGroup.property( "ADBE Vector Transform Group" )( "ADBE Vector Scale" ) );
+
+    effect.remove();
 }
