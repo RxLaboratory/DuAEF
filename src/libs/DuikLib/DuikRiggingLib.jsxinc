@@ -441,11 +441,11 @@ DuAEF.Duik.Rigging.disableLocator = function (locator, disable)
 {
     disable = def(disable, true);
     var l = locator.locked;
-    locator.transform.anchorPoint.expressionEnabled = false;
-    locator.transform.position.expressionEnabled = false;
-    locator.transform.scale.expressionEnabled = false;
-    locator.transform.rotation.expressionEnabled = false;
-    locator.transform.opacity.expressionEnabled = false;
+    locator.transform.anchorPoint.expressionEnabled = !disable;
+    locator.transform.position.expressionEnabled = !disable;
+    locator.transform.scale.expressionEnabled = !disable;
+    locator.transform.rotation.expressionEnabled = !disable;
+    locator.transform.opacity.expressionEnabled = !disable;
     locator.locked = l;
 }
 
