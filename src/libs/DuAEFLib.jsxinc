@@ -63,7 +63,7 @@
  * @namespace
  * @author Nicolas Dufresne and contributors
  * @copyright 2017 - 2020 Nicolas Dufresne, Rainbox Laboratory
- * @version 0.5.4
+ * @version 0.5.5
  * @license GPL-3.0 <br />
  * DuAEF is free software: you can redistribute it and/or modify<br />
  * it under the terms of the GNU General Public License as published by<br />
@@ -85,7 +85,7 @@ var DuAEF = {};
  * @memberof DuAEF
  * @type {string}
  */
-DuAEF.version = new DuVersion('0.5.4');
+DuAEF.version = new DuVersion('0.5.5');
 /**
  * Set to true and enable debug mode if you're a developper
  * @memberof DuAEF
