@@ -771,6 +771,7 @@ DuAEF.Duik.Rigging.parentConstraint = function( layer )
 		layer.transform.xPosition.expression = posExpr + '\nresult[0];';
 
 		layer.transform.yPosition.expression = posExpr + '\nresult[1];';
+        if (layer.threeDLayer) layer.transform.zPosition.expression = posExpr + '\nresult[2];';
 	}
 	else
 	{
