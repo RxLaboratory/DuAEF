@@ -615,6 +615,7 @@ DuAEF.Duik.Rigging.orientationConstraint = function( layer )
     var index = DuAEF.Duik.PseudoEffects.ORIENTATION.index;
 
     layer.rotation.expression = [DuAEF.Duik.expressionIds.ORIENTATION,
+        DuAEF.DuExpression.Library.sign,
         DuAEF.DuExpression.Library.getOrientation,
         DuAEF.DuExpression.Library.dishineritRotation,
         DuAEF.DuExpression.Library.checkDuikEffect,
