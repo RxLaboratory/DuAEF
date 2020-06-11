@@ -212,6 +212,10 @@ DuAEF.Ramses.archiveFolder = function ( inputFolder, outputFolder, recursive, zi
     archiveMode = def(archiveMode, DuAEF.Ramses.ArchiveModes.ONE_PER_FOLDER);
     reduce = def(reduce, true);
 
+    // suppress dialogs
+
+    app.beginSuppressDialogs();
+
     //if we're doing only one zip for all, create a temp subfolder to be zipped at the end
     if (zip && archiveMode == DuAEF.Ramses.ArchiveModes.ONE_FOR_ALL ) {
         outputFolder = new Folder (outputFolder.absoluteURI + "/" + outputFolder.name);
@@ -295,4 +299,6 @@ DuAEF.Ramses.archiveFolder = function ( inputFolder, outputFolder, recursive, zi
         //remove the folder if empty
         if ( !aepFolder.remove() ) DuAEF.Zip.compressFolderContent( aepFolder, DuAEF.DuJS.Fs.getName(outputFolder) + ".zip", true );
     }
+
+    app.endSuppressDialogs(false);
 }
