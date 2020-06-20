@@ -1575,8 +1575,9 @@ DuAEF.Duik.AnimationBlender.setup = function(setupComp,controlComp,selectedPrope
 	var blenderCtrl = DuAEF.Duik.Controller.create(controlComp,DuAEF.Duik.Controller.Types.BLENDER);
 	blenderCtrl.layer.name = DuAEF.DuAE.Comp.newUniqueLayerName("C | Blender | " + setupComp.name, controlComp);
 
-	//Store setupComp id into Duik marker of the controller
+	//Store setupComp id and name into Duik marker of the controller
 	DuAEF.Duik.setDuikMarkerParameter(blenderCtrl.layer,'animationBlenderComp',setupComp.id);
+	DuAEF.Duik.setDuikMarkerParameter(blenderCtrl.layer,'animationBlenderCompName',setupComp.name);
 	//set the duikmarker at negative time to hide it
 	var markerProp = blenderCtrl.layer.property('ADBE Marker');
 	for (var i = 1, num = markerProp.numKeys; i <= num; i++)
@@ -1709,6 +1710,38 @@ DuAEF.Duik.AnimationBlender.getAnimMarkers = function (comp)
 		markerLayer.name = "Duik | Animation blender";
 	}
 	return markerLayer.property('ADBE Marker');
+}
+
+/**
+ * Gets the blended composition from the (selected) controller
+ * @param {AVLayer} [controller] The blender controller
+ * @return {CompItem|null} The blended composition, null if not found.
+ */
+DuAEF.Duik.AnimationBlender.getBlendedComp = function ( controller )
+{
+	if (typeof controller === 'undefined')
+	{
+		var layers = DuAEF.DuAE.Comp.getSelectedLayers();
+		if (layers.length == 0) return null;
+		controller = layers[0];
+	}
+
+	var params = DuAEF.Duik.getDuikMarkerParameters(controller);
+	if (!params) return null;
+	if (!params.animationBlenderComp) return null;
+
+	var blenderCompId = params.animationBlenderComp;
+	var blenderCompName = params.animationBlenderCompName;
+	var blenderComp = DuAEF.DuAE.Project.getItemById( blenderCompId );
+	if (blenderComp instanceof CompItem && blenderComp.name == blenderCompName) return blenderComp;
+	blenderComp = DuAEF.DuAE.Project.getItemByName( blenderCompName );
+	if (blenderComp instanceof CompItem) 
+	{
+		// Update Id
+		DuAEF.Duik.setDuikMarkerParameter( controller,'animationBlenderComp',blenderComp.id);
+		return blenderComp;
+	}
+	return null;
 }
 
 /**
