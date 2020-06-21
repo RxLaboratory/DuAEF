@@ -1118,7 +1118,7 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 					}
 				}
 				else if (leg.foot && leg.femur) DuAEF.Duik.Rigging.twoLayerIK(leg.femur,leg.foot,leg.toes,ctrl);
-				else if (leg.tibia && leg.femur)	DuAEF.Duik.Rigging.twoLayerIK(leg.femur,leg.tibia,arm.claws,ctrl);
+				else if (leg.tibia && leg.femur) DuAEF.Duik.Rigging.twoLayerIK(leg.femur,leg.tibia,leg.claws,ctrl);
 			}
 			else if (leg.foot)
 			{
