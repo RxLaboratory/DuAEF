@@ -111,6 +111,18 @@ DuAEF.DuAE.Project.getItemById = function ( id ) {
 }
 
 /**
+ * Retrieves the first item with the given name
+ * @return {Item|null} The item
+ */
+DuAEF.DuAE.Project.getItemByName = function ( name ) {
+    var it = new Iterator( app.project.items );
+    while ( item = it.next() ) {
+        if ( item.name == name ) return item;
+    }
+    return null;
+}
+
+/**
  * Generates a new unique name for a composition
  * @param {string} newName - The wanted new name
  * @param {CompItem} comp  - The comp

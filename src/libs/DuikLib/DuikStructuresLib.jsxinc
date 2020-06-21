@@ -40,7 +40,8 @@ Structure.prototype.setSize = function( size )
     for ( var i = 0; i < this.elements.length; i++ )
     {
         var layer = this.elements[ i ];
-        layer.effect( DuAEF.Duik.PseudoEffects.STRUCTURE.matchName )( DuAEF.Duik.PseudoEffects.STRUCTURE.index['Display options_Size_Slider'] ).setValue( size );
+        var effect = layer.effect( DuAEF.Duik.PseudoEffects.STRUCTURE.matchName );
+        if (effect) effect( DuAEF.Duik.PseudoEffects.STRUCTURE.index['Display options_Size_Slider'] ).setValue( size );
     }
 }
 
@@ -60,7 +61,8 @@ Structure.prototype.setColor = function( color )
     for ( var i = 0; i < this.elements.length; i++ )
     {
         var layer = this.elements[ i ];
-        layer.effect( DuAEF.Duik.PseudoEffects.STRUCTURE.matchName )( DuAEF.Duik.PseudoEffects.STRUCTURE.index['Display options_Color_Color'] ).setValue( color );
+        var effect = layer.effect( DuAEF.Duik.PseudoEffects.STRUCTURE.matchName );
+        if (effect) effect( DuAEF.Duik.PseudoEffects.STRUCTURE.index['Display options_Color_Color'] ).setValue( color );
     }
 }
 

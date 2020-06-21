@@ -70,7 +70,6 @@ DuAEF.DuAE.Comp.replaceInExpressions = function ( oldString, newString, comp, ca
     DuAEF.DuAE.Project.updateExpressionsFromCache( DuAEF.DuAE.Comp.expressionCache )
 }
 
-
 /**
  * Makes sure the composition has a unique name, renaming it if needed.
  * @param {CompItem} comp - The composition
