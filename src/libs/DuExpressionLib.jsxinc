@@ -21,3 +21,47 @@
 //expressions generated from DuAEF_DuExpressionLib
 #include DuExpression_scripting.jsxinc
 
+/**
+ * Gets functions and their dependencies from the library.
+ * @param {string[]} functions The name of the functions to get
+ * @return {string} The expression
+ */
+DuAEF.DuExpression.get = function( functions )
+{
+	var exp = functions;
+	new Iterator(functions).do(function(functionName)
+	{
+		var r = DuAEF.DuExpression.getRequirements( functionName );
+		exp = exp.concat(r);
+	});
+
+	DuAEF.DuJS.Array.removeDuplicates(exp);
+
+	var expString = '';
+
+	new Iterator(exp).do(function(expName)
+	{
+		expString += DuAEF.DuExpression.Library[ expName ].expression + '\n';
+	});
+
+	return expString;
+}
+
+/**
+ * A recursive method to get all the requirements (dependencies) of a function from a library
+ * @param {string} functionName The name of the function
+ * @return {string[]} The names of the required functions, including the querried one
+ */
+DuAEF.DuExpression.getRequirements = function ( functionName )
+{
+	var r = DuAEF.DuExpression.Library[ functionName ].requirements;
+	if (r.length > 0)
+	{
+		for (var i = 0, iN = r.length; i < iN; i++)
+		{
+			r = r.concat(DuAEF.DuExpression.getRequirements( r[i]) );
+		}
+	}
+
+	return r;
+}

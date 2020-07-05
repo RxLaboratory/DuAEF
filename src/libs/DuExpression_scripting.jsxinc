@@ -32,7 +32,7 @@ if (typeof DuAEF.DuExpression === "undefined") DuAEF.DuExpression = {};
 * @namespace
 * @memberof DuAEF.DuExpression
 */
-DuAEF.DuExpression.Library = {};
+DuAEF.DuExpression.Library = [];
 
 /**
   * Fuzzy Logics for expressions. See {@link https://github.com/Nico-Duduf/DuFuzzyLogic} for more explanations
@@ -41,8 +41,13 @@ DuAEF.DuExpression.Library = {};
   * @author Duduf
   * @license GPL-v3
   * @copyright Duduf 2020
+  * @requires logistic
+  * @requires inverseLogistic
+  * @requires gaussian
+  * @requires inverseGaussian
 */
-DuAEF.DuExpression.Library.FuzzyLogic = ['function FuzzySet( name, valueNot, valueIS, shape, shapeAbove, plateauMin, plateauMax)',
+DuAEF.DuExpression.Library["FuzzyLogic"] = {};
+DuAEF.DuExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, valueNot, valueIS, shape, shapeAbove, plateauMin, plateauMax)',
 	'{',
 	'var min;',
 	'var max;',
@@ -460,22 +465,23 @@ DuAEF.DuExpression.Library.FuzzyLogic = ['function FuzzySet( name, valueNot, val
 	'return qObj;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.FuzzyLogic.requirements = [];
+DuAEF.DuExpression.Library["FuzzyLogic"].requirements = ["logistic","inverseLogistic","gaussian","inverseGaussian"];
 
 /**
  * Interpolates a value with a bezier curve.<br />
- * This method can replace <code>linear()</code> and <code>ease()</code> with a custom bézier interpolation.
+ * This method can replace <code>linear()</code> and <code>ease()</code> with a custom bï¿½zier interpolation.
  * @function
  * @param {number} t The value to interpolate
  * @param {number} [tMin=0] The minimum value of the initial range
  * @param {number} [tMax=1] The maximum value of the initial range
  * @param {number} [value1=0] The minimum value of the interpolated result
  * @param {number} [value2=1] The maximum value of the interpolated result
- * @param {number[]} [bezierPoints=[0.33,0.0,0.66,1.0]] an Array of 4 coordinates wihtin the [0.0, 1.0] range which describes the Bézier interpolation. The default mimics the native ease() function<br />
+ * @param {number[]} [bezierPoints=[0.33,0.0,0.66,1.0]] an Array of 4 coordinates wihtin the [0.0, 1.0] range which describes the Bï¿½zier interpolation. The default mimics the native ease() function<br />
  * [ outTangentX, outTangentY, inTangentX, inTangentY ]
  * @return {number} the value.
  */
-DuAEF.DuExpression.Library.bezierInterpolation = ['function bezierInterpolation(t, tMin, tMax, value1, value2, bezierPoints) {',
+DuAEF.DuExpression.Library["bezierInterpolation"] = {};
+DuAEF.DuExpression.Library["bezierInterpolation"].expression = ['function bezierInterpolation(t, tMin, tMax, value1, value2, bezierPoints) {',
 	'if (arguments.length !== 5 && arguments.length !== 6) return t;',
 	'var a = value2 - value1;',
 	'var b = tMax - tMin;',
@@ -500,7 +506,7 @@ DuAEF.DuExpression.Library.bezierInterpolation = ['function bezierInterpolation(
 	'}',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.bezierInterpolation.requirements = [];
+DuAEF.DuExpression.Library["bezierInterpolation"].requirements = [];
 
 /**
  * Interpolates a value with a gaussian function.<br />
@@ -514,7 +520,8 @@ DuAEF.DuExpression.Library.bezierInterpolation.requirements = [];
  * @param {number} [rate=0] The raising speed in the range [-1.0, 1.0].
  * @return {number} the value.
  */
-DuAEF.DuExpression.Library.gaussianInterpolation = ['function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )',
+DuAEF.DuExpression.Library["gaussianInterpolation"] = {};
+DuAEF.DuExpression.Library["gaussianInterpolation"].expression = ['function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )',
 	'{',
 	'if (typeof value2 === "undefined") value2 = 1;',
 	'if (typeof value1 === "undefined") value1 = 0;',
@@ -542,7 +549,7 @@ DuAEF.DuExpression.Library.gaussianInterpolation = ['function gaussianInterpolat
 	'return result;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.gaussianInterpolation.requirements = [];
+DuAEF.DuExpression.Library["gaussianInterpolation"].requirements = [];
 
 /**
  * Gets the key immediately after the given time
@@ -550,7 +557,8 @@ DuAEF.DuExpression.Library.gaussianInterpolation.requirements = [];
  * @param {number} [t=time] Time at which to get the key
  * @return {Key|null} The key, or null if there's no key before.
  */
-DuAEF.DuExpression.Library.getNextKey = ['function getNextKey(t) {',
+DuAEF.DuExpression.Library["getNextKey"] = {};
+DuAEF.DuExpression.Library["getNextKey"].expression = ['function getNextKey(t) {',
 	'if (typeof t === "undefined") t = time;',
 	'if (numKeys == 0) return null;',
 	'var nKey = nearestKey(t);',
@@ -559,7 +567,7 @@ DuAEF.DuExpression.Library.getNextKey = ['function getNextKey(t) {',
 	'return null;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.getNextKey.requirements = [];
+DuAEF.DuExpression.Library["getNextKey"].requirements = [];
 
 /**
  * Gets the key immediately before the given time
@@ -567,7 +575,8 @@ DuAEF.DuExpression.Library.getNextKey.requirements = [];
  * @param {number} [t=time] Time at which to get the key
  * @return {Key|null} The key, or null if there's no key before.
  */
-DuAEF.DuExpression.Library.getPrevKey = ['function getPrevKey(t) {',
+DuAEF.DuExpression.Library["getPrevKey"] = {};
+DuAEF.DuExpression.Library["getPrevKey"].expression = ['function getPrevKey(t) {',
 	'if (typeof t === "undefined") t = time;',
 	'if (numKeys == 0) return null;',
 	'var nKey = nearestKey(t);',
@@ -576,20 +585,21 @@ DuAEF.DuExpression.Library.getPrevKey = ['function getPrevKey(t) {',
 	'return null;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.getPrevKey.requirements = [];
+DuAEF.DuExpression.Library["getPrevKey"].requirements = [];
 
 /**
  * Checks if current time is after the time of the last key in the property
  * @function
  * @return {boolean} true if time is > lastkey.time
  */
-DuAEF.DuExpression.Library.isAfterLastKey = ['function isAfterLastKey() {',
+DuAEF.DuExpression.Library["isAfterLastKey"] = {};
+DuAEF.DuExpression.Library["isAfterLastKey"].expression = ['function isAfterLastKey() {',
 	'if (numKeys == 0) return false;',
 	'var nKey = nearestKey(time);',
 	'return nKey.time <= time && nKey.index == numKeys;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.isAfterLastKey.requirements = [];
+DuAEF.DuExpression.Library["isAfterLastKey"].requirements = [];
 
 /**
     * The gaussian function
@@ -601,7 +611,8 @@ DuAEF.DuExpression.Library.isAfterLastKey.requirements = [];
     * @param {Number} [fwhm=1] The full width at half maximum of the curve
     * @return {Number} The result
     */
-DuAEF.DuExpression.Library.gaussian = ['function gaussian( value, min, max, center, fwhm)',
+DuAEF.DuExpression.Library["gaussian"] = {};
+DuAEF.DuExpression.Library["gaussian"].expression = ['function gaussian( value, min, max, center, fwhm)',
 	'{',
 	'if (typeof max === "undefined") max = 1;',
 	'if (typeof min === "undefined") min = 0;',
@@ -616,7 +627,7 @@ DuAEF.DuExpression.Library.gaussian = ['function gaussian( value, min, max, cent
 	'return result * (max-min) + min;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.gaussian.requirements = [];
+DuAEF.DuExpression.Library["gaussian"].requirements = [];
 
 /**
     * The inverse gaussian function
@@ -628,7 +639,8 @@ DuAEF.DuExpression.Library.gaussian.requirements = [];
     * @param {Number} [fwhm=1] The full width at half maximum of the curve of the corresponding gaussian function
     * @return {Number[]} The two possible results, the lower is the first in the list. If both are the same, it is the maximum
     */
-DuAEF.DuExpression.Library.inverseGaussian = ['function inverseGaussian ( v, min, max, center, fwhm)',
+DuAEF.DuExpression.Library["inverseGaussian"] = {};
+DuAEF.DuExpression.Library["inverseGaussian"].expression = ['function inverseGaussian ( v, min, max, center, fwhm)',
 	'{',
 	'if (typeof max === "undefined") max = 1;',
 	'if (typeof min === "undefined") min = 0;',
@@ -644,7 +656,7 @@ DuAEF.DuExpression.Library.inverseGaussian = ['function inverseGaussian ( v, min
 	'return [ result + center, -result + center ];',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.inverseGaussian.requirements = [];
+DuAEF.DuExpression.Library["inverseGaussian"].requirements = [];
 
 /**
     * The inverse logistic function (inverse sigmoid)
@@ -656,7 +668,8 @@ DuAEF.DuExpression.Library.inverseGaussian.requirements = [];
     * @param {Number} [rate=1] The logistic growth rate or steepness of the original logistic function
     * @return {Number} The result
     */
-DuAEF.DuExpression.Library.inverseLogisitic = ['function inverseLogistic ( v, midValue, min, max, rate)',
+DuAEF.DuExpression.Library["inverseLogisitic"] = {};
+DuAEF.DuExpression.Library["inverseLogisitic"].expression = ['function inverseLogistic ( v, midValue, min, max, rate)',
 	'{',
 	'if (typeof midValue === "undefined") midValue = 0;',
 	'if (typeof max === "undefined") max = 1;',
@@ -666,7 +679,7 @@ DuAEF.DuExpression.Library.inverseLogisitic = ['function inverseLogistic ( v, mi
 	'return midValue - Math.log( (max-min)/(v-min) - 1) / rate;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.inverseLogisitic.requirements = [];
+DuAEF.DuExpression.Library["inverseLogisitic"].requirements = [];
 
 /**
     * The logistic function (sigmoid)
@@ -678,7 +691,8 @@ DuAEF.DuExpression.Library.inverseLogisitic.requirements = [];
     * @param {Number} [rate=1] The logistic growth rate or steepness of the function
     * @return {Number} The result in the range [min, max] (excluding min and max)
     */
-DuAEF.DuExpression.Library.logisitic = ['function logistic( value, midValue, min, max, rate)',
+DuAEF.DuExpression.Library["logisitic"] = {};
+DuAEF.DuExpression.Library["logisitic"].expression = ['function logistic( value, midValue, min, max, rate)',
 	'{',
 	'if (typeof midValue === "undefined") midValue = 0;',
 	'if (typeof max === "undefined") max = 1;',
@@ -689,7 +703,7 @@ DuAEF.DuExpression.Library.logisitic = ['function logistic( value, midValue, min
 	'return result * (max-min) + min;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.logisitic.requirements = [];
+DuAEF.DuExpression.Library["logisitic"].requirements = [];
 
 /**
     * Returns the mean of a set of values
@@ -697,7 +711,8 @@ DuAEF.DuExpression.Library.logisitic.requirements = [];
     * @param {Number[]} values The values
     * @return {Number} The mean
     */
-DuAEF.DuExpression.Library.mean = ['function mean( values )',
+DuAEF.DuExpression.Library["mean"] = {};
+DuAEF.DuExpression.Library["mean"].expression = ['function mean( values )',
 	'{',
 	'var num = values.length;',
 	'var result = 0;',
@@ -708,7 +723,7 @@ DuAEF.DuExpression.Library.mean = ['function mean( values )',
 	'return result / num;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.mean.requirements = [];
+DuAEF.DuExpression.Library["mean"].requirements = [];
 
 /**
     * Fix for the ExtendScript engine, implements the Math.sign function.
@@ -717,9 +732,10 @@ DuAEF.DuExpression.Library.mean.requirements = [];
     * @param {Number} x The value
     * @return {Number} The sign, 1, -1 or 0.
     */
-DuAEF.DuExpression.Library.sign = ['if (typeof Math.sign === \'undefined\') Math.sign = function(x) { return ((x > 0) - (x < 0)) || +x; };'
+DuAEF.DuExpression.Library["sign"] = {};
+DuAEF.DuExpression.Library["sign"].expression = ['if (typeof Math.sign === \'undefined\') Math.sign = function(x) { return ((x > 0) - (x < 0)) || +x; };'
 	].join('\n');
-DuAEF.DuExpression.Library.sign.requirements = [];
+DuAEF.DuExpression.Library["sign"].requirements = [];
 
 /**
  * Checks the type of a pseudo-effect used by Duik.<br />
@@ -733,7 +749,8 @@ DuAEF.DuExpression.Library.sign.requirements = [];
  * @param {string} duikMatchName The matchName of a pseudo-effect used by Duik (without the 'Pseudo/' part)
  * @return {boolean} True when the property at propIndex is named propName
  */
-DuAEF.DuExpression.Library.checkDuikEffect = ['function checkDuikEffect(fx, duikMatchName) {',
+DuAEF.DuExpression.Library["checkDuikEffect"] = {};
+DuAEF.DuExpression.Library["checkDuikEffect"].expression = ['function checkDuikEffect(fx, duikMatchName) {',
 	'if (fx.numProperties  < 3) return false;',
 	'if (!!$.engineName) {',
 	'if ( fx(2).name != duikMatchName ) return false;',
@@ -745,7 +762,7 @@ DuAEF.DuExpression.Library.checkDuikEffect = ['function checkDuikEffect(fx, duik
 	'return true;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.checkDuikEffect.requirements = [];
+DuAEF.DuExpression.Library["checkDuikEffect"].requirements = [];
 
 /**
  * Checks the type of an effect.<br />
@@ -760,7 +777,8 @@ DuAEF.DuExpression.Library.checkDuikEffect.requirements = [];
  * @param {string} propName The expected name of the property. Be careful with the internationalization of After Effects...
  * @return {boolean} True when the property at propIndex is named propName
  */
-DuAEF.DuExpression.Library.checkEffect = ['function checkEffect(fx, propIndex, propName) {',
+DuAEF.DuExpression.Library["checkEffect"] = {};
+DuAEF.DuExpression.Library["checkEffect"].expression = ['function checkEffect(fx, propIndex, propName) {',
 	'if (fx.numProperties  < propIndex) return false;',
 	'if (!!$.engineName) {',
 	'if ( fx(propIndex).name != propName ) return false;',
@@ -772,7 +790,7 @@ DuAEF.DuExpression.Library.checkEffect = ['function checkEffect(fx, propIndex, p
 	'return true;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.checkEffect.requirements = [];
+DuAEF.DuExpression.Library["checkEffect"].requirements = [];
 
 /**
  * Gets a layer from a layer property in an effect, without generating an error if "None" is selected with the Legacy expression engine.
@@ -781,12 +799,13 @@ DuAEF.DuExpression.Library.checkEffect.requirements = [];
  * @param {int|string} ind The index or the name of the property
  * @return {Layer|null} The layer, or null if set to "None"
  */
-DuAEF.DuExpression.Library.getEffectLayer = ['function getEffectLayer( fx, ind ) {',
+DuAEF.DuExpression.Library["getEffectLayer"] = {};
+DuAEF.DuExpression.Library["getEffectLayer"].expression = ['function getEffectLayer( fx, ind ) {',
 	'try { var l = fx( ind ); return l; }',
 	'catch ( e ) { return null; }',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.getEffectLayer.requirements = [];
+DuAEF.DuExpression.Library["getEffectLayer"].requirements = [];
 
 /**
  * Checks if a property is a layer. Useful when traversing up the property tree to stop when getting the layer.
@@ -794,12 +813,13 @@ DuAEF.DuExpression.Library.getEffectLayer.requirements = [];
  * @param {Property} prop - The property to test
  * @return {boolean} true if the prop is a layer
  */
-DuAEF.DuExpression.Library.isLayer = ['function isLayer( prop ) {',
+DuAEF.DuExpression.Library["isLayer"] = {};
+DuAEF.DuExpression.Library["isLayer"].expression = ['function isLayer( prop ) {',
 	'try { if ( prop.index ) return true; }',
 	'catch (e) { return false; }',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.isLayer.requirements = [];
+DuAEF.DuExpression.Library["isLayer"].requirements = [];
 
 /**
  * Checks if a property is a transform.position property.
@@ -807,7 +827,8 @@ DuAEF.DuExpression.Library.isLayer.requirements = [];
  * @param {Property} [prop=thisProperty] The property
  * @return {boolean} true if the property is the transform.position property.
  */
-DuAEF.DuExpression.Library.isPosition = ['function isPosition(prop) {',
+DuAEF.DuExpression.Library["isPosition"] = {};
+DuAEF.DuExpression.Library["isPosition"].expression = ['function isPosition(prop) {',
 	'if (typeof prop === "undefined") prop = thisProperty;',
 	'if (!(prop.value instanceof Array)) return false;',
 	'if (prop.value.length > 3) return false;',
@@ -816,14 +837,15 @@ DuAEF.DuExpression.Library.isPosition = ['function isPosition(prop) {',
 	'return false;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.isPosition.requirements = [];
+DuAEF.DuExpression.Library["isPosition"].requirements = [];
 
 /**
  * Checks if a property is spatial
  * @param {Property} prop The property to check
  * @return {boolean} true if the property is spatial.
  */
-DuAEF.DuExpression.Library.isSpatial = ['function isSpatial(prop) {',
+DuAEF.DuExpression.Library["isSpatial"] = {};
+DuAEF.DuExpression.Library["isSpatial"].expression = ['function isSpatial(prop) {',
 	'if (typeof prop === "undefined") prop = thisProperty;',
 	'if (!(prop.value instanceof Array)) return false;',
 	'if (prop.value.length != 2 && prop.value.length != 3) return false;',
@@ -835,7 +857,7 @@ DuAEF.DuExpression.Library.isSpatial = ['function isSpatial(prop) {',
 	'}',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.isSpatial.requirements = [];
+DuAEF.DuExpression.Library["isSpatial"].requirements = [];
 
 /**
  * Checks if the current property is animated at a given time.
@@ -844,7 +866,8 @@ DuAEF.DuExpression.Library.isSpatial.requirements = [];
  * @param {number} [threshold=0.1] The speed under which the property is considered still.
  * @return {boolean} true if the property does not vary.
  */
-DuAEF.DuExpression.Library.isStill = ['function isStill(t, threshold) {',
+DuAEF.DuExpression.Library["isStill"] = {};
+DuAEF.DuExpression.Library["isStill"].expression = ['function isStill(t, threshold) {',
 	'if (typeof t === "undefined") t = time;',
 	'if (typeof threshold === "undefined") threshold = 0.1;',
 	'var d = valueAtTime(t) - valueAtTime(t + framesToTime(1));',
@@ -862,7 +885,7 @@ DuAEF.DuExpression.Library.isStill = ['function isStill(t, threshold) {',
 	'}',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.isStill.requirements = [];
+DuAEF.DuExpression.Library["isStill"].requirements = [];
 
 /**
  * Adds some noise to a value.<br />
@@ -878,14 +901,15 @@ DuAEF.DuExpression.Library.isStill.requirements = [];
  * seedRandom(index, false);
  * addNoise(value, 33 ); // the noise will change at each frame, varying between (value * .66) and (value * 1.33)
  */
-DuAEF.DuExpression.Library.addNoise = ['function addNoise( val, quantity ) {',
+DuAEF.DuExpression.Library["addNoise"] = {};
+DuAEF.DuExpression.Library["addNoise"].expression = ['function addNoise( val, quantity ) {',
 	'var randomValue = random(0.9,1.1);',
 	'var noiseValue = noise(valueAtTime(0) * randomValue);',
 	'noiseValue = noiseValue * (quantity / 100);',
 	'return val * ( noiseValue + 1 );',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.addNoise.requirements = [];
+DuAEF.DuExpression.Library["addNoise"].requirements = [];
 
 /**
  * Removes the ancestors rotation from the rotation of a layer.
@@ -902,8 +926,10 @@ DuAEF.DuExpression.Library.addNoise.requirements = [];
  * @function
  * @param {Layer} [l=thisLayer] The layer
  * @return {float} The new rotation value, in degrees.
+ * @requires sign
  */
-DuAEF.DuExpression.Library.dishineritRotation = ['function dishineritRotation( l ) {',
+DuAEF.DuExpression.Library["dishineritRotation"] = {};
+DuAEF.DuExpression.Library["dishineritRotation"].expression = ['function dishineritRotation( l ) {',
 	'if (typeof l === "undefined") l = thisLayer;',
 	'var r = l.rotation.value;',
 	'while ( l.hasParent ) {',
@@ -914,7 +940,7 @@ DuAEF.DuExpression.Library.dishineritRotation = ['function dishineritRotation( l
 	'return r;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.dishineritRotation.requirements = [];
+DuAEF.DuExpression.Library["dishineritRotation"].requirements = ["sign"];
 
 /**
  * Removes the ancestors scale from the scale of a layer.
@@ -932,7 +958,8 @@ DuAEF.DuExpression.Library.dishineritRotation.requirements = [];
  * @param {Layer} [l=thisLayer] The layer
  * @return {float[]} The new scale value, in percent.
  */
-DuAEF.DuExpression.Library.dishineritScale = ['function dishineritScale( l ) {',
+DuAEF.DuExpression.Library["dishineritScale"] = {};
+DuAEF.DuExpression.Library["dishineritScale"].expression = ['function dishineritScale( l ) {',
 	'if (typeof l === "undefined") l = thisLayer;',
 	'var s = l.scale.value;',
 	'var threeD = s.length == 3;',
@@ -952,7 +979,7 @@ DuAEF.DuExpression.Library.dishineritScale = ['function dishineritScale( l ) {',
 	'return s;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.dishineritScale.requirements = [];
+DuAEF.DuExpression.Library["dishineritScale"].requirements = [];
 
 /**
  * Converts the point coordinates from the current group in the shape layer to the Layer.<br />
@@ -960,16 +987,16 @@ DuAEF.DuExpression.Library.dishineritScale.requirements = [];
  * @function
  * @param {number[]} point The 2D coordinates of the point in the current group.
  * @return {number[]} The 2D coordinates of the point in the Layer.
- * @requires isLayer
  * @requires Matrix
  * @requires getGroupTransformMatrix
  */
-DuAEF.DuExpression.Library.fromGroupToLayer = ['function fromGroupToLayer( point ) {',
+DuAEF.DuExpression.Library["fromGroupToLayer"] = {};
+DuAEF.DuExpression.Library["fromGroupToLayer"].expression = ['function fromGroupToLayer( point ) {',
 	'var matrix = getGroupTransformMatrix();',
 	'return matrix.applyToPoint( point );',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.fromGroupToLayer.requirements = ["isLayer","Matrix","getGroupTransformMatrix"];
+DuAEF.DuExpression.Library["fromGroupToLayer"].requirements = ["Matrix","getGroupTransformMatrix"];
 
 /**
  * Converts the point coordinates from Layer to the current group in the shape layer.<br />
@@ -977,16 +1004,16 @@ DuAEF.DuExpression.Library.fromGroupToLayer.requirements = ["isLayer","Matrix","
  * @function
  * @param {number[]} point The 2D coordinates of the point in the Layer.
  * @return {number[]} The 2D coordinates of the point in the current group.
- * @requires isLayer
  * @requires Matrix
  * @requires getGroupTransformMatrix
  */
-DuAEF.DuExpression.Library.fromLayerToGroup = ['function fromLayerToGroup( point ) {',
+DuAEF.DuExpression.Library["fromLayerToGroup"] = {};
+DuAEF.DuExpression.Library["fromLayerToGroup"].expression = ['function fromLayerToGroup( point ) {',
 	'var matrix = getGroupTransformMatrix().inverse();',
 	'return matrix.applyToPoint( point );',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.fromLayerToGroup.requirements = ["isLayer","Matrix","getGroupTransformMatrix"];
+DuAEF.DuExpression.Library["fromLayerToGroup"].requirements = ["Matrix","getGroupTransformMatrix"];
 
 /**
  * Gets the "real" scale of a layer, resulting to its scale property, the scale of its parents, and it's location in Z-space if it's 3D.
@@ -995,7 +1022,8 @@ DuAEF.DuExpression.Library.fromLayerToGroup.requirements = ["isLayer","Matrix","
  * @param {number} [t=time] The time when to get the scale
  * @return {number} The scale ratio. This is not a percent, 1.0 is 100%.
  */
-DuAEF.DuExpression.Library.getCompScale = ['function getCompScale( l, t ) {',
+DuAEF.DuExpression.Library["getCompScale"] = {};
+DuAEF.DuExpression.Library["getCompScale"].expression = ['function getCompScale( l, t ) {',
 	'if (typeof l === "undefined") l = thisLayer;',
 	'if (typeof t === "undefined") t = time;',
 	'var originalWidth = length( l.anchorPoint, [ l.width, 0 ] );',
@@ -1005,7 +1033,7 @@ DuAEF.DuExpression.Library.getCompScale = ['function getCompScale( l, t ) {',
 	'return newWidth / originalWidth;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.getCompScale.requirements = [];
+DuAEF.DuExpression.Library["getCompScale"].requirements = [];
 
 /**
  * Gets the transformation Matrix for the current group in a shape layer, including the transformation from the ancestor groups
@@ -1015,7 +1043,8 @@ DuAEF.DuExpression.Library.getCompScale.requirements = [];
  * @requires isLayer
  * @requires Matrix
  */
-DuAEF.DuExpression.Library.getGroupTransformMatrix = ['function getGroupTransformMatrix( prop ) {',
+DuAEF.DuExpression.Library["getGroupTransformMatrix"] = {};
+DuAEF.DuExpression.Library["getGroupTransformMatrix"].expression = ['function getGroupTransformMatrix( prop ) {',
 	'if (typeof group === "undefined") prop = thisProperty;',
 	'var matrix = new Matrix();',
 	'var shapeGroups = [];',
@@ -1039,7 +1068,7 @@ DuAEF.DuExpression.Library.getGroupTransformMatrix = ['function getGroupTransfor
 	'return matrix;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.getGroupTransformMatrix.requirements = ["isLayer","Matrix"];
+DuAEF.DuExpression.Library["getGroupTransformMatrix"].requirements = ["isLayer","Matrix"];
 
 /**
  * Gets the comp position (2D Projection in the comp) of a layer.
@@ -1048,13 +1077,14 @@ DuAEF.DuExpression.Library.getGroupTransformMatrix.requirements = ["isLayer","Ma
  * @param {Layer} [l=thisLayer] The layer
  * @return {number[]} The comp position
  */
-DuAEF.DuExpression.Library.getLayerCompPos = ['function getLayerCompPos( t, l ) {',
+DuAEF.DuExpression.Library["getLayerCompPos"] = {};
+DuAEF.DuExpression.Library["getLayerCompPos"].expression = ['function getLayerCompPos( t, l ) {',
 	'if (typeof l === "undefined") l = thisLayer;',
 	'if (typeof t === "undefined") t = time;',
 	'return l.toComp( l.anchorPoint, t );',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.getLayerCompPos.requirements = [];
+DuAEF.DuExpression.Library["getLayerCompPos"].requirements = [];
 
 /**
  * Gets the world position of a layer.
@@ -1063,13 +1093,14 @@ DuAEF.DuExpression.Library.getLayerCompPos.requirements = [];
  * @param {Layer} [l=thisLayer] The layer
  * @return {number[]} The world position
  */
-DuAEF.DuExpression.Library.getLayerWorldPos = ['function getLayerWorldPos(t, l) {',
+DuAEF.DuExpression.Library["getLayerWorldPos"] = {};
+DuAEF.DuExpression.Library["getLayerWorldPos"].expression = ['function getLayerWorldPos(t, l) {',
 	'if (typeof l === "undefined") l = thisLayer;',
 	'if (typeof t === "undefined") t = time;',
 	'return l.toWorld(l.anchorPoint, t);',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.getLayerWorldPos.requirements = [];
+DuAEF.DuExpression.Library["getLayerWorldPos"].requirements = [];
 
 /**
  * Gets the world instant speed of a layer.
@@ -1078,13 +1109,13 @@ DuAEF.DuExpression.Library.getLayerWorldPos.requirements = [];
  * @param {Layer} [l=thisLayer] The layer
  * @return {number} A positive number. The speed.
  * @requires getLayerWorldVelocity
- * @requires getLayerWorldPos
  */
-DuAEF.DuExpression.Library.getLayerWorldSpeed = ['function getLayerWorldSpeed(t, l) {',
+DuAEF.DuExpression.Library["getLayerWorldSpeed"] = {};
+DuAEF.DuExpression.Library["getLayerWorldSpeed"].expression = ['function getLayerWorldSpeed(t, l) {',
 	'return length(getWorldVelocity(t, l));',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.getLayerWorldSpeed.requirements = ["getLayerWorldVelocity","getLayerWorldPos"];
+DuAEF.DuExpression.Library["getLayerWorldSpeed"].requirements = ["getLayerWorldVelocity"];
 
 /**
  * Gets the world instant velocity of a layer.
@@ -1094,12 +1125,13 @@ DuAEF.DuExpression.Library.getLayerWorldSpeed.requirements = ["getLayerWorldVelo
  * @return {number[]} The velocity.
  * @requires getLayerWorldPos
  */
-DuAEF.DuExpression.Library.getLayerWorldVelocity = ['function getLayerWorldVelocity(t, l) {',
+DuAEF.DuExpression.Library["getLayerWorldVelocity"] = {};
+DuAEF.DuExpression.Library["getLayerWorldVelocity"].expression = ['function getLayerWorldVelocity(t, l) {',
 	'if (typeof t === "undefined") t = time;',
-	'return (getWorldPos(t, l) - getWorldPos(t - 0.01, l)) * 100;',
+	'return (getLayerWorldPos(t, l) - getLayerWorldPos(t - 0.01, l)) * 100;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.getLayerWorldVelocity.requirements = ["getLayerWorldPos"];
+DuAEF.DuExpression.Library["getLayerWorldVelocity"].requirements = ["getLayerWorldPos"];
 
 /**
  * Gets the world orientation of a (2D) layer.
@@ -1107,7 +1139,8 @@ DuAEF.DuExpression.Library.getLayerWorldVelocity.requirements = ["getLayerWorldP
  * @param {Layer} l The layer to get the orientation from
  * @return {float} The orientation, in degrees.
  */
-DuAEF.DuExpression.Library.getOrientation = ['function getOrientation( l ) {',
+DuAEF.DuExpression.Library["getOrientation"] = {};
+DuAEF.DuExpression.Library["getOrientation"].expression = ['function getOrientation( l ) {',
 	'var sign = getScaleMirror( l );',
 	'var uTurn = getScaleUTurn( l )',
 	'var r = l.rotation.value * sign + uTurn;',
@@ -1144,7 +1177,7 @@ DuAEF.DuExpression.Library.getOrientation = ['function getOrientation( l ) {',
 	'else return 0;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.getOrientation.requirements = [];
+DuAEF.DuExpression.Library["getOrientation"].requirements = [];
 
 /**
  * Gets the world orientation of a (2D) layer at a specific time.
@@ -1153,7 +1186,8 @@ DuAEF.DuExpression.Library.getOrientation.requirements = [];
  * @param {float} [t=time] The time at which to get the orientation
  * @return {float} The orientation, in degrees.
  */
-DuAEF.DuExpression.Library.getOrientationAtTime = ['function getOrientationAtTime( l, t ) {',
+DuAEF.DuExpression.Library["getOrientationAtTime"] = {};
+DuAEF.DuExpression.Library["getOrientationAtTime"].expression = ['function getOrientationAtTime( l, t ) {',
 	'if (typeof t === "undefined" ) t = time;',
 	'var r = 0;',
 	'r += l.rotation.valueAtTime( t );',
@@ -1164,7 +1198,7 @@ DuAEF.DuExpression.Library.getOrientationAtTime = ['function getOrientationAtTim
 	'return r;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.getOrientationAtTime.requirements = [];
+DuAEF.DuExpression.Library["getOrientationAtTime"].requirements = [];
 
 /**
  * Gets the world speed of a property.
@@ -1173,14 +1207,13 @@ DuAEF.DuExpression.Library.getOrientationAtTime.requirements = [];
  * @param {Layer} [prop=thisProperty] The property
  * @return {number[]} The world speed
  * @requires getPropWorldVelocity
- * @requires getPropWorldValue
- * @requires getLayerWorldPos
  */
-DuAEF.DuExpression.Library.getPropWorldSpeed = ['function getPropWorldSpeed(t, prop) {',
+DuAEF.DuExpression.Library["getPropWorldSpeed"] = {};
+DuAEF.DuExpression.Library["getPropWorldSpeed"].expression = ['function getPropWorldSpeed(t, prop) {',
 	'return length(getPropWorldVelocity(t, prop));',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.getPropWorldSpeed.requirements = ["getPropWorldVelocity","getPropWorldValue","getLayerWorldPos"];
+DuAEF.DuExpression.Library["getPropWorldSpeed"].requirements = ["getPropWorldVelocity"];
 
 /**
  * Gets the world coordinates of a property.
@@ -1189,15 +1222,17 @@ DuAEF.DuExpression.Library.getPropWorldSpeed.requirements = ["getPropWorldVeloci
  * @param {Layer} [prop=thisProperty] The property
  * @return {number[]} The world coordinates
  * @requires getLayerWorldPos
+ * @requires isPosition
  */
-DuAEF.DuExpression.Library.getPropWorldValue = ['function getPropWorldValue(t, prop) {',
+DuAEF.DuExpression.Library["getPropWorldValue"] = {};
+DuAEF.DuExpression.Library["getPropWorldValue"].expression = ['function getPropWorldValue(t, prop) {',
 	'if (typeof prop === "undefined") prop = thisProperty;',
 	'if (typeof t === "undefined") t = time;',
 	'if (isPosition(prop)) return getLayerWorldPos(t);',
 	'return thisLayer.toWorld(prop.valueAtTime(t), t);',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.getPropWorldValue.requirements = ["getLayerWorldPos"];
+DuAEF.DuExpression.Library["getPropWorldValue"].requirements = ["getLayerWorldPos","isPosition"];
 
 /**
  * Gets the world velocity of a property.
@@ -1206,14 +1241,14 @@ DuAEF.DuExpression.Library.getPropWorldValue.requirements = ["getLayerWorldPos"]
  * @param {Layer} [prop=thisProperty] The property
  * @return {number[]} The world velocity
  * @requires getPropWorldValue
- * @requires getLayerWorldPos
  */
-DuAEF.DuExpression.Library.getPropWorldVelocity = ['function getPropWorldVelocity(t, prop) {',
+DuAEF.DuExpression.Library["getPropWorldVelocity"] = {};
+DuAEF.DuExpression.Library["getPropWorldVelocity"].expression = ['function getPropWorldVelocity(t, prop) {',
 	'if (typeof t === "undefined") t = time;',
 	'return (getPropWorldValue(t + 0.005, prop) - getPropWorldValue(t - 0.005, prop)) * 100;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.getPropWorldVelocity.requirements = ["getPropWorldValue","getLayerWorldPos"];
+DuAEF.DuExpression.Library["getPropWorldVelocity"].requirements = ["getPropWorldValue"];
 
 /**
  * Gets the world scale of a layer.
@@ -1221,7 +1256,8 @@ DuAEF.DuExpression.Library.getPropWorldVelocity.requirements = ["getPropWorldVal
  * @param {Layer} l The layer to get the orientation from
  * @return {float[]} The scale, in percent.
  */
-DuAEF.DuExpression.Library.getScale = ['function getScale( l ) {',
+DuAEF.DuExpression.Library["getScale"] = {};
+DuAEF.DuExpression.Library["getScale"].expression = ['function getScale( l ) {',
 	'var s = l.scale.value;',
 	'var threeD = s.length == 3;',
 	'while ( l.hasParent ) {',
@@ -1240,7 +1276,7 @@ DuAEF.DuExpression.Library.getScale = ['function getScale( l ) {',
 	'return s;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.getScale.requirements = [];
+DuAEF.DuExpression.Library["getScale"].requirements = [];
 
 /**
   * 2D transformation matrix object initialized with identity matrix. See the source code for more documentation.
@@ -1257,7 +1293,8 @@ DuAEF.DuExpression.Library.getScale.requirements = [];
   * @license MIT license (header required)
   * @copyright Epistemex.com 2014-2018
 */
-DuAEF.DuExpression.Library.Matrix = ['function Matrix() {',
+DuAEF.DuExpression.Library["Matrix"] = {};
+DuAEF.DuExpression.Library["Matrix"].expression = ['function Matrix() {',
 	'/*!',
 	'2D Transformation Matrix v2.7.5 LT',
 	'(c) Epistemex.com 2014-2018',
@@ -1426,7 +1463,7 @@ DuAEF.DuExpression.Library.Matrix = ['function Matrix() {',
 	'}',
 	'};'
 	].join('\n');
-DuAEF.DuExpression.Library.Matrix.requirements = [];
+DuAEF.DuExpression.Library["Matrix"].requirements = [];
 
 /**
  * Translates a point with a layer, as if it was parented to it.
@@ -1437,7 +1474,8 @@ DuAEF.DuExpression.Library.Matrix.requirements = [];
  * @param {float} [endT=time] The end time of the translation
  * @return {float[]} The coordinates of the translated point.
  */
-DuAEF.DuExpression.Library.translatePointWithLayer = ['function translatePointWithLayer( l, point, startT, endT ) {',
+DuAEF.DuExpression.Library["translatePointWithLayer"] = {};
+DuAEF.DuExpression.Library["translatePointWithLayer"].expression = ['function translatePointWithLayer( l, point, startT, endT ) {',
 	'if (typeof startT === "undefined") startT = 0;',
 	'if (typeof endT === "undefined") endT = time;',
 	'try {',
@@ -1450,5 +1488,5 @@ DuAEF.DuExpression.Library.translatePointWithLayer = ['function translatePointWi
 	'return newPos - prevPos;',
 	'}'
 	].join('\n');
-DuAEF.DuExpression.Library.translatePointWithLayer.requirements = [];
+DuAEF.DuExpression.Library["translatePointWithLayer"].requirements = [];
 

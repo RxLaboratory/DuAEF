@@ -255,9 +255,7 @@ DuAEF.Duik.Rigging.addLocator = function( layerOrComp )
 
     //add expressions
     loc.transform.rotation.expression = [ DuAEF.Duik.expressionIds.LOCATOR,
-        DuAEF.DuExpression.Library.sign,
-        DuAEF.DuExpression.Library.dishineritRotation,
-        DuAEF.DuExpression.Library.getOrientation,
+        DuAEF.DuExpression.get(['sign','dishineritRotation','getOrientation']),
         'var result = 0;',
         'var l = null;',
         'try{ l = effect("' + layerfx.name + '")(1) } catch(e) { }',
@@ -300,8 +298,7 @@ DuAEF.Duik.Rigging.addLocator = function( layerOrComp )
     loc.transform.scale.expression = [ DuAEF.Duik.expressionIds.LOCATOR,
         'var l = null;',
         'try{ l = effect("' + layerfx.name + '")(1) } catch(e) { }',
-        DuAEF.DuExpression.Library.getScale,
-        DuAEF.DuExpression.Library.dishineritScale,
+        DuAEF.DuExpression.get(['getScale','dishineritScale']),
         '',
         'var threeD = value.length == 3;',
         'var result = dishineritScale() - value;',
@@ -615,10 +612,7 @@ DuAEF.Duik.Rigging.orientationConstraint = function( layer )
     var index = DuAEF.Duik.PseudoEffects.ORIENTATION.index;
 
     layer.rotation.expression = [DuAEF.Duik.expressionIds.ORIENTATION,
-        DuAEF.DuExpression.Library.sign,
-        DuAEF.DuExpression.Library.getOrientation,
-        DuAEF.DuExpression.Library.dishineritRotation,
-        DuAEF.DuExpression.Library.checkDuikEffect,
+        DuAEF.DuExpression.get(['sign','getOrientation','dishineritRotation','checkDuikEffect']),
         'var result = dishineritRotation();',
         'for ( var i = 1; i <= thisLayer( "Effects" ).numProperties; i++ ) {',
         '    var fx = effect( i );',
@@ -646,7 +640,7 @@ DuAEF.Duik.Rigging.positionConstraint = function( layer )
     effect( index['Weight_Slider'] ).setValue( 0 );
 
     layer.position.expression = [DuAEF.Duik.expressionIds.POSITION,
-        DuAEF.DuExpression.Library.checkDuikEffect,
+        DuAEF.DuExpression.get(['checkDuikEffect']),
         'var result = value;',
         'for ( var i = 1; i <= thisLayer( "Effects" ).numProperties; i++ ) {',
         '    var fx = effect( i );',
@@ -730,8 +724,7 @@ DuAEF.Duik.Rigging.parentConstraint = function( layer )
     var index = DuAEF.Duik.PseudoEffects.PARENT.index;
 
     var posExpr = [DuAEF.Duik.expressionIds.PARENT,
-        DuAEF.DuExpression.Library.translatePointWithLayer,
-        DuAEF.DuExpression.Library.checkDuikEffect,
+        DuAEF.DuExpression.get(['translatePointWithLayer','checkDuikEffect']),
         'var result = thisLayer.position.valueAtTime( 0 );',
         'var mbPrecision = 1;',
         'var step = framesToTime(1);',
@@ -780,8 +773,7 @@ DuAEF.Duik.Rigging.parentConstraint = function( layer )
 	}
 
     var rotExpression = [DuAEF.Duik.expressionIds.PARENT,
-        DuAEF.DuExpression.Library.getOrientationAtTime,
-        DuAEF.DuExpression.Library.checkDuikEffect,
+        DuAEF.DuExpression.get(['getOrientationAtTime','checkDuikEffect']),
         'var result = value;',
         'for ( var i = 1; i <= thisLayer( "Effects" ).numProperties; i++ ) {',
         '    var fx = effect( i );',
