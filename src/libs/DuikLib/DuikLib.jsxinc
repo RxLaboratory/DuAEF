@@ -31,6 +31,9 @@ DuAEF.Duik.postInit = function ()
         //kleaner
         #include "../pseudoEffects/duik_kleaner.ffx.jsxinc"
         duik_kleaner = new PseudoEffect( duik_kleaner );
+        //interpolator
+        #include "../pseudoEffects/duik_interpolator.ffx.jsxinc"
+        duik_interpolator = new PseudoEffect( duik_interpolator );
         //structures
         #include "../pseudoEffects/duik_structure.ffx.jsxinc"
         duik_structure = new PseudoEffect( duik_structure );
@@ -209,8 +212,10 @@ DuAEF.Duik.postInit = function ()
      * @readonly
      */
     DuAEF.Duik.PseudoEffects = {
-        //kleaner:
+        //kleaner
         KLEANER: duik_kleaner,
+        //interpolator
+        INTERPOLATOR: duik_interpolator,
         //walk ycle
         WALK_CYCLE: duik_rigged_walk_cycle_2,
         //autorig
@@ -632,7 +637,8 @@ DuAEF.Duik.expressionIds = {
     IK_GOAL: '//Duik.goal',
     SHAPE_LINKER: '//Duik.shapeLinker',
     BLINK: '//Duik.blink',
-    LOCATOR: '//Duik.locator'
+    LOCATOR: '//Duik.locator',
+    INTERPOLATOR: '//Duik.interpolator'
 }
 
 //undocumented low-level function used by Duik
