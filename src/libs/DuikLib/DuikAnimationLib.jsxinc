@@ -1011,8 +1011,6 @@ DuAEF.Duik.Animation.ik2fk = function (controller)
 	var goalWorldPosition, goal;
 	var params = DuAEF.Duik.getDuikMarkerParameters(controller);
 
-	
-
 	if (params[DuAEF.Duik.MarkerParameters.LINKEDTOCOMP])
 	{
 		var preComp = DuAEF.DuAE.Project.getItemById(params[DuAEF.Duik.MarkerParameters.LINKEDTOCOMP]);
@@ -1032,15 +1030,40 @@ DuAEF.Duik.Animation.ik2fk = function (controller)
 		}
 		if (!preIkEffect) return;
 
+		// Find precomp layer
+		var precompLayer;
+		for (var i = controller.index+1, n = comp.numLayers; i <= n; i++)
+		{
+			var l = comp.layer(i);
+			if (l.source.id == preComp.id)
+			{
+				precompLayer = l;
+				break;
+			}
+		}
+		if (!precompLayer)
+		{
+			for (var i = 1, n = controller.index; i < n; i++)
+			{
+				var l = comp.layer(i);
+				if (l.source.id == preComp.id)
+				{
+					precompLayer = l;
+					break;
+				}
+			}
+		}
+
 		goal = preIkEffect(preIKPseudo.goalLayer).value;
 		if (goal > 0) goal = preComp.layer(goal);
-		goalWorldPosition = preIkEffect(preIKPseudo.goalWorldPositionPoint);
+		if (precompLayer) goalWorldPosition = DuAEF.DuAE.Layer.getWorldPos(precompLayer, preIkEffect(preIKPseudo.goalWorldPositionPoint).value );
+		else goalWorldPosition = preIkEffect(preIKPseudo.goalWorldPositionPoint).value;
 	}
 	else
 	{
 		goal = ikEffect(pseudoEffect.goalLayer).value;
 		if (goal > 0) goal = comp.layer(goal);
-		goalWorldPosition = ikEffect(pseudoEffect.goalWorldPositionPoint);
+		goalWorldPosition = ikEffect(pseudoEffect.goalWorldPositionPoint).value;
 	}
 
 
@@ -1051,7 +1074,7 @@ DuAEF.Duik.Animation.ik2fk = function (controller)
 	var parent = controller.parent;
 	controller.parent = null;
 	//position
-	controller.transform.position.setValueAtTime(comp.time,goalWorldPosition.value);
+	controller.transform.position.setValueAtTime(comp.time,goalWorldPosition);
 	controller.parent = parent;
 
 	//look for a goal and adjust
