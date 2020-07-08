@@ -677,40 +677,40 @@ DuAEF.Duik.Rigging.pathConstraint = function( layer, path )
     var l = DuAEF.DuAE.Property.getLayer( path );
     var pathExpr = DuAEF.DuAE.Property.getExpressionLink( path, true );
 
-    var expr = ['//Duik.pathConstraint',
+    var expr = [ DuAEF.Duik.expressionIds.PATH,
         'var fx = effect("' + effect.name + '");',
         'var l = thisComp.layer("' + l.name + '");',
         'var p = ' + pathExpr + ';',
         'var percent = fx(' + DuAEF.Duik.PseudoEffects.PATH.index['Percent along path_Slider'] + ').value % 100 / 100;',
         'if (percent == 0) percent = 0.0001;',
-        'var pathOffset = fx(' + DuAEF.Duik.PseudoEffects.PATH.index['Path Offset_Slider']  + ');',
-        'var result = value;',
-        '//path value',
-        'result += p.pointOnPath(percent, time);',
-        '//offset',
-        'result += p.normalOnPath(percent, time)*pathOffset;',
+        'var pathOffset = fx(' + DuAEF.Duik.PseudoEffects.PATH.index['Path Offset_Slider']  + ').value;',
+        '// path value',
+        'var result = l.toWorld( p.pointOnPath(percent, time ) +  p.normalOnPath(percent, time) * pathOffset );',
+        'if (hasParent) result = parent.fromWorld(result);',
         '//layer position',
-        'result += l.position;'
-	].join('\n');
+        'result += value;'
+        ].join('\n');
 
     DuAEF.DuAE.Property.setExpression( layer.position, expr );
 
-    var expr = '//Duik.pathConstraint\n' +
+    expr = [ DuAEF.Duik.expressionIds.PATH,
         'var fx = effect("' + effect.name + '");\n' +
         'var autoOrient = fx(' + DuAEF.Duik.PseudoEffects.PATH.index['Orientation_Checkbox'] + ').value;\n' +
         'var result = value;\n' +
         'if (autoOrient)\n' +
-        '{\n' +
+        '{',
+        'var l = thisComp.layer("' + l.name + '");',
         'var p = ' + pathExpr + ';\n' +
         'var percent = fx(' + DuAEF.Duik.PseudoEffects.PATH.index['Percent along path_Slider'] + ').value % 100 / 100;\n' +
-        'var C = p.tangentOnPath(percent, time);\n' +
-        'var angle = Math.atan2(C[1], C[0]);\n' +
-        'angle = radiansToDegrees(angle);\n' +
-        'angle = angle;\n' +
-        'result += angle;\n' +
-        '}\n' +
-        'result;';
-
+        'var C = p.tangentOnPath(percent, time);',
+        'var angle = Math.atan2(C[1], C[0]);',
+        'angle = radiansToDegrees(angle);',
+        'angle += l.rotation.value;',
+        'result += angle;',
+        '}',
+        'result;'
+        ].join('\n');
+    
     DuAEF.DuAE.Property.setExpression( layer.rotation, expr );
 }
 
