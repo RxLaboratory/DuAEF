@@ -1130,6 +1130,8 @@ DuAEF.Duik.Animation.fk2ik = function (controller)
 	//get layers if this is a linked controller
 	var layer1, layer2, layer3, goal;
 	var params = DuAEF.Duik.getDuikMarkerParameters(controller);
+	var previousPosition, previousRotation;
+	var restoreTransform = false;
 	if (params[DuAEF.Duik.MarkerParameters.LINKEDTOCOMP])
 	{
 		var preComp = DuAEF.DuAE.Project.getItemById(params[DuAEF.Duik.MarkerParameters.LINKEDTOCOMP]);
@@ -1159,6 +1161,15 @@ DuAEF.Duik.Animation.fk2ik = function (controller)
 		{
 			layer3 = preIkEffect(preIKPseudo.middleLayer).value;
 			layer3 = preComp.layer(layer3);
+		}
+
+		// If it was linked through MPs, we need to update the controller position inside the precomp
+		if (params[DuAEF.Duik.MarkerParameters.LINKED_THROUGH_MP] == 'true') {
+			previousPosition = preCtrl.transform.position.value;
+			previousRotation = preCtrl.transform.rotation.value;
+			preCtrl.transform.position.setValue(controller.transform.position.value);
+			preCtrl.transform.rotation.setValue(controller.transform.rotation.value);
+			restoreTransform = true;
 		}
 	}
 	else
@@ -1203,6 +1214,13 @@ DuAEF.Duik.Animation.fk2ik = function (controller)
 
 	//restore activation
 	ikEffect(pseudoEffect.ikCheckbox).setValueAtTime(comp.time,active);
+
+	//restore precomp values if controlller was extracted through MPs
+	if (restoreTransform)
+	{
+		preCtrl.transform.position.setValue(previousPosition);
+		preCtrl.transform.rotation.setValue(previousRotation);
+	}
 }
 
 /**
