@@ -99,6 +99,10 @@ DuAEF.DuJS.Array.removeDuplicates = function (arr, comparisonFunction)
 			if (useFunction && comparisonFunction(arr[i],arr[j]) ) removed = removed.concat(arr.splice(j,1));
         }
 	}
+	//sometimes the two last items may still be the same (for a reason I don't understand)
+	if (! useFunction && arr[arr.length-2] === arr[arr.length-1]) removed.push(arr.pop());
+	if (useFunction && comparisonFunction(arr.length-2,arr.length-1) ) removed.push(arr.pop());
+
 	return removed;
 }
 
