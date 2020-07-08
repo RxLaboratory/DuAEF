@@ -659,7 +659,7 @@ DuAEF.Duik.Bone.addPinBone = function(prop, size)
 	if (prop.position)
 	{
 		if (!prop.position.canSetExpression) type = DuAEF.Duik.Bone.BoneTypes.BEND_PIN;
-		else if (prop.rotation) { if (prop.rotation.canSetExpression) type = DuAEF.Duik.Bone.BoneTypes.ADVANCED_PIN; }
+		else if (prop.property('ADBE FreePin3 PosPin Rotation')) { if (prop.property('ADBE FreePin3 PosPin Rotation').canSetExpression) type = DuAEF.Duik.Bone.BoneTypes.ADVANCED_PIN; }
 	}
 
 	//create bone
@@ -678,7 +678,7 @@ DuAEF.Duik.Bone.addPinBone = function(prop, size)
 
 	if (type == DuAEF.Duik.Bone.BoneTypes.ADVANCED_PIN || type == DuAEF.Duik.Bone.BoneTypes.BEND_PIN)
 	{
-		prop.rotation.expression = '//Duik.bone\n' +
+		prop.property('ADBE FreePin3 PosPin Rotation').expression = '//Duik.bone\n' +
 			'var l = null;\n' +
 			'try {l = effect("' + effect.name + '")(1)} catch (e) {};\n' +
 			'var result = value;\n' +
@@ -691,7 +691,7 @@ DuAEF.Duik.Bone.addPinBone = function(prop, size)
 			'}\n' +
 			'}\n' +
 			'result;';
-		prop.scale.expression = '//Duik.bone\n' +
+		prop.property('ADBE FreePin3 PosPin Scale').expression = '//Duik.bone\n' +
 			'var l = null;\n' +
 			'function getAverageScale(layer)\n' +
 			'{\n' +
