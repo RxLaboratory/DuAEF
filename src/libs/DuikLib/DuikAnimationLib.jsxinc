@@ -1035,7 +1035,7 @@ DuAEF.Duik.Animation.ik2fk = function (controller)
 		for (var i = controller.index+1, n = comp.numLayers; i <= n; i++)
 		{
 			var l = comp.layer(i);
-			if (l.source.id == preComp.id)
+			if (l.source && l.source.id == preComp.id)
 			{
 				precompLayer = l;
 				break;
