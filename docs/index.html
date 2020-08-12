@@ -56,7 +56,8 @@
         <div class="container-overview">
         
             
-                <div class="description">The Duduf After Effects ExtendScript Framework.<br />by <a href="https://rainboxlab.org">Rainbox Lab</a>.</div>
+                <div class="description">The Duduf After Effects ExtendScript Framework.<br />
+by <a href="https://rainboxlab.org">Rainbox Lab</a>.</div>
             
 
             
@@ -99,7 +100,19 @@
 
     
     <dt class="tag-license">License:</dt>
-    <dd class="tag-license"><ul class="dummy"><li>GPL-3.0 <br />DuAEF is free software: you can redistribute it and/or modify<br />it under the terms of the GNU General Public License as published by<br />the Free Software Foundation, either version 3 of the License, or<br />(at your option) any later version.<br /><br />DuAEF is distributed in the hope that it will be useful,<br />but WITHOUT ANY WARRANTY; without even the implied warranty of<br />MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />GNU General Public License for more details.<br /><br />You should have received a copy of the GNU General Public License<br />along with DuAEF. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</li></ul></dd>
+    <dd class="tag-license"><ul class="dummy"><li>GPL-3.0 <br />
+DuAEF is free software: you can redistribute it and/or modify<br />
+it under the terms of the GNU General Public License as published by<br />
+the Free Software Foundation, either version 3 of the License, or<br />
+(at your option) any later version.<br />
+<br />
+DuAEF is distributed in the hope that it will be useful,<br />
+but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+GNU General Public License for more details.<br />
+<br />
+You should have received a copy of the GNU General Public License<br />
+along with DuAEF. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</li></ul></dd>
     
 
     
@@ -115,7 +128,41 @@
             
                 <h3>Example</h3>
                 
-    <pre class="prettyprint"><code>//encapsulate the script in a function to avoid global variables  (function (thisObj) {      //================      #include DuAEF.jsxinc      DuAEF.init("Your Script Name", "1.0.2");      DuAEF.forumURL = 'https://forum.rainboxlab.org';      DuAEF.chatURL = 'http://chat.rainboxlab.org';      DuAEF.bugReportURL = 'https://github.com/Rainbox-dev/DuAEF/issues/new?template=bug_report.md';      DuAEF.featureRequestURL = 'https://github.com/Rainbox-dev/DuAEF/issues/new?template=feature_request.md';      DuAEF.aboutURL = 'https://rainboxlab.org/tools/duik/';      DuAEF.scriptAbout = 'The Duduf After Effects Framework\nDeveloped by Nicolas Dufresne and Contributors.\n\nLicensed under the GNU General Public License v3.';      DuAEF.newsServer = 'rainboxprod.net'      DuAEF.newsArgs = 'wp/?call_custom_simple_rss=1&amp;csrp_show_meta=0&amp;csrp_cat=20';      // ================ FUNCTIONS =============      //MAIN      //UI EVENTS      // _______ UI SETUP _______      var ui = DuAEF.DuScriptUI.createUI(thisObj);      // ============ UI CONTENT =================      var contents = ui.contents;      DuAEF.DuScriptUI.addStaticText(contents, "Welcome to " + DuAEF.scriptName);      //Show UI      DuAEF.DuScriptUI.showUI(ui);      DuAEF.enterRunTime();  })(this);</code></pre>
+    <pre class="prettyprint"><code>//encapsulate the script in a function to avoid global variables
+  (function (thisObj) {
+
+      //================
+      #include DuAEF.jsxinc
+      DuAEF.init("Your Script Name", "1.0.2");
+
+      DuAEF.forumURL = 'https://forum.rainboxlab.org';
+      DuAEF.chatURL = 'http://chat.rainboxlab.org';
+      DuAEF.bugReportURL = 'https://github.com/Rainbox-dev/DuAEF/issues/new?template=bug_report.md';
+      DuAEF.featureRequestURL = 'https://github.com/Rainbox-dev/DuAEF/issues/new?template=feature_request.md';
+      DuAEF.aboutURL = 'https://rainboxlab.org/tools/duik/';
+      DuAEF.scriptAbout = 'The Duduf After Effects Framework\nDeveloped by Nicolas Dufresne and Contributors.\n\nLicensed under the GNU General Public License v3.';
+      DuAEF.newsServer = 'rainboxprod.net'
+      DuAEF.newsArgs = 'wp/?call_custom_simple_rss=1&amp;csrp_show_meta=0&amp;csrp_cat=20';
+
+      // ================ FUNCTIONS =============
+      //MAIN
+
+
+      //UI EVENTS
+
+
+      // _______ UI SETUP _______
+      var ui = DuAEF.DuScriptUI.createUI(thisObj);
+
+      // ============ UI CONTENT =================
+      var contents = ui.contents;
+      DuAEF.DuScriptUI.addStaticText(contents, "Welcome to " + DuAEF.scriptName);
+
+
+      //Show UI
+      DuAEF.DuScriptUI.showUI(ui);
+      DuAEF.enterRunTime();
+  })(this);</code></pre>
 
             
         

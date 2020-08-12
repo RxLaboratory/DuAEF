@@ -171,7 +171,9 @@
 
     
     <div class="description">
-        Adds a new keyframe on the properties.<br />To set a value of your choice on one property,<br />you can create a new <a href="KeyFrame.html"><code>KeyFrame</code></a>, then use <a href="DuAEF.DuAE.Property.html#.setKey"><code>DuAEF.DuAE.Property.setKey</code></a>.
+        Adds a new keyframe on the properties.<br />
+To set a value of your choice on one property,<br />
+you can create a new <a href="KeyFrame.html"><code>KeyFrame</code></a>, then use <a href="DuAEF.DuAE.Property.html#.setKey"><code>DuAEF.DuAE.Property.setKey</code></a>.
     </div>
     
 
@@ -532,7 +534,8 @@
 
     
     <div class="description">
-        Adds all the (supported) properties found in a property to the essential graphics panel<br />Note: any Property or PropertyGroup (and its subproperties) named "data" will be ignored.
+        Adds all the (supported) properties found in a property to the essential graphics panel<br />
+Note: any Property or PropertyGroup (and its subproperties) named "data" will be ignored.
     </div>
     
 
@@ -692,7 +695,8 @@
 
     
     <div class="description">
-        Removes all unneeded keyframes from the property.< br/>Also checks the interpolation values to reset the correct display as linear/smooth.
+        Removes all unneeded keyframes from the property.< br/>
+Also checks the interpolation values to reset the correct display as linear/smooth.
     </div>
     
 
@@ -1023,7 +1027,8 @@
 
     
     <div class="description">
-        Fixes the spatial interpolation of the selected keys.<br />Sets the interpolation to linear when the property does not move between keyframes
+        Fixes the spatial interpolation of the selected keys.<br />
+Sets the interpolation to linear when the property does not move between keyframes
     </div>
     
 
@@ -1165,7 +1170,8 @@
 
     
     <div class="description">
-        Gets all animations in the group in the whole timeline or in the time range<br />The first KeyFrame._time will be adjusted relatively to the start of the time range (if provided) instead of the startTime of the composition.
+        Gets all animations in the group in the whole timeline or in the time range<br />
+The first KeyFrame._time will be adjusted relatively to the start of the time range (if provided) instead of the startTime of the composition.
     </div>
     
 
@@ -1537,7 +1543,8 @@
                 </td>
             
 
-            <td class="description last">A filter to get only a certain type, or value type, or property name or matchName.<br />A function which take one PropertyBase as argument can be used to filter the properties: the Property will be returned if the function returns true.</td>
+            <td class="description last">A filter to get only a certain type, or value type, or property name or matchName.<br />
+A function which take one PropertyBase as argument can be used to filter the properties: the Property will be returned if the function returns true.</td>
         </tr>
 
     
@@ -2935,7 +2942,8 @@
 
     
     <div class="description">
-        Gets the property keyframes in the whole timeline or in the time range<br />The KeyFrame._time will be adjusted relatively to the start of the time range instead of the startTime of the composition.
+        Gets the property keyframes in the whole timeline or in the time range<br />
+The KeyFrame._time will be adjusted relatively to the start of the time range instead of the startTime of the composition.
     </div>
     
 
@@ -3082,7 +3090,8 @@
                 </td>
             
 
-            <td class="description last">The time range, an array of two time values, in seconds. If not provided, will use the comp time range.<br />Ignored if selected is true;</td>
+            <td class="description last">The time range, an array of two time values, in seconds. If not provided, will use the comp time range.<br />
+Ignored if selected is true;</td>
         </tr>
 
     
@@ -3571,7 +3580,9 @@
 
     
     <div class="description">
-        Gets the maximum velocity of the animated property.<br >The property type must be one of: one D, two D, three D (spatial or not), Color.If the property is not one of these types, returns 0.
+        Gets the maximum velocity of the animated property.<br >
+The property type must be one of: one D, two D, three D (spatial or not), Color.
+If the property is not one of these types, returns 0.
     </div>
     
 
@@ -3720,7 +3731,9 @@
                 </td>
             
 
-            <td class="description last">True to limit the number of samples used to compute the velocity and make the process faster.<br />The number of samples is automatically adapted from the duration of the composition.<br />When true and if there are more than one keyframe, the velocity is sampled only between keyframes.</td>
+            <td class="description last">True to limit the number of samples used to compute the velocity and make the process faster.<br />
+The number of samples is automatically adapted from the duration of the composition.<br />
+When true and if there are more than one keyframe, the velocity is sampled only between keyframes.</td>
         </tr>
 
     
@@ -4131,7 +4144,8 @@
                 </td>
             
 
-            <td class="description last">A filter to get only a certain type, or value type, or property name or matchName.<br />A function which take one PropertyBase as argument can be used to filter the properties: the Property will be returned if the function returns true.</td>
+            <td class="description last">A filter to get only a certain type, or value type, or property name or matchName.<br />
+A function which take one PropertyBase as argument can be used to filter the properties: the Property will be returned if the function returns true.</td>
         </tr>
 
     
@@ -4317,7 +4331,9 @@
 
     
     <div class="description">
-        Gets the value range of the animated property.<br >The property type must be one of: one D, two D, three D (spatial or not), Color.If the property is not one of these types, returns an empty Array.
+        Gets the value range of the animated property.<br >
+The property type must be one of: one D, two D, three D (spatial or not), Color.
+If the property is not one of these types, returns an empty Array.
     </div>
     
 
@@ -4539,7 +4555,8 @@
 
 
 
-- The minimum and maximum value.<br />The first item in the Array is not necesarily the lowest value, it is the first in time.
+- The minimum and maximum value.<br />
+The first item in the Array is not necesarily the lowest value, it is the first in time.
 
 
 
@@ -4870,7 +4887,8 @@
 
     
     <div class="description">
-        Checks if the property has some selected keyframes.<br />The property can be either a Property or a PropertyGroup.
+        Checks if the property has some selected keyframes.<br />
+The property can be either a Property or a PropertyGroup.
     </div>
     
 
@@ -5516,7 +5534,8 @@
 
     
     <div class="description">
-        Checks if the property value is a number or an Array of Number.<br >I.e if its value type is one of: one D, two D, three D (spatial or not), Color.
+        Checks if the property value is a number or an Array of Number.<br >
+I.e if its value type is one of: one D, two D, three D (spatial or not), Color.
     </div>
     
 
@@ -5837,7 +5856,8 @@
 
     
     <div class="description">
-        Link all the properties found in childProp to all the same properties of parentProp (this is a recursive method)<br />Note: any Property or PropertyGroup (and its subproperties) named "Data" will be linked the opposite way (from parentProp to childProp).
+        Link all the properties found in childProp to all the same properties of parentProp (this is a recursive method)<br />
+Note: any Property or PropertyGroup (and its subproperties) named "Data" will be linked the opposite way (from parentProp to childProp).
     </div>
     
 
@@ -6016,7 +6036,8 @@
                 </td>
             
 
-            <td class="description last">A layer used to offset the time (typically, in case of link between precompositions, the precomposition layer).<br />When not null, the start time of this layer will be taken into account to get the values and synchronize them.</td>
+            <td class="description last">A layer used to offset the time (typically, in case of link between precompositions, the precomposition layer).<br />
+When not null, the start time of this layer will be taken into account to get the values and synchronize them.</td>
         </tr>
 
     
@@ -7959,7 +7980,8 @@
 
     
     <div class="description">
-        Selects the keyframes in the propoerty.<br />Selects all nested keyframes if the property is a group.
+        Selects the keyframes in the propoerty.<br />
+Selects all nested keyframes if the property is a group.
     </div>
     
 
@@ -8195,7 +8217,10 @@
 
     
     <div class="description">
-        Sets the property animation on the property.<br />Use this method only to force the animation onto the property without checks.<br />Must be used on a Property (not a group) with a PropertyAnim (not a PropertyGroupAnim).<br />To easily set an animation on a property with automatic compatibility checks, you should use setGroupAnim().
+        Sets the property animation on the property.<br />
+Use this method only to force the animation onto the property without checks.<br />
+Must be used on a Property (not a group) with a PropertyAnim (not a PropertyGroupAnim).<br />
+To easily set an animation on a property with automatic compatibility checks, you should use setGroupAnim().
     </div>
     
 
@@ -8835,7 +8860,8 @@
                 </td>
             
 
-            <td class="description last">Use a percent instead of a value to set velocities.<br />In this case, the proper velocity value will be deduced by multiplying the max speed of the property by the percent.</td>
+            <td class="description last">Use a percent instead of a value to set velocities.<br />
+In this case, the proper velocity value will be deduced by multiplying the max speed of the property by the percent.</td>
         </tr>
 
     
@@ -8922,7 +8948,8 @@
 
     
     <div class="description">
-        Sets an expression to a property.<br />With the ability to keep the initial value.
+        Sets an expression to a property.<br />
+With the ability to keep the initial value.
     </div>
     
 
@@ -9492,7 +9519,9 @@
                 </td>
             
 
-            <td class="description last">A list of matchNames used as a white list for properties to set anims.<br />Can be the matchName of a propertyGroup to set all the subproperties.<br />Ignored if the list is empty.</td>
+            <td class="description last">A list of matchNames used as a white list for properties to set anims.<br />
+Can be the matchName of a propertyGroup to set all the subproperties.<br />
+Ignored if the list is empty.</td>
         </tr>
 
     
