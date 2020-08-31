@@ -201,8 +201,8 @@ function PropertyInfo(property)
 	this.isAngle = this.unitsText == localize("$$$/AE/TLW/GraphEditor/DegreesSource=degrees");
 	this.isPixels = this.unitsText == localize("$$$/AE/TLW/GraphEditor/PixelsSource=pixels");
 	this.unit = "";
-	if (this.isPercent) this.unit = localize("$$$/AE/TLW/GraphEditor/PercentDest=%");
-	if (this.isAngle) this.unit = localize("$$$/AE/TLW/GraphEditor/DegreesDest=°");
+	if (this.isPercent) this.unit = "%";
+	if (this.isAngle) this.unit = "°";
 	if (this.isPixels) this.unit = localize("$$$/AE/TLW/GraphEditor/PixelsDest=px");
 
 	if (this.riggable) {

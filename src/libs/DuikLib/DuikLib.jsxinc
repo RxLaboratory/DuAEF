@@ -631,6 +631,7 @@ DuAEF.Duik.expressionIds = {
     PARENT: '//Duik.parentConstraint',
     POSITION: '//Duik.positionConstraint',
     ORIENTATION: '//Duik.orientationConstraint',
+    PATH: '//Duik.pathConstraint',
     STRUCTURE: '//Duik.structure',
     MOTION_TRAIL: '//Duik.motionTrail',
     AUTORIG_HEAD: '//Duik.autorig.head',
@@ -638,6 +639,7 @@ DuAEF.Duik.expressionIds = {
     SHAPE_LINKER: '//Duik.shapeLinker',
     BLINK: '//Duik.blink',
     LOCATOR: '//Duik.locator',
+    CAMERA_2D: '//Duik.twoDCamera',
     INTERPOLATOR: '//Duik.interpolator'
 }
 
