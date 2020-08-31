@@ -1568,9 +1568,7 @@
 
     
     <div class="description">
-        Adds an animation preset on the layer.<br />
-Be careful as layer selection will be kept but not properties selection,<br />
-and this can result in an "invalid object" if referencing a property.
+        Adds an animation preset on the layer.<br />Be careful as layer selection will be kept but not properties selection,<br />and this can result in an "invalid object" if referencing a property.
     </div>
     
 
@@ -2115,8 +2113,7 @@ and this can result in an "invalid object" if referencing a property.
                 </td>
             
 
-            <td class="description last">Add expressions on the properties to link them to the orriginal layers<br />
-Works only on 12.0 and above, ignored on 11.0 (CS6) and below</td>
+            <td class="description last">Add expressions on the properties to link them to the orriginal layers<br />Works only on 12.0 and above, ignored on 11.0 (CS6) and below</td>
         </tr>
 
     
@@ -2595,8 +2592,7 @@ Works only on 12.0 and above, ignored on 11.0 (CS6) and below</td>
 
     
     <div class="description">
-        Gets all animations on the layer in the whole timeline or in the time range<br />
-The first KeyFrame._time will be adjusted relatively to the start of the time range (if provided) instead of the startTime of the composition.
+        Gets all animations on the layer in the whole timeline or in the time range<br />The first KeyFrame._time will be adjusted relatively to the start of the time range (if provided) instead of the startTime of the composition.
     </div>
     
 
@@ -2848,8 +2844,7 @@ The first KeyFrame._time will be adjusted relatively to the start of the time ra
 
     
     <div class="description">
-        Gets all animations on the layers in the whole timeline or in the time range<br />
-The first KeyFrame._time will be adjusted relatively to the start of the time range (if provided) instead of the startTime of the composition.
+        Gets all animations on the layers in the whole timeline or in the time range<br />The first KeyFrame._time will be adjusted relatively to the start of the time range (if provided) instead of the startTime of the composition.
     </div>
     
 
@@ -3447,8 +3442,7 @@ The first KeyFrame._time will be adjusted relatively to the start of the time ra
 
     
     <div class="description">
-        Gets all the (selected) puppet pins found on the layer.<br />
-Will return all puppet pins if there is no puppet selection.
+        Gets all the (selected) puppet pins found on the layer.<br />Will return all puppet pins if there is no puppet selection.
     </div>
     
 
@@ -3720,9 +3714,7 @@ Will return all puppet pins if there is no puppet selection.
 
 
 
-- the degree of relation. 0 if layer1 is not a relative of layer2,<br />
-negative if layer2 is a descendant of layer1, positive if layer2 is an ancestor.<br />
-null if the two layers are not in the same composition or if they are the same layer.
+- the degree of relation. 0 if layer1 is not a relative of layer2,<br />negative if layer2 is a descendant of layer1, positive if layer2 is an ancestor.<br />null if the two layers are not in the same composition or if they are the same layer.
 
 
 
@@ -3910,8 +3902,7 @@ null if the two layers are not in the same composition or if they are the same l
                 </td>
             
 
-            <td class="description last">A filter to get only a certain type, or value type, or property name or matchName.<br />
-A function which take one PropertyBase as argument can be used to filter the properties: the Property will be returned if the function returns true.</td>
+            <td class="description last">A filter to get only a certain type, or value type, or property name or matchName.<br />A function which take one PropertyBase as argument can be used to filter the properties: the Property will be returned if the function returns true.</td>
         </tr>
 
     
@@ -4097,8 +4088,7 @@ A function which take one PropertyBase as argument can be used to filter the pro
 
     
     <div class="description">
-        Gets the transformation matrix of the layer from the compostion.<br />
-Use Matrix.applyToPoint(point) to transform any coordinate with the matrix returned by this method.
+        Gets the transformation matrix of the layer from the compostion.<br />Use Matrix.applyToPoint(point) to transform any coordinate with the matrix returned by this method.
     </div>
     
 
@@ -4903,8 +4893,7 @@ Use Matrix.applyToPoint(point) to transform any coordinate with the matrix retur
                 </td>
             
 
-            <td class="description last">true to lock scale even on CS6 and older<br />
-Those older versions will display the scale property when typing the "U" shorcut when it's locked.</td>
+            <td class="description last">true to lock scale even on CS6 and older<br />Those older versions will display the scale property when typing the "U" shorcut when it's locked.</td>
         </tr>
 
     
@@ -6213,8 +6202,7 @@ Those older versions will display the scale property when typing the "U" shorcut
 
     
     <div class="description">
-        Creates a sequence with the layers, but using opacities.
-This enables more possibilities to rig them, like with the Connector
+        Creates a sequence with the layers, but using opacities.This enables more possibilities to rig them, like with the Connector
     </div>
     
 
@@ -6399,8 +6387,7 @@ This enables more possibilities to rig them, like with the Connector
 
     
     <div class="description">
-        Sets the animations on the layers.<br />
-If you need to set only on the same layers (same index, same name), use <a href="DuAEF.DuAE.Layer.html#.setAnims"><code>DuAEF.DuAE.Layer.setAnims</code></a>.
+        Sets the animations on the layers.<br />If you need to set only on the same layers (same index, same name), use <a href="DuAEF.DuAE.Layer.html#.setAnims"><code>DuAEF.DuAE.Layer.setAnims</code></a>.
     </div>
     
 
@@ -6471,8 +6458,7 @@ If you need to set only on the same layers (same index, same name), use <a href=
                 </td>
             
 
-            <td class="description last">The layers.<br />
-If there are more layers than animations, the layers array will be truncated.</td>
+            <td class="description last">The layers.<br />If there are more layers than animations, the layers array will be truncated.</td>
         </tr>
 
     
@@ -6507,8 +6493,7 @@ If there are more layers than animations, the layers array will be truncated.</t
                 </td>
             
 
-            <td class="description last">The layer animations.<br />
-If there are more animations than layers, the animations array will be truncated.</td>
+            <td class="description last">The layer animations.<br />If there are more animations than layers, the animations array will be truncated.</td>
         </tr>
 
     
@@ -6586,8 +6571,7 @@ If there are more animations than layers, the animations array will be truncated
                 </td>
             
 
-            <td class="description last">true to set the anim even if name of the property do not match the name animation.<br />
-This way, only the type of property (i.e. matchName) is checked.</td>
+            <td class="description last">true to set the anim even if name of the property do not match the name animation.<br />This way, only the type of property (i.e. matchName) is checked.</td>
         </tr>
 
     
@@ -6741,8 +6725,7 @@ This way, only the type of property (i.e. matchName) is checked.</td>
                 </td>
             
 
-            <td class="description last">A list of matchNames used as a white list for properties to set anims.<br />
-Can be the matchName of a propertyGroup to set all the subproperties.</td>
+            <td class="description last">A list of matchNames used as a white list for properties to set anims.<br />Can be the matchName of a propertyGroup to set all the subproperties.</td>
         </tr>
 
     
@@ -6820,8 +6803,7 @@ Can be the matchName of a propertyGroup to set all the subproperties.</td>
                 </td>
             
 
-            <td class="description last">true to reverse the keyframes (in time)<br />
-Note: the remaining animations which are returned will already be reversed, do not set this to true again if you plan to set them later.</td>
+            <td class="description last">true to reverse the keyframes (in time)<br />Note: the remaining animations which are returned will already be reversed, do not set this to true again if you plan to set them later.</td>
         </tr>
 
     
@@ -7089,8 +7071,7 @@ Note: the remaining animations which are returned will already be reversed, do n
                 </td>
             
 
-            <td class="description last">true to set the anim even if name of the property do not match the name of the animation.<br />
-This way, only the type of property (i.e. matchName) is checked.</td>
+            <td class="description last">true to set the anim even if name of the property do not match the name of the animation.<br />This way, only the type of property (i.e. matchName) is checked.</td>
         </tr>
 
     
@@ -7244,8 +7225,7 @@ This way, only the type of property (i.e. matchName) is checked.</td>
                 </td>
             
 
-            <td class="description last">A list of matchNames used as a white list for properties to set anims.<br />
-Can be the matchName of a propertyGroup to set all the subproperties.</td>
+            <td class="description last">A list of matchNames used as a white list for properties to set anims.<br />Can be the matchName of a propertyGroup to set all the subproperties.</td>
         </tr>
 
     
@@ -7431,9 +7411,7 @@ Can be the matchName of a propertyGroup to set all the subproperties.</td>
 
     
     <div class="description">
-        Sets the animations on the corresponding layers.<br />
-The animation will be set only on layers with the same name and index.<br />
-To set all animations on all layers, not checking their names or indices, use <a href="DuAEF.DuAE.Layer.html#.setAllAnims"><code>DuAEF.DuAE.Layer.setAllAnims</code></a>.
+        Sets the animations on the corresponding layers.<br />The animation will be set only on layers with the same name and index.<br />To set all animations on all layers, not checking their names or indices, use <a href="DuAEF.DuAE.Layer.html#.setAllAnims"><code>DuAEF.DuAE.Layer.setAllAnims</code></a>.
     </div>
     
 
@@ -7617,8 +7595,7 @@ To set all animations on all layers, not checking their names or indices, use <a
                 </td>
             
 
-            <td class="description last">true to set the anim even if name of the property do not match the name animation.<br />
-This way, only the type of property (i.e. matchName) is checked.</td>
+            <td class="description last">true to set the anim even if name of the property do not match the name animation.<br />This way, only the type of property (i.e. matchName) is checked.</td>
         </tr>
 
     
@@ -7772,8 +7749,7 @@ This way, only the type of property (i.e. matchName) is checked.</td>
                 </td>
             
 
-            <td class="description last">A list of matchNames used as a white list for properties to set anims.<br />
-Can be the matchName of a propertyGroup to set all the subproperties.</td>
+            <td class="description last">A list of matchNames used as a white list for properties to set anims.<br />Can be the matchName of a propertyGroup to set all the subproperties.</td>
         </tr>
 
     
@@ -7851,8 +7827,7 @@ Can be the matchName of a propertyGroup to set all the subproperties.</td>
                 </td>
             
 
-            <td class="description last">true to reverse the keyframes (in time)<br />
-Note: the remaining animations which are returned will already be reversed, do not set this to true again if you plan to set them later.</td>
+            <td class="description last">true to reverse the keyframes (in time)<br />Note: the remaining animations which are returned will already be reversed, do not set this to true again if you plan to set them later.</td>
         </tr>
 
     
@@ -8286,9 +8261,7 @@ Note: the remaining animations which are returned will already be reversed, do n
 
     
     <div class="description">
-        (Un)parent the children of the layer.< br/>
-When children are unparented, an effect is added and the name of the layer is changed to show the "edit mode" is enabled.<br />
-When toggled again, the effect is removed, and the name is restored.
+        (Un)parent the children of the layer.< br/>When children are unparented, an effect is added and the name of the layer is changed to show the "edit mode" is enabled.<br />When toggled again, the effect is removed, and the name is restored.
     </div>
     
 

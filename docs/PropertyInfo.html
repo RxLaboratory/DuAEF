@@ -48,10 +48,7 @@
     
         <h2><span class="attribs"><span class="type-signature"></span></span>PropertyInfo<span class="signature">(property)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description">Get some handy informations about a property<br />
-This class is able to "fix" effects properties which have been broken by
-the addition of another effect on the same layer, as long as the class has been
-instanciated before the effect has been broken.</div>
+            <div class="class-description">Get some handy informations about a property<br />This class is able to "fix" effects properties which have been broken bythe addition of another effect on the same layer, as long as the class has beeninstanciated before the effect has been broken.</div>
         
     
 </header>
@@ -138,8 +135,7 @@ instanciated before the effect has been broken.</div>
 
             
 
-            <td class="description last">The property. If a PropertyInfo is provided, the constructor returns it (it does not make a copy).<br />
-This makes it easy to avoid type checking, as you can always pass any property or PropertyInfo to the constructor to be sure to handle a PropertyInfo, without any impact on performance.<br /></td>
+            <td class="description last">The property. If a PropertyInfo is provided, the constructor returns it (it does not make a copy).<br />This makes it easy to avoid type checking, as you can always pass any property or PropertyInfo to the constructor to be sure to handle a PropertyInfo, without any impact on performance.<br /></td>
         </tr>
 
     
@@ -647,15 +643,9 @@ This makes it easy to avoid type checking, as you can always pass any property o
     
         <h5>Examples</h5>
         
-    <pre class="prettyprint"><code>var propInfo = new PropertyInfo(property);
-layer("ADBE effect parade").addProperty("ADBE layer control"); //now the property object is broken
-property = propInfo.getProperty(); // You can retrieve the property like this, fixed if it's an effect</code></pre>
+    <pre class="prettyprint"><code>var propInfo = new PropertyInfo(property);layer("ADBE effect parade").addProperty("ADBE layer control"); //now the property object is brokenproperty = propInfo.getProperty(); // You can retrieve the property like this, fixed if it's an effect</code></pre>
 
-    <pre class="prettyprint"><code>myFunction (prop) //This function can be passed either a property or a PropertyInfo
-{
-propInfo = new PropertyInfo(prop);
-prop = propInfo.getProperty();
-}</code></pre>
+    <pre class="prettyprint"><code>myFunction (prop) //This function can be passed either a property or a PropertyInfo{propInfo = new PropertyInfo(prop);prop = propInfo.getProperty();}</code></pre>
 
     
 
@@ -706,9 +696,7 @@ prop = propInfo.getProperty();
 
     
     <div class="description">
-        Gets the original Property<br />
-Always works even if this PropertyInfo represents an effect which has been broken<br />
----AE Hack---
+        Gets the original Property<br />Always works even if this PropertyInfo represents an effect which has been broken<br />---AE Hack---
     </div>
     
 

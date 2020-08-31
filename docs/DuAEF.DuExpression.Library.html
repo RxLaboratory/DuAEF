@@ -243,9 +243,7 @@
 
     
     <div class="description">
-        Adds some noise to a value.<br />
-You may use seedRandom() before using this function as it will influence the generated noise.
-A timeless noise can be achieved with <code>seedRandom(index,true)</code> for example.
+        Adds some noise to a value.<br />You may use seedRandom() before using this function as it will influence the generated noise.A timeless noise can be achieved with <code>seedRandom(index,true)</code> for example.
     </div>
     
 
@@ -385,11 +383,9 @@ A timeless noise can be achieved with <code>seedRandom(index,true)</code> for ex
     
         <h5>Examples</h5>
         
-    <pre class="prettyprint"><code>seedRandom(index, true) // a timeless noise
-addNoise(value, 50 ); // the property value will have noise between (value * 0.5) and (value * 1.5) which won't vary through time.</code></pre>
+    <pre class="prettyprint"><code>seedRandom(index, true) // a timeless noiseaddNoise(value, 50 ); // the property value will have noise between (value * 0.5) and (value * 1.5) which won't vary through time.</code></pre>
 
-    <pre class="prettyprint"><code>seedRandom(index, false);
-addNoise(value, 33 ); // the noise will change at each frame, varying between (value * .66) and (value * 1.33)</code></pre>
+    <pre class="prettyprint"><code>seedRandom(index, false);addNoise(value, 33 ); // the noise will change at each frame, varying between (value * .66) and (value * 1.33)</code></pre>
 
     
 
@@ -419,8 +415,7 @@ addNoise(value, 33 ); // the noise will change at each frame, varying between (v
 
     
     <div class="description">
-        Interpolates a value with a bezier curve.<br />
-This method can replace <code>linear()</code> and <code>ease()</code> with a custom b�zier interpolation.
+        Interpolates a value with a bezier curve.<br />This method can replace <code>linear()</code> and <code>ease()</code> with a custom b�zier interpolation.
     </div>
     
 
@@ -683,8 +678,7 @@ This method can replace <code>linear()</code> and <code>ease()</code> with a cus
                 </td>
             
 
-            <td class="description last">an Array of 4 coordinates wihtin the [0.0, 1.0] range which describes the B�zier interpolation. The default mimics the native ease() function<br />
-[ outTangentX, outTangentY, inTangentX, inTangentY ]</td>
+            <td class="description last">an Array of 4 coordinates wihtin the [0.0, 1.0] range which describes the B�zier interpolation. The default mimics the native ease() function<br />[ outTangentX, outTangentY, inTangentX, inTangentY ]</td>
         </tr>
 
     
@@ -792,9 +786,7 @@ This method can replace <code>linear()</code> and <code>ease()</code> with a cus
 
     
     <div class="description">
-        Checks the type of a pseudo-effect used by Duik.<br />
-This is a workaround for the missing matchName in expressions.<br />
-Pseudo-Effects used by Duik start with a hidden property which name is the same as the matchName of the effect itself (without the 'Pseudo/' part).
+        Checks the type of a pseudo-effect used by Duik.<br />This is a workaround for the missing matchName in expressions.<br />Pseudo-Effects used by Duik start with a hidden property which name is the same as the matchName of the effect itself (without the 'Pseudo/' part).
     </div>
     
 
@@ -952,8 +944,7 @@ Pseudo-Effects used by Duik start with a hidden property which name is the same 
     
         <h5>Example</h5>
         
-    <pre class="prettyprint"><code>if ( checkEffect(thisLayer.effect(1), "DUIK parentConstraint2") ) { "This is the second version of the parent constraint by Duik" }
-else { "Who knows what this is?" }</code></pre>
+    <pre class="prettyprint"><code>if ( checkEffect(thisLayer.effect(1), "DUIK parentConstraint2") ) { "This is the second version of the parent constraint by Duik" }else { "Who knows what this is?" }</code></pre>
 
     
 
@@ -983,9 +974,7 @@ else { "Who knows what this is?" }</code></pre>
 
     
     <div class="description">
-        Checks the type of an effect.<br />
-This is a workaround for the missing matchName in expressions.<br />
-It checks if the given effect has a specific property at a specific index.
+        Checks the type of an effect.<br />This is a workaround for the missing matchName in expressions.<br />It checks if the given effect has a specific property at a specific index.
     </div>
     
 
@@ -1166,8 +1155,7 @@ It checks if the given effect has a specific property at a specific index.
     
         <h5>Example</h5>
         
-    <pre class="prettyprint"><code>if ( checkEffect(thisLayer.effect(1), 1, "Blur") ) { "The first effect is a blur!" }
-else { "Who knows what this is?" }</code></pre>
+    <pre class="prettyprint"><code>if ( checkEffect(thisLayer.effect(1), 1, "Blur") ) { "The first effect is a blur!" }else { "Who knows what this is?" }</code></pre>
 
     
 
@@ -1197,8 +1185,7 @@ else { "Who knows what this is?" }</code></pre>
 
     
     <div class="description">
-        Removes the ancestors rotation from the rotation of a layer.
-This is very useful to make a layer keep its orientation without being influenced by its parents.
+        Removes the ancestors rotation from the rotation of a layer.This is very useful to make a layer keep its orientation without being influenced by its parents.
     </div>
     
 
@@ -1358,13 +1345,9 @@ This is very useful to make a layer keep its orientation without being influence
     
         <h5>Examples</h5>
         
-    <pre class="prettyprint"><code>//in a rotation property, just include the function and use:
-dishineritRotation();
-//the layer will now keep its own orientation.</code></pre>
+    <pre class="prettyprint"><code>//in a rotation property, just include the function and use:dishineritRotation();//the layer will now keep its own orientation.</code></pre>
 
-    <pre class="prettyprint"><code>//you can also combine the result with something else
-var result = dishineritRotation();
-result + wiggle(5,20);</code></pre>
+    <pre class="prettyprint"><code>//you can also combine the result with something elsevar result = dishineritRotation();result + wiggle(5,20);</code></pre>
 
     
 
@@ -1394,8 +1377,7 @@ result + wiggle(5,20);</code></pre>
 
     
     <div class="description">
-        Removes the ancestors scale from the scale of a layer.
-This is very useful to make a layer keep its scale without being influenced by its parents.
+        Removes the ancestors scale from the scale of a layer.This is very useful to make a layer keep its scale without being influenced by its parents.
     </div>
     
 
@@ -1550,13 +1532,9 @@ This is very useful to make a layer keep its scale without being influenced by i
     
         <h5>Examples</h5>
         
-    <pre class="prettyprint"><code>//in a rotation property, just include the function and use:
-dishineritScale();
-//the layer will now keep its own scale.</code></pre>
+    <pre class="prettyprint"><code>//in a rotation property, just include the function and use:dishineritScale();//the layer will now keep its own scale.</code></pre>
 
-    <pre class="prettyprint"><code>//you can also combine the result with something else
-var result = dishineritScale();
-result + wiggle(5,20);</code></pre>
+    <pre class="prettyprint"><code>//you can also combine the result with something elsevar result = dishineritScale();result + wiggle(5,20);</code></pre>
 
     
 
@@ -1586,8 +1564,7 @@ result + wiggle(5,20);</code></pre>
 
     
     <div class="description">
-        Converts the point coordinates from the current group in the shape layer to the Layer.<br />
-Use toWorld and toComp with the result if you need te coordinates in the world or the comp.
+        Converts the point coordinates from the current group in the shape layer to the Layer.<br />Use toWorld and toComp with the result if you need te coordinates in the world or the comp.
     </div>
     
 
@@ -1754,8 +1731,7 @@ Use toWorld and toComp with the result if you need te coordinates in the world o
 
     
     <div class="description">
-        Converts the point coordinates from Layer to the current group in the shape layer.<br />
-Use fromWorld or fromComp first if you need to convert from the world or composition coordinates, and pass the result to this function.
+        Converts the point coordinates from Layer to the current group in the shape layer.<br />Use fromWorld or fromComp first if you need to convert from the world or composition coordinates, and pass the result to this function.
     </div>
     
 
@@ -2254,8 +2230,7 @@ Use fromWorld or fromComp first if you need to convert from the world or composi
 
     
     <div class="description">
-        Interpolates a value with a gaussian function.<br />
-This method can replace <code>linear()</code> and <code>ease()</code> with a gaussian interpolation.
+        Interpolates a value with a gaussian function.<br />This method can replace <code>linear()</code> and <code>ease()</code> with a gaussian interpolation.
     </div>
     
 
