@@ -962,12 +962,10 @@ DuAEF.Duik.Rigging.connector = function( childProp, parentProp, parentEffect, mi
     // check if the current comp is the same than the comp containing the masterProperty
     var parentComp = parentLayer.containingComp;
     var childComp = DuAEF.DuAE.Property.getComp( childProp );
-    var comp = 'thisComp.';
-    if ( parentComp !== childComp ) comp = 'comp("' + parentComp.name + '").';
 
     var expr = '//Duik.connector\n' +
-        'var ctrlLayer = ' + comp + 'layer("' + parentLayer.name + '");\n' +
-        'var connectorLayer = ' + comp + 'layer("' + connectorLayer.name + '");\n' +
+        'var ctrlLayer = comp("' + parentComp.name + '").layer("' + parentLayer.name + '");\n' +
+        'var connectorLayer = comp("' + parentComp.name + '").layer("' + connectorLayer.name + '");\n' +
         'var ctrlValue = ctrlLayer' + DuAEF.DuAE.Property.getExpressionLink( parentProp.getProperty(), false, false ) + ';\n' +
         'var ctrlEffect = connectorLayer.effect("' + parentEffect.name + '");\n' +
         'var ctrlMin = ctrlEffect(2).value;\n' +
