@@ -128,21 +128,21 @@ DuAEF.Duik.Camera.create2DCam = function(comp,layers)
 	//cam rig
 	var camZero = camLayer.parent;
 	//tilt
-	camZero.transform.rotation.expression = '//Duik.twoDCamera\n' +
+	camZero.transform.rotation.expression = DuAEF.Duik.expressionIds.CAMERA_2D + '\n' +
 	'thisComp.layer("' + camLayer.name + '").effect("' + effect.name + '")(' + DuAEF.Duik.PseudoEffects.TWOD_CAMERA.tiltAngle + ');';
 	//zoom & truck in/out
-	camZero.transform.scale.expression = '//Duik.twoDCamera\n' +
+	camZero.transform.scale.expression = DuAEF.Duik.expressionIds.CAMERA_2D + '\n' +
 	'var zoom = thisComp.layer("' + camLayer.name + '").effect("' + effect.name + '")(' + DuAEF.Duik.PseudoEffects.TWOD_CAMERA.zoomSlider + ');\n' +
 	'var truck = thisComp.layer("' + camLayer.name + '").effect("' + effect.name + '")(' + DuAEF.Duik.PseudoEffects.TWOD_CAMERA.truckSlider + ');\n' +
 	'value + [zoom,zoom] + [truck,truck];';
 	//pan
-	camZero.transform.position.expression = '//Duik.twoDCamera\n' +
+	camZero.transform.position.expression = DuAEF.Duik.expressionIds.CAMERA_2D + '\n' +
 	'var x = thisComp.layer("' + camLayer.name + '").effect("' + effect.name + '")(' + DuAEF.Duik.PseudoEffects.TWOD_CAMERA.horizontalPanSlider + ');\n' +
 	'var y = thisComp.layer("' + camLayer.name + '").effect("' + effect.name + '")(' + DuAEF.Duik.PseudoEffects.TWOD_CAMERA.verticalPanSlider + ');\n' +
 	'[x,y] + [thisComp.width/2,thisComp.height/2];';
 
 	//motion
-	effect(DuAEF.Duik.PseudoEffects.TWOD_CAMERA.horizontalPanSlider).expression = '//Duik.2DCamera\n' +
+	effect(DuAEF.Duik.PseudoEffects.TWOD_CAMERA.horizontalPanSlider).expression = DuAEF.Duik.expressionIds.CAMERA_2D + '\n' +
 		'var fx = thisComp.layer("' + camLayer.name + '").effect("' + effect.name + '")\n' +
 		'gFreq = fx(' + DuAEF.Duik.PseudoEffects.TWOD_CAMERA.generalFrequencySlider + ').value;\n' +
 		'gAmp = fx(' + DuAEF.Duik.PseudoEffects.TWOD_CAMERA.generalAmplitudeSlider + ').value;\n' +
@@ -183,10 +183,10 @@ DuAEF.Duik.Camera.create2DCam = function(comp,layers)
 		'}\n' +
 		'gw = wiggle(gFreq,gAmp, complexity , 0.7);\n' +
 		'sw = wiggle(sFreq,sAmp, complexity , 0.7);\n' +
-		'result = sw + gw + value - valueAtTime(0);\n' +
+		'result = sw + gw - valueAtTime(0);\n' +
 		'result;';
 
-	effect(DuAEF.Duik.PseudoEffects.TWOD_CAMERA.verticalPanSlider).expression = '//Duik.2DCamera\n' +
+	effect(DuAEF.Duik.PseudoEffects.TWOD_CAMERA.verticalPanSlider).expression = DuAEF.Duik.expressionIds.CAMERA_2D + '\n' +
 		'var fx = thisComp.layer("' + camLayer.name + '").effect("' + effect.name + '")\n' +
 		'gFreq = fx(' + DuAEF.Duik.PseudoEffects.TWOD_CAMERA.generalFrequencySlider + ').value;\n' +
 		'gAmp = fx(' + DuAEF.Duik.PseudoEffects.TWOD_CAMERA.generalAmplitudeSlider + ').value;\n' +
@@ -227,10 +227,10 @@ DuAEF.Duik.Camera.create2DCam = function(comp,layers)
 		'}\n' +
 		'gw = wiggle(gFreq,gAmp, complexity , 0.7);\n' +
 		'sw = wiggle(sFreq,sAmp, complexity, 0.7);\n' +
-		'result = sw + gw + value - valueAtTime(0);\n' +
+		'result = sw + gw - valueAtTime(0);\n' +
 		'result;';
 
-	effect(DuAEF.Duik.PseudoEffects.TWOD_CAMERA.tiltAngle).expression = '//Duik.2DCamera\n' +
+	effect(DuAEF.Duik.PseudoEffects.TWOD_CAMERA.tiltAngle).expression = DuAEF.Duik.expressionIds.CAMERA_2D + '\n' +
 		'var fx = thisComp.layer("' + camLayer.name + '").effect("' + effect.name + '")\n' +
 		'gFreq = fx(' + DuAEF.Duik.PseudoEffects.TWOD_CAMERA.generalFrequencySlider + ').value;\n' +
 		'gAmp = fx(' + DuAEF.Duik.PseudoEffects.TWOD_CAMERA.generalAmplitudeSlider + ').value;\n' +
@@ -261,10 +261,10 @@ DuAEF.Duik.Camera.create2DCam = function(comp,layers)
 		'loop = 0;\n' +
 		'gw = wiggle(gFreq,gAmp, complexity , 0.7);\n' +
 		'sw = wiggle(sFreq,sAmp, complexity , 0.7);\n' +
-		'result = sw + gw + value - valueAtTime(0);\n' +
+		'result = sw + gw - valueAtTime(0);\n' +
 		'result;';
 
-	camLayer.transform.position.expression = '//Duik.2DCamera\n' +
+	camLayer.transform.position.expression = DuAEF.Duik.expressionIds.CAMERA_2D + '\n' +
 		'var fx = thisComp.layer("' + camLayer.name + '").effect("' + effect.name + '")\n' +
 		'gFreq = fx(' + DuAEF.Duik.PseudoEffects.TWOD_CAMERA.generalFrequencySlider + ').value;\n' +
 		'gAmp = fx(' + DuAEF.Duik.PseudoEffects.TWOD_CAMERA.generalAmplitudeSlider + ').value;\n' +
@@ -310,21 +310,21 @@ DuAEF.Duik.Camera.create2DCam = function(comp,layers)
 			(i<camLayer.index+1) ? slider(1).setValue((1+(numLayersAbove-i+1)*.2)*100) : slider(1).setValue(((1/(camIndex+1))*Math.abs(i-numLayers-2))*100) ;
 
 			//truck
-			layer.transform.anchorPoint.expression = '//Duik.twoDCamera\nvar camPosition = thisComp.layer("' + camLayer.name + '").transform.position.value;\nvalueAtTime(0) - camPosition * effect("Camera influence")(1) / 100';
+			layer.transform.anchorPoint.expression = DuAEF.Duik.expressionIds.CAMERA_2D + '\n' + 'var camPosition = thisComp.layer("' + camLayer.name + '").transform.position.value;\nvalueAtTime(0) - camPosition * effect("Camera influence")(1) / 100';
 
 			//tilt
-			layer.transform.rotation.expression = '//Duik.twoDCamera\n' +
+			layer.transform.rotation.expression = DuAEF.Duik.expressionIds.CAMERA_2D + '\n' +
 			'thisComp.layer("' + camLayer.name + '").effect("' + effect.name + '")(' + DuAEF.Duik.PseudoEffects.TWOD_CAMERA.tiltAngle + ');';
 
 			//zoom & truck in/out
-			layer.transform.scale.expression = '//Duik.twoDCamera\n' +
+			layer.transform.scale.expression = DuAEF.Duik.expressionIds.CAMERA_2D + '\n' +
 			'var zoom = thisComp.layer("' + camLayer.name + '").effect("' + effect.name + '")(' + DuAEF.Duik.PseudoEffects.TWOD_CAMERA.zoomSlider + ');\n' +
 			'var truck = thisComp.layer("' + camLayer.name + '").effect("' + effect.name + '")(' + DuAEF.Duik.PseudoEffects.TWOD_CAMERA.truckSlider + ');\n' +
 			'var infl = effect("Camera influence")(1);\n' +
 			'value + [zoom,zoom] + [truck,truck]*infl/100;';
 
 			//pan
-			layer.transform.position.expression = '//Duik.twoDCamera\n' +
+			layer.transform.position.expression = DuAEF.Duik.expressionIds.CAMERA_2D + '\n' +
 			'var x = thisComp.layer("' + camLayer.name + '").effect("' + effect.name + '")(' + DuAEF.Duik.PseudoEffects.TWOD_CAMERA.horizontalPanSlider + ');\n' +
 			'var y = thisComp.layer("' + camLayer.name + '").effect("' + effect.name + '")(' + DuAEF.Duik.PseudoEffects.TWOD_CAMERA.verticalPanSlider + ');\n' +
 			'[x,y] + [thisComp.width/2,thisComp.height/2];';
