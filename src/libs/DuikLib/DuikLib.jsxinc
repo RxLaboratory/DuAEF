@@ -633,7 +633,8 @@ DuAEF.Duik.expressionIds = {
     IK_GOAL: '//Duik.goal',
     SHAPE_LINKER: '//Duik.shapeLinker',
     BLINK: '//Duik.blink',
-    LOCATOR: '//Duik.locator'
+    LOCATOR: '//Duik.locator',
+    CAMERA_2D: '//Duik.twoDCamera'
 }
 
 //undocumented low-level function used by Duik
