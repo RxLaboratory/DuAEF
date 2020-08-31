@@ -1596,7 +1596,8 @@ DuAEF.Duik.Structure.createLeg = function( femur, tibia, foot, toes, left, type,
                 if (structure.elements[ currentElement ].transform.position.value[0] > 0 ) sign = -1;
                 element.transform.position.setValue( [ sign * size / 2, 0 ] );
             }
-            element.name = DuAEF.DuAE.Comp.newUniqueLayerName( "S | Heel", comp );
+            var name = DuAEF.Duik.generateName( "S", DuAEF.Duik.Structure.Strings.HEEL );
+            element.name = DuAEF.DuAE.Comp.newUniqueLayerName( name, comp );
             element.selected = false;
             structure.elements[ 0 ].selected = true;
             heelLayer = element;
