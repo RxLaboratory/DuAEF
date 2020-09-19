@@ -387,3 +387,51 @@ DuAEF.DuAE.Comp.getAudioLayers = function ( comp, audioActiveOnly ) {
 
     return audioLayers;
 }
+
+/**
+ * Gets the total number of master properties used on precompositions in the comp.
+ * @param {CompItem} [comp=DuAEF.DuAE.Project.getActiveComp] The composition to check
+ * @return {int} The number of master properties
+ */
+DuAEF.DuAE.Comp.numMasterProperties = function(comp) {
+    if (DuAEF.DuAE.App.version.version < 15.1) return 0;
+    comp = def(comp, DuAEF.DuAE.Project.getActiveComp());
+    if (!comp) return 0;
+    var numMP = 0;
+    for (var i = 1, n = comp.numLayers; i <= n; i++)
+    {
+        var l = comp.layer(i);
+        if (!l.source) continue;
+        if (l.source instanceof CompItem)
+        {
+            numMP += l('ADBE Layer Overrides').numProperties;
+        }
+    }
+    return numMP;
+}
+
+/**
+ * Checks if all layers have a different name.
+ * @param {CompItem} [comp=DuAEF.DuAE.Project.getActiveComp] The comp to check
+ * @return {string[]} The list of names used several times. Empty if all layers have a different name.
+ */
+DuAEF.DuAE.Comp.checkLayerNames = function (comp) {
+    comp = def(comp, DuAEF.DuAE.Project.getActiveComp());
+    if (!comp) return [];
+    var duplicatedNames = [];
+    var layerNames = [];
+    var layers = app.project.items;
+    for (var i = 1, n = comp.numLayers; i <= n; i++)
+    {
+        var layer = comp.layer(i);
+        var name = layer.name;
+        if (DuAEF.DuJS.Array.indexOf(duplicatedNames, name) >= 0 ) continue;
+        if (DuAEF.DuJS.Array.indexOf(layerNames, name) >= 0 ) 
+        {
+            duplicatedNames.push(name);
+            continue;
+        }
+        layerNames.push( name );
+    }
+    return duplicatedNames;
+}
