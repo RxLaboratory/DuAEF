@@ -18,4 +18,3 @@
 
     // _______ UI SETUP _______
 	var ui = DuAEF.DuScriptUI.createUI(thisObj);
-    var contents = ui_panel.contents;
