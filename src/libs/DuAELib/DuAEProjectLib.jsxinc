@@ -166,6 +166,28 @@ DuAEF.DuAE.Project.checkCompNames = function () {
 }
 
 /**
+ * Gets the size of the current project file
+ * @return {int} the size in Bytes. -1 if it has not been saved yet.
+ */
+DuAEF.DuAE.Project.getSize = function() {
+    var file = app.project.file;
+    if (!(file instanceof File)) return -1;
+    if (!file.exists) return -1;
+    else return file.length;
+}
+
+/**
+ * The Expressions Engine setting in the Project Settings dialog box, as a string.
+ * @return {string} One of: "extendscript", "javascript-1.0"
+ */
+DuAEF.DuAE.Project.expressionEngine = function ()
+{
+    var engine = app.project.expressionEngine;
+    if (!engine) engine = "extendscript";
+    return engine;
+}
+
+/**
  * Makes sure all compositions in the project have unique names, renaming them if needed.
  */
 DuAEF.DuAE.Project.setUniqueCompNames = function () {
