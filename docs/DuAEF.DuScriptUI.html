@@ -625,8 +625,7 @@
 <dd>
     
     <div class="description">
-        Stores all strings used by the UI.<br />
-This can be very useful to work with a translation framework.
+        Stores all strings used by the UI.<br />This can be very useful to work with a translation framework.
     </div>
     
 
@@ -2836,8 +2835,7 @@ This can be very useful to work with a translation framework.
 
     
     <div class="description">
-        Creates a layout to add forms to a UI, using ScriptUI groups.<br />
-You can easily add controls/fields to this form using DuAEF.DuScriptUI.addField
+        Creates a layout to add forms to a UI, using ScriptUI groups.<br />You can easily add controls/fields to this form using DuAEF.DuScriptUI.addField
     </div>
     
 
@@ -3804,8 +3802,7 @@ You can easily add controls/fields to this form using DuAEF.DuScriptUI.addField
 
     
     <div class="description">
-        Creates a panel which displays RSS feed.<br />
-DuRSS uses a cache system and gets the content online only if more time than a given interval has passed, otherwise it gets the contents from cache.
+        Creates a panel which displays RSS feed.<br />DuRSS uses a cache system and gets the content online only if more time than a given interval has passed, otherwise it gets the contents from cache.
     </div>
     
 
@@ -5410,9 +5407,7 @@ DuRSS uses a cache system and gets the content online only if more time than a g
                 </td>
             
 
-            <td class="description last">The alignment of the text.<br />
-One of 'left', 'center', 'right' for column orientation,<br />
-And 'top', 'center', 'bottom' for row orientation.</td>
+            <td class="description last">The alignment of the text.<br />One of 'left', 'center', 'right' for column orientation,<br />And 'top', 'center', 'bottom' for row orientation.</td>
         </tr>
 
     
@@ -6810,8 +6805,7 @@ And 'top', 'center', 'bottom' for row orientation.</td>
 
     
     <div class="description">
-        Displays an invitation to enable file and network access.<br />
-Use this method before loading any scripts which needs this authorization.
+        Displays an invitation to enable file and network access.<br />Use this method before loading any scripts which needs this authorization.
     </div>
     
 
@@ -6917,8 +6911,7 @@ Use this method before loading any scripts which needs this authorization.
                 </td>
             
 
-            <td class="description last">The function to execute when the user has granted access to file and network.<br />
-This function should be the one which loads the script.</td>
+            <td class="description last">The function to execute when the user has granted access to file and network.<br />This function should be the one which loads the script.</td>
         </tr>
 
     
@@ -7207,8 +7200,7 @@ This function should be the one which loads the script.</td>
 
     
     <div class="description">
-        Creates a dialog with a LayerPicker<br />
-Use <a href="DuAEF.DuScriptUI.html#.showUI"><code>DuAEF.DuScriptUI.showUI</code></a> to show it after creation.
+        Creates a dialog with a LayerPicker<br />Use <a href="DuAEF.DuScriptUI.html#.showUI"><code>DuAEF.DuScriptUI.showUI</code></a> to show it after creation.
     </div>
     
 
@@ -7639,10 +7631,7 @@ Use <a href="DuAEF.DuScriptUI.html#.showUI"><code>DuAEF.DuScriptUI.showUI</code>
     
         <h5>Example</h5>
         
-    <pre class="prettyprint"><code>var ui = DuAEF.DuScriptUI.createUI(this,"Test Script");
-var refreshButton = ui.contents.add('button',undefined,"Refresh");
-refreshButton.onClick = function() { ui.refreshUI( new File($.fileName) ); }; //reloads the current script
-DuAEF.DuScriptUI.showUI(ui);</code></pre>
+    <pre class="prettyprint"><code>var ui = DuAEF.DuScriptUI.createUI(this,"Test Script");var refreshButton = ui.contents.add('button',undefined,"Refresh");refreshButton.onClick = function() { ui.refreshUI( new File($.fileName) ); }; //reloads the current scriptDuAEF.DuScriptUI.showUI(ui);</code></pre>
 
     
 
@@ -7862,9 +7851,7 @@ DuAEF.DuScriptUI.showUI(ui);</code></pre>
     
         <h5>Example</h5>
         
-    <pre class="prettyprint"><code>var popup = DuAEF.DuScriptUI.createPopup( );
-var popupButton = DuAEF.DuScriptUI.addButton( myUI, "My Buttton for the popup" );
-popup.tieTo( popupButton ); // will show the popup when the button is clicked, just above it.</code></pre>
+    <pre class="prettyprint"><code>var popup = DuAEF.DuScriptUI.createPopup( );var popupButton = DuAEF.DuScriptUI.addButton( myUI, "My Buttton for the popup" );popup.tieTo( popupButton ); // will show the popup when the button is clicked, just above it.</code></pre>
 
     
 
@@ -8161,10 +8148,7 @@ popup.tieTo( popupButton ); // will show the popup when the button is clicked, j
     
         <h5>Example</h5>
         
-    <pre class="prettyprint"><code>var ui = DuAEF.DuScriptUI.createUI(this,"Test Script");
-var refreshButton = ui.contents.add('button',undefined,"Refresh");
-refreshButton.onClick = function() { ui.refreshUI( new File($.fileName) ); }; //reloads the current script
-DuAEF.DuScriptUI.showUI(ui);</code></pre>
+    <pre class="prettyprint"><code>var ui = DuAEF.DuScriptUI.createUI(this,"Test Script");var refreshButton = ui.contents.add('button',undefined,"Refresh");refreshButton.onClick = function() { ui.refreshUI( new File($.fileName) ); }; //reloads the current scriptDuAEF.DuScriptUI.showUI(ui);</code></pre>
 
     
 
@@ -9207,8 +9191,7 @@ DuAEF.DuScriptUI.showUI(ui);</code></pre>
                 </td>
             
 
-            <td class="description last">Set to true to automatically set DuAEF to runtime state<br />
-Set this to false if the ui shown is not the actual main panel of the script and it is shown before the main panel has been loaded.</td>
+            <td class="description last">Set to true to automatically set DuAEF to runtime state<br />Set this to false if the ui shown is not the actual main panel of the script and it is shown before the main panel has been loaded.</td>
         </tr>
 
     

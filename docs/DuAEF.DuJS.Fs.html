@@ -233,10 +233,7 @@
 <dd>
     
     <div class="description">
-        The default user data.<br />
-Replaces the Folder.userData provided by ESTK which does not work properly with mac network sessions.<br />
-In windows, the value of %APPDATA% ("C:\Documents and Settings\username\Application Data")<br />
-In Mac OS, "~/Library/Application Support"
+        The default user data.<br />Replaces the Folder.userData provided by ESTK which does not work properly with mac network sessions.<br />In windows, the value of %APPDATA% ("C:\Documents and Settings\username\Application Data")<br />In Mac OS, "~/Library/Application Support"
     </div>
     
 
@@ -863,8 +860,7 @@ In Mac OS, "~/Library/Application Support"
     
         <h5>Example</h5>
         
-    <pre class="prettyprint"><code>DuAEF.DuJS.Fs.getBasename(new File("D:/code/open/Duik/shape.test")) // "shape"
-DuAEF.DuJS.Fs.getBasename("D:/code/open/Duik/shape.test") // "shape"</code></pre>
+    <pre class="prettyprint"><code>DuAEF.DuJS.Fs.getBasename(new File("D:/code/open/Duik/shape.test")) // "shape"DuAEF.DuJS.Fs.getBasename("D:/code/open/Duik/shape.test") // "shape"</code></pre>
 
     
 
@@ -1044,8 +1040,7 @@ DuAEF.DuJS.Fs.getBasename("D:/code/open/Duik/shape.test") // "shape"</code></pre
     
         <h5>Example</h5>
         
-    <pre class="prettyprint"><code>DuAEF.DuJS.Fs.getExtension(new File("D:/code/open/Duik/shape.other.test")) // "test"
-DuAEF.DuJS.Fs.getExtension("D:/code/open/Duik/shape.test") // "test"</code></pre>
+    <pre class="prettyprint"><code>DuAEF.DuJS.Fs.getExtension(new File("D:/code/open/Duik/shape.other.test")) // "test"DuAEF.DuJS.Fs.getExtension("D:/code/open/Duik/shape.test") // "test"</code></pre>
 
     
 
@@ -1075,8 +1070,7 @@ DuAEF.DuJS.Fs.getExtension("D:/code/open/Duik/shape.test") // "test"</code></pre
 
     
     <div class="description">
-        Recursively gets all files in a folder using a name filter
-Returns an array of File objects.
+        Recursively gets all files in a folder using a name filterReturns an array of File objects.
     </div>
     
 
@@ -1186,9 +1180,7 @@ Returns an array of File objects.
                 </td>
             
 
-            <td class="description last">A search mask for file names, specified as a string or a function.
-A mask string can contain question mark (?) and asterisk (*) wild cards. Default is "*", which matches all file names.
-Can also be the name of a function that takes a File or Folder object as its argument. It is called for each file or folder found in the search; if it returns true, the object is added to the return array.</td>
+            <td class="description last">A search mask for file names, specified as a string or a function.A mask string can contain question mark (?) and asterisk (*) wild cards. Default is "*", which matches all file names.Can also be the name of a function that takes a File or Folder object as its argument. It is called for each file or folder found in the search; if it returns true, the object is added to the return array.</td>
         </tr>
 
     
@@ -1449,8 +1441,7 @@ Can also be the name of a function that takes a File or Folder object as its arg
     
         <h5>Example</h5>
         
-    <pre class="prettyprint"><code>DuAEF.DuJS.Fs.getName(new File("D:\\code\\open\\Duik\\shape test.test")) // "shape test.test"
-DuAEF.DuJS.Fs.getName("D:/code/open/Duik/other shape.test") // "other shape.test"</code></pre>
+    <pre class="prettyprint"><code>DuAEF.DuJS.Fs.getName(new File("D:\\code\\open\\Duik\\shape test.test")) // "shape test.test"DuAEF.DuJS.Fs.getName("D:/code/open/Duik/other shape.test") // "other shape.test"</code></pre>
 
     
 
@@ -3005,8 +2996,7 @@ DuAEF.DuJS.Fs.getName("D:/code/open/Duik/other shape.test") // "other shape.test
 
     
     <div class="description">
-        Shows the default save file dialog and returns the file selected by the user.<r />
-If the user ommits the extension, the default extension will be appended (Mac OS fix).
+        Shows the default save file dialog and returns the file selected by the user.<r />If the user ommits the extension, the default extension will be appended (Mac OS fix).
     </div>
     
 
