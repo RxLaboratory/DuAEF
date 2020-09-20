@@ -17,6 +17,7 @@ DuAEF.DuJS.Color = {};
 	DuAEF.DuJS.Color.Colors =
 	{
 		BLACK: [0,0,0,1],
+		WHITE: [1,1,1,1],
 		VERY_DARK_GREY: [0.12,0.12,0.12,1],
 		AE_DARK_GREY: aeColor,
 		DARK_GREY: [.262,.262,.262,1],
@@ -53,8 +54,8 @@ DuAEF.DuJS.Color.validateColor = function (color, ignoreAlpha)
 		var c = color[i];
 		if (isNaN(c)) return false;
 		if (!DuAEF.DuJS.typeof(color) == 'number') return false;
-		if (c < 0) return false;
-		if (c > 1) return false;
+		if (c < 0) color[i] = 0;
+		if (c > 1) color[i] = 1;
 	}
 	return true;
 }
