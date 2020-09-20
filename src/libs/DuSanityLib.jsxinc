@@ -1,0 +1,356 @@
+/*
+DuSanityLib
+Library for checking After Effects Project Sanity.
+Copyright (c)2020 Nicolas Dufresne, Rainbox Laboratory
+https://rainboxlab.org
+
+_Contributors:_
+Nicolas Dufresne - Lead developer
+
+This file is part of DuAEF.
+
+DuAEF is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+DuAEF is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/**
+* Project sanity tests
+* @namespace
+* @memberof DuAEF
+*/
+DuAEF.DuSanity = {};
+
+//internal use: ui elements
+DuAEF.DuSanity.compNamesText = null;
+DuAEF.DuSanity.layerNamesText = null;
+DuAEF.DuSanity.expressionText = null;
+DuAEF.DuSanity.projectSizeText = null;
+DuAEF.DuSanity.numItemsText = null;
+DuAEF.DuSanity.memoryText = null;
+DuAEF.DuSanity.MPText = null;
+DuAEF.DuSanity.saveText = null;
+DuAEF.DuSanity.hasUI = false;
+DuAEF.DuSanity.button = null;
+
+/**
+ * Enum for sanity levels.
+ * @readonly
+ * @enum {int}
+ */
+DuAEF.DuSanity.Levels =
+{
+    UNKNOWN: -1,
+    OK: 0,
+    WARNING: 1,
+    BAD: 2,
+    CRITICAL: 3,
+    FATAL: 4
+}
+
+DuAEF.DuSanity.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+
+DuAEF.DuSanity.createUI = function (container)
+{
+    var ui_reportMainGroup = DuAEF.DuScriptUI.addGroup(container, "row");
+    var ui_reportLeftGroup = DuAEF.DuScriptUI.addGroup(ui_reportMainGroup, "column");
+    var ui_reportRightGroup = DuAEF.DuScriptUI.addGroup(ui_reportMainGroup, "column");
+    DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Composition Names:");
+    DuAEF.DuSanity.compNamesText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
+    DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Layer Names:");
+    DuAEF.DuSanity.layerNamesText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
+    DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Expression Engine:");
+    DuAEF.DuSanity.expressionText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
+    DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Project Size:");
+    DuAEF.DuSanity.projectSizeText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
+    DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Project Items:");
+    DuAEF.DuSanity.numItemsText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
+    DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Memory in use:");
+    DuAEF.DuSanity.memoryText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
+    DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Master properties in active comp:");
+    DuAEF.DuSanity.MPText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
+    DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Time since last save:");
+    DuAEF.DuSanity.saveText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "---------------------------------------------");
+
+    DuAEF.DuSanity.hasUI = true;
+}
+
+//low-level undocumented function: checks a value against a limit and sets the results in the UI
+//returns the level
+DuAEF.DuSanity.checkLevel = function(value, limit, detailsText, uiText)
+{
+    if (value < limit*0.75)
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            uiText.setText("OK (" + detailsText + ")");
+            DuAEF.DuScriptUI.setTextColor(uiText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
+        }
+        return DuAEF.DuSanity.Levels.OK;
+    }
+    
+    if (value < limit)
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            uiText.setText("WARNING (" + detailsText + ")");
+            DuAEF.DuScriptUI.setTextColor(uiText, DuAEF.DuJS.Color.Colors.YELLOW);
+        }
+        return DuAEF.DuSanity.Levels.WARNING;
+    }
+    
+    if (value < limit * 1.5)
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            uiText.setText("BAD (" + detailsText + ")");
+            DuAEF.DuScriptUI.setTextColor(uiText, DuAEF.DuJS.Color.Colors.ORANGE);
+        }
+        return DuAEF.DuSanity.Levels.BAD;
+    }
+
+    if (DuAEF.DuSanity.hasUI)
+    {
+        uiText.setText("CRITICAL (" + detailsText + ")");
+        DuAEF.DuScriptUI.setTextColor(uiText, DuAEF.DuJS.Color.Colors.RAINBOX_RED);
+    }
+    return DuAEF.DuSanity.Levels.CRITICAL;
+}
+
+/**
+ * Checks if the project has been saved recently.
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkSave = function ()
+{
+    var proj = app.project;
+    var f = app.project.file;
+    var limit = 1800000;
+
+    if (!(f instanceof File))
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            DuAEF.DuSanity.saveText.setText("CRITICAL (Not saved)");
+            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.saveText, DuAEF.DuJS.Color.Colors.RAINBOX_RED);
+        }
+        return DuAEF.DuSanity.Levels.CRITICAL;
+    }
+    
+    if (!f.exists)
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            DuAEF.DuSanity.saveText.setText("CRITICAL (Missing file)");
+            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.saveText, DuAEF.DuJS.Color.Colors.RAINBOX_RED);
+        }
+        return DuAEF.DuSanity.Levels.CRITICAL;
+    }
+
+    var date = f.modified.getTime();
+    var now = new Date().getTime();
+    var elapsed =  now - date;
+    var elapsedStr = Math.round(elapsed/60000) + "mn";
+    return DuAEF.DuSanity.checkLevel(elapsed, limit, elapsedStr, DuAEF.DuSanity.saveText);
+}
+
+/**
+ * Checks if there are comps with the same name in the project.
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkCompNames = function ()
+{
+    var duplicatedNames = DuAEF.DuAE.Project.checkCompNames();
+    if (duplicatedNames.length == 0)
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            DuAEF.DuSanity.compNamesText.setText("OK");
+            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.compNamesText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
+        }
+        return DuAEF.DuSanity.Levels.OK;
+    }
+    else
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            DuAEF.DuSanity.compNamesText.setText("BAD");
+            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.compNamesText, DuAEF.DuJS.Color.Colors.ORANGE);
+        }
+        return DuAEF.DuSanity.Levels.BAD;
+    }
+}
+
+/**
+ * Checks if there are layers in the active comp which have the same name.
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkLayerNames = function ()
+{
+    var duplicatedNames = DuAEF.DuAE.Comp.checkLayerNames();
+    if (duplicatedNames.length == 0)
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            DuAEF.DuSanity.layerNamesText.setText("OK");
+            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.layerNamesText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
+        }
+        return DuAEF.DuSanity.Levels.OK;
+    }
+    else
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            DuAEF.DuSanity.layerNamesText.setText("BAD");
+            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.layerNamesText, DuAEF.DuJS.Color.Colors.ORANGE);
+        }
+        return DuAEF.DuSanity.Levels.BAD;
+    }
+}
+
+/**
+ * Checks the project file size.
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkProjectSize = function ()
+{
+    var size = DuAEF.DuAE.Project.getSize();
+    var sizeLimit = 20000000;
+
+    if (size < 0)
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            DuAEF.DuSanity.projectSizeText.setText("CRITICAL (not saved)");
+            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.projectSizeText, DuAEF.DuJS.Color.Colors.RAINBOX_RED);
+        }
+        return DuAEF.DuSanity.Levels.CRITICAL;
+    }
+
+    return DuAEF.DuSanity.checkLevel(size, sizeLimit, DuAEF.DuJS.String.fromSize(size), DuAEF.DuSanity.projectSizeText);
+}
+
+/**
+ * Checks the expression engine
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkExpressionEngine = function ()
+{
+    var e = DuAEF.DuAE.Project.expressionEngine();
+    if (e.indexOf("javascript") == 0)
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            DuAEF.DuSanity.expressionText.setText("OK (JS)");
+            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.expressionText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
+        }
+        return DuAEF.DuSanity.Levels.OK;
+    }
+    else
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            DuAEF.DuSanity.expressionText.setText("BAD (ES)");
+            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.expressionText, DuAEF.DuJS.Color.Colors.ORANGE);
+        }
+        return DuAEF.DuSanity.Levels.BAD;
+    }
+}
+
+/**
+ * Checks the number of items in the project
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkNumItems = function ()
+{
+    var n = app.project.numItems;
+    var limit = 400;
+
+    return DuAEF.DuSanity.checkLevel(n, limit, n, DuAEF.DuSanity.numItemsText);
+}
+
+/**
+ * Checks the memory in use
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkMemory = function ()
+{
+    var mem = app.memoryInUse ;
+    //alert(mem);
+    var limit = 4294967296 ; //4GB 4294967296‬
+
+    return DuAEF.DuSanity.checkLevel(mem, limit, DuAEF.DuJS.String.fromSize(mem), DuAEF.DuSanity.memoryText);
+}
+
+/**
+ * Checks the number of master properties in the project
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkMP = function ()
+{
+    var n = DuAEF.DuAE.Comp.numMasterProperties();
+    var limit = 40;
+    return DuAEF.DuSanity.checkLevel(n, limit, n, DuAEF.DuSanity.MPText);
+}
+
+/**
+ * Runs all the sanity tests and updates the sanity Button
+ * @return {DuAEF.DuSanity.Levels} The highest level.
+ */
+DuAEF.DuSanity.test = function ()
+{
+    var level = DuAEF.DuSanity.Levels.UNKNOWN;
+    var test  = DuAEF.DuSanity.checkCompNames();
+    if (test > level) level = test;
+    test = DuAEF.DuSanity.checkLayerNames();
+    if (test > level) level = test;
+    test = DuAEF.DuSanity.checkProjectSize();
+    if (test > level) level = test;
+    test = DuAEF.DuSanity.checkExpressionEngine();
+    if (test > level) level = test;
+    test = DuAEF.DuSanity.checkNumItems();
+    if (test > level) level = test;
+    test = DuAEF.DuSanity.checkMemory();
+    if (test > level) level = test;
+    test = DuAEF.DuSanity.checkMP();
+    if (test > level) level = test;
+    test = DuAEF.DuSanity.checkSave();
+    if (test > level) level = test;
+
+    if (DuAEF.DuSanity.button)
+    {
+        if (level == DuAEF.DuSanity.Levels.UNKNOWN || level == DuAEF.DuSanity.Levels.OK)
+            DuAEF.DuSanity.button.setBackgroundColor(DuAEF.DuJS.Color.Colors.VERY_DARK_GREY);
+        else if (level == DuAEF.DuSanity.Levels.WARNING)
+            DuAEF.DuSanity.button.setBackgroundColor(DuAEF.DuJS.Color.Colors.YELLOW);
+        else if (level == DuAEF.DuSanity.Levels.BAD)
+            DuAEF.DuSanity.button.setBackgroundColor(DuAEF.DuJS.Color.Colors.ORANGE);
+        else if (level == DuAEF.DuSanity.Levels.CRITICAL)
+            DuAEF.DuSanity.button.setBackgroundColor(DuAEF.DuJS.Color.Colors.RAINBOX_RED);
+        else if (level == DuAEF.DuSanity.Levels.FATAL)
+            DuAEF.DuSanity.button.setBackgroundColor(DuAEF.DuJS.Color.Colors.LIGHT_PURPLE);
+    }
+
+    DuAEF.DuSanity.currentLevel = level;
+    return level;
+}
+
+/**
+ * Intializes the sanity tests and schedule the monitor task. Has to be called once to be able to automatically monitor the project.
+ */
+DuAEF.DuSanity.init = function ()
+{
+    //First run
+    DuAEF.DuSanity.test();
+    //add to events
+    DuAEF.DuScriptUI.addEvent(DuAEF.DuSanity.test);
+}

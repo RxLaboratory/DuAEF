@@ -456,6 +456,7 @@ DuAEF.DuScriptUI.showUI = function( ui, enterRunTime )
  * @param {bool} [addSettingsButton=true] - Wether to create a button to open the settings or not
  * @param {bool} [addHelpButton=false] - Wether to create a button to open the help panel or not
  * @param {bool} [helpButtonOpensPanel=false] - The help button opens a help panel instead of the link to the documentation
+ * @param {bool} [addSanityTestButton=false] - The sanity test button monitors the project sanity, and opens a panel to check what may be wrong
  * @return {DuMainPanel} The panel created, either a ScriptUI Panel or a ScriptUI Window.
  * @example
  * var ui = DuAEF.DuScriptUI.createUI(this,"Test Script");
@@ -463,11 +464,12 @@ DuAEF.DuScriptUI.showUI = function( ui, enterRunTime )
  * refreshButton.onClick = function() { ui.refreshUI( new File($.fileName) ); }; //reloads the current script
  * DuAEF.DuScriptUI.showUI(ui);
  */
-DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHelpButton, helpButtonOpensPanel )
+DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHelpButton, helpButtonOpensPanel, addSanityTestButton )
 {
     addSettingsButton = def(addSettingsButton, true);
     addHelpButton = def(addHelpButton, false);
     helpButtonOpensPanel = def(helpButtonOpensPanel, false);
+    addSanityTestButton = def(addSanityTestButton, false);
 
     var panel = DuAEF.DuScriptUI.createUI( container, undefined, ['fill','fill'] );
     panel.contents.orientation = 'stack';
@@ -476,6 +478,7 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
     panel.mainGroup = DuAEF.DuScriptUI.addGroup(panel.contents, 'column');
     panel.mainGroup.alignment = ['fill', 'top'];
     
+    // == SETTINGS PANEL
     var rootSettingsGroup = DuAEF.DuScriptUI.addGroup(panel.contents, 'column');
     rootSettingsGroup.alignment = ['fill', 'fill'];
     rootSettingsGroup.visible = false;
@@ -489,6 +492,11 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
         DuAEF.DuBinary.toFile(w14_back_l)
     )
 
+    // == SANITY PANEL
+    panel.sanityGroup = DuAEF.DuScriptUI.addGroup(panel.contents, 'column');
+    panel.sanityGroup.visible = false;
+
+    // == Bottom Line
     var bottomGroup = DuAEF.DuScriptUI.addGroup(panel.contents, 'row');
     bottomGroup.alignment = ['fill', 'bottom'];
     DuAEF.DuScriptUI.setBackgroundColor(bottomGroup, DuAEF.DuJS.Color.Colors.AE_DARK_GREY, false);
@@ -513,24 +521,26 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
     if (addSettingsButton)
     {
         var settingsButton = DuAEF.DuScriptUI.addButton(
-        bottomGroup,
-        '',
-        DuAEF.DuBinary.toFile(w18_settings_l),
-        "Change the settings",
-        DuAEF.DuBinary.toFile(w18_settings_r)
-        );
+            bottomGroup,
+            '',
+            DuAEF.DuBinary.toFile(w18_settings_l),
+            "Change the settings",
+            DuAEF.DuBinary.toFile(w18_settings_r)
+            );
         settingsButton.alignment = ['right', 'fill'];
 
         settingsButton.onClick = function()
         {
-            if (panel.mainGroup.visible)
+            if (!rootSettingsGroup.visible)
             {
                 panel.mainGroup.visible = false;
+                panel.sanityGroup.visible = false;
                 rootSettingsGroup.visible = true;
             }
             else
             {
                 panel.mainGroup.visible = true;
+                panel.sanityGroup.visible = false;
                 rootSettingsGroup.visible = false;
             }
         }
@@ -549,5 +559,44 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
         helpButton.alignment = ['right', 'fill'];
     }
     
+    if (addSanityTestButton)
+    {
+        var sanityButton = DuAEF.DuScriptUI.addButton(bottomGroup);
+        sanityButton.minimumSize = sanityButton.maximumSize = [14,14];
+        sanityButton.alignment = ['right','center'];
+        sanityButton.setBackgroundColor(DuAEF.DuJS.Color.Colors.ORANGE);
+        sanityButton.onClick = function()
+        {
+            if (!panel.sanityGroup.visible)
+            {
+                panel.mainGroup.visible = false;
+                panel.sanityGroup.visible = true;
+                rootSettingsGroup.visible = false;
+            }
+            else
+            {
+                panel.mainGroup.visible = true;
+                panel.sanityGroup.visible = false;
+                rootSettingsGroup.visible = false;
+            }
+        }
+
+        // Create UI
+        DuAEF.DuSanity.createUI( panel.sanityGroup );
+        var sanityBackButton = DuAEF.DuScriptUI.addButton(
+            panel.sanityGroup,
+            "Back",
+            DuAEF.DuBinary.toFile(w14_back_m),
+            "Close sanity report",
+            DuAEF.DuBinary.toFile(w14_back_l)
+        )
+        sanityBackButton.onClick = function () {
+            panel.sanityGroup.visible = false;
+            panel.mainGroup.visible = true;
+        }
+        DuAEF.DuSanity.button = sanityButton;
+        DuAEF.DuSanity.init();
+    }
+
     return panel;
 }
