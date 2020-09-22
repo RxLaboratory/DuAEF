@@ -39,6 +39,7 @@ DuAEF.DuSanity.numItemsText = null;
 DuAEF.DuSanity.memoryText = null;
 DuAEF.DuSanity.MPText = null;
 DuAEF.DuSanity.saveText = null;
+DuAEF.DuSanity.itemSourcesText = null;
 DuAEF.DuSanity.hasUI = false;
 DuAEF.DuSanity.button = null;
 
@@ -74,6 +75,8 @@ DuAEF.DuSanity.createUI = function (container)
     DuAEF.DuSanity.projectSizeText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
     DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Project Items:");
     DuAEF.DuSanity.numItemsText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
+    DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Duplicated Footages:");
+    DuAEF.DuSanity.itemSourcesText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
     DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Memory in use:");
     DuAEF.DuSanity.memoryText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
     DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Master properties in active comp:");
@@ -303,28 +306,78 @@ DuAEF.DuSanity.checkMP = function ()
 }
 
 /**
+ * Checks if some items have the same source file
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkItemSources = function ()
+{
+    var duplicatedSources = {};
+    duplicatedSources.length = 0;
+    var sources = {};
+    for (var i = 1, n = app.project.numItems; i <= n; i++)
+    {
+        var item = app.project.item(i);
+        if (!(item instanceof FootageItem)) continue;
+        var source  = item.mainSource;
+        if (!(source instanceof FileSource)) continue;
+        var file = source.file.path;
+        if (duplicatedSources[file])
+        {
+            duplicatedSources[file].push(item);
+            continue;
+        }
+        if ( sources[file] ) 
+        {
+            duplicatedSources[file] = [item];
+            duplicatedSources.length++;
+            continue;
+        }
+        sources[file] = item;
+    }
+
+    if (duplicatedSources.length == 0)
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            DuAEF.DuSanity.itemSourcesText.setText("OK");
+            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.itemSourcesText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
+        }
+        return DuAEF.DuSanity.Levels.OK;
+    }
+    else
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            DuAEF.DuSanity.itemSourcesText.setText("BAD");
+            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.itemSourcesText, DuAEF.DuJS.Color.Colors.ORANGE);
+        }
+        return DuAEF.DuSanity.Levels.BAD;
+    }
+}
+
+/**
  * Runs all the sanity tests and updates the sanity Button
  * @return {DuAEF.DuSanity.Levels} The highest level.
  */
 DuAEF.DuSanity.test = function ()
 {
     var level = DuAEF.DuSanity.Levels.UNKNOWN;
-    var test  = DuAEF.DuSanity.checkCompNames();
-    if (test > level) level = test;
-    test = DuAEF.DuSanity.checkLayerNames();
-    if (test > level) level = test;
-    test = DuAEF.DuSanity.checkProjectSize();
-    if (test > level) level = test;
-    test = DuAEF.DuSanity.checkExpressionEngine();
-    if (test > level) level = test;
-    test = DuAEF.DuSanity.checkNumItems();
-    if (test > level) level = test;
-    test = DuAEF.DuSanity.checkMemory();
-    if (test > level) level = test;
-    test = DuAEF.DuSanity.checkMP();
-    if (test > level) level = test;
-    test = DuAEF.DuSanity.checkSave();
-    if (test > level) level = test;
+
+    function runTest(testFunction)
+    {
+        var test = testFunction();
+        if (test > level) level = test;
+    }
+
+    runTest(DuAEF.DuSanity.checkCompNames);
+    runTest(DuAEF.DuSanity.checkLayerNames);
+    runTest(DuAEF.DuSanity.checkProjectSize);
+    runTest(DuAEF.DuSanity.checkExpressionEngine);
+    runTest(DuAEF.DuSanity.checkNumItems);
+    runTest(DuAEF.DuSanity.checkMemory);
+    runTest(DuAEF.DuSanity.checkMP);
+    runTest(DuAEF.DuSanity.checkSave);
+    runTest(DuAEF.DuSanity.checkItemSources);
 
     if (DuAEF.DuSanity.button)
     {
