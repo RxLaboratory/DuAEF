@@ -141,11 +141,19 @@ DuAEF.DuAE.Project.newUniqueCompName = function ( newName, increment ) {
 
 /**
  * Checks if all comps have a different name.
- * @return {string[]} The list of names used several times. Empty if all comps have a different name.
- */
+ * @return {Object} The list of names used several times. Check the length attribute to know how many duplicates were found, loop through the keys to get the names. Eech key is an array containing the list of comps with that name.
+ * @example
+ * var dupes = DuAEF.DuAE.Project.checkCompNames();
+ * if (dupes.length != 0) {
+ * for (name in dupes)
+ * {
+ *     if (dupes.hasOwnProperty(name)) alert(dupes[name]); //dupes[name] is an array of Layer
+ * }
+ * } */
 DuAEF.DuAE.Project.checkCompNames = function () {
-    var duplicatedNames = [];
-    var compNames = [];
+    var duplicatedNames = {};
+    duplicatedNames.length  = 0;
+    var compNames = {};
     var items = app.project.items;
     for (var i = 1, n = items.length; i <= n; i++)
     {
@@ -153,13 +161,18 @@ DuAEF.DuAE.Project.checkCompNames = function () {
         if ( comp instanceof CompItem )
         {
             var name = comp.name;
-            if (DuAEF.DuJS.Array.indexOf(duplicatedNames, name) >= 0 ) continue;
-            if (DuAEF.DuJS.Array.indexOf(compNames, name) >= 0 ) 
+            if (duplicatedNames[name])
             {
-                duplicatedNames.push(name);
+                duplicatedNames[name].push(comp);
                 continue;
             }
-            compNames.push( name );
+            if ( compNames[name] ) 
+            {
+                duplicatedNames[name] = [comp];
+                duplicatedNames.length++;
+                continue;
+            }
+            compNames[name] = comp;
         }
     }
     return duplicatedNames;
