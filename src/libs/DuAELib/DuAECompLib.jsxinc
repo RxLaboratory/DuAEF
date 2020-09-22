@@ -413,25 +413,40 @@ DuAEF.DuAE.Comp.numMasterProperties = function(comp) {
 /**
  * Checks if all layers have a different name.
  * @param {CompItem} [comp=DuAEF.DuAE.Project.getActiveComp] The comp to check
- * @return {string[]} The list of names used several times. Empty if all layers have a different name.
+ * @return {Object} The list of names used several times. Check the length attribute to know how many duplicates were found, loop through the keys to get the names. Eech key is an array containing the list of layers with that name.
+ * @example
+ * var dupes = DuAEF.DuAE.Comp.checkLayerNames();
+ * if (dupes.length != 0) {
+ * for (name in dupes)
+ * {
+ *     if (dupes.hasOwnProperty(name)) alert(dupes[name]); //dupes[name] is an array of Layer
+ * }
+ * }
  */
 DuAEF.DuAE.Comp.checkLayerNames = function (comp) {
     comp = def(comp, DuAEF.DuAE.Project.getActiveComp());
-    if (!comp) return [];
-    var duplicatedNames = [];
-    var layerNames = [];
+    var duplicatedNames = {};
+    duplicatedNames.length  = 0;
+    if (!comp) return duplicatedNames;
+    var layerNames = {};
     var layers = app.project.items;
     for (var i = 1, n = comp.numLayers; i <= n; i++)
     {
         var layer = comp.layer(i);
         var name = layer.name;
-        if (DuAEF.DuJS.Array.indexOf(duplicatedNames, name) >= 0 ) continue;
-        if (DuAEF.DuJS.Array.indexOf(layerNames, name) >= 0 ) 
+
+        if (duplicatedNames[name])
         {
-            duplicatedNames.push(name);
+            duplicatedNames[name].push(layer);
             continue;
         }
-        layerNames.push( name );
+        if ( layerNames[name] ) 
+        {
+            duplicatedNames[name] = [layer];
+            duplicatedNames.length++;
+            continue;
+        }
+        layerNames[name] = layer;
     }
     return duplicatedNames;
 }
