@@ -99,12 +99,14 @@ DuAEF.Ramses.getCurrentProjectVersion = function () {
  * Saves the current project, and copies a backup file.
  * @param {boolean} [increment=false] Set to true to increment the current version.
  * @param {boolean} [publish=false] Set to true to publish the current project (remove the WIP part)
+ * @param {int} [timeout=120] A timeout in minutes before the project is automatically saved with an incrementation
  * @return {File} The backup file.
  */
-DuAEF.Ramses.saveProject = function ( increment, publish ) {
+DuAEF.Ramses.saveProject = function ( increment, publish, timeout ) {
 
     increment = def(increment, false);
     publish = def(publish, false);
+    timeout = def(timeout, 120);
 
     var projectFile = app.project.file;
     
@@ -115,6 +117,13 @@ DuAEF.Ramses.saveProject = function ( increment, publish ) {
 
     if ( projectFile ) {
         projectName = DuAEF.Ramses.getProjectName();
+        // timeout for increment
+        if (!increment && !publish) {
+            var date = projectFile.modified.getTime();
+            var now = new Date().getTime();
+            var elapsed =  now - date;
+            if (elapsed > timeout/60/1000) increment = true;
+        }
     } else {
         throw ( 'Please save this project with After Effects once before using Ramses.' );
         return;
