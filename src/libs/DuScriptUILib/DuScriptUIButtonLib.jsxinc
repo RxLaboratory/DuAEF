@@ -59,6 +59,14 @@
  */
 
 /**
+ * Sets the standard image of the button.
+ * @method
+ * @memberof DuButton
+ * @name setStandardImage
+ * @param {string} image - the path to the image.
+ */
+
+/**
  * Creates a button with an optionnal icon. Must have at least an icon or a text, or both.
  * @memberof DuAEF.DuScriptUI
  * @param {Panel|Window|Group}			container	- The ScriptUI Object which will contain and display the button.
@@ -274,6 +282,12 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
     imageButton.setTextColor = function(color)
     {
         imageButton.textColor = color;
+        imageButton.dim();
+    }
+
+    imageButton.setStandardImage = function(im)
+    {
+        imageButton.standardImage = im;
         imageButton.dim();
     }
 
