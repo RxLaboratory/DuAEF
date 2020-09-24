@@ -44,7 +44,7 @@ DuAEF.DuSanity.unusedText = null;
 DuAEF.DuSanity.precompsText = null;
 DuAEF.DuSanity.unusedCompsText = null;
 DuAEF.DuSanity.hasUI = false;
-DuAEF.DuSanity.button = null;
+DuAEF.DuSanity.isInitialized = false;
 
 /**
  * Enum for sanity levels.
@@ -143,6 +143,7 @@ DuAEF.DuSanity.checkLevel = function(value, limit, detailsText, uiText)
         uiText.setText("CRITICAL (" + detailsText + ")");
         DuAEF.DuScriptUI.setTextColor(uiText, DuAEF.DuJS.Color.Colors.RAINBOX_RED);
     }
+    
     return DuAEF.DuSanity.Levels.CRITICAL;
 }
 
@@ -601,22 +602,6 @@ DuAEF.DuSanity.test = function ()
     runTest(DuAEF.DuSanity.checkSave);
     runTest(DuAEF.DuSanity.checkItemSources);
 
-    if (DuAEF.DuSanity.button)
-    {
-        if (level == DuAEF.DuSanity.Levels.UNKNOWN || level == DuAEF.DuSanity.Levels.OK)
-            DuAEF.DuSanity.button.setBackgroundColor(DuAEF.DuJS.Color.Colors.VERY_DARK_GREY);
-        else if (level == DuAEF.DuSanity.Levels.INFO)
-            DuAEF.DuSanity.button.setBackgroundColor(DuAEF.DuJS.Color.Colors.AFTER_EFFECTS_BLUE);
-        else if (level == DuAEF.DuSanity.Levels.WARNING)
-            DuAEF.DuSanity.button.setBackgroundColor(DuAEF.DuJS.Color.Colors.YELLOW);
-        else if (level == DuAEF.DuSanity.Levels.BAD)
-            DuAEF.DuSanity.button.setBackgroundColor(DuAEF.DuJS.Color.Colors.ORANGE);
-        else if (level == DuAEF.DuSanity.Levels.CRITICAL)
-            DuAEF.DuSanity.button.setBackgroundColor(DuAEF.DuJS.Color.Colors.RAINBOX_RED);
-        else if (level == DuAEF.DuSanity.Levels.FATAL)
-            DuAEF.DuSanity.button.setBackgroundColor(DuAEF.DuJS.Color.Colors.LIGHT_PURPLE);
-    }
-
     DuAEF.DuSanity.currentLevel = level;
     return level;
 }
@@ -626,8 +611,10 @@ DuAEF.DuSanity.test = function ()
  */
 DuAEF.DuSanity.init = function ()
 {
+    if (DuAEF.DuSanity.isInitialized) return;
     //First run
     DuAEF.DuSanity.test();
     //add to events
     DuAEF.DuScriptUI.addEvent(DuAEF.DuSanity.test);
+    DuAEF.DuSanity.isInitialized = true;
 }
