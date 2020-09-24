@@ -473,7 +473,7 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
 
     var panel = DuAEF.DuScriptUI.createUI( container, undefined, ['fill','fill'] );
     panel.contents.orientation = 'stack';
-    panel.contents.alignment = ['fill','fill'];  
+    panel.contents.alignment = ['fill','fill'];
 
     panel.mainGroup = DuAEF.DuScriptUI.addGroup(panel.contents, 'column');
     panel.mainGroup.alignment = ['fill', 'top'];
@@ -494,6 +494,7 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
 
     // == SANITY PANEL
     panel.sanityGroup = DuAEF.DuScriptUI.addGroup(panel.contents, 'column');
+    panel.sanityGroup.alignment = ['fill', 'fill'];
     panel.sanityGroup.visible = false;
 
     // == Bottom Line
@@ -561,12 +562,26 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
     
     if (addSanityTestButton)
     {
-        var sanityButton = DuAEF.DuScriptUI.addButton(bottomGroup);
+        var buttonM = DuAEF.DuBinary.toFile(w14_brain_m);
+        var buttonB = DuAEF.DuBinary.toFile(w14_brain_b);
+        var buttonY = DuAEF.DuBinary.toFile(w14_brain_y);
+        var buttonO = DuAEF.DuBinary.toFile(w14_brain_o);
+        var buttonR = DuAEF.DuBinary.toFile(w14_brain_r);
+        var buttonP = DuAEF.DuBinary.toFile(w14_brain_p);
+
+        var sanityButton = DuAEF.DuScriptUI.addButton(
+            bottomGroup,
+            '',
+            buttonM,
+            "Sanity report",
+            buttonR
+            );
         sanityButton.minimumSize = sanityButton.maximumSize = [14,14];
         sanityButton.alignment = ['right','center'];
         sanityButton.setBackgroundColor(DuAEF.DuJS.Color.Colors.ORANGE);
         sanityButton.onClick = function()
         {
+            DuAEF.DuSanity.test();
             if (!panel.sanityGroup.visible)
             {
                 panel.mainGroup.visible = false;
@@ -590,11 +605,31 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
             "Close sanity report",
             DuAEF.DuBinary.toFile(w14_back_l)
         )
+
         sanityBackButton.onClick = function () {
             panel.sanityGroup.visible = false;
             panel.mainGroup.visible = true;
         }
-        DuAEF.DuSanity.button = sanityButton;
+        
+        function checkSanity()
+        {
+            var level = DuAEF.DuSanity.currentLevel;
+            if (level == DuAEF.DuSanity.Levels.UNKNOWN || level == DuAEF.DuSanity.Levels.OK)
+                sanityButton.setStandardImage(buttonM);
+            else if (level == DuAEF.DuSanity.Levels.INFO)
+                sanityButton.setStandardImage(buttonB);
+            else if (level == DuAEF.DuSanity.Levels.WARNING)
+                sanityButton.setStandardImage(buttonY);
+            else if (level == DuAEF.DuSanity.Levels.BAD)
+                sanityButton.setStandardImage(buttonO);
+            else if (level == DuAEF.DuSanity.Levels.CRITICAL)
+                sanityButton.setStandardImage(buttonR);
+            else if (level == DuAEF.DuSanity.Levels.FATAL)
+                sanityButton.setStandardImage(buttonP);
+        }
+
+        DuAEF.DuScriptUI.addEvent(checkSanity,1000);
+
         DuAEF.DuSanity.init();
     }
 
