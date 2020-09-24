@@ -168,7 +168,7 @@ DuAEF.DuAE.Project.checkCompNames = function () {
             }
             if ( compNames[name] ) 
             {
-                duplicatedNames[name] = [comp];
+                duplicatedNames[name] = [compNames[name], comp];
                 duplicatedNames.length++;
                 continue;
             }
