@@ -40,9 +40,9 @@ DuAEF.DuSanity.memoryText = null;
 DuAEF.DuSanity.MPText = null;
 DuAEF.DuSanity.saveText = null;
 DuAEF.DuSanity.itemSourcesText = null;
-DuAEF.DuSanity.notUsedText = null;
+DuAEF.DuSanity.unusedText = null;
 DuAEF.DuSanity.precompsText = null;
-DuAEF.DuSanity.notUsedCompsText = null;
+DuAEF.DuSanity.unusedCompsText = null;
 DuAEF.DuSanity.hasUI = false;
 DuAEF.DuSanity.button = null;
 
@@ -84,9 +84,9 @@ DuAEF.DuSanity.createUI = function (container)
     DuAEF.DuSanity.projectSizeText = createReportText("Project Size:");
     DuAEF.DuSanity.numItemsText = createReportText("Project Items:");
     DuAEF.DuSanity.itemSourcesText = createReportText("Duplicated Footages:");
-    DuAEF.DuSanity.notUsedText = createReportText("Not used Footages:");
+    DuAEF.DuSanity.unusedText = createReportText("Unused Footages:");
     DuAEF.DuSanity.precompsText = createReportText("Precompositions:");
-    DuAEF.DuSanity.notUsedCompsText = createReportText("Not used compositions:");
+    DuAEF.DuSanity.unusedCompsText = createReportText("Unused compositions:");
     DuAEF.DuSanity.memoryText = createReportText("Memory in use:");
     DuAEF.DuSanity.MPText = createReportText("Master properties in active comp:");
     DuAEF.DuSanity.saveText = createReportText("Time since last save:");
@@ -453,35 +453,35 @@ DuAEF.DuSanity.checkItemSources = function ()
 }
 
 /**
- * Checks if some items are not used and should be removed
+ * Checks if some items are unused and should be removed
  * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
  */
 DuAEF.DuSanity.checkItemsUnused = function ()
 {
     var limit = 10;
-    notUsed = [];
+    unused = [];
     for (var i = 1, n = app.project.numItems; i <= n; i++)
     {
         var item = app.project.item(i);
         if (item instanceof FootageItem)
         {
-            if (item.usedIn.length == 0) notUsed.push(item);
+            if (item.usedIn.length == 0) unused.push(item);
         }
     }
 
-    var level = DuAEF.DuSanity.checkLevel(notUsed.length, limit, notUsed.length, DuAEF.DuSanity.notUsedText);
+    var level = DuAEF.DuSanity.checkLevel(unused.length, limit, unused.length, DuAEF.DuSanity.unusedText);
     if (DuAEF.DuSanity.hasUI)
     {
         if (level > DuAEF.DuSanity.Levels.OK) 
         {
-            var helpTip = "Found some footages which are not used. You should remove them.";
-            for (var i = 0, n = notUsed.length; i < n; i++)
+            var helpTip = "Found some footages which are unused. You should remove them.";
+            for (var i = 0, n = unused.length; i < n; i++)
             {
-                helpTip += "\n- " + notUsed[i].name;
+                helpTip += "\n- " + unused[i].name;
             }
-            DuAEF.DuSanity.notUsedText.helpTip = helpTip;
+            DuAEF.DuSanity.unusedText.helpTip = helpTip;
         }
-        else DuAEF.DuSanity.notUsedText.helpTip = "";
+        else DuAEF.DuSanity.unusedText.helpTip = "";
     }
     return level;
 }
@@ -531,10 +531,10 @@ DuAEF.DuSanity.checkPrecomps = function ()
 }
 
 /**
- * Checks if there are not used comps in some subfolders
+ * Checks if there are unused comps in some subfolders
  * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
  */
-DuAEF.DuSanity.checkNotUsedComps = function ()
+DuAEF.DuSanity.checkUnusedComps = function ()
 {
     var comps = [];
     for (var i = 1, n = app.project.numItems; i <= n; i++ )
@@ -550,9 +550,9 @@ DuAEF.DuSanity.checkNotUsedComps = function ()
     {
         if (DuAEF.DuSanity.hasUI)
         {
-            DuAEF.DuSanity.notUsedCompsText.setText("OK");
-            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.notUsedCompsText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
-            DuAEF.DuSanity.notUsedCompsText.helpTip = "";
+            DuAEF.DuSanity.unusedCompsText.setText("OK");
+            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.unusedCompsText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
+            DuAEF.DuSanity.unusedCompsText.helpTip = "";
         }
         return DuAEF.DuSanity.Levels.OK; 
     }
@@ -560,15 +560,15 @@ DuAEF.DuSanity.checkNotUsedComps = function ()
     {
         if (DuAEF.DuSanity.hasUI)
         {
-            DuAEF.DuSanity.notUsedCompsText.setText("INFO");
-            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.notUsedCompsText, DuAEF.DuJS.Color.Colors.AFTER_EFFECTS_BLUE);
+            DuAEF.DuSanity.unusedCompsText.setText("INFO");
+            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.unusedCompsText, DuAEF.DuJS.Color.Colors.AFTER_EFFECTS_BLUE);
             var helpTip = "Some main compositions are stored in subfolders.\n" + 
                 "It is easier to keep them at the root of the project, or they should be removed if they're not needed anymore.";
             for (var i = 0, n = comps.length; i<n; i++)
             {
                 helpTip += "\n- " + comps[i].name;
             }
-            DuAEF.DuSanity.notUsedCompsText.helpTip = helpTip;
+            DuAEF.DuSanity.unusedCompsText.helpTip = helpTip;
         }
         return DuAEF.DuSanity.Levels.INFO; 
     }
@@ -595,7 +595,7 @@ DuAEF.DuSanity.test = function ()
     runTest(DuAEF.DuSanity.checkNumItems);
     runTest(DuAEF.DuSanity.checkItemsUnused);
     runTest(DuAEF.DuSanity.checkPrecomps);
-    runTest(DuAEF.DuSanity.checkNotUsedComps);
+    runTest(DuAEF.DuSanity.checkUnusedComps);
     runTest(DuAEF.DuSanity.checkMemory);
     runTest(DuAEF.DuSanity.checkMP);
     runTest(DuAEF.DuSanity.checkSave);
