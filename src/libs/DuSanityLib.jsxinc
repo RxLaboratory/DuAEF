@@ -40,6 +40,7 @@ DuAEF.DuSanity.memoryText = null;
 DuAEF.DuSanity.MPText = null;
 DuAEF.DuSanity.saveText = null;
 DuAEF.DuSanity.itemSourcesText = null;
+DuAEF.DuSanity.notUsedText = null;
 DuAEF.DuSanity.hasUI = false;
 DuAEF.DuSanity.button = null;
 
@@ -65,24 +66,25 @@ DuAEF.DuSanity.createUI = function (container)
     var ui_reportMainGroup = DuAEF.DuScriptUI.addGroup(container, "row");
     var ui_reportLeftGroup = DuAEF.DuScriptUI.addGroup(ui_reportMainGroup, "column");
     var ui_reportRightGroup = DuAEF.DuScriptUI.addGroup(ui_reportMainGroup, "column");
-    DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Composition Names:");
-    DuAEF.DuSanity.compNamesText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
-    DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Layer Names:");
-    DuAEF.DuSanity.layerNamesText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
-    DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Expression Engine:");
-    DuAEF.DuSanity.expressionText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
-    DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Project Size:");
-    DuAEF.DuSanity.projectSizeText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
-    DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Project Items:");
-    DuAEF.DuSanity.numItemsText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
-    DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Duplicated Footages:");
-    DuAEF.DuSanity.itemSourcesText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
-    DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Memory in use:");
-    DuAEF.DuSanity.memoryText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
-    DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Master properties in active comp:");
-    DuAEF.DuSanity.MPText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "----------------------------");
-    DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, "Time since last save:");
-    DuAEF.DuSanity.saveText = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "---------------------------------------------");
+
+    function createReportText(t)
+    {
+        DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, t);
+        var st = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "---------------------------------------------");
+        st.minimumSize = [100,0];
+        return st;
+    }
+
+    DuAEF.DuSanity.compNamesText = createReportText("Composition Names:");
+    DuAEF.DuSanity.layerNamesText = createReportText("Layer Names:");
+    DuAEF.DuSanity.expressionText = createReportText("Expression Engine:");
+    DuAEF.DuSanity.projectSizeText = createReportText("Project Size:");
+    DuAEF.DuSanity.numItemsText = createReportText("Project Items:");
+    DuAEF.DuSanity.itemSourcesText = createReportText("Duplicated Footages:");
+    DuAEF.DuSanity.notUsedText = createReportText("Not used Footages:");
+    DuAEF.DuSanity.memoryText = createReportText("Memory in use:");
+    DuAEF.DuSanity.MPText = createReportText("Master properties in active comp:");
+    DuAEF.DuSanity.saveText = createReportText("Time since last save:");
 
     DuAEF.DuSanity.hasUI = true;
 }
@@ -163,7 +165,13 @@ DuAEF.DuSanity.checkSave = function ()
     var now = new Date().getTime();
     var elapsed =  now - date;
     var elapsedStr = Math.round(elapsed/60000) + "mn";
-    return DuAEF.DuSanity.checkLevel(elapsed, limit, elapsedStr, DuAEF.DuSanity.saveText);
+    var level = DuAEF.DuSanity.checkLevel(elapsed, limit, elapsedStr, DuAEF.DuSanity.saveText);
+    if (DuAEF.DuSanity.hasUI)
+    {
+        if (level > DuAEF.DuSanity.Levels.OK) DuAEF.DuSanity.saveText.helpTip = "You should save the project at least every " + Math.round(limit/60000) + "mn";
+        else DuAEF.DuSanity.saveText.helpTip = "";
+    }
+    return level;
 }
 
 /**
@@ -264,7 +272,15 @@ DuAEF.DuSanity.checkProjectSize = function ()
         return DuAEF.DuSanity.Levels.CRITICAL;
     }
 
-    return DuAEF.DuSanity.checkLevel(size, sizeLimit, DuAEF.DuJS.String.fromSize(size), DuAEF.DuSanity.projectSizeText);
+    var level = DuAEF.DuSanity.checkLevel(size, sizeLimit, DuAEF.DuJS.String.fromSize(size), DuAEF.DuSanity.projectSizeText);
+    if (DuAEF.DuSanity.hasUI)
+    {
+        if (level > DuAEF.DuSanity.Levels.OK) DuAEF.DuSanity.projectSizeText.helpTip = "Try to keep the project small (less than " + DuAEF.DuJS.String.fromSize(sizeLimit) + ")\n" + 
+            "e.g. do not animate several shots in the same project, but use one project per shot.\n" + 
+            "Do not use After Effects to edit compositions, make the edit in an editing shoftware, or at least use renders instead compositions in a clean and simple project.";
+        else DuAEF.DuSanity.projectSizeText.helpTip = "";
+    }
+    return level;
 }
 
 /**
@@ -280,6 +296,7 @@ DuAEF.DuSanity.checkExpressionEngine = function ()
         {
             DuAEF.DuSanity.expressionText.setText("OK (JS)");
             DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.expressionText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
+            DuAEF.DuSanity.expressionText.helpTip = "";
         }
         return DuAEF.DuSanity.Levels.OK;
     }
@@ -289,6 +306,8 @@ DuAEF.DuSanity.checkExpressionEngine = function ()
         {
             DuAEF.DuSanity.expressionText.setText("BAD (ES)");
             DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.expressionText, DuAEF.DuJS.Color.Colors.ORANGE);
+            DuAEF.DuSanity.expressionText.helpTip = "The expression engine is set to \"ExtendScript legacy\".\n" +
+                "Setting it to \"JavaScript\" will improve performance (see the project settings).";
         }
         return DuAEF.DuSanity.Levels.BAD;
     }
@@ -303,7 +322,15 @@ DuAEF.DuSanity.checkNumItems = function ()
     var n = app.project.numItems;
     var limit = 400;
 
-    return DuAEF.DuSanity.checkLevel(n, limit, n, DuAEF.DuSanity.numItemsText);
+    var level = DuAEF.DuSanity.checkLevel(n, limit, n, DuAEF.DuSanity.numItemsText);
+    if (DuAEF.DuSanity.hasUI)
+    {
+        if (level > DuAEF.DuSanity.Levels.OK) DuAEF.DuSanity.numItemsText.helpTip = "Try to keep the project small (less than " + limit + " items)\n" + 
+            "e.g. do not animate several shots in the same project, but use one project per shot.\n" + 
+            "You can also remove unused items, and consolidate footage.";
+        else DuAEF.DuSanity.numItemsText.helpTip = "";
+    }
+    return level;
 }
 
 /**
@@ -316,7 +343,14 @@ DuAEF.DuSanity.checkMemory = function ()
     //alert(mem);
     var limit = 4294967296 ; //4GB 4294967296‬
 
-    return DuAEF.DuSanity.checkLevel(mem, limit, DuAEF.DuJS.String.fromSize(mem), DuAEF.DuSanity.memoryText);
+    var level = DuAEF.DuSanity.checkLevel(mem, limit, DuAEF.DuJS.String.fromSize(mem), DuAEF.DuSanity.memoryText);
+    if (DuAEF.DuSanity.hasUI)
+    {
+        if (level > DuAEF.DuSanity.Levels.OK) DuAEF.DuSanity.memoryText.helpTip = "Memory use is getting high.\n" + 
+            "It may help to purge the cache and the memory.";
+        else DuAEF.DuSanity.memoryText.helpTip = "";
+    }
+    return level;
 }
 
 /**
@@ -327,7 +361,14 @@ DuAEF.DuSanity.checkMP = function ()
 {
     var n = DuAEF.DuAE.Comp.numMasterProperties();
     var limit = 40;
-    return DuAEF.DuSanity.checkLevel(n, limit, n, DuAEF.DuSanity.MPText);
+
+    var level = DuAEF.DuSanity.checkLevel(n, limit, n, DuAEF.DuSanity.MPText);
+    if (DuAEF.DuSanity.hasUI)
+    {
+        if (level > DuAEF.DuSanity.Levels.OK) DuAEF.DuSanity.MPText.helpTip = "Too many Master Properties in the active composition have a very bad impact on performance.";
+        else DuAEF.DuSanity.MPText.helpTip = "";
+    }
+    return level;
 }
 
 /**
@@ -398,6 +439,40 @@ DuAEF.DuSanity.checkItemSources = function ()
 }
 
 /**
+ * Checks if some items are not used and should be removed
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkItemsUnused = function ()
+{
+    var limit = 10;
+    notUsed = [];
+    for (var i = 1, n = app.project.numItems; i <= n; i++)
+    {
+        var item = app.project.item(i);
+        if (item instanceof FootageItem)
+        {
+            if (item.usedIn.length == 0) notUsed.push(item);
+        }
+    }
+
+    var level = DuAEF.DuSanity.checkLevel(notUsed.length, limit, notUsed.length, DuAEF.DuSanity.notUsedText);
+    if (DuAEF.DuSanity.hasUI)
+    {
+        if (level > DuAEF.DuSanity.Levels.OK) 
+        {
+            var helpTip = "Found some footages which are not used. You should remove them.";
+            for (var i = 0, n = notUsed.length; i < n; i++)
+            {
+                helpTip += "\n" + notUsed[i].name;
+            }
+            DuAEF.DuSanity.notUsedText.helpTip = helpTip;
+        }
+        else DuAEF.DuSanity.notUsedText.helpTip = "";
+    }
+    return level;
+}
+
+/**
  * Runs all the sanity tests and updates the sanity Button
  * @return {DuAEF.DuSanity.Levels} The highest level.
  */
@@ -416,6 +491,7 @@ DuAEF.DuSanity.test = function ()
     runTest(DuAEF.DuSanity.checkProjectSize);
     runTest(DuAEF.DuSanity.checkExpressionEngine);
     runTest(DuAEF.DuSanity.checkNumItems);
+    runTest(DuAEF.DuSanity.checkItemsUnused);
     runTest(DuAEF.DuSanity.checkMemory);
     runTest(DuAEF.DuSanity.checkMP);
     runTest(DuAEF.DuSanity.checkSave);
