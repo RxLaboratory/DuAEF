@@ -41,6 +41,8 @@ DuAEF.DuSanity.MPText = null;
 DuAEF.DuSanity.saveText = null;
 DuAEF.DuSanity.itemSourcesText = null;
 DuAEF.DuSanity.notUsedText = null;
+DuAEF.DuSanity.precompsText = null;
+DuAEF.DuSanity.notUsedCompsText = null;
 DuAEF.DuSanity.hasUI = false;
 DuAEF.DuSanity.button = null;
 
@@ -53,6 +55,7 @@ DuAEF.DuSanity.Levels =
 {
     UNKNOWN: -1,
     OK: 0,
+    INFO: 0.5,
     WARNING: 1,
     BAD: 2,
     CRITICAL: 3,
@@ -82,6 +85,8 @@ DuAEF.DuSanity.createUI = function (container)
     DuAEF.DuSanity.numItemsText = createReportText("Project Items:");
     DuAEF.DuSanity.itemSourcesText = createReportText("Duplicated Footages:");
     DuAEF.DuSanity.notUsedText = createReportText("Not used Footages:");
+    DuAEF.DuSanity.precompsText = createReportText("Precompositions:");
+    DuAEF.DuSanity.notUsedCompsText = createReportText("Not used compositions:");
     DuAEF.DuSanity.memoryText = createReportText("Memory in use:");
     DuAEF.DuSanity.MPText = createReportText("Master properties in active comp:");
     DuAEF.DuSanity.saveText = createReportText("Time since last save:");
@@ -93,14 +98,24 @@ DuAEF.DuSanity.createUI = function (container)
 //returns the level
 DuAEF.DuSanity.checkLevel = function(value, limit, detailsText, uiText)
 {
+    if (value < limit*0.66)
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            uiText.setText("OK");
+            DuAEF.DuScriptUI.setTextColor(uiText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
+        }
+        return DuAEF.DuSanity.Levels.OK;
+    }
+
     if (value < limit*0.75)
     {
         if (DuAEF.DuSanity.hasUI)
         {
-            uiText.setText("OK (" + detailsText + ")");
-            DuAEF.DuScriptUI.setTextColor(uiText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
+            uiText.setText("INFO (" + detailsText + ")");
+            DuAEF.DuScriptUI.setTextColor(uiText, DuAEF.DuJS.Color.Colors.AFTER_EFFECTS_BLUE);
         }
-        return DuAEF.DuSanity.Levels.OK;
+        return DuAEF.DuSanity.Levels.INFO;
     }
     
     if (value < limit)
@@ -196,13 +211,13 @@ DuAEF.DuSanity.checkCompNames = function ()
         {
             DuAEF.DuSanity.compNamesText.setText("BAD");
             DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.compNamesText, DuAEF.DuJS.Color.Colors.ORANGE);
-            var helpTip = "Some compositions have the same name:\n";
+            var helpTip = "Some compositions have the same name:";
             for (name in duplicatedNames)
             {
                 if (name == 'length') continue;
                 if (duplicatedNames.hasOwnProperty(name))
                 {
-                    helpTip += name + "\n";
+                    helpTip += "\n- " + name;
                 }
             }
             DuAEF.DuSanity.compNamesText.helpTip = helpTip
@@ -233,18 +248,17 @@ DuAEF.DuSanity.checkLayerNames = function ()
         {
             DuAEF.DuSanity.layerNamesText.setText("BAD");
             DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.layerNamesText, DuAEF.DuJS.Color.Colors.ORANGE);
-            var helpTip = "Some layers have the same name:\n";
+            var helpTip = "Some layers have the same name:";
             for (name in duplicatedNames)
             {
                 if (name == 'length') continue;
                 if (duplicatedNames.hasOwnProperty(name))
                 {
-                    helpTip += name;
+                    helpTip += "\n- " + name;
                     for (var i = 0, n = duplicatedNames[name].length; i < n; i++)
                     {
                         helpTip += " | " + duplicatedNames[name][i].index;
                     }
-                    helpTip += "\n";
                 }
             }
             DuAEF.DuSanity.layerNamesText.helpTip = helpTip
@@ -422,13 +436,13 @@ DuAEF.DuSanity.checkItemSources = function ()
         {
             DuAEF.DuSanity.itemSourcesText.setText("BAD");
             DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.itemSourcesText, DuAEF.DuJS.Color.Colors.ORANGE);
-            var helpTip = "Some items share the same sources:\n";
+            var helpTip = "Some items share the same sources:";
             for (file in duplicatedSources)
             {
                 if (file == 'length') continue;
                 if (duplicatedSources.hasOwnProperty(file))
                 {
-                    helpTip += file + "\n";
+                    helpTip += "\n- " + file;
                 }
             }
             DuAEF.DuSanity.itemSourcesText.helpTip = helpTip
@@ -463,13 +477,101 @@ DuAEF.DuSanity.checkItemsUnused = function ()
             var helpTip = "Found some footages which are not used. You should remove them.";
             for (var i = 0, n = notUsed.length; i < n; i++)
             {
-                helpTip += "\n" + notUsed[i].name;
+                helpTip += "\n- " + notUsed[i].name;
             }
             DuAEF.DuSanity.notUsedText.helpTip = helpTip;
         }
         else DuAEF.DuSanity.notUsedText.helpTip = "";
     }
     return level;
+}
+
+/**
+ * Checks if there are precomps in the project root folder
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkPrecomps = function ()
+{
+    var precomps = [];
+    for (var i = 1, n = app.project.numItems; i <= n; i++ )
+    {
+        var item = app.project.item(i);
+        if (item instanceof CompItem)
+        {
+            if (item.parentFolder.id == app.project.rootFolder.id && item.usedIn.length != 0) precomps.push(item);
+        }
+    }
+
+    if (precomps.length == 0)
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            DuAEF.DuSanity.precompsText.setText("OK");
+            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.precompsText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
+            DuAEF.DuSanity.precompsText.helpTip = "";
+        }
+        return DuAEF.DuSanity.Levels.OK; 
+    }
+    else
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            DuAEF.DuSanity.precompsText.setText("INFO");
+            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.precompsText, DuAEF.DuJS.Color.Colors.AFTER_EFFECTS_BLUE);
+            var helpTip = "Some precompositions are at the root of the project.\n" + 
+                "They should be moved in a subfolder.";
+            for (var i = 0, n = precomps.length; i<n; i++)
+            {
+                helpTip += "\n- " + precomps[i].name;
+            }
+            DuAEF.DuSanity.precompsText.helpTip = helpTip;
+        }
+        return DuAEF.DuSanity.Levels.INFO; 
+    }
+}
+
+/**
+ * Checks if there are not used comps in some subfolders
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkNotUsedComps = function ()
+{
+    var comps = [];
+    for (var i = 1, n = app.project.numItems; i <= n; i++ )
+    {
+        var item = app.project.item(i);
+        if (item instanceof CompItem)
+        {
+            if (item.parentFolder.id != app.project.rootFolder.id && item.usedIn.length == 0) comps.push(item);
+        }
+    }
+
+    if (comps.length == 0)
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            DuAEF.DuSanity.notUsedCompsText.setText("OK");
+            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.notUsedCompsText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
+            DuAEF.DuSanity.notUsedCompsText.helpTip = "";
+        }
+        return DuAEF.DuSanity.Levels.OK; 
+    }
+    else
+    {
+        if (DuAEF.DuSanity.hasUI)
+        {
+            DuAEF.DuSanity.notUsedCompsText.setText("INFO");
+            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.notUsedCompsText, DuAEF.DuJS.Color.Colors.AFTER_EFFECTS_BLUE);
+            var helpTip = "Some main compositions are stored in subfolders.\n" + 
+                "It is easier to keep them at the root of the project, or they should be removed if they're not needed anymore.";
+            for (var i = 0, n = comps.length; i<n; i++)
+            {
+                helpTip += "\n- " + comps[i].name;
+            }
+            DuAEF.DuSanity.notUsedCompsText.helpTip = helpTip;
+        }
+        return DuAEF.DuSanity.Levels.INFO; 
+    }
 }
 
 /**
@@ -492,6 +594,8 @@ DuAEF.DuSanity.test = function ()
     runTest(DuAEF.DuSanity.checkExpressionEngine);
     runTest(DuAEF.DuSanity.checkNumItems);
     runTest(DuAEF.DuSanity.checkItemsUnused);
+    runTest(DuAEF.DuSanity.checkPrecomps);
+    runTest(DuAEF.DuSanity.checkNotUsedComps);
     runTest(DuAEF.DuSanity.checkMemory);
     runTest(DuAEF.DuSanity.checkMP);
     runTest(DuAEF.DuSanity.checkSave);
@@ -501,6 +605,8 @@ DuAEF.DuSanity.test = function ()
     {
         if (level == DuAEF.DuSanity.Levels.UNKNOWN || level == DuAEF.DuSanity.Levels.OK)
             DuAEF.DuSanity.button.setBackgroundColor(DuAEF.DuJS.Color.Colors.VERY_DARK_GREY);
+        else if (level == DuAEF.DuSanity.Levels.INFO)
+            DuAEF.DuSanity.button.setBackgroundColor(DuAEF.DuJS.Color.Colors.AFTER_EFFECTS_BLUE);
         else if (level == DuAEF.DuSanity.Levels.WARNING)
             DuAEF.DuSanity.button.setBackgroundColor(DuAEF.DuJS.Color.Colors.YELLOW);
         else if (level == DuAEF.DuSanity.Levels.BAD)
