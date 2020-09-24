@@ -188,6 +188,16 @@ DuAEF.DuSanity.checkCompNames = function ()
         {
             DuAEF.DuSanity.compNamesText.setText("BAD");
             DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.compNamesText, DuAEF.DuJS.Color.Colors.ORANGE);
+            var helpTip = "Some compositions have the same name:\n";
+            for (name in duplicatedNames)
+            {
+                if (name == 'length') continue;
+                if (duplicatedNames.hasOwnProperty(name))
+                {
+                    helpTip += name + "\n";
+                }
+            }
+            DuAEF.DuSanity.compNamesText.helpTip = helpTip
         }
         return DuAEF.DuSanity.Levels.BAD;
     }
@@ -215,6 +225,21 @@ DuAEF.DuSanity.checkLayerNames = function ()
         {
             DuAEF.DuSanity.layerNamesText.setText("BAD");
             DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.layerNamesText, DuAEF.DuJS.Color.Colors.ORANGE);
+            var helpTip = "Some layers have the same name:\n";
+            for (name in duplicatedNames)
+            {
+                if (name == 'length') continue;
+                if (duplicatedNames.hasOwnProperty(name))
+                {
+                    helpTip += name;
+                    for (var i = 0, n = duplicatedNames[name].length; i < n; i++)
+                    {
+                        helpTip += " | " + duplicatedNames[name][i].index;
+                    }
+                    helpTip += "\n";
+                }
+            }
+            DuAEF.DuSanity.layerNamesText.helpTip = helpTip
         }
         return DuAEF.DuSanity.Levels.BAD;
     }
@@ -314,24 +339,29 @@ DuAEF.DuSanity.checkItemSources = function ()
     var duplicatedSources = {};
     duplicatedSources.length = 0;
     var sources = {};
+    var layerNames = {};
     for (var i = 1, n = app.project.numItems; i <= n; i++)
     {
         var item = app.project.item(i);
         if (!(item instanceof FootageItem)) continue;
         var source  = item.mainSource;
         if (!(source instanceof FileSource)) continue;
-        var file = source.file.path;
+        var file = source.file.fsName;
+  
+        if (DuAEF.DuAE.isLayeredFile(file)) continue;
+
         if (duplicatedSources[file])
         {
             duplicatedSources[file].push(item);
             continue;
         }
-        if ( sources[file] ) 
+        if ( sources[file]) 
         {
-            duplicatedSources[file] = [item];
+            duplicatedSources[file] = [sources[file], item];
             duplicatedSources.length++;
             continue;
         }
+
         sources[file] = item;
     }
 
@@ -341,6 +371,7 @@ DuAEF.DuSanity.checkItemSources = function ()
         {
             DuAEF.DuSanity.itemSourcesText.setText("OK");
             DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.itemSourcesText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
+            DuAEF.DuSanity.itemSourcesText.helpTip = "";
         }
         return DuAEF.DuSanity.Levels.OK;
     }
@@ -350,6 +381,17 @@ DuAEF.DuSanity.checkItemSources = function ()
         {
             DuAEF.DuSanity.itemSourcesText.setText("BAD");
             DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.itemSourcesText, DuAEF.DuJS.Color.Colors.ORANGE);
+            var helpTip = "Some items share the same sources:\n";
+            for (file in duplicatedSources)
+            {
+                if (file == 'length') continue;
+                if (duplicatedSources.hasOwnProperty(file))
+                {
+                    helpTip += file + "\n";
+                }
+            }
+            DuAEF.DuSanity.itemSourcesText.helpTip = helpTip
+
         }
         return DuAEF.DuSanity.Levels.BAD;
     }
