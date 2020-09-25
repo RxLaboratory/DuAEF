@@ -95,6 +95,17 @@ DuAEF.DuSanity.createUI = function (container)
     var umim = DuAEF.DuBinary.toFile(w18_magic_m);
     var umil = DuAEF.DuBinary.toFile(w18_magic_l);
 
+    //Init project settings
+    var projectSettings = DuAEF.DuAE.Project.settings;
+    projectSettings.update();
+    if (typeof projectSettings.data.sanity === 'undefined')
+    {
+        projectSettings.data.sanity = {};
+        projectSettings.save();
+    }
+
+    if (typeof projectSettings.data.sanity[checkName] === 'undefined') projectSettings.data.sanity[checkName] = true;
+
     function createReportText(t, checkName, fixName)
     {
         var group = DuAEF.DuScriptUI.addGroup(ui_reportMainGroup, "row");
@@ -144,26 +155,47 @@ DuAEF.DuSanity.createUI = function (container)
         pb.onClick = function () {
             var checked = pb.checked;
             fpb.enabled = checked;
-            fpb.setChecked(checked);
-            umb.enabled = checked;
-            mb.enabled = checked;
-            st.visible = checked;
-            label.enabled = checked;
+
+            if (checked)
+            {
+                DuAEF.DuSanity[checkName]();
+                fpbUpdate();
+            }
+            else
+            {
+                fpb.setChecked(false);
+            }
+            activateTest(fpb.checked);
+
             DuAEF.settings.data.sanity[checkName] = checked;
             DuAEF.settings.save();
-
-            if (checked) DuAEF.DuSanity[checkName]();
         }
 
         fpb.onClick = function () {
             var checked = fpb.checked;
-            umb.enabled = checked;
-            mb.enabled = checked;
-            st.visible = checked;
-            label.enabled = checked;
+            activateTest(checked);
+            projectSettings.data.sanity[checkName] = checked;
+            projectSettings.save();
         }
 
+        function activateTest(activate)
+        {
+            umb.enabled = activate;
+            mb.enabled = activate;
+            st.visible = activate;
+            label.enabled = activate;
+        }
+
+        function fpbUpdate()
+        {
+            projectSettings.update();
+            fpb.setChecked( projectSettings.data.sanity[checkName] );
+        }
+        DuAEF.DuScriptUI.addEvent(fpbUpdate);
+
         pb.setChecked( DuAEF.settings.data.sanity[checkName] );
+        pb.onClick();
+        activateTest(fpb.checked);
 
         return st;
     }
@@ -445,7 +477,6 @@ DuAEF.DuSanity.checkNumItems = function ()
 DuAEF.DuSanity.checkMemory = function ()
 {
     var mem = app.memoryInUse ;
-    //alert(mem);
     var limit = 4294967296 ; //4GB 4294967296‬
 
     var level = DuAEF.DuSanity.checkLevel(mem, limit, DuAEF.DuJS.String.fromSize(mem), DuAEF.DuSanity.memoryText);
@@ -673,35 +704,42 @@ DuAEF.DuSanity.test = function ()
 {
     var level = DuAEF.DuSanity.Levels.UNKNOWN;
 
-    function runTest(testFunction)
+    DuAEF.DuAE.Project.settings.update();
+    if (typeof DuAEF.DuAE.Project.settings.data.sanity === 'undefined') DuAEF.DuAE.Project.settings.data.sanity = {};
+
+
+    function runTest(checkName)
     {
-        var test = testFunction();
+        var ok = DuAEF.DuAE.Project.settings.data.sanity[checkName] && DuAEF.settings.data.sanity[checkName];
+        if (!ok) return;
+        var test = DuAEF.DuSanity[checkName]();
         if (test > level) level = test;
     }
 
-    if (DuAEF.settings.data.sanity.checkCompNames) runTest(DuAEF.DuSanity.checkCompNames);
-    if (DuAEF.settings.data.sanity.checkLayerNames) runTest(DuAEF.DuSanity.checkLayerNames);
-    if (DuAEF.settings.data.sanity.checkProjectSize) runTest(DuAEF.DuSanity.checkProjectSize);
-    if (DuAEF.settings.data.sanity.checkExpressionEngine) runTest(DuAEF.DuSanity.checkExpressionEngine);
-    if (DuAEF.settings.data.sanity.checkNumItems) runTest(DuAEF.DuSanity.checkNumItems);
-    if (DuAEF.settings.data.sanity.checkItemsUnused) runTest(DuAEF.DuSanity.checkItemsUnused);
-    if (DuAEF.settings.data.sanity.checkPrecomps) runTest(DuAEF.DuSanity.checkPrecomps);
-    if (DuAEF.settings.data.sanity.checkUnusedComps) runTest(DuAEF.DuSanity.checkUnusedComps);
-    if (DuAEF.settings.data.sanity.checkMemory) runTest(DuAEF.DuSanity.checkMemory);
-    if (DuAEF.settings.data.sanity.checkMP) runTest(DuAEF.DuSanity.checkMP);
-    if (DuAEF.settings.data.sanity.checkSave) runTest(DuAEF.DuSanity.checkSave);
-    if (DuAEF.settings.data.sanity.checkItemSources) runTest(DuAEF.DuSanity.checkItemSources);
+    runTest("checkCompNames");
+    runTest("checkLayerNames");
+    runTest("checkProjectSize");
+    runTest("checkExpressionEngine");
+    runTest("checkNumItems");
+    runTest("checkItemsUnused");
+    runTest("checkPrecomps");
+    runTest("checkUnusedComps");
+    runTest("checkMemory");
+    runTest("checkMP");
+    runTest("checkSave");
+    runTest("checkItemSources");
 
     DuAEF.DuSanity.currentLevel = level;
     return level;
 }
 
 /**
- * Intializes the sanity tests and schedule the monitor task. Has to be called once to be able to automatically monitor the project.
+ * Intializes the sanity tests and schedule the monitor task. Has to be called once.
  */
 DuAEF.DuSanity.init = function ()
 {
     if (DuAEF.DuSanity.isInitialized) return;
+
     //First run
     DuAEF.DuSanity.test();
     //add to events
