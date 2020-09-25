@@ -839,6 +839,7 @@ DuAEF.DuAE.isLayeredFile = function(file)
 
 #include "DuAEAppLib.jsxinc"
 #include "DuAEProjectLib.jsxinc"
+#include "DuAEProjectXMPLib.jsxinc"
 #include "DuAEItemLib.jsxinc"
 #include "DuAECompLib.jsxinc"
 #include "DuAELayerLib.jsxinc"
