@@ -12,7 +12,6 @@
 #include "libs/DuProcessLib.jsxinc"
 #include "libs/DuQuantLib.jsxinc"
 #include "libs/DuRendererLib.jsxinc"
-#include "libs/DuSanityLib.jsxinc"
 #include "libs/DuScriptUILib/DuScriptUILib.jsxinc"
 #include "libs/DuSettingsLib.jsxinc"
 #include "libs/DuikLib/DuikLib.jsxinc"
@@ -29,3 +28,4 @@
 #include "libs/DuExpressionLib.jsxinc"
 #include "libs/RamsesLib.jsxinc"
 #include "libs/DuZipLib.jsxinc"
+#include "libs/DuSanityLib.jsxinc"

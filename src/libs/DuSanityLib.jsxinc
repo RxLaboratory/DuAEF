@@ -30,21 +30,39 @@ along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
 */
 DuAEF.DuSanity = {};
 
-//internal use: ui elements
-DuAEF.DuSanity.compNamesText = null;
-DuAEF.DuSanity.layerNamesText = null;
-DuAEF.DuSanity.expressionText = null;
-DuAEF.DuSanity.projectSizeText = null;
-DuAEF.DuSanity.numItemsText = null;
-DuAEF.DuSanity.memoryText = null;
-DuAEF.DuSanity.MPText = null;
-DuAEF.DuSanity.saveText = null;
-DuAEF.DuSanity.itemSourcesText = null;
-DuAEF.DuSanity.unusedText = null;
-DuAEF.DuSanity.precompsText = null;
-DuAEF.DuSanity.unusedCompsText = null;
-DuAEF.DuSanity.hasUI = false;
-DuAEF.DuSanity.isInitialized = false;
+(function () {
+
+    //internal use: ui elements
+    DuAEF.DuSanity.compNamesText = null;
+    DuAEF.DuSanity.layerNamesText = null;
+    DuAEF.DuSanity.expressionText = null;
+    DuAEF.DuSanity.projectSizeText = null;
+    DuAEF.DuSanity.numItemsText = null;
+    DuAEF.DuSanity.memoryText = null;
+    DuAEF.DuSanity.MPText = null;
+    DuAEF.DuSanity.saveText = null;
+    DuAEF.DuSanity.itemSourcesText = null;
+    DuAEF.DuSanity.unusedText = null;
+    DuAEF.DuSanity.precompsText = null;
+    DuAEF.DuSanity.unusedCompsText = null;
+    DuAEF.DuSanity.hasUI = false;
+    DuAEF.DuSanity.isInitialized = false;
+
+    //internal use: shared settings defaults
+    if (typeof DuAEF.settings.data.sanity === 'undefined') DuAEF.settings.data.sanity = {};
+    if (typeof DuAEF.settings.data.sanity.checkSave === 'undefined') DuAEF.settings.data.sanity.checkSave = true;
+    if (typeof DuAEF.settings.data.sanity.checkCompNames === 'undefined') DuAEF.settings.data.sanity.checkCompNames = true;
+    if (typeof DuAEF.settings.data.sanity.checkUnusedComps === 'undefined') DuAEF.settings.data.sanity.checkUnusedComps = true;
+    if (typeof DuAEF.settings.data.sanity.checkPrecomps === 'undefined') DuAEF.settings.data.sanity.checkPrecomps = true;
+    if (typeof DuAEF.settings.data.sanity.checkItemsUnused === 'undefined') DuAEF.settings.data.sanity.checkItemsUnused = true;
+    if (typeof DuAEF.settings.data.sanity.checkItemSources === 'undefined') DuAEF.settings.data.sanity.checkItemSources = true;
+    if (typeof DuAEF.settings.data.sanity.checkMP === 'undefined') DuAEF.settings.data.sanity.checkMP = true;
+    if (typeof DuAEF.settings.data.sanity.checkMemory === 'undefined') DuAEF.settings.data.sanity.checkMemory = true;
+    if (typeof DuAEF.settings.data.sanity.checkNumItems === 'undefined') DuAEF.settings.data.sanity.checkNumItems = true;
+    if (typeof DuAEF.settings.data.sanity.checkExpressionEngine === 'undefined') DuAEF.settings.data.sanity.checkExpressionEngine = true;
+    if (typeof DuAEF.settings.data.sanity.checkProjectSize === 'undefined') DuAEF.settings.data.sanity.checkProjectSize = true;
+    if (typeof DuAEF.settings.data.sanity.checkLayerNames === 'undefined') DuAEF.settings.data.sanity.checkLayerNames = true;
+})();
 
 /**
  * Enum for sanity levels.
@@ -66,30 +84,102 @@ DuAEF.DuSanity.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 
 DuAEF.DuSanity.createUI = function (container)
 {
-    var ui_reportMainGroup = DuAEF.DuScriptUI.addGroup(container, "row");
-    var ui_reportLeftGroup = DuAEF.DuScriptUI.addGroup(ui_reportMainGroup, "column");
-    var ui_reportRightGroup = DuAEF.DuScriptUI.addGroup(ui_reportMainGroup, "column");
+    var ui_reportMainGroup = DuAEF.DuScriptUI.addGroup(container, "column");
 
-    function createReportText(t)
+    var pim = DuAEF.DuBinary.toFile(w18_poweroff_m);
+    var pil = DuAEF.DuBinary.toFile(w18_poweroff_l);
+    var fpim = DuAEF.DuBinary.toFile(w18_file_m);
+    var fpil = DuAEF.DuBinary.toFile(w18_file_l);
+    var mim = DuAEF.DuBinary.toFile(w18_screwdriver_m);
+    var mil = DuAEF.DuBinary.toFile(w18_screwdriver_l);
+    var umim = DuAEF.DuBinary.toFile(w18_magic_m);
+    var umil = DuAEF.DuBinary.toFile(w18_magic_l);
+
+    function createReportText(t, checkName, fixName)
     {
-        DuAEF.DuScriptUI.addStaticText(ui_reportLeftGroup, t);
-        var st = DuAEF.DuScriptUI.addStaticText(ui_reportRightGroup, "---------------------------------------------");
-        st.minimumSize = [100,0];
+        var group = DuAEF.DuScriptUI.addGroup(ui_reportMainGroup, "row");
+
+        var addFix = typeof fixFunction === 'function';
+
+        var pb = DuAEF.DuScriptUI.addCheckBox(
+            group,
+            '',
+            pim,
+            "Globally enable or disable this test.",
+            pil
+            );
+        var fpb = DuAEF.DuScriptUI.addCheckBox(
+            group,
+            '',
+            fpim,
+            "Enable or disable this test for the current project.",
+            fpil
+            );
+        var umb = DuAEF.DuScriptUI.addCheckBox(
+            group,
+            '',
+            umim,
+            "Enable or disable live-fix.",
+            umil
+            );
+        var mb = DuAEF.DuScriptUI.addButton(
+            group,
+            '',
+            mim,
+            "Auto-fix now.",
+            mil
+            );
+
+        if (!addFix)
+        {
+            umb.visible = false;
+            mb.visible = false;
+        }
+
+        var label = DuAEF.DuScriptUI.addStaticText(group, t);
+        label.minimumSize = [200,0];
+        var st = DuAEF.DuScriptUI.addStaticText(group, "");
+        st.minimumSize = [120,0];
+
+        pb.onClick = function () {
+            var checked = pb.checked;
+            fpb.enabled = checked;
+            fpb.setChecked(checked);
+            umb.enabled = checked;
+            mb.enabled = checked;
+            st.visible = checked;
+            label.enabled = checked;
+            DuAEF.settings.data.sanity[checkName] = checked;
+            DuAEF.settings.save();
+
+            if (checked) DuAEF.DuSanity[checkName]();
+        }
+
+        fpb.onClick = function () {
+            var checked = fpb.checked;
+            umb.enabled = checked;
+            mb.enabled = checked;
+            st.visible = checked;
+            label.enabled = checked;
+        }
+
+        pb.setChecked( DuAEF.settings.data.sanity[checkName] );
+
         return st;
     }
 
-    DuAEF.DuSanity.compNamesText = createReportText("Composition Names:");
-    DuAEF.DuSanity.layerNamesText = createReportText("Layer Names:");
-    DuAEF.DuSanity.expressionText = createReportText("Expression Engine:");
-    DuAEF.DuSanity.projectSizeText = createReportText("Project Size:");
-    DuAEF.DuSanity.numItemsText = createReportText("Project Items:");
-    DuAEF.DuSanity.itemSourcesText = createReportText("Duplicated Footages:");
-    DuAEF.DuSanity.unusedText = createReportText("Unused Footages:");
-    DuAEF.DuSanity.precompsText = createReportText("Precompositions:");
-    DuAEF.DuSanity.unusedCompsText = createReportText("Unused compositions:");
-    DuAEF.DuSanity.memoryText = createReportText("Memory in use:");
-    DuAEF.DuSanity.MPText = createReportText("Master properties in active comp:");
-    DuAEF.DuSanity.saveText = createReportText("Time since last save:");
+    DuAEF.DuSanity.compNamesText = createReportText("Composition Names:", "checkCompNames" );
+    DuAEF.DuSanity.layerNamesText = createReportText("Layer Names:", "checkLayerNames" );
+    DuAEF.DuSanity.expressionText = createReportText("Expression Engine:", "checkExpressionEngine" );
+    DuAEF.DuSanity.projectSizeText = createReportText("Project Size:", "checkProjectSize" );
+    DuAEF.DuSanity.numItemsText = createReportText("Project Items:", "checkNumItems" );
+    DuAEF.DuSanity.itemSourcesText = createReportText("Duplicated Footages:", "checkItemSources" );
+    DuAEF.DuSanity.unusedText = createReportText("Unused Footages:", "checkItemsUnused" );
+    DuAEF.DuSanity.precompsText = createReportText("Precompositions:", "checkPrecomps" );
+    DuAEF.DuSanity.unusedCompsText = createReportText("Unused compositions:", "checkUnusedComps" );
+    DuAEF.DuSanity.memoryText = createReportText("Memory in use:", "checkMemory" );
+    DuAEF.DuSanity.MPText = createReportText("Master properties in active comp:", "checkMP" );
+    DuAEF.DuSanity.saveText = createReportText("Time since last save:", "checkSave" );
 
     DuAEF.DuSanity.hasUI = true;
 }
@@ -309,7 +399,7 @@ DuAEF.DuSanity.checkExpressionEngine = function ()
     {
         if (DuAEF.DuSanity.hasUI)
         {
-            DuAEF.DuSanity.expressionText.setText("OK (JS)");
+            DuAEF.DuSanity.expressionText.setText("OK");
             DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.expressionText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
             DuAEF.DuSanity.expressionText.helpTip = "";
         }
@@ -589,18 +679,18 @@ DuAEF.DuSanity.test = function ()
         if (test > level) level = test;
     }
 
-    runTest(DuAEF.DuSanity.checkCompNames);
-    runTest(DuAEF.DuSanity.checkLayerNames);
-    runTest(DuAEF.DuSanity.checkProjectSize);
-    runTest(DuAEF.DuSanity.checkExpressionEngine);
-    runTest(DuAEF.DuSanity.checkNumItems);
-    runTest(DuAEF.DuSanity.checkItemsUnused);
-    runTest(DuAEF.DuSanity.checkPrecomps);
-    runTest(DuAEF.DuSanity.checkUnusedComps);
-    runTest(DuAEF.DuSanity.checkMemory);
-    runTest(DuAEF.DuSanity.checkMP);
-    runTest(DuAEF.DuSanity.checkSave);
-    runTest(DuAEF.DuSanity.checkItemSources);
+    if (DuAEF.settings.data.sanity.checkCompNames) runTest(DuAEF.DuSanity.checkCompNames);
+    if (DuAEF.settings.data.sanity.checkLayerNames) runTest(DuAEF.DuSanity.checkLayerNames);
+    if (DuAEF.settings.data.sanity.checkProjectSize) runTest(DuAEF.DuSanity.checkProjectSize);
+    if (DuAEF.settings.data.sanity.checkExpressionEngine) runTest(DuAEF.DuSanity.checkExpressionEngine);
+    if (DuAEF.settings.data.sanity.checkNumItems) runTest(DuAEF.DuSanity.checkNumItems);
+    if (DuAEF.settings.data.sanity.checkItemsUnused) runTest(DuAEF.DuSanity.checkItemsUnused);
+    if (DuAEF.settings.data.sanity.checkPrecomps) runTest(DuAEF.DuSanity.checkPrecomps);
+    if (DuAEF.settings.data.sanity.checkUnusedComps) runTest(DuAEF.DuSanity.checkUnusedComps);
+    if (DuAEF.settings.data.sanity.checkMemory) runTest(DuAEF.DuSanity.checkMemory);
+    if (DuAEF.settings.data.sanity.checkMP) runTest(DuAEF.DuSanity.checkMP);
+    if (DuAEF.settings.data.sanity.checkSave) runTest(DuAEF.DuSanity.checkSave);
+    if (DuAEF.settings.data.sanity.checkItemSources) runTest(DuAEF.DuSanity.checkItemSources);
 
     DuAEF.DuSanity.currentLevel = level;
     return level;
