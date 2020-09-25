@@ -32,20 +32,6 @@ DuAEF.DuSanity = {};
 
 (function () {
 
-    //internal use: ui elements
-    DuAEF.DuSanity.compNamesText = null;
-    DuAEF.DuSanity.layerNamesText = null;
-    DuAEF.DuSanity.expressionText = null;
-    DuAEF.DuSanity.projectSizeText = null;
-    DuAEF.DuSanity.numItemsText = null;
-    DuAEF.DuSanity.memoryText = null;
-    DuAEF.DuSanity.MPText = null;
-    DuAEF.DuSanity.saveText = null;
-    DuAEF.DuSanity.itemSourcesText = null;
-    DuAEF.DuSanity.unusedText = null;
-    DuAEF.DuSanity.precompsText = null;
-    DuAEF.DuSanity.unusedCompsText = null;
-    DuAEF.DuSanity.hasUI = false;
     DuAEF.DuSanity.isInitialized = false;
 
     //internal use: shared settings defaults
@@ -84,6 +70,8 @@ DuAEF.DuSanity.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 
 DuAEF.DuSanity.createUI = function (container)
 {
+    DuAEF.DuSanity.init();
+
     var ui_reportMainGroup = DuAEF.DuScriptUI.addGroup(container, "column");
 
     var pim = DuAEF.DuBinary.toFile(w18_poweroff_m);
@@ -95,22 +83,9 @@ DuAEF.DuSanity.createUI = function (container)
     var umim = DuAEF.DuBinary.toFile(w18_magic_m);
     var umil = DuAEF.DuBinary.toFile(w18_magic_l);
 
-    //Init project settings
-    var projectSettings = DuAEF.DuAE.Project.settings;
-    projectSettings.update();
-    if (typeof projectSettings.data.sanity === 'undefined')
-    {
-        projectSettings.data.sanity = {};
-        projectSettings.save();
-    }
-
-    if (typeof projectSettings.data.sanity[checkName] === 'undefined') projectSettings.data.sanity[checkName] = true;
-
-    function createReportText(t, checkName, fixName)
+    function createReportText(t, test)
     {
         var group = DuAEF.DuScriptUI.addGroup(ui_reportMainGroup, "row");
-
-        var addFix = typeof fixFunction === 'function';
 
         var pb = DuAEF.DuScriptUI.addCheckBox(
             group,
@@ -141,7 +116,7 @@ DuAEF.DuSanity.createUI = function (container)
             mil
             );
 
-        if (!addFix)
+        if (!test.hasFix)
         {
             umb.visible = false;
             mb.visible = false;
@@ -152,121 +127,139 @@ DuAEF.DuSanity.createUI = function (container)
         var st = DuAEF.DuScriptUI.addStaticText(group, "");
         st.minimumSize = [120,0];
 
-        pb.onClick = function () {
-            var checked = pb.checked;
-            fpb.enabled = checked;
-
-            if (checked)
-            {
-                DuAEF.DuSanity[checkName]();
-                fpbUpdate();
-            }
-            else
-            {
-                fpb.setChecked(false);
-            }
-            activateTest(fpb.checked);
-
-            DuAEF.settings.data.sanity[checkName] = checked;
-            DuAEF.settings.save();
-        }
-
-        fpb.onClick = function () {
-            var checked = fpb.checked;
-            activateTest(checked);
-            projectSettings.data.sanity[checkName] = checked;
-            projectSettings.save();
-        }
-
-        function activateTest(activate)
+        function testUpdate()
         {
-            umb.enabled = activate;
-            mb.enabled = activate;
-            st.visible = activate;
-            label.enabled = activate;
+            if (test.currentLevel == DuAEF.DuSanity.Levels.UNKNOWN)
+            {
+                st.text = "";
+                DuAEF.DuScriptUI.setTextColor(st, DuAEF.DuJS.Color.Colors.DARK_GREY);
+            }
+            else if (test.currentLevel == DuAEF.DuSanity.Levels.OK)
+            {
+                st.text = "OK";
+                DuAEF.DuScriptUI.setTextColor(st, DuAEF.DuJS.Color.Colors.DARK_GREY);
+            }
+            else if (test.currentLevel == DuAEF.DuSanity.Levels.INFO)
+            {
+                st.text = "INFO";
+                DuAEF.DuScriptUI.setTextColor(st, DuAEF.DuJS.Color.Colors.AFTER_EFFECTS_BLUE);
+            }
+            else if (test.currentLevel == DuAEF.DuSanity.Levels.WARNING)
+            {
+                st.text = "WARNING";
+                DuAEF.DuScriptUI.setTextColor(st, DuAEF.DuJS.Color.Colors.YELLOW);
+            }
+            else if (test.currentLevel == DuAEF.DuSanity.Levels.BAD)
+            {
+                st.text = "BAD";
+                DuAEF.DuScriptUI.setTextColor(st, DuAEF.DuJS.Color.Colors.ORANGE);
+            }
+            else if (test.currentLevel == DuAEF.DuSanity.Levels.CRITICAL)
+            {
+                st.text = "CRITICAL";
+                DuAEF.DuScriptUI.setTextColor(st, DuAEF.DuJS.Color.Colors.RAINBOX_RED);
+            }
+            else if (test.currentLevel == DuAEF.DuSanity.Levels.FATAL)
+            {
+                st.text = "FATAL";
+                DuAEF.DuScriptUI.setTextColor(st, DuAEF.DuJS.Color.Colors.RAINBOX_PURPLE);
+            }
+            
+            if (test.info != "") st.text += " - " + test.info;
+            st.helpTip = test.tip;
+            
         }
 
-        function fpbUpdate()
-        {
-            projectSettings.update();
-            fpb.setChecked( projectSettings.data.sanity[checkName] );
-        }
-        DuAEF.DuScriptUI.addEvent(fpbUpdate);
-
-        pb.setChecked( DuAEF.settings.data.sanity[checkName] );
-        pb.onClick();
-        activateTest(fpb.checked);
-
-        return st;
+        //First run
+        testUpdate();
+        //add to events
+        DuAEF.DuScriptUI.addEvent(testUpdate,3000);
     }
 
-    DuAEF.DuSanity.compNamesText = createReportText("Composition Names:", "checkCompNames" );
-    DuAEF.DuSanity.layerNamesText = createReportText("Layer Names:", "checkLayerNames" );
-    DuAEF.DuSanity.expressionText = createReportText("Expression Engine:", "checkExpressionEngine" );
-    DuAEF.DuSanity.projectSizeText = createReportText("Project Size:", "checkProjectSize" );
-    DuAEF.DuSanity.numItemsText = createReportText("Project Items:", "checkNumItems" );
-    DuAEF.DuSanity.itemSourcesText = createReportText("Duplicated Footages:", "checkItemSources" );
-    DuAEF.DuSanity.unusedText = createReportText("Unused Footages:", "checkItemsUnused" );
-    DuAEF.DuSanity.precompsText = createReportText("Precompositions:", "checkPrecomps" );
-    DuAEF.DuSanity.unusedCompsText = createReportText("Unused compositions:", "checkUnusedComps" );
-    DuAEF.DuSanity.memoryText = createReportText("Memory in use:", "checkMemory" );
-    DuAEF.DuSanity.MPText = createReportText("Master properties in active comp:", "checkMP" );
-    DuAEF.DuSanity.saveText = createReportText("Time since last save:", "checkSave" );
-
-    DuAEF.DuSanity.hasUI = true;
+    createReportText("Composition Names:", DuAEF.DuSanity.checkCompNames );
+    createReportText("Layer Names:", DuAEF.DuSanity.checkLayerNames );
+    createReportText("Expression Engine:", DuAEF.DuSanity.checkExpressionEngine );
+    createReportText("Project Size:", DuAEF.DuSanity.checkProjectSize );
+    createReportText("Project Items:", DuAEF.DuSanity.checkNumItems );
+    createReportText("Duplicated Footages:", DuAEF.DuSanity.checkItemSources );
+    createReportText("Unused Footages:", DuAEF.DuSanity.checkItemsUnused );
+    createReportText("Precompositions:", DuAEF.DuSanity.checkPrecomps );
+    createReportText("Unused compositions:", DuAEF.DuSanity.checkUnusedComps );
+    createReportText("Memory in use:", DuAEF.DuSanity.checkMemory );
+    createReportText("Master properties in active comp:", DuAEF.DuSanity.checkMP );
+    createReportText("Time since last save:", DuAEF.DuSanity.checkSave );
 }
 
 //low-level undocumented function: checks a value against a limit and sets the results in the UI
 //returns the level
-DuAEF.DuSanity.checkLevel = function(value, limit, detailsText, uiText)
+DuAEF.DuSanity.checkLevel = function(value, limit)
 {
     if (value < limit*0.66)
     {
-        if (DuAEF.DuSanity.hasUI)
-        {
-            uiText.setText("OK");
-            DuAEF.DuScriptUI.setTextColor(uiText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
-        }
         return DuAEF.DuSanity.Levels.OK;
     }
 
     if (value < limit*0.75)
     {
-        if (DuAEF.DuSanity.hasUI)
-        {
-            uiText.setText("INFO (" + detailsText + ")");
-            DuAEF.DuScriptUI.setTextColor(uiText, DuAEF.DuJS.Color.Colors.AFTER_EFFECTS_BLUE);
-        }
         return DuAEF.DuSanity.Levels.INFO;
     }
     
     if (value < limit)
     {
-        if (DuAEF.DuSanity.hasUI)
-        {
-            uiText.setText("WARNING (" + detailsText + ")");
-            DuAEF.DuScriptUI.setTextColor(uiText, DuAEF.DuJS.Color.Colors.YELLOW);
-        }
         return DuAEF.DuSanity.Levels.WARNING;
     }
     
     if (value < limit * 1.5)
     {
-        if (DuAEF.DuSanity.hasUI)
-        {
-            uiText.setText("BAD (" + detailsText + ")");
-            DuAEF.DuScriptUI.setTextColor(uiText, DuAEF.DuJS.Color.Colors.ORANGE);
-        }
         return DuAEF.DuSanity.Levels.BAD;
-    }
-
-    if (DuAEF.DuSanity.hasUI)
-    {
-        uiText.setText("CRITICAL (" + detailsText + ")");
-        DuAEF.DuScriptUI.setTextColor(uiText, DuAEF.DuJS.Color.Colors.RAINBOX_RED);
     }
     
     return DuAEF.DuSanity.Levels.CRITICAL;
+}
+
+/**
+ * Checks if a Sanity Test is enabled
+ * @return {boolean}
+ */
+DuAEF.DuSanity.isEnabled = function(test)
+{
+     //Init project settings
+    var projectSettings = DuAEF.DuAE.Project.settings;
+    projectSettings.update();
+    projectSettings.data.sanity = def(projectSettings.data.sanity, {});
+    projectSettings.data.sanity[test.name] = def(projectSettings.data.sanity[test.name], true);
+
+    if (projectSettings.data.sanity[test.name]) 
+    {
+        //check DuAEF settings
+        test.enabled = DuAEF.settings.data.sanity[test.name];
+    }
+    else 
+    {
+        test.enabled = false;
+    }
+    
+    return test.enabled;
+}
+
+DuAEF.DuSanity.setEnabled = function (test, enabled)
+{
+    if (enabled) 
+    {
+         //First run
+        test();
+        var timeOut = test.timeOut;
+        if (DuAEF.debug) timeOut = 3000;
+        //Event
+        test.id = DuAEF.DuScriptUI.addEvent(test, timeOut);
+        test.enabled = true;
+    }
+    else 
+    {
+        DuAEF.DuScriptUI.removeEvent(test.id);
+        test.id = 0;
+        test.enabled = false;
+    }
 }
 
 /**
@@ -279,38 +272,50 @@ DuAEF.DuSanity.checkSave = function ()
     var f = app.project.file;
     var limit = 1800000;
 
-    if (!(f instanceof File))
+    if (!(f instanceof File) && app.project.numItems > 0)
     {
-        if (DuAEF.DuSanity.hasUI)
-        {
-            DuAEF.DuSanity.saveText.setText("CRITICAL (Not saved)");
-            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.saveText, DuAEF.DuJS.Color.Colors.RAINBOX_RED);
-        }
-        return DuAEF.DuSanity.Levels.CRITICAL;
+        DuAEF.DuSanity.checkSave.info = "Not saved";
+        DuAEF.DuSanity.checkSave.tip = "This project has not been saved yet. You should save it right now!";
+        DuAEF.DuSanity.checkSave.currentLevel = DuAEF.DuSanity.Levels.CRITICAL;
+        return DuAEF.DuSanity.checkSave.currentLevel;
+    }
+    else if (!(f instanceof File))
+    {
+        DuAEF.DuSanity.checkSave.info = "";
+        DuAEF.DuSanity.checkSave.tip = "";
+        DuAEF.DuSanity.checkSave.currentLevel = DuAEF.DuSanity.Levels.OK;
+        return DuAEF.DuSanity.checkSave.currentLevel;
     }
     
     if (!f.exists)
     {
-        if (DuAEF.DuSanity.hasUI)
-        {
-            DuAEF.DuSanity.saveText.setText("CRITICAL (Missing file)");
-            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.saveText, DuAEF.DuJS.Color.Colors.RAINBOX_RED);
-        }
-        return DuAEF.DuSanity.Levels.CRITICAL;
+        DuAEF.DuSanity.checkSave.info = "Missing file";
+        DuAEF.DuSanity.checkSave.tip = "It looks like the file for this project has disappeared. You should save it right now!";
+        DuAEF.DuSanity.checkSave.currentLevel = DuAEF.DuSanity.Levels.FATAL;
+        return DuAEF.DuSanity.checkSave.currentLevel;
     }
 
     var date = f.modified.getTime();
     var now = new Date().getTime();
     var elapsed =  now - date;
     var elapsedStr = Math.round(elapsed/60000) + "mn";
-    var level = DuAEF.DuSanity.checkLevel(elapsed, limit, elapsedStr, DuAEF.DuSanity.saveText);
-    if (DuAEF.DuSanity.hasUI)
-    {
-        if (level > DuAEF.DuSanity.Levels.OK) DuAEF.DuSanity.saveText.helpTip = "You should save the project at least every " + Math.round(limit/60000) + "mn";
-        else DuAEF.DuSanity.saveText.helpTip = "";
-    }
-    return level;
+
+    DuAEF.DuSanity.checkSave.info = elapsedStr;
+    DuAEF.DuSanity.checkSave.tip = "You should save the project at least every " + Math.round(limit/60000) + "mn.";
+    DuAEF.DuSanity.checkSave.currentLevel = DuAEF.DuSanity.checkLevel(elapsed, limit);
+    return DuAEF.DuSanity.checkSave.currentLevel;
 }
+
+DuAEF.DuSanity.checkSave.name = 'checkSave';
+DuAEF.DuSanity.checkSave.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkSave.info = "";
+DuAEF.DuSanity.checkSave.tip = "";
+DuAEF.DuSanity.checkSave.hasFix = false;
+DuAEF.DuSanity.checkSave.fix = function () {};
+DuAEF.DuSanity.checkSave.timeOut = 60000;
+DuAEF.DuSanity.checkSave.enabled = true;
+DuAEF.DuSanity.checkSave.id = 0;
+
 
 /**
  * Checks if there are comps with the same name in the project.
@@ -321,33 +326,38 @@ DuAEF.DuSanity.checkCompNames = function ()
     var duplicatedNames = DuAEF.DuAE.Project.checkCompNames();
     if (duplicatedNames.length == 0)
     {
-        if (DuAEF.DuSanity.hasUI)
-        {
-            DuAEF.DuSanity.compNamesText.setText("OK");
-            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.compNamesText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
-        }
-        return DuAEF.DuSanity.Levels.OK;
+        DuAEF.DuSanity.checkCompNames.info = "";
+        DuAEF.DuSanity.checkCompNames.tip = "";
+        DuAEF.DuSanity.checkCompNames.currentLevel = DuAEF.DuSanity.Levels.OK;
+        return DuAEF.DuSanity.checkCompNames.currentLevel;
     }
     else
     {
-        if (DuAEF.DuSanity.hasUI)
+        DuAEF.DuSanity.checkCompNames.info = duplicatedNames.length;
+        DuAEF.DuSanity.checkCompNames.tip = "Some compositions have the same name:";
+        for (name in duplicatedNames)
         {
-            DuAEF.DuSanity.compNamesText.setText("BAD");
-            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.compNamesText, DuAEF.DuJS.Color.Colors.ORANGE);
-            var helpTip = "Some compositions have the same name:";
-            for (name in duplicatedNames)
+            if (name == 'length') continue;
+            if (duplicatedNames.hasOwnProperty(name))
             {
-                if (name == 'length') continue;
-                if (duplicatedNames.hasOwnProperty(name))
-                {
-                    helpTip += "\n- " + name;
-                }
+                DuAEF.DuSanity.checkCompNames.tip += "\n- " + name;
             }
-            DuAEF.DuSanity.compNamesText.helpTip = helpTip
         }
-        return DuAEF.DuSanity.Levels.BAD;
+        DuAEF.DuSanity.checkCompNames.currentLevel = DuAEF.DuSanity.Levels.BAD;
+        return DuAEF.DuSanity.checkCompNames.currentLevel;
     }
 }
+
+DuAEF.DuSanity.checkCompNames.name = 'checkCompNames';
+DuAEF.DuSanity.checkCompNames.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkCompNames.info = "";
+DuAEF.DuSanity.checkCompNames.tip = "";
+DuAEF.DuSanity.checkCompNames.hasFix = false;
+DuAEF.DuSanity.checkCompNames.fix = function () {};
+DuAEF.DuSanity.checkCompNames.timeOut = 30000;
+DuAEF.DuSanity.checkSave.enabled = true;
+DuAEF.DuSanity.checkSave.id = 0;
+
 
 /**
  * Checks if there are layers in the active comp which have the same name.
@@ -358,37 +368,40 @@ DuAEF.DuSanity.checkLayerNames = function ()
     var duplicatedNames = DuAEF.DuAE.Comp.checkLayerNames();
     if (duplicatedNames.length == 0)
     {
-        if (DuAEF.DuSanity.hasUI)
-        {
-            DuAEF.DuSanity.layerNamesText.setText("OK");
-            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.layerNamesText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
-        }
-        return DuAEF.DuSanity.Levels.OK;
+        DuAEF.DuSanity.checkLayerNames.info = ""
+        DuAEF.DuSanity.checkLayerNames.tip = ""
+        return DuAEF.DuSanity.checkLayerNames.currentLevel = DuAEF.DuSanity.Levels.OK;
     }
     else
     {
-        if (DuAEF.DuSanity.hasUI)
+        DuAEF.DuSanity.checkLayerNames.info = duplicatedNames.length;
+        DuAEF.DuSanity.checkLayerNames.tip = "Some layers have the same name:";
+        for (name in duplicatedNames)
         {
-            DuAEF.DuSanity.layerNamesText.setText("BAD");
-            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.layerNamesText, DuAEF.DuJS.Color.Colors.ORANGE);
-            var helpTip = "Some layers have the same name:";
-            for (name in duplicatedNames)
+            if (name == 'length') continue;
+            if (duplicatedNames.hasOwnProperty(name))
             {
-                if (name == 'length') continue;
-                if (duplicatedNames.hasOwnProperty(name))
+                DuAEF.DuSanity.checkLayerNames.tip += "\n- " + name;
+                for (var i = 0, n = duplicatedNames[name].length; i < n; i++)
                 {
-                    helpTip += "\n- " + name;
-                    for (var i = 0, n = duplicatedNames[name].length; i < n; i++)
-                    {
-                        helpTip += " | " + duplicatedNames[name][i].index;
-                    }
+                    DuAEF.DuSanity.checkLayerNames.tip += " | " + duplicatedNames[name][i].index;
                 }
             }
-            DuAEF.DuSanity.layerNamesText.helpTip = helpTip
         }
-        return DuAEF.DuSanity.Levels.BAD;
+        return  DuAEF.DuSanity.checkLayerNames.currentLevel = DuAEF.DuSanity.Levels.BAD;
     }
 }
+
+DuAEF.DuSanity.checkLayerNames.name = 'checkLayerNames';
+DuAEF.DuSanity.checkLayerNames.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkLayerNames.info = "";
+DuAEF.DuSanity.checkLayerNames.tip = "";
+DuAEF.DuSanity.checkLayerNames.hasFix = false;
+DuAEF.DuSanity.checkLayerNames.fix = function () {};
+DuAEF.DuSanity.checkLayerNames.timeOut = 10000;
+DuAEF.DuSanity.checkSave.enabled = true;
+DuAEF.DuSanity.checkSave.id = 0;
+
 
 /**
  * Checks the project file size.
@@ -399,26 +412,34 @@ DuAEF.DuSanity.checkProjectSize = function ()
     var size = DuAEF.DuAE.Project.getSize();
     var sizeLimit = 20000000;
 
-    if (size < 0)
+    if (size < 0 && app.project.numItems > 0)
     {
-        if (DuAEF.DuSanity.hasUI)
-        {
-            DuAEF.DuSanity.projectSizeText.setText("CRITICAL (not saved)");
-            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.projectSizeText, DuAEF.DuJS.Color.Colors.RAINBOX_RED);
-        }
-        return DuAEF.DuSanity.Levels.CRITICAL;
+        DuAEF.DuSanity.checkProjectSize.info = "Not saved";
+        DuAEF.DuSanity.checkProjectSize.tip = "You should save this project right now!";
+        return DuAEF.DuSanity.checkProjectSize.currentLevel = DuAEF.DuSanity.Levels.CRITICAL;
+    }
+    else if (size < 0)
+    {
+        DuAEF.DuSanity.checkProjectSize.info = "";
+        DuAEF.DuSanity.checkProjectSize.tip = "";
+        return DuAEF.DuSanity.checkProjectSize.currentLevel = DuAEF.DuSanity.Levels.OK;
     }
 
-    var level = DuAEF.DuSanity.checkLevel(size, sizeLimit, DuAEF.DuJS.String.fromSize(size), DuAEF.DuSanity.projectSizeText);
-    if (DuAEF.DuSanity.hasUI)
-    {
-        if (level > DuAEF.DuSanity.Levels.OK) DuAEF.DuSanity.projectSizeText.helpTip = "Try to keep the project small (less than " + DuAEF.DuJS.String.fromSize(sizeLimit) + ")\n" + 
-            "e.g. do not animate several shots in the same project, but use one project per shot.\n" + 
-            "Do not use After Effects to edit compositions, make the edit in an editing shoftware, or at least use renders instead compositions in a clean and simple project.";
-        else DuAEF.DuSanity.projectSizeText.helpTip = "";
-    }
-    return level;
+    DuAEF.DuSanity.checkProjectSize.info = DuAEF.DuJS.String.fromSize(size);
+    DuAEF.DuSanity.checkProjectSize.tip = "Try to keep the project small (e.g. do not animate several shots in the same project).";
+    return DuAEF.DuSanity.checkProjectSize.currentLevel = DuAEF.DuSanity.checkLevel(size, sizeLimit);
 }
+
+DuAEF.DuSanity.checkProjectSize.name = 'checkProjectSize';
+DuAEF.DuSanity.checkProjectSize.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkProjectSize.info = "";
+DuAEF.DuSanity.checkProjectSize.tip = "";
+DuAEF.DuSanity.checkProjectSize.hasFix = false;
+DuAEF.DuSanity.checkProjectSize.fix = function () {};
+DuAEF.DuSanity.checkProjectSize.timeOut = 60000;
+DuAEF.DuSanity.checkSave.enabled = true;
+DuAEF.DuSanity.checkSave.id = 0;
+
 
 /**
  * Checks the expression engine
@@ -429,26 +450,28 @@ DuAEF.DuSanity.checkExpressionEngine = function ()
     var e = DuAEF.DuAE.Project.expressionEngine();
     if (e.indexOf("javascript") == 0)
     {
-        if (DuAEF.DuSanity.hasUI)
-        {
-            DuAEF.DuSanity.expressionText.setText("OK");
-            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.expressionText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
-            DuAEF.DuSanity.expressionText.helpTip = "";
-        }
-        return DuAEF.DuSanity.Levels.OK;
+        DuAEF.DuSanity.checkExpressionEngine.info = "";
+        DuAEF.DuSanity.checkExpressionEngine.tip = "";
+        return DuAEF.DuSanity.checkExpressionEngine.currentLevel = DuAEF.DuSanity.Levels.OK;
     }
     else
     {
-        if (DuAEF.DuSanity.hasUI)
-        {
-            DuAEF.DuSanity.expressionText.setText("BAD (ES)");
-            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.expressionText, DuAEF.DuJS.Color.Colors.ORANGE);
-            DuAEF.DuSanity.expressionText.helpTip = "The expression engine is set to \"ExtendScript legacy\".\n" +
-                "Setting it to \"JavaScript\" will improve performance (see the project settings).";
-        }
-        return DuAEF.DuSanity.Levels.BAD;
+        DuAEF.DuSanity.checkExpressionEngine.info = "ES";
+        DuAEF.DuSanity.checkExpressionEngine.tip = "The expression engine is set to 'ExtendScript Legacy'\n'JavaScript' improves performance, you can change it in the project settings.";
+        return DuAEF.DuSanity.checkExpressionEngine.currentLevel = DuAEF.DuSanity.Levels.BAD;
     }
 }
+
+DuAEF.DuSanity.checkExpressionEngine.name = 'checkExpressionEngine';
+DuAEF.DuSanity.checkExpressionEngine.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkExpressionEngine.info = "";
+DuAEF.DuSanity.checkExpressionEngine.tip = "";
+DuAEF.DuSanity.checkExpressionEngine.hasFix = false;
+DuAEF.DuSanity.checkExpressionEngine.fix = function () {};
+DuAEF.DuSanity.checkExpressionEngine.timeOut = 60000;
+DuAEF.DuSanity.checkSave.enabled = true;
+DuAEF.DuSanity.checkSave.id = 0;
+
 
 /**
  * Checks the number of items in the project
@@ -459,16 +482,21 @@ DuAEF.DuSanity.checkNumItems = function ()
     var n = app.project.numItems;
     var limit = 400;
 
-    var level = DuAEF.DuSanity.checkLevel(n, limit, n, DuAEF.DuSanity.numItemsText);
-    if (DuAEF.DuSanity.hasUI)
-    {
-        if (level > DuAEF.DuSanity.Levels.OK) DuAEF.DuSanity.numItemsText.helpTip = "Try to keep the project small (less than " + limit + " items)\n" + 
-            "e.g. do not animate several shots in the same project, but use one project per shot.\n" + 
-            "You can also remove unused items, and consolidate footage.";
-        else DuAEF.DuSanity.numItemsText.helpTip = "";
-    }
-    return level;
+    DuAEF.DuSanity.checkNumItems.info = n;
+    DuAEF.DuSanity.checkNumItems.tip = "Try to keep the project small (e.g. do not animate several shots in the same project).";
+    return DuAEF.DuSanity.checkNumItems.currentLevel = DuAEF.DuSanity.checkLevel(n, limit);
 }
+
+DuAEF.DuSanity.checkNumItems.name = 'checkNumItems';
+DuAEF.DuSanity.checkNumItems.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkNumItems.info = "";
+DuAEF.DuSanity.checkNumItems.tip = "";
+DuAEF.DuSanity.checkNumItems.hasFix = false;
+DuAEF.DuSanity.checkNumItems.fix = function () {};
+DuAEF.DuSanity.checkNumItems.timeOut = 30000;
+DuAEF.DuSanity.checkSave.enabled = true;
+DuAEF.DuSanity.checkSave.id = 0;
+
 
 /**
  * Checks the memory in use
@@ -479,15 +507,21 @@ DuAEF.DuSanity.checkMemory = function ()
     var mem = app.memoryInUse ;
     var limit = 4294967296 ; //4GB 4294967296‬
 
-    var level = DuAEF.DuSanity.checkLevel(mem, limit, DuAEF.DuJS.String.fromSize(mem), DuAEF.DuSanity.memoryText);
-    if (DuAEF.DuSanity.hasUI)
-    {
-        if (level > DuAEF.DuSanity.Levels.OK) DuAEF.DuSanity.memoryText.helpTip = "Memory use is getting high.\n" + 
-            "It may help to purge the cache and the memory.";
-        else DuAEF.DuSanity.memoryText.helpTip = "";
-    }
-    return level;
+    DuAEF.DuSanity.checkMemory.info = DuAEF.DuJS.String.fromSize(mem);
+    DuAEF.DuSanity.checkMemory.tip = "If the memory used gets too high, it may be good to purge the cache and free some space.";
+    return DuAEF.DuSanity.checkMemory.currentLevel = DuAEF.DuSanity.checkLevel(mem, limit);
 }
+
+DuAEF.DuSanity.checkMemory.name = 'checkMemory';
+DuAEF.DuSanity.checkMemory.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkMemory.info = "";
+DuAEF.DuSanity.checkMemory.tip = "";
+DuAEF.DuSanity.checkMemory.hasFix = false;
+DuAEF.DuSanity.checkMemory.fix = function () {};
+DuAEF.DuSanity.checkMemory.timeOut = 5000;
+DuAEF.DuSanity.checkSave.enabled = true;
+DuAEF.DuSanity.checkSave.id = 0;
+
 
 /**
  * Checks the number of master properties in the project
@@ -498,14 +532,21 @@ DuAEF.DuSanity.checkMP = function ()
     var n = DuAEF.DuAE.Comp.numMasterProperties();
     var limit = 40;
 
-    var level = DuAEF.DuSanity.checkLevel(n, limit, n, DuAEF.DuSanity.MPText);
-    if (DuAEF.DuSanity.hasUI)
-    {
-        if (level > DuAEF.DuSanity.Levels.OK) DuAEF.DuSanity.MPText.helpTip = "Too many Master Properties in the active composition have a very bad impact on performance.";
-        else DuAEF.DuSanity.MPText.helpTip = "";
-    }
-    return level;
+    DuAEF.DuSanity.checkMP.info = n;
+    DuAEF.DuSanity.checkMP.tip = "Having a lot of Master Properties in the current composition has a very bad impact on performance.";
+    return DuAEF.DuSanity.checkMP.currentLevel = DuAEF.DuSanity.checkLevel(n, limit);
 }
+
+DuAEF.DuSanity.checkMP.name = 'checkMP';
+DuAEF.DuSanity.checkMP.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkMP.info = "";
+DuAEF.DuSanity.checkMP.tip = "";
+DuAEF.DuSanity.checkMP.hasFix = false;
+DuAEF.DuSanity.checkMP.fix = function () {};
+DuAEF.DuSanity.checkMP.timeOut = 5000;
+DuAEF.DuSanity.checkSave.enabled = true;
+DuAEF.DuSanity.checkSave.id = 0;
+
 
 /**
  * Checks if some items have the same source file
@@ -544,35 +585,36 @@ DuAEF.DuSanity.checkItemSources = function ()
 
     if (duplicatedSources.length == 0)
     {
-        if (DuAEF.DuSanity.hasUI)
-        {
-            DuAEF.DuSanity.itemSourcesText.setText("OK");
-            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.itemSourcesText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
-            DuAEF.DuSanity.itemSourcesText.helpTip = "";
-        }
-        return DuAEF.DuSanity.Levels.OK;
+        DuAEF.DuSanity.checkItemSources.info = "";
+        DuAEF.DuSanity.checkItemSources.tip = "";
+        return DuAEF.DuSanity.checkItemSources.currentLevel = DuAEF.DuSanity.Levels.OK;
     }
     else
     {
-        if (DuAEF.DuSanity.hasUI)
+        DuAEF.DuSanity.checkItemSources.info = duplicatedSources.length + " items";
+        DuAEF.DuSanity.checkItemSources.tip = "Some footages share the same sources:";
+        for (file in duplicatedSources)
         {
-            DuAEF.DuSanity.itemSourcesText.setText("BAD");
-            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.itemSourcesText, DuAEF.DuJS.Color.Colors.ORANGE);
-            var helpTip = "Some items share the same sources:";
-            for (file in duplicatedSources)
+            if (file == 'length') continue;
+            if (duplicatedSources.hasOwnProperty(file))
             {
-                if (file == 'length') continue;
-                if (duplicatedSources.hasOwnProperty(file))
-                {
-                    helpTip += "\n- " + file;
-                }
+                DuAEF.DuSanity.checkItemSources.tip += "\n- " + file;
             }
-            DuAEF.DuSanity.itemSourcesText.helpTip = helpTip
-
         }
-        return DuAEF.DuSanity.Levels.BAD;
+        return DuAEF.DuSanity.checkItemSources.currentLevel = DuAEF.DuSanity.Levels.BAD;
     }
 }
+
+DuAEF.DuSanity.checkItemSources.name = 'checkItemSources';
+DuAEF.DuSanity.checkItemSources.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkItemSources.info = "";
+DuAEF.DuSanity.checkItemSources.tip = "";
+DuAEF.DuSanity.checkItemSources.hasFix = false;
+DuAEF.DuSanity.checkItemSources.fix = function () {};
+DuAEF.DuSanity.checkItemSources.timeOut = 30000;
+DuAEF.DuSanity.checkSave.enabled = true;
+DuAEF.DuSanity.checkSave.id = 0;
+
 
 /**
  * Checks if some items are unused and should be removed
@@ -591,22 +633,36 @@ DuAEF.DuSanity.checkItemsUnused = function ()
         }
     }
 
-    var level = DuAEF.DuSanity.checkLevel(unused.length, limit, unused.length, DuAEF.DuSanity.unusedText);
-    if (DuAEF.DuSanity.hasUI)
+    DuAEF.DuSanity.checkItemsUnused.currentLevel = DuAEF.DuSanity.checkLevel(unused.length, limit);
+
+    if (DuAEF.DuSanity.checkItemsUnused.currentLevel > DuAEF.DuSanity.Levels.OK) 
     {
-        if (level > DuAEF.DuSanity.Levels.OK) 
+        DuAEF.DuSanity.checkItemsUnused.info = unused.length + " footages";
+        DuAEF.DuSanity.checkItemsUnused.tip = "Found some footages which are unused. You should remove them.";
+        for (var i = 0, n = unused.length; i < n; i++)
         {
-            var helpTip = "Found some footages which are unused. You should remove them.";
-            for (var i = 0, n = unused.length; i < n; i++)
-            {
-                helpTip += "\n- " + unused[i].name;
-            }
-            DuAEF.DuSanity.unusedText.helpTip = helpTip;
+            DuAEF.DuSanity.checkItemsUnused.tip += "\n- " + unused[i].name;
         }
-        else DuAEF.DuSanity.unusedText.helpTip = "";
     }
-    return level;
+    else
+    {
+        DuAEF.DuSanity.checkItemsUnused.info = "";
+        DuAEF.DuSanity.checkItemsUnused.tip = "";
+    }
+
+    return DuAEF.DuSanity.checkItemsUnused.currentLevel
 }
+
+DuAEF.DuSanity.checkItemsUnused.name = 'checkItemsUnused';
+DuAEF.DuSanity.checkItemsUnused.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkItemsUnused.info = "";
+DuAEF.DuSanity.checkItemsUnused.tip = "";
+DuAEF.DuSanity.checkItemsUnused.hasFix = false;
+DuAEF.DuSanity.checkItemsUnused.fix = function () {};
+DuAEF.DuSanity.checkItemsUnused.timeOut = 30000;
+DuAEF.DuSanity.checkSave.enabled = true;
+DuAEF.DuSanity.checkSave.id = 0;
+
 
 /**
  * Checks if there are precomps in the project root folder
@@ -626,31 +682,33 @@ DuAEF.DuSanity.checkPrecomps = function ()
 
     if (precomps.length == 0)
     {
-        if (DuAEF.DuSanity.hasUI)
-        {
-            DuAEF.DuSanity.precompsText.setText("OK");
-            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.precompsText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
-            DuAEF.DuSanity.precompsText.helpTip = "";
-        }
-        return DuAEF.DuSanity.Levels.OK; 
+        DuAEF.DuSanity.checkPrecomps.tip = "";
+        DuAEF.DuSanity.checkPrecomps.info = "";
+        return DuAEF.DuSanity.currentLevel = DuAEF.DuSanity.Levels.OK; 
     }
     else
     {
-        if (DuAEF.DuSanity.hasUI)
+        DuAEF.DuSanity.checkPrecomps.info = precomps.length + " comps";
+        DuAEF.DuSanity.checkPrecomps.tip = "Some precompositions are at the root of the project.\n" + 
+            "They should be moved in a subfolder.";
+        for (var i = 0, n = precomps.length; i<n; i++)
         {
-            DuAEF.DuSanity.precompsText.setText("INFO");
-            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.precompsText, DuAEF.DuJS.Color.Colors.AFTER_EFFECTS_BLUE);
-            var helpTip = "Some precompositions are at the root of the project.\n" + 
-                "They should be moved in a subfolder.";
-            for (var i = 0, n = precomps.length; i<n; i++)
-            {
-                helpTip += "\n- " + precomps[i].name;
-            }
-            DuAEF.DuSanity.precompsText.helpTip = helpTip;
+            DuAEF.DuSanity.checkPrecomps.tip += "\n- " + precomps[i].name;
         }
-        return DuAEF.DuSanity.Levels.INFO; 
+        return DuAEF.DuSanity.checkPrecomps.currentLevel = DuAEF.DuSanity.Levels.INFO; 
     }
 }
+
+DuAEF.DuSanity.checkPrecomps.name = 'checkPrecomps';
+DuAEF.DuSanity.checkPrecomps.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkPrecomps.info = "";
+DuAEF.DuSanity.checkPrecomps.tip = "";
+DuAEF.DuSanity.checkPrecomps.hasFix = false;
+DuAEF.DuSanity.checkPrecomps.fix = function () {};
+DuAEF.DuSanity.checkPrecomps.timeOut = 10000;
+DuAEF.DuSanity.checkSave.enabled = true;
+DuAEF.DuSanity.checkSave.id = 0;
+
 
 /**
  * Checks if there are unused comps in some subfolders
@@ -670,31 +728,50 @@ DuAEF.DuSanity.checkUnusedComps = function ()
 
     if (comps.length == 0)
     {
-        if (DuAEF.DuSanity.hasUI)
-        {
-            DuAEF.DuSanity.unusedCompsText.setText("OK");
-            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.unusedCompsText, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
-            DuAEF.DuSanity.unusedCompsText.helpTip = "";
-        }
-        return DuAEF.DuSanity.Levels.OK; 
+        
+        DuAEF.DuSanity.checkUnusedComps.tip = "";
+        DuAEF.DuSanity.checkUnusedComps.info = "";
+
+        return DuAEF.DuSanity.checkUnusedComps.currentLevel = DuAEF.DuSanity.Levels.OK; 
     }
     else
     {
-        if (DuAEF.DuSanity.hasUI)
+        DuAEF.DuSanity.checkUnusedComps.info = comps.length + " comps";
+        DuAEF.DuSanity.checkUnusedComps.tip = "Some main compositions are stored in subfolders.\n" + 
+            "It is easier to keep them at the root of the project, or they should be removed if they're not needed anymore.";
+        for (var i = 0, n = comps.length; i<n; i++)
         {
-            DuAEF.DuSanity.unusedCompsText.setText("INFO");
-            DuAEF.DuScriptUI.setTextColor(DuAEF.DuSanity.unusedCompsText, DuAEF.DuJS.Color.Colors.AFTER_EFFECTS_BLUE);
-            var helpTip = "Some main compositions are stored in subfolders.\n" + 
-                "It is easier to keep them at the root of the project, or they should be removed if they're not needed anymore.";
-            for (var i = 0, n = comps.length; i<n; i++)
-            {
-                helpTip += "\n- " + comps[i].name;
-            }
-            DuAEF.DuSanity.unusedCompsText.helpTip = helpTip;
+            DuAEF.DuSanity.checkUnusedComps.tip += "\n- " + comps[i].name;
         }
+
         return DuAEF.DuSanity.Levels.INFO; 
     }
 }
+
+DuAEF.DuSanity.checkUnusedComps.name = 'checkUnusedComps';
+DuAEF.DuSanity.checkUnusedComps.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkUnusedComps.info = "";
+DuAEF.DuSanity.checkUnusedComps.tip = "";
+DuAEF.DuSanity.checkUnusedComps.hasFix = false;
+DuAEF.DuSanity.checkUnusedComps.fix = function () {};
+DuAEF.DuSanity.checkUnusedComps.timeOut = 10000;
+DuAEF.DuSanity.checkSave.enabled = true;
+DuAEF.DuSanity.checkSave.id = 0;
+
+DuAEF.DuSanity.tests = [
+    DuAEF.DuSanity.checkSave,
+    DuAEF.DuSanity.checkCompNames,
+    DuAEF.DuSanity.checkLayerNames,
+    DuAEF.DuSanity.checkProjectSize,
+    DuAEF.DuSanity.checkExpressionEngine,
+    DuAEF.DuSanity.checkNumItems,
+    DuAEF.DuSanity.checkMemory,
+    DuAEF.DuSanity.checkMP,
+    DuAEF.DuSanity.checkItemSources,
+    DuAEF.DuSanity.checkItemsUnused,
+    DuAEF.DuSanity.checkPrecomps,
+    DuAEF.DuSanity.checkUnusedComps
+];
 
 /**
  * Runs all the sanity tests and updates the sanity Button
@@ -704,31 +781,16 @@ DuAEF.DuSanity.test = function ()
 {
     var level = DuAEF.DuSanity.Levels.UNKNOWN;
 
-    DuAEF.DuAE.Project.settings.update();
-    if (typeof DuAEF.DuAE.Project.settings.data.sanity === 'undefined') DuAEF.DuAE.Project.settings.data.sanity = {};
-
-
-    function runTest(checkName)
+    for (var i = 0, n = DuAEF.DuSanity.tests.length; i < n; i++)
     {
-        var ok = DuAEF.DuAE.Project.settings.data.sanity[checkName] && DuAEF.settings.data.sanity[checkName];
-        if (!ok) return;
-        var test = DuAEF.DuSanity[checkName]();
-        if (test > level) level = test;
+        var test = DuAEF.DuSanity.tests[i];
+        if (test.enabled)
+        {
+            var testLevel = test.currentLevel;
+            if (testLevel > level) level = test;
+        }
     }
-
-    runTest("checkCompNames");
-    runTest("checkLayerNames");
-    runTest("checkProjectSize");
-    runTest("checkExpressionEngine");
-    runTest("checkNumItems");
-    runTest("checkItemsUnused");
-    runTest("checkPrecomps");
-    runTest("checkUnusedComps");
-    runTest("checkMemory");
-    runTest("checkMP");
-    runTest("checkSave");
-    runTest("checkItemSources");
-
+    
     DuAEF.DuSanity.currentLevel = level;
     return level;
 }
@@ -740,9 +802,25 @@ DuAEF.DuSanity.init = function ()
 {
     if (DuAEF.DuSanity.isInitialized) return;
 
+    //add and first run
+    for (var i = 0, n = DuAEF.DuSanity.tests.length; i < n; i++)
+    {
+        var test = DuAEF.DuSanity.tests[i];
+        //if (DuAEF.DuSanity.isEnabled(test))
+        {
+            //First run
+            test();
+            var timeOut = test.timeOut;
+            if (DuAEF.debug) timeOut = 3000;
+            //Event
+            DuAEF.DuSanity.tests[i].id = DuAEF.DuScriptUI.addEvent(test, timeOut);
+        }
+        
+    }
+
     //First run
     DuAEF.DuSanity.test();
     //add to events
-    DuAEF.DuScriptUI.addEvent(DuAEF.DuSanity.test);
+    DuAEF.DuScriptUI.addEvent(DuAEF.DuSanity.test,3000);
     DuAEF.DuSanity.isInitialized = true;
 }
