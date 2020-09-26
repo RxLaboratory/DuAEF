@@ -36,6 +36,7 @@ DuAEF.DuSanity = {};
 
     //internal use: shared settings defaults
     if (typeof DuAEF.settings.data.sanity === 'undefined') DuAEF.settings.data.sanity = {};
+    //checks
     if (typeof DuAEF.settings.data.sanity.checkSave === 'undefined') DuAEF.settings.data.sanity.checkSave = true;
     if (typeof DuAEF.settings.data.sanity.checkCompNames === 'undefined') DuAEF.settings.data.sanity.checkCompNames = true;
     if (typeof DuAEF.settings.data.sanity.checkUnusedComps === 'undefined') DuAEF.settings.data.sanity.checkUnusedComps = true;
@@ -48,6 +49,20 @@ DuAEF.DuSanity = {};
     if (typeof DuAEF.settings.data.sanity.checkExpressionEngine === 'undefined') DuAEF.settings.data.sanity.checkExpressionEngine = true;
     if (typeof DuAEF.settings.data.sanity.checkProjectSize === 'undefined') DuAEF.settings.data.sanity.checkProjectSize = true;
     if (typeof DuAEF.settings.data.sanity.checkLayerNames === 'undefined') DuAEF.settings.data.sanity.checkLayerNames = true;
+    //live fix
+    if (typeof DuAEF.settings.data.sanity.fix === 'undefined') DuAEF.settings.data.sanity.fix = {};
+    if (typeof DuAEF.settings.data.sanity.fix.checkSave === 'undefined') DuAEF.settings.data.sanity.fix.checkSave = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkCompNames === 'undefined') DuAEF.settings.data.sanity.fix.checkCompNames = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkUnusedComps === 'undefined') DuAEF.settings.data.sanity.fix.checkUnusedComps = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkPrecomps === 'undefined') DuAEF.settings.data.sanity.fix.checkPrecomps = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkItemsUnused === 'undefined') DuAEF.settings.data.sanity.fix.checkItemsUnused = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkItemSources === 'undefined') DuAEF.settings.data.sanity.fix.checkItemSources = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkMP === 'undefined') DuAEF.settings.data.sanity.fix.checkMP = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkMemory === 'undefined') DuAEF.settings.data.sanity.fix.checkMemory = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkNumItems === 'undefined') DuAEF.settings.data.sanity.fix.checkNumItems = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkExpressionEngine === 'undefined') DuAEF.settings.data.sanity.fix.checkExpressionEngine = false;
+    if (typeof DuAEF.settings.data.sanity.fix.checkProjectSize === 'undefined') DuAEF.settings.data.sanity.fix.checkProjectSize = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkLayerNames === 'undefined') DuAEF.settings.data.sanity.fix.checkLayerNames = true;
 })();
 
 /**
@@ -74,6 +89,7 @@ DuAEF.DuSanity.createUI = function (container)
 
     var ui_reportMainGroup = DuAEF.DuScriptUI.addGroup(container, "column");
 
+    // icons
     var pim = DuAEF.DuBinary.toFile(w18_poweroff_m);
     var pil = DuAEF.DuBinary.toFile(w18_poweroff_l);
     var fpim = DuAEF.DuBinary.toFile(w18_file_m);
@@ -134,23 +150,26 @@ DuAEF.DuSanity.createUI = function (container)
             else fpb.setChecked( DuAEF.DuSanity.isProjectEnabled(test) );
             fpb.enabled = c;
             
-            DuAEF.settings.data.sanity[test.stringId] = c;
-            DuAEF.settings.save();
-            
+            DuAEF.DuSanity.setGloballyEnabled(test, c);
             DuAEF.DuSanity.setEnabled(test, c && fpb.checked);
             updateUI();
         }
 
         fpb.onClick = function () {
             var c = fpb.checked;
-            //Init project settings
-            var projectSettings = DuAEF.DuAE.Project.settings;
-            projectSettings.update();
-            projectSettings.data.sanity = def(projectSettings.data.sanity, {});
-            projectSettings.data.sanity[test.stringId] = c;
-            projectSettings.save();
+            DuAEF.DuSanity.setProjectEnabled(test, c)
             DuAEF.DuSanity.setEnabled(test, c);
             updateUI();
+        }
+
+        mb.onClick = function () {
+            test.fix();
+            test();
+            updateUI();
+        }
+
+        umb.onClick = function () {
+            DuAEF.DuSanity.setLiveFixEnabled(test, umb.checked);
         }
 
         function updateUI()
@@ -211,6 +230,7 @@ DuAEF.DuSanity.createUI = function (container)
 
         pb.setChecked( DuAEF.DuSanity.isGloballyEnabled(test) );
         fpb.setChecked( DuAEF.DuSanity.isProjectEnabled(test) );
+        umb.setChecked( DuAEF.DuSanity.isLiveFixEnabled(test) );
         fpb.onClick();
         pb.onClick();
 
@@ -276,6 +296,48 @@ DuAEF.DuSanity.isGloballyEnabled = function (test)
     return DuAEF.settings.data.sanity[test.stringId];
 }
 
+DuAEF.DuSanity.isLiveFixEnabled = function (test)
+{
+    return DuAEF.settings.data.sanity.fix[test.stringId];
+}
+
+DuAEF.DuSanity.needsFix = function (test)
+{
+    return DuAEF.DuSanity.isLiveFixEnabled(test) && test.currentLevel >= DuAEF.DuSanity.Levels.BAD && test.hasFix;
+}
+
+DuAEF.DuSanity.fixIfNeeded = function (test)
+{
+    if ( DuAEF.DuSanity.needsFix( test ) )
+    {
+        test.fix();
+        return test(true);
+    }
+    return test.currentLevel;
+}
+
+DuAEF.DuSanity.setProjectEnabled = function (test, enabled)
+{
+    //Init project settings
+    var projectSettings = DuAEF.DuAE.Project.settings;
+    projectSettings.update();
+    projectSettings.data.sanity = def(projectSettings.data.sanity, {});
+    projectSettings.data.sanity[test.stringId] = enabled;
+    projectSettings.save();
+}
+
+DuAEF.DuSanity.setGloballyEnabled = function (test, enabled)
+{
+    DuAEF.settings.data.sanity[test.stringId] = enabled;
+    DuAEF.settings.save();
+}
+
+DuAEF.DuSanity.setLiveFixEnabled = function (test, enabled)
+{
+    DuAEF.settings.data.sanity.fix[test.stringId] = enabled;
+    DuAEF.settings.save();
+}
+
 /**
  * Checks if a Sanity Test is enabled
  * @return {boolean}
@@ -321,8 +383,9 @@ DuAEF.DuSanity.setEnabled = function (test, enabled)
  * Checks if the project has been saved recently.
  * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
  */
-DuAEF.DuSanity.checkSave = function ()
+DuAEF.DuSanity.checkSave = function (dontFix)
 {
+    dontFix = def(dontFix, false);
     var proj = app.project;
     var f = app.project.file;
     var limit = 1800000;
@@ -358,15 +421,19 @@ DuAEF.DuSanity.checkSave = function ()
     DuAEF.DuSanity.checkSave.info = elapsedStr;
     DuAEF.DuSanity.checkSave.tip = "You should save the project at least every " + Math.round(limit/60000) + "mn.";
     DuAEF.DuSanity.checkSave.currentLevel = DuAEF.DuSanity.checkLevel(elapsed, limit);
-    return DuAEF.DuSanity.checkSave.currentLevel;
+
+    if (dontFix) return  DuAEF.DuSanity.checkSave.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkSave );
 }
 
 DuAEF.DuSanity.checkSave.stringId = 'checkSave';
 DuAEF.DuSanity.checkSave.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkSave.info = "";
 DuAEF.DuSanity.checkSave.tip = "";
-DuAEF.DuSanity.checkSave.hasFix = false;
-DuAEF.DuSanity.checkSave.fix = function () {};
+DuAEF.DuSanity.checkSave.hasFix = true;
+DuAEF.DuSanity.checkSave.fix = function () {
+    app.project.save();
+};
 DuAEF.DuSanity.checkSave.timeOut = 60000;
 DuAEF.DuSanity.checkSave.enabled = true;
 DuAEF.DuSanity.checkSave.id = 0;
@@ -376,15 +443,15 @@ DuAEF.DuSanity.checkSave.id = 0;
  * Checks if there are comps with the same name in the project.
  * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
  */
-DuAEF.DuSanity.checkCompNames = function ()
+DuAEF.DuSanity.checkCompNames = function (dontFix)
 {
+    dontFix = def(dontFix, false);
     var duplicatedNames = DuAEF.DuAE.Project.checkCompNames();
     if (duplicatedNames.length == 0)
     {
         DuAEF.DuSanity.checkCompNames.info = "";
         DuAEF.DuSanity.checkCompNames.tip = "";
         DuAEF.DuSanity.checkCompNames.currentLevel = DuAEF.DuSanity.Levels.OK;
-        return DuAEF.DuSanity.checkCompNames.currentLevel;
     }
     else
     {
@@ -399,16 +466,28 @@ DuAEF.DuSanity.checkCompNames = function ()
             }
         }
         DuAEF.DuSanity.checkCompNames.currentLevel = DuAEF.DuSanity.Levels.BAD;
-        return DuAEF.DuSanity.checkCompNames.currentLevel;
     }
+
+    if (dontFix) return  DuAEF.DuSanity.checkCompNames.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkCompNames );
 }
 
 DuAEF.DuSanity.checkCompNames.stringId = 'checkCompNames';
 DuAEF.DuSanity.checkCompNames.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkCompNames.info = "";
 DuAEF.DuSanity.checkCompNames.tip = "";
-DuAEF.DuSanity.checkCompNames.hasFix = false;
-DuAEF.DuSanity.checkCompNames.fix = function () {};
+DuAEF.DuSanity.checkCompNames.hasFix = true;
+DuAEF.DuSanity.checkCompNames.fix = function () {
+    var duplicatedNames = DuAEF.DuAE.Project.checkCompNames();
+    for (name in duplicatedNames)
+    {
+        if (name == 'length') continue;
+        if (duplicatedNames.hasOwnProperty(name))
+        {
+            DuAEF.DuAE.Project.setUniqueCompNames( duplicatedNames[name] );
+        }
+    }
+};
 DuAEF.DuSanity.checkCompNames.timeOut = 30000;
 DuAEF.DuSanity.checkCompNames.enabled = true;
 DuAEF.DuSanity.checkCompNames.id = 0;
@@ -418,14 +497,15 @@ DuAEF.DuSanity.checkCompNames.id = 0;
  * Checks if there are layers in the active comp which have the same name.
  * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
  */
-DuAEF.DuSanity.checkLayerNames = function ()
+DuAEF.DuSanity.checkLayerNames = function (dontFix)
 {
+    dontFix = def(dontFix, false);
     var duplicatedNames = DuAEF.DuAE.Comp.checkLayerNames();
     if (duplicatedNames.length == 0)
     {
         DuAEF.DuSanity.checkLayerNames.info = ""
         DuAEF.DuSanity.checkLayerNames.tip = ""
-        return DuAEF.DuSanity.checkLayerNames.currentLevel = DuAEF.DuSanity.Levels.OK;
+        DuAEF.DuSanity.checkLayerNames.currentLevel = DuAEF.DuSanity.Levels.OK;
     }
     else
     {
@@ -443,16 +523,29 @@ DuAEF.DuSanity.checkLayerNames = function ()
                 }
             }
         }
-        return  DuAEF.DuSanity.checkLayerNames.currentLevel = DuAEF.DuSanity.Levels.BAD;
+        DuAEF.DuSanity.checkLayerNames.currentLevel = DuAEF.DuSanity.Levels.BAD;
     }
+
+    if (dontFix) return  DuAEF.DuSanity.checkLayerNames.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkLayerNames );
 }
 
 DuAEF.DuSanity.checkLayerNames.stringId = 'checkLayerNames';
 DuAEF.DuSanity.checkLayerNames.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkLayerNames.info = "";
 DuAEF.DuSanity.checkLayerNames.tip = "";
-DuAEF.DuSanity.checkLayerNames.hasFix = false;
-DuAEF.DuSanity.checkLayerNames.fix = function () {};
+DuAEF.DuSanity.checkLayerNames.hasFix = true;
+DuAEF.DuSanity.checkLayerNames.fix = function () {
+    var duplicatedNames = DuAEF.DuAE.Comp.checkLayerNames();
+    for (name in duplicatedNames)
+    {
+        if (name == 'length') continue;
+        if (duplicatedNames.hasOwnProperty(name))
+        {
+            DuAEF.DuAE.Comp.setUniqueLayerNames( duplicatedNames[name] );
+        }
+    }
+};
 DuAEF.DuSanity.checkLayerNames.timeOut = 10000;
 DuAEF.DuSanity.checkLayerNames.enabled = true;
 DuAEF.DuSanity.checkLayerNames.id = 0;
@@ -462,8 +555,9 @@ DuAEF.DuSanity.checkLayerNames.id = 0;
  * Checks the project file size.
  * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
  */
-DuAEF.DuSanity.checkProjectSize = function ()
+DuAEF.DuSanity.checkProjectSize = function (dontFix)
 {
+    dontFix = def(dontFix, false);
     var size = DuAEF.DuAE.Project.getSize();
     var sizeLimit = 20000000;
 
@@ -471,18 +565,24 @@ DuAEF.DuSanity.checkProjectSize = function ()
     {
         DuAEF.DuSanity.checkProjectSize.info = "Not saved";
         DuAEF.DuSanity.checkProjectSize.tip = "You should save this project right now!";
-        return DuAEF.DuSanity.checkProjectSize.currentLevel = DuAEF.DuSanity.Levels.CRITICAL;
+        DuAEF.DuSanity.checkProjectSize.currentLevel = DuAEF.DuSanity.Levels.CRITICAL;
+        return DuAEF.DuSanity.checkProjectSize.currentLevel;
     }
     else if (size < 0)
     {
         DuAEF.DuSanity.checkProjectSize.info = "";
         DuAEF.DuSanity.checkProjectSize.tip = "";
-        return DuAEF.DuSanity.checkProjectSize.currentLevel = DuAEF.DuSanity.Levels.OK;
+        DuAEF.DuSanity.checkProjectSize.currentLevel = DuAEF.DuSanity.Levels.OK;
+    }
+    else
+    {
+        DuAEF.DuSanity.checkProjectSize.info = DuAEF.DuJS.String.fromSize(size);
+        DuAEF.DuSanity.checkProjectSize.tip = "Try to keep the project small (e.g. do not animate several shots in the same project).";
+        DuAEF.DuSanity.checkProjectSize.currentLevel = DuAEF.DuSanity.checkLevel(size, sizeLimit);
     }
 
-    DuAEF.DuSanity.checkProjectSize.info = DuAEF.DuJS.String.fromSize(size);
-    DuAEF.DuSanity.checkProjectSize.tip = "Try to keep the project small (e.g. do not animate several shots in the same project).";
-    return DuAEF.DuSanity.checkProjectSize.currentLevel = DuAEF.DuSanity.checkLevel(size, sizeLimit);
+    if (dontFix) return  DuAEF.DuSanity.checkProjectSize.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkProjectSize );
 }
 
 DuAEF.DuSanity.checkProjectSize.stringId = 'checkProjectSize';
@@ -500,29 +600,35 @@ DuAEF.DuSanity.checkProjectSize.id = 0;
  * Checks the expression engine
  * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
  */
-DuAEF.DuSanity.checkExpressionEngine = function ()
+DuAEF.DuSanity.checkExpressionEngine = function (dontFix)
 {
+    dontFix = def(dontFix, false);
     var e = DuAEF.DuAE.Project.expressionEngine();
     if (e.indexOf("javascript") == 0)
     {
         DuAEF.DuSanity.checkExpressionEngine.info = "";
         DuAEF.DuSanity.checkExpressionEngine.tip = "";
-        return DuAEF.DuSanity.checkExpressionEngine.currentLevel = DuAEF.DuSanity.Levels.OK;
+        DuAEF.DuSanity.checkExpressionEngine.currentLevel = DuAEF.DuSanity.Levels.OK;
     }
     else
     {
         DuAEF.DuSanity.checkExpressionEngine.info = "ES";
         DuAEF.DuSanity.checkExpressionEngine.tip = "The expression engine is set to 'ExtendScript Legacy'\n'JavaScript' improves performance, you can change it in the project settings.";
-        return DuAEF.DuSanity.checkExpressionEngine.currentLevel = DuAEF.DuSanity.Levels.BAD;
+        DuAEF.DuSanity.checkExpressionEngine.currentLevel = DuAEF.DuSanity.Levels.BAD;
     }
+
+    if (dontFix) return  DuAEF.DuSanity.checkExpressionEngine.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkExpressionEngine );
 }
 
 DuAEF.DuSanity.checkExpressionEngine.stringId = 'checkExpressionEngine';
 DuAEF.DuSanity.checkExpressionEngine.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkExpressionEngine.info = "";
 DuAEF.DuSanity.checkExpressionEngine.tip = "";
-DuAEF.DuSanity.checkExpressionEngine.hasFix = false;
-DuAEF.DuSanity.checkExpressionEngine.fix = function () {};
+DuAEF.DuSanity.checkExpressionEngine.hasFix = true;
+DuAEF.DuSanity.checkExpressionEngine.fix = function () {
+    app.project.expressionEngine = 'javascript-1.0';
+};
 DuAEF.DuSanity.checkExpressionEngine.timeOut = 60000;
 DuAEF.DuSanity.checkExpressionEngine.enabled = true;
 DuAEF.DuSanity.checkExpressionEngine.id = 0;
@@ -532,14 +638,18 @@ DuAEF.DuSanity.checkExpressionEngine.id = 0;
  * Checks the number of items in the project
  * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
  */
-DuAEF.DuSanity.checkNumItems = function ()
+DuAEF.DuSanity.checkNumItems = function (dontFix)
 {
+    dontFix = def(dontFix, false);
     var n = app.project.numItems;
     var limit = 400;
 
     DuAEF.DuSanity.checkNumItems.info = n + " items";
     DuAEF.DuSanity.checkNumItems.tip = "Try to keep the project small (e.g. do not animate several shots in the same project).";
-    return DuAEF.DuSanity.checkNumItems.currentLevel = DuAEF.DuSanity.checkLevel(n, limit);
+    DuAEF.DuSanity.checkNumItems.currentLevel = DuAEF.DuSanity.checkLevel(n, limit);
+
+    if (dontFix) return  DuAEF.DuSanity.checkNumItems.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkNumItems );
 }
 
 DuAEF.DuSanity.checkNumItems.stringId = 'checkNumItems';
@@ -557,14 +667,18 @@ DuAEF.DuSanity.checkNumItems.id = 0;
  * Checks the memory in use
  * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
  */
-DuAEF.DuSanity.checkMemory = function ()
+DuAEF.DuSanity.checkMemory = function (dontFix)
 {
+    dontFix = def(dontFix, false);
     var mem = app.memoryInUse ;
     var limit = 4294967296 ; //4GB 4294967296‬
 
     DuAEF.DuSanity.checkMemory.info = DuAEF.DuJS.String.fromSize(mem);
     DuAEF.DuSanity.checkMemory.tip = "If the memory used gets too high, it may be good to purge the cache and free some space.";
-    return DuAEF.DuSanity.checkMemory.currentLevel = DuAEF.DuSanity.checkLevel(mem, limit);
+    DuAEF.DuSanity.checkMemory.currentLevel = DuAEF.DuSanity.checkLevel(mem, limit);
+
+    if (dontFix) return  DuAEF.DuSanity.checkMemory.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkMemory );
 }
 
 DuAEF.DuSanity.checkMemory.stringId = 'checkMemory';
@@ -582,14 +696,18 @@ DuAEF.DuSanity.checkMemory.id = 0;
  * Checks the number of master properties in the project
  * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
  */
-DuAEF.DuSanity.checkMP = function ()
+DuAEF.DuSanity.checkMP = function (dontFix)
 {
+    dontFix = def(dontFix, false);
     var n = DuAEF.DuAE.Comp.numMasterProperties();
     var limit = 40;
 
     DuAEF.DuSanity.checkMP.info = n;
     DuAEF.DuSanity.checkMP.tip = "Having a lot of Master Properties in the current composition has a very bad impact on performance.";
-    return DuAEF.DuSanity.checkMP.currentLevel = DuAEF.DuSanity.checkLevel(n, limit);
+    DuAEF.DuSanity.checkMP.currentLevel = DuAEF.DuSanity.checkLevel(n, limit);
+
+    if (dontFix) return  DuAEF.DuSanity.checkMP.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkMP );
 }
 
 DuAEF.DuSanity.checkMP.stringId = 'checkMP';
@@ -607,8 +725,9 @@ DuAEF.DuSanity.checkMP.id = 0;
  * Checks if some items have the same source file
  * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
  */
-DuAEF.DuSanity.checkItemSources = function ()
+DuAEF.DuSanity.checkItemSources = function (dontFix)
 {
+    dontFix = def(dontFix, false);
     var duplicatedSources = {};
     duplicatedSources.length = 0;
     var sources = {};
@@ -642,7 +761,7 @@ DuAEF.DuSanity.checkItemSources = function ()
     {
         DuAEF.DuSanity.checkItemSources.info = "";
         DuAEF.DuSanity.checkItemSources.tip = "";
-        return DuAEF.DuSanity.checkItemSources.currentLevel = DuAEF.DuSanity.Levels.OK;
+        DuAEF.DuSanity.checkItemSources.currentLevel = DuAEF.DuSanity.Levels.OK;
     }
     else
     {
@@ -656,8 +775,11 @@ DuAEF.DuSanity.checkItemSources = function ()
                 DuAEF.DuSanity.checkItemSources.tip += "\n- " + file;
             }
         }
-        return DuAEF.DuSanity.checkItemSources.currentLevel = DuAEF.DuSanity.Levels.BAD;
+        DuAEF.DuSanity.checkItemSources.currentLevel = DuAEF.DuSanity.Levels.BAD;
     }
+
+    if (dontFix) return  DuAEF.DuSanity.checkItemSources.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkItemSources );
 }
 
 DuAEF.DuSanity.checkItemSources.stringId = 'checkItemSources';
@@ -675,8 +797,9 @@ DuAEF.DuSanity.checkItemSources.id = 0;
  * Checks if some items are unused and should be removed
  * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
  */
-DuAEF.DuSanity.checkItemsUnused = function ()
+DuAEF.DuSanity.checkItemsUnused = function (dontFix)
 {
+    dontFix = def(dontFix, false);
     var limit = 10;
     unused = [];
     for (var i = 1, n = app.project.numItems; i <= n; i++)
@@ -705,7 +828,8 @@ DuAEF.DuSanity.checkItemsUnused = function ()
         DuAEF.DuSanity.checkItemsUnused.tip = "";
     }
 
-    return DuAEF.DuSanity.checkItemsUnused.currentLevel
+    if (dontFix) return  DuAEF.DuSanity.checkItemsUnused.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkItemsUnused );
 }
 
 DuAEF.DuSanity.checkItemsUnused.stringId = 'checkItemsUnused';
@@ -723,8 +847,9 @@ DuAEF.DuSanity.checkItemsUnused.id = 0;
  * Checks if there are precomps in the project root folder
  * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
  */
-DuAEF.DuSanity.checkPrecomps = function ()
+DuAEF.DuSanity.checkPrecomps = function (dontFix)
 {
+    dontFix = def(dontFix, false);
     var precomps = [];
     for (var i = 1, n = app.project.numItems; i <= n; i++ )
     {
@@ -751,7 +876,8 @@ DuAEF.DuSanity.checkPrecomps = function ()
         DuAEF.DuSanity.checkPrecomps.currentLevel = DuAEF.DuSanity.Levels.INFO; 
     }
 
-    return DuAEF.DuSanity.checkPrecomps.currentLevel;
+    if (dontFix) return  DuAEF.DuSanity.checkPrecomps.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkPrecomps );
 }
 
 DuAEF.DuSanity.checkPrecomps.stringId = 'checkPrecomps';
@@ -769,8 +895,9 @@ DuAEF.DuSanity.checkPrecomps.id = 0;
  * Checks if there are unused comps in some subfolders
  * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
  */
-DuAEF.DuSanity.checkUnusedComps = function ()
+DuAEF.DuSanity.checkUnusedComps = function (dontFix)
 {
+    dontFix = def(dontFix, false);
     var comps = [];
     for (var i = 1, n = app.project.numItems; i <= n; i++ )
     {
@@ -798,7 +925,8 @@ DuAEF.DuSanity.checkUnusedComps = function ()
         DuAEF.DuSanity.checkUnusedComps.currentLevel = DuAEF.DuSanity.Levels.INFO; 
     }
 
-    return DuAEF.DuSanity.checkUnusedComps.currentLevel;
+    if (dontFix) return  DuAEF.DuSanity.checkUnusedComps.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkUnusedComps );
 }
 
 DuAEF.DuSanity.checkUnusedComps.stringId = 'checkUnusedComps';
