@@ -202,15 +202,17 @@ DuAEF.DuAE.Project.expressionEngine = function ()
 
 /**
  * Makes sure all compositions in the project have unique names, renaming them if needed.
+ * @param {Array|ItemCollection} [comps] A list of comps, all of them by default
  */
-DuAEF.DuAE.Project.setUniqueCompNames = function () {
-    var comps = DuAEF.DuAE.Project.getComps();
-    var it = new Iterator( app.project.items );
+DuAEF.DuAE.Project.setUniqueCompNames = function ( comps ) {
+    comps = def( comps, DuAEF.DuAE.Project.getComps() );
+    var it = new Iterator( comps );
     it.do( function ( comp ) {
         //temporarily set another name to correctly generate a new unique name 
-        var newName = comp.name;
+        var oldName = comp.name;
         comp.name = '***Duik-temp-name-xxx***';
-        comp.name = DuAEF.DuAE.Project.newUniqueCompName( newName );
+        comp.name = DuAEF.DuAE.Project.newUniqueCompName( oldName );
+        app.project.autoFixExpressions(oldName, comp.name);
     } );
 }
 
