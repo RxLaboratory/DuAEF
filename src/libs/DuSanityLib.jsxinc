@@ -134,7 +134,7 @@ DuAEF.DuSanity.createUI = function (container)
             else fpb.setChecked( DuAEF.DuSanity.isProjectEnabled(test) );
             fpb.enabled = c;
             
-            DuAEF.settings.data.sanity[test.name] = c;
+            DuAEF.settings.data.sanity[test.stringId] = c;
             DuAEF.settings.save();
             
             DuAEF.DuSanity.setEnabled(test, c && fpb.checked);
@@ -147,7 +147,7 @@ DuAEF.DuSanity.createUI = function (container)
             var projectSettings = DuAEF.DuAE.Project.settings;
             projectSettings.update();
             projectSettings.data.sanity = def(projectSettings.data.sanity, {});
-            projectSettings.data.sanity[test.name] = c;
+            projectSettings.data.sanity[test.stringId] = c;
             projectSettings.save();
             DuAEF.DuSanity.setEnabled(test, c);
             updateUI();
@@ -267,13 +267,13 @@ DuAEF.DuSanity.isProjectEnabled = function (test)
     var projectSettings = DuAEF.DuAE.Project.settings;
     projectSettings.update();
     projectSettings.data.sanity = def(projectSettings.data.sanity, {});
-    projectSettings.data.sanity[test.name] = def(projectSettings.data.sanity[test.name], true);
-    return projectSettings.data.sanity[test.name];
+    projectSettings.data.sanity[test.stringId] = def(projectSettings.data.sanity[test.stringId], true);
+    return projectSettings.data.sanity[test.stringId];
 }
 
 DuAEF.DuSanity.isGloballyEnabled = function (test)
 {
-    return DuAEF.settings.data.sanity[test.name];
+    return DuAEF.settings.data.sanity[test.stringId];
 }
 
 /**
@@ -361,7 +361,7 @@ DuAEF.DuSanity.checkSave = function ()
     return DuAEF.DuSanity.checkSave.currentLevel;
 }
 
-DuAEF.DuSanity.checkSave.name = 'checkSave';
+DuAEF.DuSanity.checkSave.stringId = 'checkSave';
 DuAEF.DuSanity.checkSave.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkSave.info = "";
 DuAEF.DuSanity.checkSave.tip = "";
@@ -403,7 +403,7 @@ DuAEF.DuSanity.checkCompNames = function ()
     }
 }
 
-DuAEF.DuSanity.checkCompNames.name = 'checkCompNames';
+DuAEF.DuSanity.checkCompNames.stringId = 'checkCompNames';
 DuAEF.DuSanity.checkCompNames.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkCompNames.info = "";
 DuAEF.DuSanity.checkCompNames.tip = "";
@@ -447,7 +447,7 @@ DuAEF.DuSanity.checkLayerNames = function ()
     }
 }
 
-DuAEF.DuSanity.checkLayerNames.name = 'checkLayerNames';
+DuAEF.DuSanity.checkLayerNames.stringId = 'checkLayerNames';
 DuAEF.DuSanity.checkLayerNames.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkLayerNames.info = "";
 DuAEF.DuSanity.checkLayerNames.tip = "";
@@ -485,7 +485,7 @@ DuAEF.DuSanity.checkProjectSize = function ()
     return DuAEF.DuSanity.checkProjectSize.currentLevel = DuAEF.DuSanity.checkLevel(size, sizeLimit);
 }
 
-DuAEF.DuSanity.checkProjectSize.name = 'checkProjectSize';
+DuAEF.DuSanity.checkProjectSize.stringId = 'checkProjectSize';
 DuAEF.DuSanity.checkProjectSize.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkProjectSize.info = "";
 DuAEF.DuSanity.checkProjectSize.tip = "";
@@ -517,7 +517,7 @@ DuAEF.DuSanity.checkExpressionEngine = function ()
     }
 }
 
-DuAEF.DuSanity.checkExpressionEngine.name = 'checkExpressionEngine';
+DuAEF.DuSanity.checkExpressionEngine.stringId = 'checkExpressionEngine';
 DuAEF.DuSanity.checkExpressionEngine.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkExpressionEngine.info = "";
 DuAEF.DuSanity.checkExpressionEngine.tip = "";
@@ -542,7 +542,7 @@ DuAEF.DuSanity.checkNumItems = function ()
     return DuAEF.DuSanity.checkNumItems.currentLevel = DuAEF.DuSanity.checkLevel(n, limit);
 }
 
-DuAEF.DuSanity.checkNumItems.name = 'checkNumItems';
+DuAEF.DuSanity.checkNumItems.stringId = 'checkNumItems';
 DuAEF.DuSanity.checkNumItems.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkNumItems.info = "";
 DuAEF.DuSanity.checkNumItems.tip = "";
@@ -567,7 +567,7 @@ DuAEF.DuSanity.checkMemory = function ()
     return DuAEF.DuSanity.checkMemory.currentLevel = DuAEF.DuSanity.checkLevel(mem, limit);
 }
 
-DuAEF.DuSanity.checkMemory.name = 'checkMemory';
+DuAEF.DuSanity.checkMemory.stringId = 'checkMemory';
 DuAEF.DuSanity.checkMemory.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkMemory.info = "";
 DuAEF.DuSanity.checkMemory.tip = "";
@@ -592,7 +592,7 @@ DuAEF.DuSanity.checkMP = function ()
     return DuAEF.DuSanity.checkMP.currentLevel = DuAEF.DuSanity.checkLevel(n, limit);
 }
 
-DuAEF.DuSanity.checkMP.name = 'checkMP';
+DuAEF.DuSanity.checkMP.stringId = 'checkMP';
 DuAEF.DuSanity.checkMP.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkMP.info = "";
 DuAEF.DuSanity.checkMP.tip = "";
@@ -660,7 +660,7 @@ DuAEF.DuSanity.checkItemSources = function ()
     }
 }
 
-DuAEF.DuSanity.checkItemSources.name = 'checkItemSources';
+DuAEF.DuSanity.checkItemSources.stringId = 'checkItemSources';
 DuAEF.DuSanity.checkItemSources.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkItemSources.info = "";
 DuAEF.DuSanity.checkItemSources.tip = "";
@@ -708,7 +708,7 @@ DuAEF.DuSanity.checkItemsUnused = function ()
     return DuAEF.DuSanity.checkItemsUnused.currentLevel
 }
 
-DuAEF.DuSanity.checkItemsUnused.name = 'checkItemsUnused';
+DuAEF.DuSanity.checkItemsUnused.stringId = 'checkItemsUnused';
 DuAEF.DuSanity.checkItemsUnused.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkItemsUnused.info = "";
 DuAEF.DuSanity.checkItemsUnused.tip = "";
@@ -754,7 +754,7 @@ DuAEF.DuSanity.checkPrecomps = function ()
     return DuAEF.DuSanity.checkPrecomps.currentLevel;
 }
 
-DuAEF.DuSanity.checkPrecomps.name = 'checkPrecomps';
+DuAEF.DuSanity.checkPrecomps.stringId = 'checkPrecomps';
 DuAEF.DuSanity.checkPrecomps.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkPrecomps.info = "";
 DuAEF.DuSanity.checkPrecomps.tip = "";
@@ -801,7 +801,7 @@ DuAEF.DuSanity.checkUnusedComps = function ()
     return DuAEF.DuSanity.checkUnusedComps.currentLevel;
 }
 
-DuAEF.DuSanity.checkUnusedComps.name = 'checkUnusedComps';
+DuAEF.DuSanity.checkUnusedComps.stringId = 'checkUnusedComps';
 DuAEF.DuSanity.checkUnusedComps.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkUnusedComps.info = "";
 DuAEF.DuSanity.checkUnusedComps.tip = "";
@@ -859,7 +859,7 @@ DuAEF.DuSanity.init = function ()
     for (var i = 0, n = DuAEF.DuSanity.tests.length; i < n; i++)
     {
         var test = DuAEF.DuSanity.tests[i];
-        //if (DuAEF.DuSanity.isEnabled(test))
+        if (DuAEF.DuSanity.isEnabled(test))
         {
             //First run
             test();
