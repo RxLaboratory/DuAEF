@@ -86,6 +86,25 @@ DuAEF.DuAE.Comp.setUniqueCompName = function ( comp ) {
 }
 
 /**
+ * Makes sure all layers in the comp have unique names, renaming them if needed.
+ * @param {Array|LayerCollection} [layers=comp.layers] - The layers
+ * @param {CompItem} [comp=DuAEF.DuAE.Project.getActiveComp] - The composition
+ */
+DuAEF.DuAE.Comp.setUniqueLayerNames = function ( layers, comp ) {
+    comp = def( comp, DuAEF.DuAE.Project.getActiveComp() );
+    if (!comp) return;
+    layers = def(layers, comp.layers);
+    var it = new Iterator( layers );
+    it.do( function ( layer ) {
+        //temporarily set another name to correctly generate a new unique name 
+        var oldName = layer.name;
+        layer.name = '***Duik-temp-name-xxx***';
+        layer.name = DuAEF.DuAE.Comp.newUniqueLayerName( oldName, comp );
+        app.project.autoFixExpressions(oldName, layer.name);
+    } );
+}
+
+/**
  * Gets the After Effects selected properties in the current comp
  * @param {PropertyType|PropertyValueType|string|function}	 [filter]	- A filter to get only a certain type, or value type, or property name or matchName.<br />
  * A function which take one PropertyBase as argument can be used to filter the properties: the Property will be returned if the function returns true.
@@ -247,12 +266,13 @@ DuAEF.DuAE.Comp.selectLayers = function ( layers ) {
 /**
  * Generates a new unique name for a layer
  * @param {string} newName	- The wanted new name
- * @param {CompItem} comp 	- The comp
+ * @param {CompItem} [comp] 	- The comp
  * @param {boolean} [increment=true] - true to automatically increment the new name if it already ends with a digit
  * @return {string}	The unique name, with a new number at the end if needed.
  */
 DuAEF.DuAE.Comp.newUniqueLayerName = function ( newName, comp, increment ) {
-    if ( increment == undefined ) increment = true;
+    increment = def(increment, true);
+    comp = def(comp, DuAEF.DuAE.Project.getActiveComp() );
     var layerNames = [];
     for ( var i = 1; i <= comp.layers.length; i++ ) {
         layerNames.push( comp.layer( i ).name );
