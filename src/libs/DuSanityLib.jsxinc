@@ -840,7 +840,7 @@ DuAEF.DuSanity.test = function ()
         if (test.enabled)
         {
             var testLevel = test.currentLevel;
-            if (testLevel > level) level = test;
+            if (testLevel > level) level = testLevel;
         }
     }
     
