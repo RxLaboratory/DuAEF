@@ -137,7 +137,7 @@ DuAEF.DuScriptUI.removeEvent = function (id)
         var f = DuAEF.DuScriptUI.eventFunctions[i];
         if (f.id == id)
         {
-            arr.splice(i,1);
+            DuAEF.DuScriptUI.eventFunctions.splice(i,1);
             break;
         }
     }
