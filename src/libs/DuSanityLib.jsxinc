@@ -127,8 +127,48 @@ DuAEF.DuSanity.createUI = function (container)
         var st = DuAEF.DuScriptUI.addStaticText(group, "");
         st.minimumSize = [120,0];
 
-        function testUpdate()
+        pb.onClick = function () {
+            var c = pb.checked;
+
+            if (!c) fpb.setChecked(false);
+            else fpb.setChecked( DuAEF.DuSanity.isProjectEnabled(test) );
+            fpb.enabled = c;
+            
+            DuAEF.settings.data.sanity[test.name] = c;
+            DuAEF.settings.save();
+            
+            DuAEF.DuSanity.setEnabled(test, c && fpb.checked);
+            updateUI();
+        }
+
+        fpb.onClick = function () {
+            var c = fpb.checked;
+            //Init project settings
+            var projectSettings = DuAEF.DuAE.Project.settings;
+            projectSettings.update();
+            projectSettings.data.sanity = def(projectSettings.data.sanity, {});
+            projectSettings.data.sanity[test.name] = c;
+            projectSettings.save();
+            DuAEF.DuSanity.setEnabled(test, c);
+            updateUI();
+        }
+
+        function updateUI()
         {
+            if (!test.enabled)
+            {
+                st.text = "";
+                DuAEF.DuScriptUI.setTextColor(st, DuAEF.DuJS.Color.Colors.DARK_GREY);
+                umb.enabled = false;
+                mb.enabled = false;
+                label.enabled = false;
+                return;
+            }
+
+            umb.enabled = true;
+            mb.enabled = true;
+            label.enabled = true;
+
             if (test.currentLevel == DuAEF.DuSanity.Levels.UNKNOWN)
             {
                 st.text = "";
@@ -167,13 +207,17 @@ DuAEF.DuSanity.createUI = function (container)
             
             if (test.info != "") st.text += " - " + test.info;
             st.helpTip = test.tip;
-            
         }
 
+        pb.setChecked( DuAEF.DuSanity.isGloballyEnabled(test) );
+        fpb.setChecked( DuAEF.DuSanity.isProjectEnabled(test) );
+        fpb.onClick();
+        pb.onClick();
+
         //First run
-        testUpdate();
+        updateUI();
         //add to events
-        DuAEF.DuScriptUI.addEvent(testUpdate,3000);
+        DuAEF.DuScriptUI.addEvent(updateUI,3000);
     }
 
     createReportText("Composition Names:", DuAEF.DuSanity.checkCompNames );
@@ -217,22 +261,33 @@ DuAEF.DuSanity.checkLevel = function(value, limit)
     return DuAEF.DuSanity.Levels.CRITICAL;
 }
 
+DuAEF.DuSanity.isProjectEnabled = function (test)
+{
+    //Init project settings
+    var projectSettings = DuAEF.DuAE.Project.settings;
+    projectSettings.update();
+    projectSettings.data.sanity = def(projectSettings.data.sanity, {});
+    projectSettings.data.sanity[test.name] = def(projectSettings.data.sanity[test.name], true);
+    return projectSettings.data.sanity[test.name];
+}
+
+DuAEF.DuSanity.isGloballyEnabled = function (test)
+{
+    return DuAEF.settings.data.sanity[test.name];
+}
+
 /**
  * Checks if a Sanity Test is enabled
  * @return {boolean}
  */
 DuAEF.DuSanity.isEnabled = function(test)
 {
-     //Init project settings
-    var projectSettings = DuAEF.DuAE.Project.settings;
-    projectSettings.update();
-    projectSettings.data.sanity = def(projectSettings.data.sanity, {});
-    projectSettings.data.sanity[test.name] = def(projectSettings.data.sanity[test.name], true);
+    var project = DuAEF.DuSanity.isProjectEnabled(test)
 
-    if (projectSettings.data.sanity[test.name]) 
+    if (project) 
     {
         //check DuAEF settings
-        test.enabled = DuAEF.settings.data.sanity[test.name];
+        test.enabled = DuAEF.DuSanity.isGloballyEnabled(test);
     }
     else 
     {
