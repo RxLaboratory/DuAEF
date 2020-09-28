@@ -140,6 +140,32 @@ DuAEF.DuAE.Project.newUniqueCompName = function ( newName, increment ) {
 }
 
 /**
+ * Checks if all comps have a different name.
+ * @return {string[]} The list of names used several times. Empty if all comps have a different name.
+ */
+DuAEF.DuAE.Project.checkCompNames = function () {
+    var duplicatedNames = [];
+    var compNames = [];
+    var items = app.project.items;
+    for (var i = 1, n = items.length; i <= n; i++)
+    {
+        var comp = items[i];
+        if ( comp instanceof CompItem )
+        {
+            var name = comp.name;
+            if (DuAEF.DuJS.Array.indexOf(duplicatedNames, name) >= 0 ) continue;
+            if (DuAEF.DuJS.Array.indexOf(compNames, name) >= 0 ) 
+            {
+                duplicatedNames.push(name);
+                continue;
+            }
+            compNames.push( name );
+        }
+    }
+    return duplicatedNames;
+}
+
+/**
  * Makes sure all compositions in the project have unique names, renaming them if needed.
  */
 DuAEF.DuAE.Project.setUniqueCompNames = function () {
