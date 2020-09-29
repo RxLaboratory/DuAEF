@@ -26,6 +26,7 @@ along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
 #include 'DuScriptUIIcons.jsxinc'
 #include 'DuScriptUIDefaults.jsxinc'
 #include 'DuScriptUILowLevelLib.jsxinc'
+#include 'DuScriptUIScreen.jsxinc'
 #include 'DuScriptUIStyleLib.jsxinc'
 #include 'DuScriptUIPanelLib.jsxinc'
 #include 'DuScriptUILayoutLib.jsxinc'
@@ -105,4 +106,40 @@ DuAEF.DuScriptUI.askFilesAndNetworkAccess = function( ui, callback, scriptName, 
     }
 
     callback( ui );
+}
+
+//low-level list of functions to be run when the user interacts with the UI
+DuAEF.DuScriptUI.eventFunctions = [];
+
+/**
+ * Adds a function to be run periodically, which will be connected to several UI events, fired when the user interacts with the UI.
+ * @param {function} func The function to connect to the UI
+ * @param {int} [timeOut=3000] A timeOut in milliseconds which prevents the function to be run too often
+ * @return {int} a unique identifier to be used to remove the function later, with {@link DuAEF.DuScriptUI.removeEvent}.
+ */
+DuAEF.DuScriptUI.addEvent = function (func, timeOut)
+{
+    timeOut = def(timeOut, 3000);
+    func.id = new Date().getTime();
+    func.timeOut = timeOut;
+    func.lastFire = func.id;
+    DuAEF.DuScriptUI.eventFunctions.push(func);
+    return func.id;
+}
+
+/**
+ * Removes a function previously added with {@link DuAEF.DuScriptUI.addEvent}.
+ * @param {int} id The id of the function
+ */
+DuAEF.DuScriptUI.removeEvent = function (id)
+{
+    for (var i = 0, n = DuAEF.DuScriptUI.eventFunctions.length; i < n; i++)
+    {
+        var f = DuAEF.DuScriptUI.eventFunctions[i];
+        if (f.id == id)
+        {
+            DuAEF.DuScriptUI.eventFunctions.splice(i,1);
+            break;
+        }
+    }
 }

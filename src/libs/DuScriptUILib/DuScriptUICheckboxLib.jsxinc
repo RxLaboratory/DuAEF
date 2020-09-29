@@ -130,7 +130,7 @@ DuAEF.DuScriptUI.addCheckBox = function( container, text, image, helpTip, imageC
             checkbox.helpTip = helpTip;
         }
         //general appearance
-        DuAEF.DuScriptUI.setBackgroundColor( duCheckBox, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+        DuAEF.DuScriptUI.setBackgroundColor( duCheckBox, DuAEF.DuJS.Color.Colors.ABYSS_GREY );
         duCheckBox.alignment = [ 'fill', 'top' ];
         duCheckBox.alignChildren = [ 'fill', 'center' ];
     }
@@ -244,7 +244,7 @@ DuAEF.DuScriptUI.addCheckBox = function( container, text, image, helpTip, imageC
         if ( duCheckBox.image && duCheckBox.imageChecked != '' && duCheckBox.checked ) duCheckBox.image.image = duCheckBox.imageChecked;
         else if ( duCheckBox.image && duCheckBox.imageChecked != '' ) duCheckBox.image.image = duCheckBox.standardImage;
         //label
-        if ( duCheckBox.label ) DuAEF.DuScriptUI.setBackgroundColor( duCheckBox, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+        if ( duCheckBox.label ) DuAEF.DuScriptUI.setBackgroundColor( duCheckBox, DuAEF.DuJS.Color.Colors.ABYSS_GREY );
         //checkbox 
         if ( checkbox && duCheckBox.checked ) checkbox.image = iconChecked;
         else if ( checkbox ) checkbox.image = iconUnchecked;

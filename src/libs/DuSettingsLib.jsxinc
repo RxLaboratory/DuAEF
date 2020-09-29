@@ -46,7 +46,7 @@ function DuSettings(namespace,file)
 	else this.file = new File(file);
 	this.file.encoding = 'UTF-8';
 	
-	app.settings.saveSetting( namespace,"settingsFile", file.absoluteURI );
+	app.settings.saveSetting( namespace,"settingsFile", this.file.absoluteURI );
 
 	this.data = {};
 	this.load();
@@ -76,3 +76,9 @@ DuSettings.prototype.save = function()
 	if (!DuAEF.DuAE.App.hasFilesAndNetworkAccess) return false;
 	return DuAEF.DuJS.Fs.saveJSON(this.data, this.file);
 }
+
+/**
+ * Some settings shared with all DuAEF instances
+ * @type {DuSettings}
+ */
+DuAEF.settings = new DuSettings("DuAEF",DuAEF.DuJS.Fs.duaefData.absoluteURI + "/DuAEF_settings.json");

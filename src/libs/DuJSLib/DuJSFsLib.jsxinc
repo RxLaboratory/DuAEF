@@ -401,6 +401,31 @@ DuAEF.DuJS.Fs.fixFileName = function (name, placeholder ) {
 }
 
 /**
+ * Converts a number of Bytes to kB or MB or GB or TB
+ * @param {int} size The size in Bytes to convert
+ * @param {string} [to="MB"] The unit to convert to, one of: kB, MB, GB, TB
+ * @param {int} [decimals=2] The number of decimals to round the result
+ * @return {float} The result of the conversion
+ */
+DuAEF.DuJS.Fs.sizeFromBytes = function(size,  to, decimals )
+{
+	to = def(to, "MB");
+	decimals = def(decimals, 0);
+	var result = size;
+	if (to == "kB" || to == "MB" || to == "GB" || to == "TB") result = result / 1024;
+	if (to == "MB" || to == "GB" || to == "TB") result = result / 1024;
+	if (to == "GB" || to == "TB") result = result / 1024;
+	if (to == "TB") result = result / 1024;
+	var round = 1;
+	for (var i = 0; i < decimals; i++)
+	{
+		round = round * 10;
+	}
+	result = Math.round(result*round)/round;
+	return result;
+}
+
+/**
 	* Image sequences tools
 	* @namespace
 	* @memberof DuAEF.DuJS.Fs

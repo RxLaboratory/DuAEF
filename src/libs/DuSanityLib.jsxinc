@@ -1,0 +1,1006 @@
+/*
+DuSanityLib
+Library for checking After Effects Project Sanity.
+Copyright (c)2020 Nicolas Dufresne, Rainbox Laboratory
+https://rainboxlab.org
+
+_Contributors:_
+Nicolas Dufresne - Lead developer
+
+This file is part of DuAEF.
+
+DuAEF is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+DuAEF is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/**
+* Project sanity tests
+* @namespace
+* @memberof DuAEF
+*/
+DuAEF.DuSanity = {};
+
+(function () {
+
+    DuAEF.DuSanity.isInitialized = false;
+
+    //internal use: shared settings defaults
+    if (typeof DuAEF.settings.data.sanity === 'undefined') DuAEF.settings.data.sanity = {};
+    //checks
+    if (typeof DuAEF.settings.data.sanity.checkSave === 'undefined') DuAEF.settings.data.sanity.checkSave = true;
+    if (typeof DuAEF.settings.data.sanity.checkCompNames === 'undefined') DuAEF.settings.data.sanity.checkCompNames = true;
+    if (typeof DuAEF.settings.data.sanity.checkUnusedComps === 'undefined') DuAEF.settings.data.sanity.checkUnusedComps = true;
+    if (typeof DuAEF.settings.data.sanity.checkPrecomps === 'undefined') DuAEF.settings.data.sanity.checkPrecomps = true;
+    if (typeof DuAEF.settings.data.sanity.checkItemsUnused === 'undefined') DuAEF.settings.data.sanity.checkItemsUnused = true;
+    if (typeof DuAEF.settings.data.sanity.checkItemSources === 'undefined') DuAEF.settings.data.sanity.checkItemSources = true;
+    if (typeof DuAEF.settings.data.sanity.checkMP === 'undefined') DuAEF.settings.data.sanity.checkMP = true;
+    if (typeof DuAEF.settings.data.sanity.checkMemory === 'undefined') DuAEF.settings.data.sanity.checkMemory = true;
+    if (typeof DuAEF.settings.data.sanity.checkNumItems === 'undefined') DuAEF.settings.data.sanity.checkNumItems = true;
+    if (typeof DuAEF.settings.data.sanity.checkExpressionEngine === 'undefined') DuAEF.settings.data.sanity.checkExpressionEngine = true;
+    if (typeof DuAEF.settings.data.sanity.checkProjectSize === 'undefined') DuAEF.settings.data.sanity.checkProjectSize = true;
+    if (typeof DuAEF.settings.data.sanity.checkLayerNames === 'undefined') DuAEF.settings.data.sanity.checkLayerNames = true;
+    //live fix
+    if (typeof DuAEF.settings.data.sanity.fix === 'undefined') DuAEF.settings.data.sanity.fix = {};
+    if (typeof DuAEF.settings.data.sanity.fix.checkSave === 'undefined') DuAEF.settings.data.sanity.fix.checkSave = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkCompNames === 'undefined') DuAEF.settings.data.sanity.fix.checkCompNames = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkUnusedComps === 'undefined') DuAEF.settings.data.sanity.fix.checkUnusedComps = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkPrecomps === 'undefined') DuAEF.settings.data.sanity.fix.checkPrecomps = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkItemsUnused === 'undefined') DuAEF.settings.data.sanity.fix.checkItemsUnused = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkItemSources === 'undefined') DuAEF.settings.data.sanity.fix.checkItemSources = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkMP === 'undefined') DuAEF.settings.data.sanity.fix.checkMP = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkMemory === 'undefined') DuAEF.settings.data.sanity.fix.checkMemory = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkNumItems === 'undefined') DuAEF.settings.data.sanity.fix.checkNumItems = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkExpressionEngine === 'undefined') DuAEF.settings.data.sanity.fix.checkExpressionEngine = false;
+    if (typeof DuAEF.settings.data.sanity.fix.checkProjectSize === 'undefined') DuAEF.settings.data.sanity.fix.checkProjectSize = true;
+    if (typeof DuAEF.settings.data.sanity.fix.checkLayerNames === 'undefined') DuAEF.settings.data.sanity.fix.checkLayerNames = true;
+})();
+
+/**
+ * Enum for sanity levels.
+ * @readonly
+ * @enum {int}
+ */
+DuAEF.DuSanity.Levels =
+{
+    UNKNOWN: -1,
+    OK: 0,
+    INFO: 0.5,
+    WARNING: 1,
+    BAD: 2,
+    CRITICAL: 3,
+    FATAL: 4
+}
+
+DuAEF.DuSanity.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+
+DuAEF.DuSanity.createUI = function (container)
+{
+    DuAEF.DuSanity.init();
+
+    var ui_reportMainGroup = DuAEF.DuScriptUI.addGroup(container, "column");
+
+    // icons
+    var pim = DuAEF.DuBinary.toFile(w18_poweroff_m);
+    var pil = DuAEF.DuBinary.toFile(w18_poweroff_l);
+    var fpim = DuAEF.DuBinary.toFile(w18_file_m);
+    var fpil = DuAEF.DuBinary.toFile(w18_file_l);
+    var mim = DuAEF.DuBinary.toFile(w18_screwdriver_m);
+    var mil = DuAEF.DuBinary.toFile(w18_screwdriver_l);
+    var umim = DuAEF.DuBinary.toFile(w18_magic_m);
+    var umil = DuAEF.DuBinary.toFile(w18_magic_l);
+
+    function createReportText(t, test)
+    {
+        var group = DuAEF.DuScriptUI.addGroup(ui_reportMainGroup, "row");
+
+        var pb = DuAEF.DuScriptUI.addCheckBox(
+            group,
+            '',
+            pim,
+            "Globally enable or disable this test.",
+            pil
+            );
+        var fpb = DuAEF.DuScriptUI.addCheckBox(
+            group,
+            '',
+            fpim,
+            "Enable or disable this test for the current project.",
+            fpil
+            );
+        var umb = DuAEF.DuScriptUI.addCheckBox(
+            group,
+            '',
+            umim,
+            "Enable or disable live-fix.",
+            umil
+            );
+        var mb = DuAEF.DuScriptUI.addButton(
+            group,
+            '',
+            mim,
+            "Auto-fix now.",
+            mil
+            );
+
+        if (!test.hasFix)
+        {
+            umb.visible = false;
+            mb.visible = false;
+        }
+
+        var label = DuAEF.DuScriptUI.addStaticText(group, t);
+        label.minimumSize = [200,0];
+        var st = DuAEF.DuScriptUI.addStaticText(group, "");
+        st.minimumSize = [120,0];
+
+        pb.onClick = function () {
+            var c = pb.checked;
+
+            if (!c) fpb.setChecked(false);
+            else fpb.setChecked( DuAEF.DuSanity.isProjectEnabled(test) );
+            fpb.enabled = c;
+            
+            DuAEF.DuSanity.setGloballyEnabled(test, c);
+            DuAEF.DuSanity.setEnabled(test, c && fpb.checked);
+            updateUI();
+        }
+
+        fpb.onClick = function () {
+            var c = fpb.checked;
+            DuAEF.DuSanity.setProjectEnabled(test, c)
+            DuAEF.DuSanity.setEnabled(test, c);
+            updateUI();
+        }
+
+        mb.onClick = function () {
+            test.fix();
+            test();
+            updateUI();
+        }
+
+        umb.onClick = function () {
+            DuAEF.DuSanity.setLiveFixEnabled(test, umb.checked);
+        }
+
+        function updateUI()
+        {
+            if (!test.enabled)
+            {
+                st.text = "";
+                DuAEF.DuScriptUI.setTextColor(st, DuAEF.DuJS.Color.Colors.DARK_GREY);
+                umb.enabled = false;
+                mb.enabled = false;
+                label.enabled = false;
+                return;
+            }
+
+            umb.enabled = true;
+            mb.enabled = true;
+            label.enabled = true;
+
+            if (test.currentLevel == DuAEF.DuSanity.Levels.UNKNOWN)
+            {
+                st.text = "";
+                DuAEF.DuScriptUI.setTextColor(st, DuAEF.DuJS.Color.Colors.DARK_GREY);
+            }
+            else if (test.currentLevel == DuAEF.DuSanity.Levels.OK)
+            {
+                st.text = "OK";
+                DuAEF.DuScriptUI.setTextColor(st, DuAEF.DuJS.Color.Colors.LIGHT_GREY);
+            }
+            else if (test.currentLevel == DuAEF.DuSanity.Levels.INFO)
+            {
+                st.text = "INFO";
+                DuAEF.DuScriptUI.setTextColor(st, DuAEF.DuJS.Color.Colors.AFTER_EFFECTS_BLUE);
+            }
+            else if (test.currentLevel == DuAEF.DuSanity.Levels.WARNING)
+            {
+                st.text = "WARNING";
+                DuAEF.DuScriptUI.setTextColor(st, DuAEF.DuJS.Color.Colors.YELLOW);
+            }
+            else if (test.currentLevel == DuAEF.DuSanity.Levels.BAD)
+            {
+                st.text = "BAD";
+                DuAEF.DuScriptUI.setTextColor(st, DuAEF.DuJS.Color.Colors.ORANGE);
+            }
+            else if (test.currentLevel == DuAEF.DuSanity.Levels.CRITICAL)
+            {
+                st.text = "CRITICAL";
+                DuAEF.DuScriptUI.setTextColor(st, DuAEF.DuJS.Color.Colors.RAINBOX_RED);
+            }
+            else if (test.currentLevel == DuAEF.DuSanity.Levels.FATAL)
+            {
+                st.text = "FATAL";
+                DuAEF.DuScriptUI.setTextColor(st, DuAEF.DuJS.Color.Colors.RAINBOX_PURPLE);
+            }
+            
+            if (test.info != "") st.text += " - " + test.info;
+            st.helpTip = test.tip;
+        }
+
+        pb.setChecked( DuAEF.DuSanity.isGloballyEnabled(test) );
+        fpb.setChecked( DuAEF.DuSanity.isProjectEnabled(test) );
+        umb.setChecked( DuAEF.DuSanity.isLiveFixEnabled(test) );
+        fpb.onClick();
+        pb.onClick();
+
+        //First run
+        updateUI();
+        //add to events
+        DuAEF.DuScriptUI.addEvent(updateUI,3000);
+    }
+
+    createReportText("Composition Names:", DuAEF.DuSanity.checkCompNames );
+    createReportText("Layer Names:", DuAEF.DuSanity.checkLayerNames );
+    createReportText("Expression Engine:", DuAEF.DuSanity.checkExpressionEngine );
+    createReportText("Project Size:", DuAEF.DuSanity.checkProjectSize );
+    createReportText("Project Items:", DuAEF.DuSanity.checkNumItems );
+    createReportText("Duplicated Footages:", DuAEF.DuSanity.checkItemSources );
+    createReportText("Unused Footages:", DuAEF.DuSanity.checkItemsUnused );
+    createReportText("Precompositions:", DuAEF.DuSanity.checkPrecomps );
+    createReportText("Unused compositions:", DuAEF.DuSanity.checkUnusedComps );
+    createReportText("Memory in use:", DuAEF.DuSanity.checkMemory );
+    createReportText("Master properties in active comp:", DuAEF.DuSanity.checkMP );
+    createReportText("Time since last save:", DuAEF.DuSanity.checkSave );
+}
+
+//low-level undocumented function: checks a value against a limit and sets the results in the UI
+//returns the level
+DuAEF.DuSanity.checkLevel = function(value, limit)
+{
+    if (value < limit*0.66)
+    {
+        return DuAEF.DuSanity.Levels.OK;
+    }
+
+    if (value < limit*0.75)
+    {
+        return DuAEF.DuSanity.Levels.INFO;
+    }
+    
+    if (value < limit)
+    {
+        return DuAEF.DuSanity.Levels.WARNING;
+    }
+    
+    if (value < limit * 1.5)
+    {
+        return DuAEF.DuSanity.Levels.BAD;
+    }
+    
+    return DuAEF.DuSanity.Levels.CRITICAL;
+}
+
+DuAEF.DuSanity.isProjectEnabled = function (test)
+{
+    //Init project settings
+    var projectSettings = DuAEF.DuAE.Project.settings;
+    projectSettings.update();
+    projectSettings.data.sanity = def(projectSettings.data.sanity, {});
+    projectSettings.data.sanity[test.stringId] = def(projectSettings.data.sanity[test.stringId], true);
+    return projectSettings.data.sanity[test.stringId];
+}
+
+DuAEF.DuSanity.isGloballyEnabled = function (test)
+{
+    return DuAEF.settings.data.sanity[test.stringId];
+}
+
+DuAEF.DuSanity.isLiveFixEnabled = function (test)
+{
+    return DuAEF.settings.data.sanity.fix[test.stringId];
+}
+
+DuAEF.DuSanity.needsFix = function (test)
+{
+    return DuAEF.DuSanity.isLiveFixEnabled(test) && test.currentLevel >= DuAEF.DuSanity.Levels.BAD && test.hasFix;
+}
+
+DuAEF.DuSanity.fixIfNeeded = function (test)
+{
+    if ( DuAEF.DuSanity.needsFix( test ) )
+    {
+        test.fix();
+        return test(true);
+    }
+    return test.currentLevel;
+}
+
+DuAEF.DuSanity.setProjectEnabled = function (test, enabled)
+{
+    //Init project settings
+    var projectSettings = DuAEF.DuAE.Project.settings;
+    projectSettings.update();
+    projectSettings.data.sanity = def(projectSettings.data.sanity, {});
+    projectSettings.data.sanity[test.stringId] = enabled;
+    projectSettings.save();
+}
+
+DuAEF.DuSanity.setGloballyEnabled = function (test, enabled)
+{
+    DuAEF.settings.data.sanity[test.stringId] = enabled;
+    DuAEF.settings.save();
+}
+
+DuAEF.DuSanity.setLiveFixEnabled = function (test, enabled)
+{
+    DuAEF.settings.data.sanity.fix[test.stringId] = enabled;
+    DuAEF.settings.save();
+}
+
+/**
+ * Checks if a Sanity Test is enabled
+ * @return {boolean}
+ */
+DuAEF.DuSanity.isEnabled = function(test)
+{
+    var project = DuAEF.DuSanity.isProjectEnabled(test)
+
+    if (project) 
+    {
+        //check DuAEF settings
+        test.enabled = DuAEF.DuSanity.isGloballyEnabled(test);
+    }
+    else 
+    {
+        test.enabled = false;
+    }
+    
+    return test.enabled;
+}
+
+DuAEF.DuSanity.setEnabled = function (test, enabled)
+{
+    if (enabled) 
+    {
+         //First run
+        test();
+        var timeOut = test.timeOut;
+        if (DuAEF.debug) timeOut = 3000;
+        //Event
+        test.id = DuAEF.DuScriptUI.addEvent(test, timeOut);
+        test.enabled = true;
+    }
+    else 
+    {
+        DuAEF.DuScriptUI.removeEvent(test.id);
+        test.id = 0;
+        test.enabled = false;
+    }
+}
+
+/**
+ * Checks if the project has been saved recently.
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkSave = function (dontFix)
+{
+    dontFix = def(dontFix, false);
+    var proj = app.project;
+    var f = app.project.file;
+    var limit = 1800000;
+
+    if (!(f instanceof File) && app.project.numItems > 0)
+    {
+        DuAEF.DuSanity.checkSave.info = "Not saved";
+        DuAEF.DuSanity.checkSave.tip = "This project has not been saved yet. You should save it right now!";
+        DuAEF.DuSanity.checkSave.currentLevel = DuAEF.DuSanity.Levels.CRITICAL;
+        return DuAEF.DuSanity.checkSave.currentLevel;
+    }
+    else if (!(f instanceof File))
+    {
+        DuAEF.DuSanity.checkSave.info = "";
+        DuAEF.DuSanity.checkSave.tip = "";
+        DuAEF.DuSanity.checkSave.currentLevel = DuAEF.DuSanity.Levels.OK;
+        return DuAEF.DuSanity.checkSave.currentLevel;
+    }
+    
+    if (!f.exists)
+    {
+        DuAEF.DuSanity.checkSave.info = "Missing file";
+        DuAEF.DuSanity.checkSave.tip = "It looks like the file for this project has disappeared. You should save it right now!";
+        DuAEF.DuSanity.checkSave.currentLevel = DuAEF.DuSanity.Levels.FATAL;
+        return DuAEF.DuSanity.checkSave.currentLevel;
+    }
+
+    var date = f.modified.getTime();
+    var now = new Date().getTime();
+    var elapsed =  now - date;
+    var elapsedStr = Math.round(elapsed/60000) + "mn";
+
+    DuAEF.DuSanity.checkSave.info = elapsedStr;
+    DuAEF.DuSanity.checkSave.tip = "You should save the project at least every " + Math.round(limit/60000) + "mn.";
+    DuAEF.DuSanity.checkSave.currentLevel = DuAEF.DuSanity.checkLevel(elapsed, limit);
+
+    if (dontFix) return  DuAEF.DuSanity.checkSave.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkSave );
+}
+
+DuAEF.DuSanity.checkSave.stringId = 'checkSave';
+DuAEF.DuSanity.checkSave.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkSave.info = "";
+DuAEF.DuSanity.checkSave.tip = "";
+DuAEF.DuSanity.checkSave.hasFix = true;
+DuAEF.DuSanity.checkSave.fix = function () {
+    app.project.save();
+};
+DuAEF.DuSanity.checkSave.timeOut = 60000;
+DuAEF.DuSanity.checkSave.enabled = true;
+DuAEF.DuSanity.checkSave.id = 0;
+
+
+/**
+ * Checks if there are comps with the same name in the project.
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkCompNames = function (dontFix)
+{
+    dontFix = def(dontFix, false);
+    var duplicatedNames = DuAEF.DuAE.Project.checkCompNames();
+    if (duplicatedNames.length == 0)
+    {
+        DuAEF.DuSanity.checkCompNames.info = "";
+        DuAEF.DuSanity.checkCompNames.tip = "";
+        DuAEF.DuSanity.checkCompNames.currentLevel = DuAEF.DuSanity.Levels.OK;
+    }
+    else
+    {
+        DuAEF.DuSanity.checkCompNames.info = duplicatedNames.length;
+        DuAEF.DuSanity.checkCompNames.tip = "Some compositions have the same name:";
+        for (name in duplicatedNames)
+        {
+            if (name == 'length') continue;
+            if (duplicatedNames.hasOwnProperty(name))
+            {
+                DuAEF.DuSanity.checkCompNames.tip += "\n- " + name;
+            }
+        }
+        DuAEF.DuSanity.checkCompNames.currentLevel = DuAEF.DuSanity.Levels.BAD;
+    }
+
+    if (dontFix) return  DuAEF.DuSanity.checkCompNames.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkCompNames );
+}
+
+DuAEF.DuSanity.checkCompNames.stringId = 'checkCompNames';
+DuAEF.DuSanity.checkCompNames.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkCompNames.info = "";
+DuAEF.DuSanity.checkCompNames.tip = "";
+DuAEF.DuSanity.checkCompNames.hasFix = true;
+DuAEF.DuSanity.checkCompNames.fix = function () {
+    var duplicatedNames = DuAEF.DuAE.Project.checkCompNames();
+    for (name in duplicatedNames)
+    {
+        if (name == 'length') continue;
+        if (duplicatedNames.hasOwnProperty(name))
+        {
+            DuAEF.DuAE.Project.setUniqueCompNames( duplicatedNames[name] );
+        }
+    }
+};
+DuAEF.DuSanity.checkCompNames.timeOut = 30000;
+DuAEF.DuSanity.checkCompNames.enabled = true;
+DuAEF.DuSanity.checkCompNames.id = 0;
+
+
+/**
+ * Checks if there are layers in the active comp which have the same name.
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkLayerNames = function (dontFix)
+{
+    dontFix = def(dontFix, false);
+    var duplicatedNames = DuAEF.DuAE.Comp.checkLayerNames();
+    if (duplicatedNames.length == 0)
+    {
+        DuAEF.DuSanity.checkLayerNames.info = ""
+        DuAEF.DuSanity.checkLayerNames.tip = ""
+        DuAEF.DuSanity.checkLayerNames.currentLevel = DuAEF.DuSanity.Levels.OK;
+    }
+    else
+    {
+        DuAEF.DuSanity.checkLayerNames.info = duplicatedNames.length;
+        DuAEF.DuSanity.checkLayerNames.tip = "Some layers have the same name:";
+        for (name in duplicatedNames)
+        {
+            if (name == 'length') continue;
+            if (duplicatedNames.hasOwnProperty(name))
+            {
+                DuAEF.DuSanity.checkLayerNames.tip += "\n- " + name;
+                for (var i = 0, n = duplicatedNames[name].length; i < n; i++)
+                {
+                    DuAEF.DuSanity.checkLayerNames.tip += " | " + duplicatedNames[name][i].index;
+                }
+            }
+        }
+        DuAEF.DuSanity.checkLayerNames.currentLevel = DuAEF.DuSanity.Levels.BAD;
+    }
+
+    if (dontFix) return  DuAEF.DuSanity.checkLayerNames.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkLayerNames );
+}
+
+DuAEF.DuSanity.checkLayerNames.stringId = 'checkLayerNames';
+DuAEF.DuSanity.checkLayerNames.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkLayerNames.info = "";
+DuAEF.DuSanity.checkLayerNames.tip = "";
+DuAEF.DuSanity.checkLayerNames.hasFix = true;
+DuAEF.DuSanity.checkLayerNames.fix = function () {
+    var duplicatedNames = DuAEF.DuAE.Comp.checkLayerNames();
+    for (name in duplicatedNames)
+    {
+        if (name == 'length') continue;
+        if (duplicatedNames.hasOwnProperty(name))
+        {
+            DuAEF.DuAE.Comp.setUniqueLayerNames( duplicatedNames[name] );
+        }
+    }
+};
+DuAEF.DuSanity.checkLayerNames.timeOut = 10000;
+DuAEF.DuSanity.checkLayerNames.enabled = true;
+DuAEF.DuSanity.checkLayerNames.id = 0;
+
+
+/**
+ * Checks the project file size.
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkProjectSize = function (dontFix)
+{
+    dontFix = def(dontFix, false);
+    var size = DuAEF.DuAE.Project.getSize();
+    var sizeLimit = 20000000;
+
+    if (size < 0 && app.project.numItems > 0)
+    {
+        DuAEF.DuSanity.checkProjectSize.info = "Not saved";
+        DuAEF.DuSanity.checkProjectSize.tip = "You should save this project right now!";
+        DuAEF.DuSanity.checkProjectSize.currentLevel = DuAEF.DuSanity.Levels.CRITICAL;
+        return DuAEF.DuSanity.checkProjectSize.currentLevel;
+    }
+    else if (size < 0)
+    {
+        DuAEF.DuSanity.checkProjectSize.info = "";
+        DuAEF.DuSanity.checkProjectSize.tip = "";
+        DuAEF.DuSanity.checkProjectSize.currentLevel = DuAEF.DuSanity.Levels.OK;
+    }
+    else
+    {
+        DuAEF.DuSanity.checkProjectSize.info = DuAEF.DuJS.String.fromSize(size);
+        DuAEF.DuSanity.checkProjectSize.tip = "Try to keep the project small (e.g. do not animate several shots in the same project).";
+        DuAEF.DuSanity.checkProjectSize.currentLevel = DuAEF.DuSanity.checkLevel(size, sizeLimit);
+    }
+
+    if (dontFix) return  DuAEF.DuSanity.checkProjectSize.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkProjectSize );
+}
+
+DuAEF.DuSanity.checkProjectSize.stringId = 'checkProjectSize';
+DuAEF.DuSanity.checkProjectSize.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkProjectSize.info = "";
+DuAEF.DuSanity.checkProjectSize.tip = "";
+DuAEF.DuSanity.checkProjectSize.hasFix = false;
+DuAEF.DuSanity.checkProjectSize.fix = function () {};
+DuAEF.DuSanity.checkProjectSize.timeOut = 60000;
+DuAEF.DuSanity.checkProjectSize.enabled = true;
+DuAEF.DuSanity.checkProjectSize.id = 0;
+
+
+/**
+ * Checks the expression engine
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkExpressionEngine = function (dontFix)
+{
+    dontFix = def(dontFix, false);
+    var e = DuAEF.DuAE.Project.expressionEngine();
+    if (e.indexOf("javascript") == 0)
+    {
+        DuAEF.DuSanity.checkExpressionEngine.info = "";
+        DuAEF.DuSanity.checkExpressionEngine.tip = "";
+        DuAEF.DuSanity.checkExpressionEngine.currentLevel = DuAEF.DuSanity.Levels.OK;
+    }
+    else
+    {
+        DuAEF.DuSanity.checkExpressionEngine.info = "ES";
+        DuAEF.DuSanity.checkExpressionEngine.tip = "The expression engine is set to 'ExtendScript Legacy'\n'JavaScript' improves performance, you can change it in the project settings.";
+        DuAEF.DuSanity.checkExpressionEngine.currentLevel = DuAEF.DuSanity.Levels.BAD;
+    }
+
+    if (dontFix) return  DuAEF.DuSanity.checkExpressionEngine.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkExpressionEngine );
+}
+
+DuAEF.DuSanity.checkExpressionEngine.stringId = 'checkExpressionEngine';
+DuAEF.DuSanity.checkExpressionEngine.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkExpressionEngine.info = "";
+DuAEF.DuSanity.checkExpressionEngine.tip = "";
+DuAEF.DuSanity.checkExpressionEngine.hasFix = true;
+DuAEF.DuSanity.checkExpressionEngine.fix = function () {
+    app.project.expressionEngine = 'javascript-1.0';
+};
+DuAEF.DuSanity.checkExpressionEngine.timeOut = 60000;
+DuAEF.DuSanity.checkExpressionEngine.enabled = true;
+DuAEF.DuSanity.checkExpressionEngine.id = 0;
+
+
+/**
+ * Checks the number of items in the project
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkNumItems = function (dontFix)
+{
+    dontFix = def(dontFix, false);
+    var n = app.project.numItems;
+    var limit = 400;
+
+    DuAEF.DuSanity.checkNumItems.info = n + " items";
+    DuAEF.DuSanity.checkNumItems.tip = "Try to keep the project small (e.g. do not animate several shots in the same project).";
+    DuAEF.DuSanity.checkNumItems.currentLevel = DuAEF.DuSanity.checkLevel(n, limit);
+
+    if (dontFix) return  DuAEF.DuSanity.checkNumItems.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkNumItems );
+}
+
+DuAEF.DuSanity.checkNumItems.stringId = 'checkNumItems';
+DuAEF.DuSanity.checkNumItems.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkNumItems.info = "";
+DuAEF.DuSanity.checkNumItems.tip = "";
+DuAEF.DuSanity.checkNumItems.hasFix = false;
+DuAEF.DuSanity.checkNumItems.fix = function () {};
+DuAEF.DuSanity.checkNumItems.timeOut = 30000;
+DuAEF.DuSanity.checkNumItems.enabled = true;
+DuAEF.DuSanity.checkNumItems.id = 0;
+
+
+/**
+ * Checks the memory in use
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkMemory = function (dontFix)
+{
+    dontFix = def(dontFix, false);
+    var mem = app.memoryInUse ;
+    var limit = 4294967296 ; //4GB 4294967296‬
+
+    DuAEF.DuSanity.checkMemory.info = DuAEF.DuJS.String.fromSize(mem);
+    DuAEF.DuSanity.checkMemory.tip = "If the memory used gets too high, it may be good to purge the cache and free some space.";
+    DuAEF.DuSanity.checkMemory.currentLevel = DuAEF.DuSanity.checkLevel(mem, limit);
+
+    if (dontFix) return  DuAEF.DuSanity.checkMemory.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkMemory );
+}
+
+DuAEF.DuSanity.checkMemory.stringId = 'checkMemory';
+DuAEF.DuSanity.checkMemory.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkMemory.info = "";
+DuAEF.DuSanity.checkMemory.tip = "";
+DuAEF.DuSanity.checkMemory.hasFix = false;
+DuAEF.DuSanity.checkMemory.fix = function () {};
+DuAEF.DuSanity.checkMemory.timeOut = 5000;
+DuAEF.DuSanity.checkMemory.enabled = true;
+DuAEF.DuSanity.checkMemory.id = 0;
+
+
+/**
+ * Checks the number of master properties in the project
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkMP = function (dontFix)
+{
+    dontFix = def(dontFix, false);
+    var n = DuAEF.DuAE.Comp.numMasterProperties();
+    var limit = 40;
+
+    DuAEF.DuSanity.checkMP.info = n;
+    DuAEF.DuSanity.checkMP.tip = "Having a lot of Master Properties in the current composition has a very bad impact on performance.";
+    DuAEF.DuSanity.checkMP.currentLevel = DuAEF.DuSanity.checkLevel(n, limit);
+
+    if (dontFix) return  DuAEF.DuSanity.checkMP.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkMP );
+}
+
+DuAEF.DuSanity.checkMP.stringId = 'checkMP';
+DuAEF.DuSanity.checkMP.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkMP.info = "";
+DuAEF.DuSanity.checkMP.tip = "";
+DuAEF.DuSanity.checkMP.hasFix = false;
+DuAEF.DuSanity.checkMP.fix = function () {};
+DuAEF.DuSanity.checkMP.timeOut = 5000;
+DuAEF.DuSanity.checkMP.enabled = true;
+DuAEF.DuSanity.checkMP.id = 0;
+
+
+/**
+ * Checks if some items have the same source file
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkItemSources = function (dontFix)
+{
+    dontFix = def(dontFix, false);
+    var duplicatedSources = {};
+    duplicatedSources.length = 0;
+    var sources = {};
+    var layerNames = {};
+    for (var i = 1, n = app.project.numItems; i <= n; i++)
+    {
+        var item = app.project.item(i);
+        if (!(item instanceof FootageItem)) continue;
+        var source  = item.mainSource;
+        if (!(source instanceof FileSource)) continue;
+        var file = source.file.fsName;
+  
+        if (DuAEF.DuAE.isLayeredFile(file)) continue;
+
+        if (duplicatedSources[file])
+        {
+            duplicatedSources[file].push(item);
+            continue;
+        }
+        if ( sources[file]) 
+        {
+            duplicatedSources[file] = [sources[file], item];
+            duplicatedSources.length++;
+            continue;
+        }
+
+        sources[file] = item;
+    }
+
+    if (duplicatedSources.length == 0)
+    {
+        DuAEF.DuSanity.checkItemSources.info = "";
+        DuAEF.DuSanity.checkItemSources.tip = "";
+        DuAEF.DuSanity.checkItemSources.currentLevel = DuAEF.DuSanity.Levels.OK;
+    }
+    else
+    {
+        DuAEF.DuSanity.checkItemSources.info = duplicatedSources.length + " items";
+        DuAEF.DuSanity.checkItemSources.tip = "Some footages share the same sources:";
+        for (file in duplicatedSources)
+        {
+            if (file == 'length') continue;
+            if (duplicatedSources.hasOwnProperty(file))
+            {
+                DuAEF.DuSanity.checkItemSources.tip += "\n- " + file;
+            }
+        }
+        DuAEF.DuSanity.checkItemSources.currentLevel = DuAEF.DuSanity.Levels.BAD;
+    }
+
+    if (dontFix) return  DuAEF.DuSanity.checkItemSources.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkItemSources );
+}
+
+DuAEF.DuSanity.checkItemSources.stringId = 'checkItemSources';
+DuAEF.DuSanity.checkItemSources.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkItemSources.info = "";
+DuAEF.DuSanity.checkItemSources.tip = "";
+DuAEF.DuSanity.checkItemSources.hasFix = false;
+DuAEF.DuSanity.checkItemSources.fix = function () {};
+DuAEF.DuSanity.checkItemSources.timeOut = 30000;
+DuAEF.DuSanity.checkItemSources.enabled = true;
+DuAEF.DuSanity.checkItemSources.id = 0;
+
+
+/**
+ * Checks if some items are unused and should be removed
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkItemsUnused = function (dontFix)
+{
+    dontFix = def(dontFix, false);
+    var limit = 10;
+    unused = [];
+    for (var i = 1, n = app.project.numItems; i <= n; i++)
+    {
+        var item = app.project.item(i);
+        if (item instanceof FootageItem)
+        {
+            if (item.usedIn.length == 0) unused.push(item);
+        }
+    }
+
+    DuAEF.DuSanity.checkItemsUnused.currentLevel = DuAEF.DuSanity.checkLevel(unused.length, limit);
+
+    if (DuAEF.DuSanity.checkItemsUnused.currentLevel > DuAEF.DuSanity.Levels.OK) 
+    {
+        DuAEF.DuSanity.checkItemsUnused.info = unused.length + " footages";
+        DuAEF.DuSanity.checkItemsUnused.tip = "Found some footages which are unused. You should remove them.";
+        for (var i = 0, n = unused.length; i < n; i++)
+        {
+            DuAEF.DuSanity.checkItemsUnused.tip += "\n- " + unused[i].name;
+        }
+    }
+    else
+    {
+        DuAEF.DuSanity.checkItemsUnused.info = "";
+        DuAEF.DuSanity.checkItemsUnused.tip = "";
+    }
+
+    if (dontFix) return  DuAEF.DuSanity.checkItemsUnused.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkItemsUnused );
+}
+
+DuAEF.DuSanity.checkItemsUnused.stringId = 'checkItemsUnused';
+DuAEF.DuSanity.checkItemsUnused.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkItemsUnused.info = "";
+DuAEF.DuSanity.checkItemsUnused.tip = "";
+DuAEF.DuSanity.checkItemsUnused.hasFix = false;
+DuAEF.DuSanity.checkItemsUnused.fix = function () {};
+DuAEF.DuSanity.checkItemsUnused.timeOut = 30000;
+DuAEF.DuSanity.checkItemsUnused.enabled = true;
+DuAEF.DuSanity.checkItemsUnused.id = 0;
+
+
+/**
+ * Checks if there are precomps in the project root folder
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkPrecomps = function (dontFix)
+{
+    dontFix = def(dontFix, false);
+    var precomps = [];
+    for (var i = 1, n = app.project.numItems; i <= n; i++ )
+    {
+        var item = app.project.item(i);
+        if (item instanceof CompItem)
+        {
+            if (item.parentFolder.id == app.project.rootFolder.id && item.usedIn.length != 0) precomps.push(item);
+        }
+    }
+
+    DuAEF.DuSanity.checkPrecomps.currentLevel = DuAEF.DuSanity.Levels.OK;
+    DuAEF.DuSanity.checkPrecomps.tip = "";
+    DuAEF.DuSanity.checkPrecomps.info = "";
+
+    if (precomps.length > 0)
+    {
+        DuAEF.DuSanity.checkPrecomps.info = precomps.length + " comps";
+        DuAEF.DuSanity.checkPrecomps.tip = "Some precompositions are at the root of the project.\n" + 
+            "They should be moved in a subfolder.";
+        for (var i = 0, n = precomps.length; i<n; i++)
+        {
+            DuAEF.DuSanity.checkPrecomps.tip += "\n- " + precomps[i].name;
+        }
+        DuAEF.DuSanity.checkPrecomps.currentLevel = DuAEF.DuSanity.Levels.INFO; 
+    }
+
+    if (dontFix) return  DuAEF.DuSanity.checkPrecomps.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkPrecomps );
+}
+
+DuAEF.DuSanity.checkPrecomps.stringId = 'checkPrecomps';
+DuAEF.DuSanity.checkPrecomps.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkPrecomps.info = "";
+DuAEF.DuSanity.checkPrecomps.tip = "";
+DuAEF.DuSanity.checkPrecomps.hasFix = false;
+DuAEF.DuSanity.checkPrecomps.fix = function () {};
+DuAEF.DuSanity.checkPrecomps.timeOut = 10000;
+DuAEF.DuSanity.checkPrecomps.enabled = true;
+DuAEF.DuSanity.checkPrecomps.id = 0;
+
+
+/**
+ * Checks if there are unused comps in some subfolders
+ * @return {DuAEF.DuSanity.Levels} The sanity level of the check.
+ */
+DuAEF.DuSanity.checkUnusedComps = function (dontFix)
+{
+    dontFix = def(dontFix, false);
+    var comps = [];
+    for (var i = 1, n = app.project.numItems; i <= n; i++ )
+    {
+        var item = app.project.item(i);
+        if (item instanceof CompItem)
+        {
+            if (item.parentFolder.id != app.project.rootFolder.id && item.usedIn.length == 0) comps.push(item);
+        }
+    }
+
+    DuAEF.DuSanity.checkUnusedComps.currentLevel = DuAEF.DuSanity.Levels.OK;
+    DuAEF.DuSanity.checkUnusedComps.tip = "";
+    DuAEF.DuSanity.checkUnusedComps.info = "";
+
+    if (comps.length > 0)
+    {
+        DuAEF.DuSanity.checkUnusedComps.info = comps.length + " comps";
+        DuAEF.DuSanity.checkUnusedComps.tip = "Some main compositions are stored in subfolders.\n" + 
+            "It is easier to keep them at the root of the project, or they should be removed if they're not needed anymore.";
+        for (var i = 0, n = comps.length; i<n; i++)
+        {
+            DuAEF.DuSanity.checkUnusedComps.tip += "\n- " + comps[i].name;
+        }
+
+        DuAEF.DuSanity.checkUnusedComps.currentLevel = DuAEF.DuSanity.Levels.INFO; 
+    }
+
+    if (dontFix) return  DuAEF.DuSanity.checkUnusedComps.currentLevel;
+    return DuAEF.DuSanity.fixIfNeeded( DuAEF.DuSanity.checkUnusedComps );
+}
+
+DuAEF.DuSanity.checkUnusedComps.stringId = 'checkUnusedComps';
+DuAEF.DuSanity.checkUnusedComps.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
+DuAEF.DuSanity.checkUnusedComps.info = "";
+DuAEF.DuSanity.checkUnusedComps.tip = "";
+DuAEF.DuSanity.checkUnusedComps.hasFix = false;
+DuAEF.DuSanity.checkUnusedComps.fix = function () {};
+DuAEF.DuSanity.checkUnusedComps.timeOut = 10000;
+DuAEF.DuSanity.checkUnusedComps.enabled = true;
+DuAEF.DuSanity.checkUnusedComps.id = 0;
+
+DuAEF.DuSanity.tests = [
+    DuAEF.DuSanity.checkSave,
+    DuAEF.DuSanity.checkCompNames,
+    DuAEF.DuSanity.checkLayerNames,
+    DuAEF.DuSanity.checkProjectSize,
+    DuAEF.DuSanity.checkExpressionEngine,
+    DuAEF.DuSanity.checkNumItems,
+    DuAEF.DuSanity.checkMemory,
+    DuAEF.DuSanity.checkMP,
+    DuAEF.DuSanity.checkItemSources,
+    DuAEF.DuSanity.checkItemsUnused,
+    //DuAEF.DuSanity.checkPrecomps,
+    DuAEF.DuSanity.checkUnusedComps
+];
+
+/**
+ * Runs all the sanity tests and updates the sanity Button
+ * @return {DuAEF.DuSanity.Levels} The highest level.
+ */
+DuAEF.DuSanity.test = function ()
+{
+    var level = DuAEF.DuSanity.Levels.UNKNOWN;
+
+    for (var i = 0, n = DuAEF.DuSanity.tests.length; i < n; i++)
+    {
+        var test = DuAEF.DuSanity.tests[i];
+        if (test.enabled)
+        {
+            var testLevel = test.currentLevel;
+            if (testLevel > level) level = testLevel;
+        }
+    }
+    
+    DuAEF.DuSanity.currentLevel = level;
+    return level;
+}
+
+/**
+ * Intializes the sanity tests and schedule the monitor task. Has to be called once.
+ */
+DuAEF.DuSanity.init = function ()
+{
+    if (DuAEF.DuSanity.isInitialized) return;
+
+    //add and first run
+    for (var i = 0, n = DuAEF.DuSanity.tests.length; i < n; i++)
+    {
+        var test = DuAEF.DuSanity.tests[i];
+        if (DuAEF.DuSanity.isEnabled(test))
+        {
+            //First run
+            test();
+            var timeOut = test.timeOut;
+            if (DuAEF.debug) timeOut = 3000;
+            //Event
+            DuAEF.DuSanity.tests[i].id = DuAEF.DuScriptUI.addEvent(test, timeOut);
+        }
+    }
+
+    //First run
+    DuAEF.DuSanity.test();
+    //add to events
+    DuAEF.DuScriptUI.addEvent(DuAEF.DuSanity.test,3000);
+    DuAEF.DuSanity.isInitialized = true;
+}

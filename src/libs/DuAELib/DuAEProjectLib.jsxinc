@@ -11,13 +11,20 @@ DuAEF.DuAE.Project.activeComp = null;
 DuAEF.DuAE.Project.progressComp = null;
 DuAEF.DuAE.Project.viewerMaximized = false;
 
-//caches
-//this must be set to true during work on the cache to prevent it from updating
-DuAEF.DuAE.Project.suspendCacheUpdates = false;
+// ========== DEPRECATED =============
 
-// the expression cache is an array of PropertyExpression
-DuAEF.DuAE.Project.expressionCache = [];
-DuAEF.DuAE.Project.lastExpressionCacheUpdateTime = 0;
+/**
+ * Updates the cache of the expressions used by Duik to speed up batch process of expressions in the whole project.<br />
+ * It's automatically run when needed if it's not been updated in a long time (1 mn) or if it's empty
+ * @function
+ * @param {bool} [currentComp=false] true: in current compositions, false: in all compositions of the project
+ * @param {bool} [selectedComps=false] When currentComp is false, true to replace only in selected compositions
+ * @param {bool} [selectedLayers=false] When currentComp is true, wether to replace only on selected layers
+ * @deprecated since v0.7.0; Use {@link DuAEF.DuAE.Expression.updateCache DuAEF.DuAE.Expression.updateCache(true, false, selectedLayers)}.
+ */
+DuAEF.DuAE.Project.updateExpressionCache = DuAEF.DuAE.Expression.updateCache;
+
+// ========== ========== =============
 
 /**
  * Sets the project in "waiting mode" to speed up things.
@@ -141,11 +148,19 @@ DuAEF.DuAE.Project.newUniqueCompName = function ( newName, increment ) {
 
 /**
  * Checks if all comps have a different name.
- * @return {string[]} The list of names used several times. Empty if all comps have a different name.
- */
+ * @return {Object} The list of names used several times. Check the length attribute to know how many duplicates were found, loop through the keys to get the names. Eech key is an array containing the list of comps with that name.
+ * @example
+ * var dupes = DuAEF.DuAE.Project.checkCompNames();
+ * if (dupes.length != 0) {
+ * for (name in dupes)
+ * {
+ *     if (dupes.hasOwnProperty(name)) alert(dupes[name]); //dupes[name] is an array of Layer
+ * }
+ * } */
 DuAEF.DuAE.Project.checkCompNames = function () {
-    var duplicatedNames = [];
-    var compNames = [];
+    var duplicatedNames = {};
+    duplicatedNames.length  = 0;
+    var compNames = {};
     var items = app.project.items;
     for (var i = 1, n = items.length; i <= n; i++)
     {
@@ -153,66 +168,59 @@ DuAEF.DuAE.Project.checkCompNames = function () {
         if ( comp instanceof CompItem )
         {
             var name = comp.name;
-            if (DuAEF.DuJS.Array.indexOf(duplicatedNames, name) >= 0 ) continue;
-            if (DuAEF.DuJS.Array.indexOf(compNames, name) >= 0 ) 
+            if (duplicatedNames[name])
             {
-                duplicatedNames.push(name);
+                duplicatedNames[name].push(comp);
                 continue;
             }
-            compNames.push( name );
+            if ( compNames[name] ) 
+            {
+                duplicatedNames[name] = [compNames[name], comp];
+                duplicatedNames.length++;
+                continue;
+            }
+            compNames[name] = comp;
         }
     }
     return duplicatedNames;
 }
 
 /**
- * Makes sure all compositions in the project have unique names, renaming them if needed.
+ * Gets the size of the current project file
+ * @return {int} the size in Bytes. -1 if it has not been saved yet.
  */
-DuAEF.DuAE.Project.setUniqueCompNames = function () {
-    var comps = DuAEF.DuAE.Project.getComps();
-    var it = new Iterator( app.project.items );
-    it.do( function ( comp ) {
-        //temporarily set another name to correctly generate a new unique name 
-        var newName = comp.name;
-        comp.name = '***Duik-temp-name-xxx***';
-        comp.name = DuAEF.DuAE.Project.newUniqueCompName( newName );
-    } );
+DuAEF.DuAE.Project.getSize = function() {
+    var file = app.project.file;
+    if (!(file instanceof File)) return -1;
+    if (!file.exists) return -1;
+    else return file.length;
 }
 
 /**
- * Updates the cache of the expressions used by Duik to speed up batch process of expressions in the whole project.<br />
- * It's automatically run when needed if it's not been updated in a long time (1 mn) or if it's empty
+ * The Expressions Engine setting in the Project Settings dialog box, as a string.
+ * @return {string} One of: "extendscript", "javascript-1.0"
  */
-DuAEF.DuAE.Project.updateExpressionCache = function () {
-
-    if ( DuAEF.DuAE.Project.suspendCacheUpdates ) return;
-
-    //clear cache
-    DuAEF.DuAE.Project.expressionCache = [];
-
-    for ( var i = 1, num = app.project.numItems; i <= num; i++ ) {
-        var comp = app.project.item( i );
-        if ( !( comp instanceof CompItem ) ) continue;
-
-        for ( var l = 1, num = comp.numLayers; l <= num; l++ ) {
-            DuAEF.DuAE.Property.addToExpressionCache( comp.layer( l ) );
-        }
-    }
-
-    DuAEF.DuAE.Project.lastExpressionCacheUpdateTime = new Date().getTime();
+DuAEF.DuAE.Project.expressionEngine = function ()
+{
+    var engine = app.project.expressionEngine;
+    if (!engine) engine = "extendscript";
+    return engine;
 }
 
-//low-level undocumented method used to re-set expressions once they have been modified in the cache
-DuAEF.DuAE.Project.updateExpressionsFromCache = function ( cache ) {
-    for (var i = 0, num = cache.length; i < num; i++)
-    {
-        var pExp = cache[i];
-        if (pExp.layer.locked) continue;
-        if (!pExp.changed) continue;
-
-        var prop = pExp.getProperty();
-        prop.expression = pExp.expression;
-    } 
+/**
+ * Makes sure all compositions in the project have unique names, renaming them if needed.
+ * @param {Array|ItemCollection} [comps] A list of comps, all of them by default
+ */
+DuAEF.DuAE.Project.setUniqueCompNames = function ( comps ) {
+    comps = def( comps, DuAEF.DuAE.Project.getComps() );
+    var it = new Iterator( comps );
+    it.do( function ( comp ) {
+        //temporarily set another name to correctly generate a new unique name 
+        var oldName = comp.name;
+        comp.name = '***Duik-temp-name-xxx***';
+        comp.name = DuAEF.DuAE.Project.newUniqueCompName( oldName );
+        app.project.autoFixExpressions(oldName, comp.name);
+    } );
 }
 
 /**
@@ -404,17 +412,44 @@ DuAEF.DuAE.Project.collectFiles = function ( destination, overwrite, zip, create
 DuAEF.DuAE.Project.replaceInExpressions = function ( oldString, newString, caseSensitive ) {
     caseSensitive = def (caseSensitive, true);
 
-    //update expression cache before searching
-    DuAEF.DuAE.Project.updateExpressionCache();
-
     var re = new RegExp( DuAEF.DuJS.RegExp.escapeRegExp(oldString), caseSensitive ? 'g' : 'gi');
 
-    //search and replace in the cache
-    for (var i = 0, num = DuAEF.DuAE.Project.expressionCache.length; i < num; i++) {
-        DuAEF.DuAE.Project.expressionCache[i].changed = re.test( DuAEF.DuAE.Project.expressionCache[i].expression );
-        if (DuAEF.DuAE.Project.expressionCache[i].changed) DuAEF.DuAE.Project.expressionCache[i].expression = DuAEF.DuAE.Project.expressionCache[i].expression.replace( re, newString );
-    }
+    DuAEF.DuAE.Expression.doInExpresssions(function(e) {
+        e.changed = re.test( e.expression );
+        if (e.changed) e.expression = e.expression.replace( re, newString );
+        return e;
+    });
+}
 
-    //update expressions from cache
-    DuAEF.DuAE.Project.updateExpressionsFromCache( DuAEF.DuAE.Project.expressionCache )
+/**
+ * Replace all <code>thisComp</code> occurences by <code>comp("name")</code>.
+ * @param {bool} [selectedComps=false] true to replace only in selected compositions
+ */
+DuAEF.DuAE.Project.removeThisCompInExpressions = function( selectedComps )
+{
+    selectedComps = def(selectedComps, false);
+    
+    var re = new RegExp("(^|" + DuAEF.DuJS.RegExp.javascriptSymbols + ")thisComp(?!" + DuAEF.DuJS.RegExp.javascriptVarChars + ")",'gm')
+
+    DuAEF.DuAE.Expression.doInExpresssions(function(e) {
+        e.changed = re.test( e.expression );
+        if (e.changed) e.expression = e.expression.replace( re, '$1comp("' + e.comp.name + '")' );
+    }, false, selectedComps);
+}
+
+
+/**
+ * Replace all <code>comp("name")</code> occurences by <code>thisComp</code>.
+ * @param {bool} [selectedComps=false] true to replace only in selected compositions
+ */
+DuAEF.DuAE.Project.removeCompInExpressions = function( selectedComps )
+{
+    selectedComps = def(selectedComps, false);
+    
+    DuAEF.DuAE.Expression.doInExpresssions(function(e) {
+        var name = e.comp.name;
+        var re = new RegExp("(^|" + DuAEF.DuJS.RegExp.javascriptSymbols + ")comp\\s*\\(\\s*[\"']" + DuAEF.DuJS.RegExp.escapeRegExp(name) + "[\"']\\s*\\)", 'gm');
+        e.changed = re.test( e.expression );
+        if (e.changed) e.expression = e.expression.replace( re, '$1thisComp' );
+    }, false, selectedComps);
 }

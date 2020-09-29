@@ -1352,7 +1352,7 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 	// this will be set to true to update the expressions in the MPs
 	var reLink = false;
 
-	if (ctrlLayers.length == 0) 
+	if (ctrlLayers.length == 0)
 	{
 		//Let's ask if the user wants to extract them all once again.
 		if (!useMasterProperties) return;

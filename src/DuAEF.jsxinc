@@ -4,6 +4,7 @@
 #include "libs/third-party/SeedRandom.jsxinc"
 #include "libs/third-party/colorPicker.jsxinc"
 #include "libs/DuTranslatorLib.jsxinc"
+#include "libs/DuXMPLib.jsxinc"
 #include "libs/DuDebugLib.jsxinc"
 #include "libs/DuAELib/DuAECoreLib.jsxinc"
 #include "libs/DuBinaryLib.jsxinc"
@@ -28,3 +29,4 @@
 #include "libs/DuExpressionLib.jsxinc"
 #include "libs/RamsesLib.jsxinc"
 #include "libs/DuZipLib.jsxinc"
+#include "libs/DuSanityLib.jsxinc"

@@ -5,69 +5,73 @@
  */
 DuAEF.DuAE.Comp = {};
 
-//caches
-//this must be set to true during work on the cache to prevent it from updating
-DuAEF.DuAE.Comp.suspendCacheUpdates = false;
+// ========== DEPRECATED =============
 
-// the expression cache is an array of PropertyExpression
-DuAEF.DuAE.Comp.expressionCache = [];
-DuAEF.DuAE.Comp.lastExpressionCacheUpdateTime = 0;
 
 /**
  * Updates the cache of the expressions used by Duik to speed up batch process of expressions in the whole project.<br />
  * It's automatically run when needed if it's not been updated in a long time (1 mn) or if it's empty
  * @param {CompItem} [comp=DuAEF.DuAE.Project.getActiveComp()] The comp with expressions to cache
  * @param {boolean} [selectedLayers=false] Set to true to cache only selected layers.
+ * @deprecated since v0.7.0; Use {@link DuAEF.DuAE.Expression.updateCache DuAEF.DuAE.Expression.updateCache(true, false, selectedLayers)}.
  */
-DuAEF.DuAE.Comp.updateExpressionCache = function ( comp, selectedLayers ) {
-    if ( DuAEF.DuAE.Comp.suspendCacheUpdates ) return;
+DuAEF.DuAE.Comp.updateExpressionCache = function (comp, selectedLayers) { DuAEF.DuAE.Expression.updateCache(true, false, selectedLayers) };
 
-    comp = def(comp, DuAEF.DuAE.Project.getActiveComp());
-    if (!comp) return;
-    selectedLayers = def (selectedLayers, false);
-
-    //clear cache
-    DuAEF.DuAE.Comp.expressionCache = [];
-
-    var layers = [];
-    if (selectedLayers) layers = comp.selectedLayers;
-    else layers = comp.layers;
-
-    var it = new Iterator(layers);
-    it.do(function(layer) {
-        DuAEF.DuAE.Property.addToExpressionCache( layer, true );
-    });
-
-    DuAEF.DuAE.Comp.lastExpressionCacheUpdateTime = new Date().getTime();
-}
+// ========== ========== =============
 
 /**
  * Replaces text in Expressions
  * @param {string} oldString - The string to replace
  * @param {string} newString - The new string
- * @param {CompItem} [comp=DuAEF.DuAE.Project.getActiveComp()] The comp with expressions to cache
+ * @param {CompItem} [comp=DuAEF.DuAE.Project.getActiveComp()] The comp with expressions to cache. WARNING: Since v0.7.0 this param is ignored.
  * @param {boolean} [caseSensitive=true] - Wether the search has to be case sensitive
  * @param {boolean} [selectedLayers=false] Set to true to cache only selected layers.
  */
 DuAEF.DuAE.Comp.replaceInExpressions = function ( oldString, newString, comp, caseSensitive, selectedLayers ) {
-    comp = def(comp, DuAEF.DuAE.Project.getActiveComp());
+    comp = DuAEF.DuAE.Project.getActiveComp();
     if (!comp) return;
     caseSensitive = def (caseSensitive, true);
     selectedLayers = def (selectedLayers, false);
 
-    //update expression cache before searching
-    DuAEF.DuAE.Comp.updateExpressionCache( comp, selectedLayers );
-
     var re = new RegExp( DuAEF.DuJS.RegExp.escapeRegExp(oldString), caseSensitive ? 'g' : 'gi');
 
-    //search and replace in the cache
-    for (var i = 0, num = DuAEF.DuAE.Comp.expressionCache.length; i < num; i++) {
-        DuAEF.DuAE.Comp.expressionCache[i].changed = re.test( DuAEF.DuAE.Comp.expressionCache[i].expression );
-        if (DuAEF.DuAE.Comp.expressionCache[i].changed) DuAEF.DuAE.Comp.expressionCache[i].expression = DuAEF.DuAE.Comp.expressionCache[i].expression.replace( re, newString );
-    }
+    DuAEF.DuAE.Expression.doInExpresssions(function(e) {
+        e.changed = re.test( e.expression );
+        if (e.changed) e.expression = e.expression.replace( re, newString );
+        return e;
+    }, true, false, selectedLayers);
+}
 
-    //update expressions from cache
-    DuAEF.DuAE.Project.updateExpressionsFromCache( DuAEF.DuAE.Comp.expressionCache )
+/**
+ * Replace all <code>thisComp</code> occurences by <code>comp("name")</code>.
+ * @param {bool} [selectedLayers=false] true to replace only in selected layers
+ */
+DuAEF.DuAE.Comp.removeThisCompInExpressions = function( selectedLayers )
+{
+    selectedLayers = def(selectedLayers, false);
+    
+    var re = new RegExp("(^|" + DuAEF.DuJS.RegExp.javascriptSymbols + ")thisComp(?!" + DuAEF.DuJS.RegExp.javascriptVarChars + ")",'gm')
+
+    DuAEF.DuAE.Expression.doInExpresssions(function(e) {
+        e.changed = re.test( e.expression );
+        if (e.changed) e.expression = e.expression.replace( re, '$1comp("' + e.comp.name + '")' );
+    }, true, false, selectedLayers);
+}
+
+/**
+ * Replace all <code>comp("name")</code> occurences by <code>thisComp</code>.
+ * @param {bool} [selectedComps=false] true to replace only in selected compositions
+ */
+DuAEF.DuAE.Comp.removeCompInExpressions = function( selectedLayers )
+{
+    selectedLayers = def(selectedLayers, false);
+    
+    DuAEF.DuAE.Expression.doInExpresssions(function(e) {
+        var name = e.comp.name;
+        var re = new RegExp("(^|" + DuAEF.DuJS.RegExp.javascriptSymbols + ")comp\\s*\\(\\s*[\"']" + DuAEF.DuJS.RegExp.escapeRegExp(name) + "[\"']\\s*\\)", 'gm');
+        e.changed = re.test( e.expression );
+        if (e.changed) e.expression = e.expression.replace( re, '$1thisComp' );
+    }, true, false, selectedLayers);
 }
 
 /**
@@ -83,6 +87,25 @@ DuAEF.DuAE.Comp.setUniqueCompName = function ( comp ) {
     comp.name = DuAEF.DuAE.Project.newUniqueCompName( newName, false );
     app.project.autoFixExpressions( newName, comp.name );
     return comp.name;
+}
+
+/**
+ * Makes sure all layers in the comp have unique names, renaming them if needed.
+ * @param {Array|LayerCollection} [layers=comp.layers] - The layers
+ * @param {CompItem} [comp=DuAEF.DuAE.Project.getActiveComp] - The composition
+ */
+DuAEF.DuAE.Comp.setUniqueLayerNames = function ( layers, comp ) {
+    comp = def( comp, DuAEF.DuAE.Project.getActiveComp() );
+    if (!comp) return;
+    layers = def(layers, comp.layers);
+    var it = new Iterator( layers );
+    it.do( function ( layer ) {
+        //temporarily set another name to correctly generate a new unique name 
+        var oldName = layer.name;
+        layer.name = '***Duik-temp-name-xxx***';
+        layer.name = DuAEF.DuAE.Comp.newUniqueLayerName( oldName, comp );
+        app.project.autoFixExpressions(oldName, layer.name);
+    } );
 }
 
 /**
@@ -247,12 +270,13 @@ DuAEF.DuAE.Comp.selectLayers = function ( layers ) {
 /**
  * Generates a new unique name for a layer
  * @param {string} newName	- The wanted new name
- * @param {CompItem} comp 	- The comp
+ * @param {CompItem} [comp] 	- The comp
  * @param {boolean} [increment=true] - true to automatically increment the new name if it already ends with a digit
  * @return {string}	The unique name, with a new number at the end if needed.
  */
 DuAEF.DuAE.Comp.newUniqueLayerName = function ( newName, comp, increment ) {
-    if ( increment == undefined ) increment = true;
+    increment = def(increment, true);
+    comp = def(comp, DuAEF.DuAE.Project.getActiveComp() );
     var layerNames = [];
     for ( var i = 1; i <= comp.layers.length; i++ ) {
         layerNames.push( comp.layer( i ).name );
@@ -386,4 +410,67 @@ DuAEF.DuAE.Comp.getAudioLayers = function ( comp, audioActiveOnly ) {
     } );
 
     return audioLayers;
+}
+
+/**
+ * Gets the total number of master properties used on precompositions in the comp.
+ * @param {CompItem} [comp=DuAEF.DuAE.Project.getActiveComp] The composition to check
+ * @return {int} The number of master properties
+ */
+DuAEF.DuAE.Comp.numMasterProperties = function(comp) {
+    if (DuAEF.DuAE.App.version.version < 15.1) return 0;
+    comp = def(comp, DuAEF.DuAE.Project.getActiveComp());
+    if (!comp) return 0;
+    var numMP = 0;
+    for (var i = 1, n = comp.numLayers; i <= n; i++)
+    {
+        var l = comp.layer(i);
+        if (!l.source) continue;
+        if (l.source instanceof CompItem)
+        {
+            numMP += l('ADBE Layer Overrides').numProperties;
+        }
+    }
+    return numMP;
+}
+
+/**
+ * Checks if all layers have a different name.
+ * @param {CompItem} [comp=DuAEF.DuAE.Project.getActiveComp] The comp to check
+ * @return {Object} The list of names used several times. Check the length attribute to know how many duplicates were found, loop through the keys to get the names. Eech key is an array containing the list of layers with that name.
+ * @example
+ * var dupes = DuAEF.DuAE.Comp.checkLayerNames();
+ * if (dupes.length != 0) {
+ * for (name in dupes)
+ * {
+ *     if (dupes.hasOwnProperty(name)) alert(dupes[name]); //dupes[name] is an array of Layer
+ * }
+ * }
+ */
+DuAEF.DuAE.Comp.checkLayerNames = function (comp) {
+    comp = def(comp, DuAEF.DuAE.Project.getActiveComp());
+    var duplicatedNames = {};
+    duplicatedNames.length  = 0;
+    if (!comp) return duplicatedNames;
+    var layerNames = {};
+    var layers = app.project.items;
+    for (var i = 1, n = comp.numLayers; i <= n; i++)
+    {
+        var layer = comp.layer(i);
+        var name = layer.name;
+
+        if (duplicatedNames[name])
+        {
+            duplicatedNames[name].push(layer);
+            continue;
+        }
+        if ( layerNames[name] ) 
+        {
+            duplicatedNames[name] = [layerNames[name], layer];
+            duplicatedNames.length++;
+            continue;
+        }
+        layerNames[name] = layer;
+    }
+    return duplicatedNames;
 }

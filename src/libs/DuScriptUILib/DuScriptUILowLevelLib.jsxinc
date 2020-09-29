@@ -10,8 +10,17 @@ DuAEF.DuScriptUI.uiShown = false;
 
 
 //low-level undocumented function: dims all currently highlighted controls
+//Also runs all functions in DuAEF.DuScriptUI.eventFunctions
 DuAEF.DuScriptUI.dimControls = function( e )
 {
+    var now = new Date().getTime();
+    for (var i = 0, n = DuAEF.DuScriptUI.eventFunctions.length; i < n; i++)
+    {
+        var f = DuAEF.DuScriptUI.eventFunctions[i];
+        if (now - f.lastFire < f.timeOut) continue;
+        f();
+        f.lastFire = now;
+    }
     if ( DuAEF.DuScriptUI.highlightedControls.length == 0 ) return;
     for ( var i = DuAEF.DuScriptUI.highlightedControls.length - 1; i >= 0; i-- )
     {

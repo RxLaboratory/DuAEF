@@ -38,11 +38,11 @@
  * @method
  * @memberof Selector
  * @name addButton
- * @param {string} text - The text displayed by the button
- * @param {string} image - The icon, either a path to the file or a PNG represented as a string.
- * @param {string} helpTip - The help tip
- * @param {string} imageOver - The roll over icon, either a path to the file or a PNG represented as a string.
- * @param {string[][]} items - The items in the selector in the form [text, image, helpTip, imageOver].
+ * @param {string} [text] - The text displayed by the button
+ * @param {string} [image] - The icon, either a path to the file or a PNG represented as a string.
+ * @param {string} [helpTip] - The help tip
+ * @param {string} [imageOver] - The roll over icon, either a path to the file or a PNG represented as a string.
+ * @param {boolean} [localize=true] - Set to false if the text must not be translated.
  */
 
 /**
@@ -97,7 +97,7 @@ DuAEF.DuScriptUI.addSelector = function( container, addRefreshButton )
     selector.mainGroup.spacing = 5;
     selector.mainGroup.alignment = [ 'fill', 'fill' ];
     selector.mainGroup.alignChildren = [ 'center', 'center' ];
-    DuAEF.DuScriptUI.setBackgroundColor( selector, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+    DuAEF.DuScriptUI.setBackgroundColor( selector, DuAEF.DuJS.Color.Colors.ABYSS_GREY );
 
     //the refresh button
     if (addRefreshButton)
@@ -110,25 +110,29 @@ DuAEF.DuScriptUI.addSelector = function( container, addRefreshButton )
     }
 
 
-    selector.addButton = function( text, image, helpTip, imageOver )
+    selector.addButton = function( text, image, helpTip, imageOver, localize )
     {
-        if ( !text ) text = '-';
-        if ( !image ) image = '';
-        if ( !helpTip ) helpTip = '';
-        if ( !imageOver ) imageOver = '';
+        text = def(text, '-');
+        image = def(image, '');
+        helpTip = def(helpTip, '');
+        imageOver = def(imageOver, '');
+        localize = def(localize, true);
 
-        if ( text != '' ) DuAEF.DuScriptUI.uiStrings.push( text );
-        if ( helpTip != '' ) DuAEF.DuScriptUI.uiStrings.push( helpTip );
-        text = tr( text );
-        helpTip = tr( helpTip );
-
+        if (localize)
+        {
+            if ( text != '' ) DuAEF.DuScriptUI.uiStrings.push( text );
+            if ( helpTip != '' ) DuAEF.DuScriptUI.uiStrings.push( helpTip );
+            text = tr( text );
+            helpTip = tr( helpTip );
+        }
+        
         var size = text.length * 7;
         if ( selector.label.minimumSize.width < size ) selector.label.minimumSize.width = size;
 
         var index = selector.items.length;
         selector.items.push( [ text, image, helpTip, imageOver ] );
         //add to popup
-        var button = DuAEF.DuScriptUI.addButton( selector.popup.buttons, text, image, helpTip, imageOver );
+        var button = DuAEF.DuScriptUI.addButton( selector.popup.buttons, text, image, helpTip, imageOver, undefined, undefined, undefined, false );
         button.onClick = function()
         {
             selector.setCurrentIndex( index );
@@ -301,7 +305,7 @@ DuAEF.DuScriptUI.addSelector = function( container, addRefreshButton )
     {
         selector.menuButton.image = selector.menuImage;
         DuAEF.DuScriptUI.setTextColor( selector.label, DuAEF.DuJS.Color.Colors.LIGHT_GREY );
-        DuAEF.DuScriptUI.setBackgroundColor( selector, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+        DuAEF.DuScriptUI.setBackgroundColor( selector, DuAEF.DuJS.Color.Colors.ABYSS_GREY );
         if ( selector.image != '' ) selector.icon.image = selector.image;
         if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.refreshButton.image = selector.refreshImage;
     }
@@ -384,7 +388,7 @@ DuAEF.DuScriptUI.addLayerSelector = function( container )
     selector.mainGroup.spacing = 5;
     selector.mainGroup.alignment = [ 'fill', 'fill' ];
     selector.mainGroup.alignChildren = [ 'center', 'center' ];
-    DuAEF.DuScriptUI.setBackgroundColor( selector, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+    DuAEF.DuScriptUI.setBackgroundColor( selector, DuAEF.DuJS.Color.Colors.ABYSS_GREY );
 
     //init
     selector.index = 0;
@@ -577,7 +581,7 @@ DuAEF.DuScriptUI.addLayerSelector = function( container )
         selector.menuButton.image = selector.menuImage;
         selector.pickButton.image = selector.pickImage;
         DuAEF.DuScriptUI.setTextColor( selector.label, DuAEF.DuJS.Color.Colors.LIGHT_GREY );
-        DuAEF.DuScriptUI.setBackgroundColor( selector, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+        DuAEF.DuScriptUI.setBackgroundColor( selector, DuAEF.DuJS.Color.Colors.ABYSS_GREY );
     }
 
     selector.pick = function()
@@ -705,7 +709,7 @@ DuAEF.DuScriptUI.addCompSelector = function( container )
     selector.mainGroup.spacing = 5;
     selector.mainGroup.alignment = [ 'fill', 'fill' ];
     selector.mainGroup.alignChildren = [ 'center', 'center' ];
-    DuAEF.DuScriptUI.setBackgroundColor( selector, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+    DuAEF.DuScriptUI.setBackgroundColor( selector, DuAEF.DuJS.Color.Colors.ABYSS_GREY );
 
     //init
     selector.id = 0;
@@ -906,7 +910,7 @@ DuAEF.DuScriptUI.addCompSelector = function( container )
         if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.refreshButton.image = selector.refreshImage;
         if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.pickButton.image = selector.pickImage;
         DuAEF.DuScriptUI.setTextColor( selector.label, DuAEF.DuJS.Color.Colors.LIGHT_GREY );
-        DuAEF.DuScriptUI.setBackgroundColor( selector, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+        DuAEF.DuScriptUI.setBackgroundColor( selector, DuAEF.DuJS.Color.Colors.ABYSS_GREY );
     }
 
     selector.pick = function()

@@ -1,0 +1,50 @@
+/*
+DuAEProjectXMPLib
+Library for managing XMP data from projects.
+Copyright (c)2020 Nicolas Dufresne, Rainbox Laboratory
+https://rainboxlab.org
+
+_Contributors:_
+Nicolas Dufresne - Lead developer
+
+This file is part of DuAEF.
+
+DuAEF is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+DuAEF is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+/**
+ * XMP
+ * @namespace
+ * @memberof DuAEF
+ */
+DuAEF.XMP = {};
+
+DuAEF.XMP.initialized = false;
+
+/**
+ * Loads the XMP library if it has not been loaded yet. There is no need to call this function as it's called automatically by DuAEF methods if needed.<br />
+ * Call it once if you plan to use XMP without the methods in DuAEF
+ */
+DuAEF.XMP.init = function ()
+{
+    if (DuAEF.XMP.initialized) return;
+    
+    // load the library
+    if ( typeof ExternalObject.AdobeXMPScript === 'undefined' ) {
+        ExternalObject.AdobeXMPScript = new ExternalObject( "lib:AdobeXMPScript");
+    }
+
+    DuAEF.XMP.initialized = true;
+}

@@ -15,3 +15,15 @@ DuAEF.DuJS.RegExp.escapeRegExp = function (string)
 {
 	return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
+
+/**
+ * The set containing javascript symbols ( +, -, [, etc.). Useful when parsing javascript code.
+ * @readonly
+ */
+DuAEF.DuJS.RegExp.javascriptSymbols = "[\\s=!/*\\-+%()[\\]{};:.]";
+
+/**
+ * The set containing authorized characters for javascript variable. Useful when parsing javascript code.
+ * @readonly
+ */
+DuAEF.DuJS.RegExp.javascriptVarChars = "[a-zA-Z0-9_]";

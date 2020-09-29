@@ -1,0 +1,156 @@
+/*
+DuAEProjectXMPLib
+Library for managing XMP data from projects.
+Copyright (c)2020 Nicolas Dufresne, Rainbox Laboratory
+https://rainboxlab.org
+
+_Contributors:_
+Nicolas Dufresne - Lead developer
+
+This file is part of DuAEF.
+
+DuAEF is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+DuAEF is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+/**
+ * XMP
+ * @namespace
+ * @memberof DuAEF.DuAE.Project
+ */
+DuAEF.DuAE.Project.XMP = {};
+
+/**
+ * Gets the XMP of the current project
+ * @return {XMPMeta} The XMP data
+ */
+DuAEF.DuAE.Project.XMP.getXmp = function()
+{
+    DuAEF.XMP.init();
+    if (!app.project.file) return null;
+    return new XMPMeta(app.project.xmpPacket)
+}
+
+/**
+ * Gets the value of a property.
+ * @param {string} prop The name of the property
+ * @param {XMPConst} [type] The property data type, one of: - XMPConst.STRING - XMPConst.INTEGER - XMPConst.NUMBER - XMPConst.BOOLEAN - XMPConst.XMPDATE
+ * @return {Object} The value
+ */
+DuAEF.DuAE.Project.XMP.getPropertyValue = function( prop, type)
+{
+    var xmp = DuAEF.DuAE.Project.XMP.getXmp();
+    if (!xmp) return null;
+
+    var p = xmp.getProperty(XMPConst.NS_XMP, prop);
+
+    if (!p) return null;
+    return p.value;
+}
+
+/**
+ * Sets the value of a property.
+ * @param {string} prop The name of the property
+ * @param {Object} value The value
+ */
+DuAEF.DuAE.Project.XMP.setPropertyValue = function(prop, value)
+{
+    var xmp = DuAEF.DuAE.Project.XMP.getXmp();
+    if (!xmp) return null;
+
+    var type;
+    var options = 0;
+    var isArray = false;
+
+    //Check type
+    //TODO if array, use setArrayItem (see XMP doc)
+    if (DuAEF.DuJS.typeof(value) === 'Array')
+    {
+        options = XMPConst.PROP_IS_ARRAY;
+        isArray = true;
+    }
+
+    var testVal;
+    if (isArray && value.length > 0) testVal = value[0];
+    else testVal = value;
+
+    if (DuAEF.DuJS.typeof(testVal) === 'string')
+    {
+        type = XMPConst.STRING;
+    }
+    else if (DuAEF.DuJS.typeof(testVal) === 'number')
+    {
+        var testInt = Math.round(testVal);
+        if (testInt == testVal) type = XMPConst.INTEGER;
+        else type = XMPConst.NUMBER;
+    }
+    else if (DuAEF.DuJS.typeof(testVal) === 'boolean')
+    {
+        type = XMPConst.BOOLEAN;
+    }
+    else if (DuAEF.DuJS.typeof(testVal) === 'Date')
+    {
+        type = XMPConst.XMPDATE;
+    }
+
+    xmp.setProperty(XMPConst.NS_XMP, prop, value, options, type);
+    app.project.xmpPacket = xmp.serialize();
+}
+
+/**
+ * Gets the project settings stored in XMP by DuAEF.
+ * @return {object} The settings.
+ */
+DuAEF.DuAE.Project.XMP.getSettings = function ()
+{
+    var json = DuAEF.JSON.parse(DuAEF.DuAE.Project.XMP.getPropertyValue("DuAEF"));
+    if (!json) json = {};
+    return json;
+}
+
+/**
+ * Saves the project settings stored in XMP by DuAEF.
+ * @param {object} settings The settings.
+ */
+DuAEF.DuAE.Project.XMP.saveSettings = function (settings)
+{
+    var str = DuAEF.JSON.stringify(settings);
+    DuAEF.DuAE.Project.XMP.setPropertyValue("DuAEF", str);
+}
+
+/**
+ * The Settings of the project, an object similar to {@link DuSettings} except that it saves in the Project XMP
+ */
+DuAEF.DuAE.Project.settings = {}
+
+/**
+ * The settings data
+ */
+DuAEF.DuAE.Project.settings.data = {};
+
+/**
+ * Updates the settings: reads them in the XMP of the current project. Call this function before reading the data.
+ */
+DuAEF.DuAE.Project.settings.update = function()
+{
+    DuAEF.DuAE.Project.settings.data = DuAEF.DuAE.Project.XMP.getSettings();
+}
+
+/**
+ * Saves the settings to the project XMP
+ */
+DuAEF.DuAE.Project.settings.save = function()
+{
+    DuAEF.DuAE.Project.XMP.saveSettings(DuAEF.DuAE.Project.settings.data);
+}

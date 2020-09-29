@@ -43,6 +43,30 @@
  */
 
 /**
+ * Changes the background color of the button.
+ * @method
+ * @memberof DuButton
+ * @name setBackgroundColor
+ * @param {float[]} color - the color.
+ */
+
+/**
+ * Changes the text color of the button.
+ * @method
+ * @memberof DuButton
+ * @name setTextColor
+ * @param {float[]} color - the color.
+ */
+
+/**
+ * Sets the standard image of the button.
+ * @method
+ * @memberof DuButton
+ * @name setStandardImage
+ * @param {string} image - the path to the image.
+ */
+
+/**
  * Creates a button with an optionnal icon. Must have at least an icon or a text, or both.
  * @memberof DuAEF.DuScriptUI
  * @param {Panel|Window|Group}			container	- The ScriptUI Object which will contain and display the button.
@@ -53,10 +77,15 @@
  * @param {bool}					[addOptionsPanel=false]	- Adds a panel for options and a button to access it.
  * @param {bool}					[optionsButtonUnder]	- When true, the options button appears under the button instead of next to it.
  * @param {string}					[imageDisabled=image]	- The path to an icon displayed when the button is disabled.
+ * @param {boolean}					[localize=true]	- Set to false if the text must not be translated.
  * @return {DuButton}			The image button created.
  */
-DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOver, addOptionsPanel, optionsButtonUnder, imageDisabled )
+DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOver, addOptionsPanel, optionsButtonUnder, imageDisabled, localize )
 {
+    if (typeof container === undefined)
+    {
+        throw 'DuScriptUI: DuAEF.DuScriptUI.addButton(container, text, image, helpTip, imageOver):\nMissing argument: container.';
+    }
     if (DuAEF.DuJS.typeof(container) != 'Group' && DuAEF.DuJS.typeof(container) != 'Panel' && DuAEF.DuJS.typeof(container) != 'Window' )
     {
         throw 'DuScriptUI: DuAEF.DuScriptUI.addButton(container, text, image, helpTip, imageOver):\nTypeError.\n\ncontainer has to be a Group/Panel/Window.\n\ncontainer is ' + DuAEF.DuJS.typeof(container) + ' with value ' + container.toString();
@@ -69,23 +98,24 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
     imageDisabled = def(imageDisabled, '');
     addOptionsPanel = def(addOptionsPanel, false);
     optionsButtonUnder = def(optionsButtonUnder, text == '');
+    localize = def(localize, true);
     
     if ( imageOver != '' && !DuAEF.DuJS.Fs.fileExists( imageOver ) ) imageOver = '';
     if ( image != '' && !DuAEF.DuJS.Fs.fileExists( image ) ) image = '';
     if ( imageDisabled != '' && !DuAEF.DuJS.Fs.fileExists( imageDisabled ) ) imageDisabled = '';
 
-    if ( text != '' )
+    if ( text != '' && localize)
     {
         DuAEF.DuScriptUI.uiStrings.push( text );
         text = tr( text );
     }
-    if ( helpTip != '' )
+    if ( helpTip != '' && localize)
     {
         DuAEF.DuScriptUI.uiStrings.push( helpTip );
         helpTip = tr( helpTip );
     }
 
-    if ( image == '' && text == '' ) text = 'o';
+    if ( image == '' && text == '' ) text = ' ';
 
     var rootGroup = container.add( 'group' );
     var imageButton = rootGroup;
@@ -97,6 +127,9 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
     imageButton.alignment = [ 'fill', 'fill' ];
     if (addOptionsPanel) imageButton.spacing = 2;
     else imageButton.spacing = 0;
+
+    imageButton.bgColor = DuAEF.DuJS.Color.Colors.ABYSS_GREY;
+    imageButton.textColor = DuAEF.DuJS.Color.Colors.LIGHT_GREY;
 
     var mainGroup = imageButton.add( 'group' );
     mainGroup.orientation = 'row';
@@ -171,7 +204,7 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
         label.helpTip = helpTip;
         label.alignment = [ 'left', 'center' ];
         imageButton.label = label;
-        DuAEF.DuScriptUI.setBackgroundColor( mainGroup, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+        DuAEF.DuScriptUI.setBackgroundColor( mainGroup, DuAEF.DuJS.Color.Colors.ABYSS_GREY );
         imageButton.alignment = [ 'fill', 'top' ];
     }
 
@@ -225,8 +258,8 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
             if ( imageButton.imageOver != '' ) icon.image = imageButton.imageOver;
         if ( label )
         {
-            DuAEF.DuScriptUI.setTextColor( imageButton.label, DuAEF.DuJS.Color.Colors.VERY_LIGHT_GREY );
-            DuAEF.DuScriptUI.setBackgroundColor( mainGroup, DuAEF.DuJS.Color.Colors.DARK_GREY );
+            DuAEF.DuScriptUI.setTextColor( imageButton.label,  imageButton.textColor + [0.25,0.25,0.25,0] );
+            DuAEF.DuScriptUI.setBackgroundColor( mainGroup, imageButton.bgColor + [0.25,0.25,0.25,0] );
         }
         DuAEF.DuScriptUI.highlightedControls.push( imageButton );
     }
@@ -237,9 +270,27 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
             if ( imageButton.standardImage != '' ) icon.image = imageButton.standardImage;
         if ( label )
         {
-            DuAEF.DuScriptUI.setTextColor( imageButton.label, DuAEF.DuJS.Color.Colors.LIGHT_GREY );
-            DuAEF.DuScriptUI.setBackgroundColor( mainGroup, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+            DuAEF.DuScriptUI.setTextColor( imageButton.label, imageButton.textColor );
+            DuAEF.DuScriptUI.setBackgroundColor( mainGroup, imageButton.bgColor );
         }
+    }
+
+    imageButton.setBackgroundColor = function(color)
+    {
+        imageButton.bgColor = color;
+        imageButton.dim();
+    }
+
+    imageButton.setTextColor = function(color)
+    {
+        imageButton.textColor = color;
+        imageButton.dim();
+    }
+
+    imageButton.setStandardImage = function(im)
+    {
+        imageButton.standardImage = im;
+        imageButton.dim();
     }
 
     //add events
@@ -354,7 +405,7 @@ DuAEF.DuScriptUI.addSmallButton = function( container, text, helpTip, value )
     smallButton.label = smallButton.add( 'statictext', undefined, text );
     smallButton.label.helpTip = helpTip;
     smallButton.label.justify = 'center';
-    DuAEF.DuScriptUI.setBackgroundColor( smallButton, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+    DuAEF.DuScriptUI.setBackgroundColor( smallButton, DuAEF.DuJS.Color.Colors.ABYSS_GREY );
 
     smallButton.value = value;
 
@@ -403,7 +454,7 @@ DuAEF.DuScriptUI.addSmallButton = function( container, text, helpTip, value )
     smallButton.dim = function()
     {
         DuAEF.DuScriptUI.setTextColor( smallButton.label, DuAEF.DuJS.Color.Colors.LIGHT_GREY );
-        DuAEF.DuScriptUI.setBackgroundColor( smallButton, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+        DuAEF.DuScriptUI.setBackgroundColor( smallButton, DuAEF.DuJS.Color.Colors.ABYSS_GREY );
     }
 
     //add events
