@@ -38,11 +38,11 @@
  * @method
  * @memberof Selector
  * @name addButton
- * @param {string} text - The text displayed by the button
- * @param {string} image - The icon, either a path to the file or a PNG represented as a string.
- * @param {string} helpTip - The help tip
- * @param {string} imageOver - The roll over icon, either a path to the file or a PNG represented as a string.
- * @param {string[][]} items - The items in the selector in the form [text, image, helpTip, imageOver].
+ * @param {string} [text] - The text displayed by the button
+ * @param {string} [image] - The icon, either a path to the file or a PNG represented as a string.
+ * @param {string} [helpTip] - The help tip
+ * @param {string} [imageOver] - The roll over icon, either a path to the file or a PNG represented as a string.
+ * @param {boolean} [localize=true] - Set to false if the text must not be translated.
  */
 
 /**
@@ -110,25 +110,29 @@ DuAEF.DuScriptUI.addSelector = function( container, addRefreshButton )
     }
 
 
-    selector.addButton = function( text, image, helpTip, imageOver )
+    selector.addButton = function( text, image, helpTip, imageOver, localize )
     {
-        if ( !text ) text = '-';
-        if ( !image ) image = '';
-        if ( !helpTip ) helpTip = '';
-        if ( !imageOver ) imageOver = '';
+        text = def(text, '-');
+        image = def(image, '');
+        helpTip = def(helpTip, '');
+        imageOver = def(imageOver, '');
+        localize = def(localize, true);
 
-        if ( text != '' ) DuAEF.DuScriptUI.uiStrings.push( text );
-        if ( helpTip != '' ) DuAEF.DuScriptUI.uiStrings.push( helpTip );
-        text = tr( text );
-        helpTip = tr( helpTip );
-
+        if (localize)
+        {
+            if ( text != '' ) DuAEF.DuScriptUI.uiStrings.push( text );
+            if ( helpTip != '' ) DuAEF.DuScriptUI.uiStrings.push( helpTip );
+            text = tr( text );
+            helpTip = tr( helpTip );
+        }
+        
         var size = text.length * 7;
         if ( selector.label.minimumSize.width < size ) selector.label.minimumSize.width = size;
 
         var index = selector.items.length;
         selector.items.push( [ text, image, helpTip, imageOver ] );
         //add to popup
-        var button = DuAEF.DuScriptUI.addButton( selector.popup.buttons, text, image, helpTip, imageOver );
+        var button = DuAEF.DuScriptUI.addButton( selector.popup.buttons, text, image, helpTip, imageOver, undefined, undefined, undefined, false );
         button.onClick = function()
         {
             selector.setCurrentIndex( index );
