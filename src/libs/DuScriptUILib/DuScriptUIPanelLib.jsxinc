@@ -309,7 +309,11 @@ DuAEF.DuScriptUI.createPopup = function( title, alignment )
         control.addEventListener( 'click', function(e) {
             var x = e.screenX - e.clientX;
             var y = e.screenY - e.clientY;
-            popup.location = [ x, y ];
+            //we need a layout and resize to get the window frame size
+            popup.layout.layout( true );
+            popup.layout.resize( );
+            var location = DuAEF.DuScriptUI.moveInsideScreen( [x, y], popup.frameSize );
+            popup.location = location;
             popup.show();
         }, true);
     }

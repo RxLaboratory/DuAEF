@@ -26,6 +26,7 @@ along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
 #include 'DuScriptUIIcons.jsxinc'
 #include 'DuScriptUIDefaults.jsxinc'
 #include 'DuScriptUILowLevelLib.jsxinc'
+#include 'DuScriptUIScreen.jsxinc'
 #include 'DuScriptUIStyleLib.jsxinc'
 #include 'DuScriptUIPanelLib.jsxinc'
 #include 'DuScriptUILayoutLib.jsxinc'
