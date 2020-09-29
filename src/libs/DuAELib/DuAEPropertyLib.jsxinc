@@ -371,19 +371,16 @@ DuAEF.DuAE.Property.getAnim = function ( prop, selected, timeRange ) {
 }
 
 // low-level undocumented method to get all expressions and cache them
-//if compCache is true, add to the comp cache instead of the project cache
-DuAEF.DuAE.Property.addToExpressionCache = function ( prop , compCache) {
-    compCache = def(compCache, false);
+DuAEF.DuAE.Property.addToExpressionCache = function ( prop ) {
     //it it's a prop, add to cache
     if ( prop.propertyType === PropertyType.PROPERTY ) {
         var exp = new PropertyExpression(prop);
-        if ( !exp.empty && compCache) DuAEF.DuAE.Comp.expressionCache.push(exp);
-        else if (!exp.empty) DuAEF.DuAE.Project.expressionCache.push(exp);
+        if ( !exp.empty ) DuAEF.DuAE.Expression.cache.push(exp);
     }
     //if it's a group, get props inside
     else if ( prop.numProperties > 0 ) {
         for ( var p = 1; p <= prop.numProperties; p++ ) {
-            DuAEF.DuAE.Property.addToExpressionCache( prop.property(p), compCache );
+            DuAEF.DuAE.Property.addToExpressionCache( prop.property(p) );
         }
     }
 }

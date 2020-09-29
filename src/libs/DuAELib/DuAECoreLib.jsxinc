@@ -220,6 +220,8 @@ function PropertyExpression(property)
 	}
 
 	this.property = property;
+	this.layer = DuAEF.DuAE.Property.getLayer(property);
+	this.comp = this.layer.containingComp;
 	this.empty = false;
 
 	if ( !DuAEF.DuAE.Property.isRiggable(property) ) {
@@ -836,7 +838,7 @@ DuAEF.DuAE.isLayeredFile = function(file)
 	return yes;
 }
 
-
+#include "DuAEExpressionLib.jsxinc"
 #include "DuAEAppLib.jsxinc"
 #include "DuAEProjectLib.jsxinc"
 #include "DuAEProjectXMPLib.jsxinc"

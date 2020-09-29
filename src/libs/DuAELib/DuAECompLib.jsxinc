@@ -5,69 +5,73 @@
  */
 DuAEF.DuAE.Comp = {};
 
-//caches
-//this must be set to true during work on the cache to prevent it from updating
-DuAEF.DuAE.Comp.suspendCacheUpdates = false;
+// ========== DEPRECATED =============
 
-// the expression cache is an array of PropertyExpression
-DuAEF.DuAE.Comp.expressionCache = [];
-DuAEF.DuAE.Comp.lastExpressionCacheUpdateTime = 0;
 
 /**
  * Updates the cache of the expressions used by Duik to speed up batch process of expressions in the whole project.<br />
  * It's automatically run when needed if it's not been updated in a long time (1 mn) or if it's empty
  * @param {CompItem} [comp=DuAEF.DuAE.Project.getActiveComp()] The comp with expressions to cache
  * @param {boolean} [selectedLayers=false] Set to true to cache only selected layers.
+ * @deprecated since v0.7.0; Use {@link DuAEF.DuAE.Expression.updateCache DuAEF.DuAE.Expression.updateCache(true, false, selectedLayers)}.
  */
-DuAEF.DuAE.Comp.updateExpressionCache = function ( comp, selectedLayers ) {
-    if ( DuAEF.DuAE.Comp.suspendCacheUpdates ) return;
+DuAEF.DuAE.Comp.updateExpressionCache = function (comp, selectedLayers) { DuAEF.DuAE.Expression.updateCache(true, false, selectedLayers) };
 
-    comp = def(comp, DuAEF.DuAE.Project.getActiveComp());
-    if (!comp) return;
-    selectedLayers = def (selectedLayers, false);
-
-    //clear cache
-    DuAEF.DuAE.Comp.expressionCache = [];
-
-    var layers = [];
-    if (selectedLayers) layers = comp.selectedLayers;
-    else layers = comp.layers;
-
-    var it = new Iterator(layers);
-    it.do(function(layer) {
-        DuAEF.DuAE.Property.addToExpressionCache( layer, true );
-    });
-
-    DuAEF.DuAE.Comp.lastExpressionCacheUpdateTime = new Date().getTime();
-}
+// ========== ========== =============
 
 /**
  * Replaces text in Expressions
  * @param {string} oldString - The string to replace
  * @param {string} newString - The new string
- * @param {CompItem} [comp=DuAEF.DuAE.Project.getActiveComp()] The comp with expressions to cache
+ * @param {CompItem} [comp=DuAEF.DuAE.Project.getActiveComp()] The comp with expressions to cache. WARNING: Since v0.7.0 this param is ignored.
  * @param {boolean} [caseSensitive=true] - Wether the search has to be case sensitive
  * @param {boolean} [selectedLayers=false] Set to true to cache only selected layers.
  */
 DuAEF.DuAE.Comp.replaceInExpressions = function ( oldString, newString, comp, caseSensitive, selectedLayers ) {
-    comp = def(comp, DuAEF.DuAE.Project.getActiveComp());
+    comp = DuAEF.DuAE.Project.getActiveComp();
     if (!comp) return;
     caseSensitive = def (caseSensitive, true);
     selectedLayers = def (selectedLayers, false);
 
-    //update expression cache before searching
-    DuAEF.DuAE.Comp.updateExpressionCache( comp, selectedLayers );
-
     var re = new RegExp( DuAEF.DuJS.RegExp.escapeRegExp(oldString), caseSensitive ? 'g' : 'gi');
 
-    //search and replace in the cache
-    for (var i = 0, num = DuAEF.DuAE.Comp.expressionCache.length; i < num; i++) {
-        DuAEF.DuAE.Comp.expressionCache[i].changed = re.test( DuAEF.DuAE.Comp.expressionCache[i].expression );
-        if (DuAEF.DuAE.Comp.expressionCache[i].changed) DuAEF.DuAE.Comp.expressionCache[i].expression = DuAEF.DuAE.Comp.expressionCache[i].expression.replace( re, newString );
-    }
+    DuAEF.DuAE.Expression.doInExpresssions(function(e) {
+        e.changed = re.test( e.expression );
+        if (e.changed) e.expression = e.expression.replace( re, newString );
+        return e;
+    }, true, false, selectedLayers);
+}
 
-    //update expressions from cache
-    DuAEF.DuAE.Project.updateExpressionsFromCache( DuAEF.DuAE.Comp.expressionCache )
+/**
+ * Replace all <code>thisComp</code> occurences by <code>comp("name")</code>.
+ * @param {bool} [selectedLayers=false] true to replace only in selected layers
+ */
+DuAEF.DuAE.Comp.removeThisCompInExpressions = function( selectedLayers )
+{
+    selectedLayers = def(selectedLayers, false);
+    
+    var re = new RegExp("(^|" + DuAEF.DuJS.RegExp.javascriptSymbols + ")thisComp(?!" + DuAEF.DuJS.RegExp.javascriptVarChars + ")",'gm')
+
+    DuAEF.DuAE.Expression.doInExpresssions(function(e) {
+        e.changed = re.test( e.expression );
+        if (e.changed) e.expression = e.expression.replace( re, '$1comp("' + e.comp.name + '")' );
+    }, true, false, selectedLayers);
+}
+
+/**
+ * Replace all <code>comp("name")</code> occurences by <code>thisComp</code>.
+ * @param {bool} [selectedComps=false] true to replace only in selected compositions
+ */
+DuAEF.DuAE.Comp.removeCompInExpressions = function( selectedLayers )
+{
+    selectedLayers = def(selectedLayers, false);
+    
+    DuAEF.DuAE.Expression.doInExpresssions(function(e) {
+        var name = e.comp.name;
+        var re = new RegExp("(^|" + DuAEF.DuJS.RegExp.javascriptSymbols + ")comp\\s*\\(\\s*[\"']" + DuAEF.DuJS.RegExp.escapeRegExp(name) + "[\"']\\s*\\)", 'gm');
+        e.changed = re.test( e.expression );
+        if (e.changed) e.expression = e.expression.replace( re, '$1thisComp' );
+    }, true, false, selectedLayers);
 }
 
 /**
