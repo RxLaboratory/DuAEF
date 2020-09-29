@@ -228,7 +228,7 @@ DuAEF.DuJS.String.fromSize = function (size)
 {
 	if (size < 1024) return size + "B";
 	if (size < 1048576) return DuAEF.DuJS.Fs.sizeFromBytes(size, "kB") + "kB";
-	if (size < 1073741824‬) return DuAEF.DuJS.Fs.sizeFromBytes(size, "MB") + "MB";
-	if (size < 1099511627776‬) return DuAEF.DuJS.Fs.sizeFromBytes(size, "GB") + "GB";
+	if (size < 1073741824) return DuAEF.DuJS.Fs.sizeFromBytes(size, "MB") + "MB";
+	if (size < 1099511627776) return DuAEF.DuJS.Fs.sizeFromBytes(size, "GB") + "GB";
 	else return DuAEF.DuJS.Fs.sizeFromBytes(size, "TB") + "TB";
 }
