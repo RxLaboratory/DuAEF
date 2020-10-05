@@ -497,9 +497,8 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
     )
 
     // == SANITY PANEL
-    panel.sanityGroup = DuAEF.DuScriptUI.addGroup(panel.contents, 'column');
-    panel.sanityGroup.alignment = ['fill', 'fill'];
-    panel.sanityGroup.visible = false;
+    panel.sanityGroup = DuAEF.DuScriptUI.createPopup("Sanity Report", 'column');
+    panel.sanityGroup.pin(true);
 
     // == Bottom Line
     var bottomGroup = DuAEF.DuScriptUI.addGroup(panel.contents, 'row');
@@ -539,13 +538,11 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
             if (!rootSettingsGroup.visible)
             {
                 panel.mainGroup.visible = false;
-                panel.sanityGroup.visible = false;
                 rootSettingsGroup.visible = true;
             }
             else
             {
                 panel.mainGroup.visible = true;
-                panel.sanityGroup.visible = false;
                 rootSettingsGroup.visible = false;
             }
         }
@@ -586,35 +583,12 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
         sanityButton.onClick = function()
         {
             DuAEF.DuSanity.test();
-            if (!panel.sanityGroup.visible)
-            {
-                panel.mainGroup.visible = false;
-                panel.sanityGroup.visible = true;
-                rootSettingsGroup.visible = false;
-            }
-            else
-            {
-                panel.mainGroup.visible = true;
-                panel.sanityGroup.visible = false;
-                rootSettingsGroup.visible = false;
-            }
         }
+        panel.sanityGroup.tieTo(sanityButton);
 
         // Create UI
-        DuAEF.DuSanity.createUI( panel.sanityGroup );
-        var sanityBackButton = DuAEF.DuScriptUI.addButton(
-            panel.sanityGroup,
-            "Back",
-            DuAEF.DuBinary.toFile(w14_back_m),
-            "Close sanity report",
-            DuAEF.DuBinary.toFile(w14_back_l)
-        )
-
-        sanityBackButton.onClick = function () {
-            panel.sanityGroup.visible = false;
-            panel.mainGroup.visible = true;
-        }
-        
+        DuAEF.DuSanity.createUI( panel.sanityGroup.contents );
+       
         function checkSanity()
         {
             var level = DuAEF.DuSanity.currentLevel;
