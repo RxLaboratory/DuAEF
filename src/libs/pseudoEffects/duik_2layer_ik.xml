@@ -1,9 +1,9 @@
-<Effect matchname="Pseudo/DUIK 2layer ik" name="$$$/AE/Preset/DUIK2layerik=IK">
+<Effect matchname="Pseudo/DUIK 2layer ik v2" name="$$$/AE/Preset/DUIK2layerikv2=IK">
 	<Checkbox name="$$$/AE/Preset/IK=IK" hold="true" default="true" />
 	<Checkbox name="$$$/AE/Preset/Reverse=Reverse" hold="true" default="false" />
 	<Group name="$$$/AE/Preset/FK=FK" >
-		<Checkbox name="$$$/AE/Preset/Followthrough&Overlap=Follow through & Overlap" hold="true" default="false" />
-		<Group name="$$$/AE/Preset/Followthrough&Overlap=Follow through & Overlap" >
+		<Checkbox name="$$$/AE/Preset/Followthrough-Overlap=Follow through - Overlap" hold="true" default="false" />
+		<Group name="$$$/AE/Preset/Followthrough-Overlap=Follow through - Overlap" >
 			<Angle name="$$$/AE/Preset/FK=FK" default="0" />
 			<Slider name="$$$/AE/Preset/Flexibility=Flexibility" default="100" slider_min="0" slider_max="200" valid_min="0" valid_max="1000" precision="0" DISPLAY_PERCENT="true" />
 			<Slider name="$$$/AE/Preset/Resistance=Resistance" default="10" slider_min="-100" slider_max="200" valid_min="-1000" valid_max="1000" precision="1" />
@@ -18,6 +18,8 @@
 	<Group name="$$$/AE/Preset/Stretch=Stretch" >
 		<Checkbox name="$$$/AE/Preset/Auto-Stretch=Auto-Stretch" hold="true" default="true" />
 		<Slider name="$$$/AE/Preset/Stretch=Stretch" default="0" slider_min="-100" slider_max="100" valid_min="-10000" valid_max="10000" precision="1" />
+		<Slider name="$$$/AE/Preset/UpperStretch=Upper Stretch" default="0" slider_min="-100" slider_max="100" valid_min="-10000" valid_max="10000" precision="1" />
+		<Slider name="$$$/AE/Preset/LowerStretch=Lower Stretch" default="0" slider_min="-100" slider_max="100" valid_min="-10000" valid_max="10000" precision="1" />
 		<Slider name="$$$/AE/Preset/Auto-Shrink=Auto-Shrink" default="0" slider_min="0" slider_max="100" valid_min="0" valid_max="200" precision="1" DISPLAY_PERCENT="true" />
 	</Group>
 	<Group name="$$$/AE/Preset/Advanced=Advanced" >

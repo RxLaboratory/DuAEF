@@ -142,7 +142,7 @@ DuAEF.Duik.postInit = function ()
         #include "../pseudoEffects/duik_1layer_ik.ffx.jsxinc"
         duik_1layer_ik = new PseudoEffect( duik_1layer_ik, 'Pseudo/DUIK 1layer ik', "IK" );
 		#include "../pseudoEffects/duik_2layer_ik.ffx.jsxinc"
-        duik_2layer_ik = new PseudoEffect( duik_2layer_ik, 'Pseudo/DUIK 2layer ik', "IK" );
+        duik_2layer_ik = new PseudoEffect( duik_2layer_ik );
 		#include "../pseudoEffects/duik_3layer_ik.ffx.jsxinc"
         duik_3layer_ik = new PseudoEffect( duik_3layer_ik, 'Pseudo/DUIK 3layer ik', "IK" );
 		#include "../pseudoEffects/duik_bezier_ik.ffx.jsxinc"
@@ -388,35 +388,6 @@ DuAEF.Duik.postInit = function ()
     DuAEF.Duik.PseudoEffects.ONELAYER_IK.rotationLimitCheckbox = 6;
     DuAEF.Duik.PseudoEffects.ONELAYER_IK.layerPopup = 9;
     DuAEF.Duik.PseudoEffects.ONELAYER_IK.drawGuidesCheckbox = 12;
-    //2-layer IK
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.ikCheckbox = 1;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.reverseCheckbox = 2;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.followThroughCheckbox = 4;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.fkAngle = 6;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.flexibilitySlider = 7;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.resistanceSlider = 8;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.upperAngle = 11;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.lowerAngle = 12;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.goalAngle = 13;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.parentRotationCheckbox = 15;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.autoStretchCheckbox = 18;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.stretchSlider = 19;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.autoShrinkSlider = 20;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.fullRotationLimitAngle = 23;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.upperLayer = 27;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.lowerLayer = 28;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.goalLayer = 29;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.upperStretchSlider = 32;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.upperScaleSlider = 33;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.lowerStretchSlider = 34;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.lowerScaleSlider = 35;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.goalPositionPoint = 36;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.goalWorldPositionPoint = 37;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.upperLengthSlider = 40;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.lowerLengthSlider = 41;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.ikLengthSlider = 42;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.straightCheckbox = 44;
-    DuAEF.Duik.PseudoEffects.TWOLAYER_IK.drawGuidesCheckbox = 47;
     //3-layer IK
     DuAEF.Duik.PseudoEffects.THREELAYER_IK.ikCheckbox = 1;
     DuAEF.Duik.PseudoEffects.THREELAYER_IK.reverseCheckbox = 2;
