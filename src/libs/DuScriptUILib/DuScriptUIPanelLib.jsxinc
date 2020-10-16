@@ -312,7 +312,11 @@ DuAEF.DuScriptUI.createPopup = function( title, alignment )
             //we need a layout and resize to get the window frame size
             popup.layout.layout( true );
             popup.layout.resize( );
-            var location = DuAEF.DuScriptUI.moveInsideScreen( [x, y], popup.frameSize );
+            var location = [x,y];
+            if ( DuAEF.DuAE.App.isVersionHigherThan("CS6") )
+            {
+                location = DuAEF.DuScriptUI.moveInsideScreen( [x, y], popup.frameSize );
+            } 
             popup.location = location;
             popup.show();
         }, true);
