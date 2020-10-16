@@ -63,7 +63,44 @@ DuAEF.DuAE.App.getAEVersionName = function ( versionAsFloat ) {
     if ( versionAsFloat >= 14 && versionAsFloat < 15 ) return "CC2017";
     if ( versionAsFloat >= 15 && versionAsFloat < 16 ) return "CC2018";
     if ( versionAsFloat >= 16 && versionAsFloat < 17 ) return "CC2019";
-    else return "Unknown";
+    if ( versionAsFloat >= 17 && versionAsFloat < 18 ) return "2020";
+    return "Unknown";
+}
+
+/**
+ * Gets the version of After Effects from its public name (like 13.8 for CC2015.3)
+ * @param {float}	[versionAsFloat]	- The version name.
+ * @return {DuVersion}	The version.
+ */
+DuAEF.DuAE.App.getAEVersion = function ( versionName ) {
+    if (versionName == "CS3") return new DuVersion( "8.0" );
+    if (versionName == "CS4") return new DuVersion( "9.0" );
+    if (versionName == "CS5") return new DuVersion( "10.0" );
+    if (versionName == "CS5.5") return new DuVersion( "10.5" );
+    if (versionName == "CS6") return new DuVersion( "11.0" );
+    if (versionName == "CC") return new DuVersion( "12.0" );
+    if (versionName == "CC2014") return new DuVersion( "13.0" );
+    if (versionName == "CC2014.1") return new DuVersion( "13.1" );
+    if (versionName == "CC2014.2") return new DuVersion( "13.2" );
+    if (versionName == "CC2015") return new DuVersion( "13.5" );
+    if (versionName == "CC2015.1") return new DuVersion( "13.6" );
+    if (versionName == "CC2015.2") return new DuVersion( "13.7" );
+    if (versionName == "CC2015.3") return new DuVersion( "13.8" );
+    if (versionName == "CC2017") return new DuVersion( "14.0" );
+    if (versionName == "CC2018") return new DuVersion( "15.0" );
+    if (versionName == "CC2019") return new DuVersion( "16.0" );
+    if (versionName == "CC2020") return new DuVersion( "17.0" );
+    return new DuVersion(versionName);
+}
+
+/**
+ * Checks if the current version is higher than a given one
+ * @param {string} versionName The minimum version
+ * @return {boolean} True if the current version is higher (strict, will be false if they're equal)
+ */
+DuAEF.DuAE.App.isVersionHigherThan = function (versionName)
+{
+    return DuAEF.DuAE.App.version.isHigherThan( DuAEF.DuAE.App.getAEVersion( versionName ) );
 }
 
 //low-level undocumented flag.
