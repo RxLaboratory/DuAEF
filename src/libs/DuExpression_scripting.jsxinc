@@ -510,7 +510,8 @@ DuAEF.DuExpression.Library["bezierInterpolation"].requirements = [];
 
 /**
  * Interpolates a value with a gaussian function.<br />
- * This method can replace <code>linear()</code> and <code>ease()</code> with a gaussian interpolation.
+ * This method can replace <code>linear()</code> and <code>ease()</code> with a gaussian interpolation.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} t The value to interpolate
  * @param {number} [tMin=0] The minimum value of the initial range
@@ -523,11 +524,6 @@ DuAEF.DuExpression.Library["bezierInterpolation"].requirements = [];
 DuAEF.DuExpression.Library["gaussianInterpolation"] = {};
 DuAEF.DuExpression.Library["gaussianInterpolation"].expression = ['function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )',
 	'{',
-	'if (typeof value2 === "undefined") value2 = 1;',
-	'if (typeof value1 === "undefined") value1 = 0;',
-	'if (typeof tMin === "undefined") tMin = 0;',
-	'if (typeof tMax === "undefined") tMax = 1;',
-	'if (typeof rate === "undefined") rate = 0;',
 	'if (t != tMin)',
 	'{',
 	'var newValue1 = gaussianInterpolation( tMin, tMin, tMax, value1, value2, rate );',
@@ -553,14 +549,14 @@ DuAEF.DuExpression.Library["gaussianInterpolation"].expression = ['function gaus
 DuAEF.DuExpression.Library["gaussianInterpolation"].requirements = [];
 
 /**
- * Gets the key immediately after the given time
+ * Gets the key immediately after the given time<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} [t=time] Time at which to get the key
  * @return {Key|null} The key, or null if there's no key before.
  */
 DuAEF.DuExpression.Library["getNextKey"] = {};
 DuAEF.DuExpression.Library["getNextKey"].expression = ['function getNextKey(t) {',
-	'if (typeof t === "undefined") t = time;',
 	'if (numKeys == 0) return null;',
 	'var nKey = nearestKey(t);',
 	'if (nKey.time >= t) return nKey;',
@@ -571,14 +567,14 @@ DuAEF.DuExpression.Library["getNextKey"].expression = ['function getNextKey(t) {
 DuAEF.DuExpression.Library["getNextKey"].requirements = [];
 
 /**
- * Gets the key immediately before the given time
+ * Gets the key immediately before the given time<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} [t=time] Time at which to get the key
  * @return {Key|null} The key, or null if there's no key before.
  */
 DuAEF.DuExpression.Library["getPrevKey"] = {};
 DuAEF.DuExpression.Library["getPrevKey"].expression = ['function getPrevKey(t) {',
-	'if (typeof t === "undefined") t = time;',
 	'if (numKeys == 0) return null;',
 	'var nKey = nearestKey(t);',
 	'if (nKey.time <= t) return nKey;',
@@ -603,7 +599,8 @@ DuAEF.DuExpression.Library["isAfterLastKey"].expression = ['function isAfterLast
 DuAEF.DuExpression.Library["isAfterLastKey"].requirements = [];
 
 /**
-    * The gaussian function
+    * The gaussian function<br />
+    * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
     * @function
     * @param {Number} value The variable
     * @param {Number} [min=0] The minimum return value
@@ -615,10 +612,6 @@ DuAEF.DuExpression.Library["isAfterLastKey"].requirements = [];
 DuAEF.DuExpression.Library["gaussian"] = {};
 DuAEF.DuExpression.Library["gaussian"].expression = ['function gaussian( value, min, max, center, fwhm)',
 	'{',
-	'if (typeof max === "undefined") max = 1;',
-	'if (typeof min === "undefined") min = 0;',
-	'if (typeof center === "undefined") center = 0;',
-	'if (typeof fwhm === "undefined") fwhm = 1;',
 	'if (fwhm === 0 && value == center) return max;',
 	'else if (fwhm === 0) return 0;',
 	'var exp = -4 * Math.LN2;',
@@ -631,7 +624,8 @@ DuAEF.DuExpression.Library["gaussian"].expression = ['function gaussian( value, 
 DuAEF.DuExpression.Library["gaussian"].requirements = [];
 
 /**
-    * The inverse gaussian function
+    * The inverse gaussian function<br />
+    * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
     * @function
     * @param {Number} v The variable
     * @param {Number} [min=0] The minimum return value of the corresponding gaussian function
@@ -643,10 +637,6 @@ DuAEF.DuExpression.Library["gaussian"].requirements = [];
 DuAEF.DuExpression.Library["inverseGaussian"] = {};
 DuAEF.DuExpression.Library["inverseGaussian"].expression = ['function inverseGaussian ( v, min, max, center, fwhm)',
 	'{',
-	'if (typeof max === "undefined") max = 1;',
-	'if (typeof min === "undefined") min = 0;',
-	'if (typeof center === "undefined") center = 0;',
-	'if (typeof fwhm === "undefined") fwhm = 1;',
 	'if (v == 1) return [center, center];',
 	'if (v === 0) return [center + fwhm/2, center - fwhm/2];',
 	'if (fwhm === 0) return [center, center];',
@@ -660,8 +650,8 @@ DuAEF.DuExpression.Library["inverseGaussian"].expression = ['function inverseGau
 DuAEF.DuExpression.Library["inverseGaussian"].requirements = [];
 
 /**
-    * The inverse logistic function (inverse sigmoid)
-    * @function
+    * The inverse logistic function (inverse sigmoid)<br />
+    * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.    * @function
     * @param {Number} v The variable
     * @param {Number} [midValue=0] The midpoint value, at which the function returns max/2 in the original logistic function
     * @param {Number} [min=0] The minimum return value of the original logistic function
@@ -672,10 +662,6 @@ DuAEF.DuExpression.Library["inverseGaussian"].requirements = [];
 DuAEF.DuExpression.Library["inverseLogisitic"] = {};
 DuAEF.DuExpression.Library["inverseLogisitic"].expression = ['function inverseLogistic ( v, midValue, min, max, rate)',
 	'{',
-	'if (typeof midValue === "undefined") midValue = 0;',
-	'if (typeof max === "undefined") max = 1;',
-	'if (typeof min === "undefined") min = 0;',
-	'if (typeof rate === "undefined") rate = 1;',
 	'if (v == min) return 0;',
 	'return midValue - Math.log( (max-min)/(v-min) - 1) / rate;',
 	'}'
@@ -683,7 +669,8 @@ DuAEF.DuExpression.Library["inverseLogisitic"].expression = ['function inverseLo
 DuAEF.DuExpression.Library["inverseLogisitic"].requirements = [];
 
 /**
-    * The logistic function (sigmoid)
+    * The logistic function (sigmoid)<br />
+    * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
     * @function
     * @param {Number} value The value
     * @param {Number} [midValue=0] The midpoint value, at which the function returns max/2
@@ -695,10 +682,6 @@ DuAEF.DuExpression.Library["inverseLogisitic"].requirements = [];
 DuAEF.DuExpression.Library["logisitic"] = {};
 DuAEF.DuExpression.Library["logisitic"].expression = ['function logistic( value, midValue, min, max, rate)',
 	'{',
-	'if (typeof midValue === "undefined") midValue = 0;',
-	'if (typeof max === "undefined") max = 1;',
-	'if (typeof min === "undefined") min = 0;',
-	'if (typeof rate === "undefined") rate = 1;',
 	'var exp = -rate*(value - midValue);',
 	'var result = 1 / (1 + Math.pow(Math.E, exp));',
 	'return result * (max-min) + min;',
@@ -823,14 +806,14 @@ DuAEF.DuExpression.Library["isLayer"].expression = ['function isLayer( prop ) {'
 DuAEF.DuExpression.Library["isLayer"].requirements = [];
 
 /**
- * Checks if a property is a transform.position property.
+ * Checks if a property is a transform.position property.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {Property} [prop=thisProperty] The property
  * @return {boolean} true if the property is the transform.position property.
  */
 DuAEF.DuExpression.Library["isPosition"] = {};
 DuAEF.DuExpression.Library["isPosition"].expression = ['function isPosition(prop) {',
-	'if (typeof prop === "undefined") prop = thisProperty;',
 	'if (!(prop.value instanceof Array)) return false;',
 	'if (prop.value.length > 3) return false;',
 	'if ( prop === transform.position ) return true;',
@@ -847,21 +830,17 @@ DuAEF.DuExpression.Library["isPosition"].requirements = [];
  */
 DuAEF.DuExpression.Library["isSpatial"] = {};
 DuAEF.DuExpression.Library["isSpatial"].expression = ['function isSpatial(prop) {',
-	'if (typeof prop === "undefined") prop = thisProperty;',
 	'if (!(prop.value instanceof Array)) return false;',
 	'if (prop.value.length != 2 && prop.value.length != 3) return false;',
-	'try {',
-	'sp = prop.speed;',
+	'if (typeof prop.speed === "undefined") return false;',
 	'return true;',
-	'} catch (e) {',
-	'return false;',
-	'}',
 	'}'
 	].join('\n');
 DuAEF.DuExpression.Library["isSpatial"].requirements = [];
 
 /**
- * Checks if the current property is animated at a given time.
+ * Checks if the current property is animated at a given time.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} [t=time] The time
  * @param {number} [threshold=0.1] The speed under which the property is considered still.
@@ -869,8 +848,6 @@ DuAEF.DuExpression.Library["isSpatial"].requirements = [];
  */
 DuAEF.DuExpression.Library["isStill"] = {};
 DuAEF.DuExpression.Library["isStill"].expression = ['function isStill(t, threshold) {',
-	'if (typeof t === "undefined") t = time;',
-	'if (typeof threshold === "undefined") threshold = 0.1;',
 	'var d = valueAtTime(t) - valueAtTime(t + framesToTime(1));',
 	'if (d instanceof Array) {',
 	'for (var i = 0; i < d.length; i++) {',
@@ -914,7 +891,8 @@ DuAEF.DuExpression.Library["addNoise"].requirements = [];
 
 /**
  * Removes the ancestors rotation from the rotation of a layer.
- * This is very useful to make a layer keep its orientation without being influenced by its parents.
+ * This is very useful to make a layer keep its orientation without being influenced by its parents.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @example
  * //in a rotation property, just include the function and use:
@@ -931,7 +909,6 @@ DuAEF.DuExpression.Library["addNoise"].requirements = [];
  */
 DuAEF.DuExpression.Library["dishineritRotation"] = {};
 DuAEF.DuExpression.Library["dishineritRotation"].expression = ['function dishineritRotation( l ) {',
-	'if (typeof l === "undefined") l = thisLayer;',
 	'var r = l.rotation.value;',
 	'while ( l.hasParent ) {',
 	'l = l.parent;',
@@ -945,7 +922,8 @@ DuAEF.DuExpression.Library["dishineritRotation"].requirements = ["sign"];
 
 /**
  * Removes the ancestors scale from the scale of a layer.
- * This is very useful to make a layer keep its scale without being influenced by its parents.
+ * This is very useful to make a layer keep its scale without being influenced by its parents.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @example
  * //in a rotation property, just include the function and use:
@@ -961,7 +939,6 @@ DuAEF.DuExpression.Library["dishineritRotation"].requirements = ["sign"];
  */
 DuAEF.DuExpression.Library["dishineritScale"] = {};
 DuAEF.DuExpression.Library["dishineritScale"].expression = ['function dishineritScale( l ) {',
-	'if (typeof l === "undefined") l = thisLayer;',
 	'var s = l.scale.value;',
 	'var threeD = s.length == 3;',
 	'while ( l.hasParent ) {',
@@ -1017,7 +994,8 @@ DuAEF.DuExpression.Library["fromLayerToGroup"].expression = ['function fromLayer
 DuAEF.DuExpression.Library["fromLayerToGroup"].requirements = ["Matrix","getGroupTransformMatrix"];
 
 /**
- * Gets the "real" scale of a layer, resulting to its scale property, the scale of its parents, and it's location in Z-space if it's 3D.
+ * Gets the "real" scale of a layer, resulting to its scale property, the scale of its parents, and it's location in Z-space if it's 3D.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {Layer} [l=thisLayer] The layer 
  * @param {number} [t=time] The time when to get the scale
@@ -1025,8 +1003,6 @@ DuAEF.DuExpression.Library["fromLayerToGroup"].requirements = ["Matrix","getGrou
  */
 DuAEF.DuExpression.Library["getCompScale"] = {};
 DuAEF.DuExpression.Library["getCompScale"].expression = ['function getCompScale( l, t ) {',
-	'if (typeof l === "undefined") l = thisLayer;',
-	'if (typeof t === "undefined") t = time;',
 	'var originalWidth = length( l.anchorPoint, [ l.width, 0 ] );',
 	'var anchorInComp = l.toComp( l.anchorPoint, t );',
 	'var widthInComp = l.toComp( [ l.width, 0 ], t );',
@@ -1037,7 +1013,8 @@ DuAEF.DuExpression.Library["getCompScale"].expression = ['function getCompScale(
 DuAEF.DuExpression.Library["getCompScale"].requirements = [];
 
 /**
- * Gets the transformation Matrix for the current group in a shape layer, including the transformation from the ancestor groups
+ * Gets the transformation Matrix for the current group in a shape layer, including the transformation from the ancestor groups<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {Property} [prop=thisProperty] The property from which to get the matrix
  * @return {Matrix} The 2D Transform Matrix.
@@ -1046,7 +1023,6 @@ DuAEF.DuExpression.Library["getCompScale"].requirements = [];
  */
 DuAEF.DuExpression.Library["getGroupTransformMatrix"] = {};
 DuAEF.DuExpression.Library["getGroupTransformMatrix"].expression = ['function getGroupTransformMatrix( prop ) {',
-	'if (typeof group === "undefined") prop = thisProperty;',
 	'var matrix = new Matrix();',
 	'var shapeGroups = [];',
 	'var parentProp = prop.propertyGroup(1);',
@@ -1072,7 +1048,8 @@ DuAEF.DuExpression.Library["getGroupTransformMatrix"].expression = ['function ge
 DuAEF.DuExpression.Library["getGroupTransformMatrix"].requirements = ["isLayer","Matrix"];
 
 /**
- * Gets the comp position (2D Projection in the comp) of a layer.
+ * Gets the comp position (2D Projection in the comp) of a layer.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} [t=time] Time from when to get the position
  * @param {Layer} [l=thisLayer] The layer
@@ -1080,15 +1057,14 @@ DuAEF.DuExpression.Library["getGroupTransformMatrix"].requirements = ["isLayer",
  */
 DuAEF.DuExpression.Library["getLayerCompPos"] = {};
 DuAEF.DuExpression.Library["getLayerCompPos"].expression = ['function getLayerCompPos( t, l ) {',
-	'if (typeof l === "undefined") l = thisLayer;',
-	'if (typeof t === "undefined") t = time;',
 	'return l.toComp( l.anchorPoint, t );',
 	'}'
 	].join('\n');
 DuAEF.DuExpression.Library["getLayerCompPos"].requirements = [];
 
 /**
- * Gets the world position of a layer.
+ * Gets the world position of a layer.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} [t=time] Time from when to get the position
  * @param {Layer} [l=thisLayer] The layer
@@ -1096,8 +1072,6 @@ DuAEF.DuExpression.Library["getLayerCompPos"].requirements = [];
  */
 DuAEF.DuExpression.Library["getLayerWorldPos"] = {};
 DuAEF.DuExpression.Library["getLayerWorldPos"].expression = ['function getLayerWorldPos(t, l) {',
-	'if (typeof l === "undefined") l = thisLayer;',
-	'if (typeof t === "undefined") t = time;',
 	'return l.toWorld(l.anchorPoint, t);',
 	'}'
 	].join('\n');
@@ -1119,7 +1093,8 @@ DuAEF.DuExpression.Library["getLayerWorldSpeed"].expression = ['function getLaye
 DuAEF.DuExpression.Library["getLayerWorldSpeed"].requirements = ["getLayerWorldVelocity"];
 
 /**
- * Gets the world instant velocity of a layer.
+ * Gets the world instant velocity of a layer.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} [t=time] The time when to get the velocity
  * @param {Layer} [l=thisLayer] The layer
@@ -1128,7 +1103,6 @@ DuAEF.DuExpression.Library["getLayerWorldSpeed"].requirements = ["getLayerWorldV
  */
 DuAEF.DuExpression.Library["getLayerWorldVelocity"] = {};
 DuAEF.DuExpression.Library["getLayerWorldVelocity"].expression = ['function getLayerWorldVelocity(t, l) {',
-	'if (typeof t === "undefined") t = time;',
 	'return (getLayerWorldPos(t, l) - getLayerWorldPos(t - 0.01, l)) * 100;',
 	'}'
 	].join('\n');
@@ -1157,7 +1131,6 @@ DuAEF.DuExpression.Library["getOrientation"].expression = ['function getOrientat
 	'return r;',
 	'}',
 	'function getScaleMirror( l ) {',
-	'if (typeof l === "undefined") l = thisLayer;',
 	'var sign = 1;',
 	'while (l.hasParent) {',
 	'l = l.parent;',
@@ -1167,7 +1140,6 @@ DuAEF.DuExpression.Library["getOrientation"].expression = ['function getOrientat
 	'return sign;',
 	'}',
 	'function getScaleUTurn( l ) {',
-	'if (typeof l === "undefined") l = thisLayer;',
 	'var u = 1;',
 	'while (l.hasParent) {',
 	'l = l.parent;',
@@ -1181,7 +1153,8 @@ DuAEF.DuExpression.Library["getOrientation"].expression = ['function getOrientat
 DuAEF.DuExpression.Library["getOrientation"].requirements = [];
 
 /**
- * Gets the world orientation of a (2D) layer at a specific time.
+ * Gets the world orientation of a (2D) layer at a specific time.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {Layer} l The layer to get the orientation from
  * @param {float} [t=time] The time at which to get the orientation
@@ -1189,7 +1162,6 @@ DuAEF.DuExpression.Library["getOrientation"].requirements = [];
  */
 DuAEF.DuExpression.Library["getOrientationAtTime"] = {};
 DuAEF.DuExpression.Library["getOrientationAtTime"].expression = ['function getOrientationAtTime( l, t ) {',
-	'if (typeof t === "undefined" ) t = time;',
 	'var r = 0;',
 	'r += l.rotation.valueAtTime( t );',
 	'while ( l.hasParent ) {',
@@ -1217,7 +1189,8 @@ DuAEF.DuExpression.Library["getPropWorldSpeed"].expression = ['function getPropW
 DuAEF.DuExpression.Library["getPropWorldSpeed"].requirements = ["getPropWorldVelocity"];
 
 /**
- * Gets the world coordinates of a property.
+ * Gets the world coordinates of a property.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} [t=time] Time from when to get the position
  * @param {Layer} [prop=thisProperty] The property
@@ -1227,8 +1200,6 @@ DuAEF.DuExpression.Library["getPropWorldSpeed"].requirements = ["getPropWorldVel
  */
 DuAEF.DuExpression.Library["getPropWorldValue"] = {};
 DuAEF.DuExpression.Library["getPropWorldValue"].expression = ['function getPropWorldValue(t, prop) {',
-	'if (typeof prop === "undefined") prop = thisProperty;',
-	'if (typeof t === "undefined") t = time;',
 	'if (isPosition(prop)) return getLayerWorldPos(t);',
 	'return thisLayer.toWorld(prop.valueAtTime(t), t);',
 	'}'
@@ -1236,7 +1207,8 @@ DuAEF.DuExpression.Library["getPropWorldValue"].expression = ['function getPropW
 DuAEF.DuExpression.Library["getPropWorldValue"].requirements = ["getLayerWorldPos","isPosition"];
 
 /**
- * Gets the world velocity of a property.
+ * Gets the world velocity of a property.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {number} [t=time] Time from when to get the position
  * @param {Layer} [prop=thisProperty] The property
@@ -1245,7 +1217,6 @@ DuAEF.DuExpression.Library["getPropWorldValue"].requirements = ["getLayerWorldPo
  */
 DuAEF.DuExpression.Library["getPropWorldVelocity"] = {};
 DuAEF.DuExpression.Library["getPropWorldVelocity"].expression = ['function getPropWorldVelocity(t, prop) {',
-	'if (typeof t === "undefined") t = time;',
 	'return (getPropWorldValue(t + 0.005, prop) - getPropWorldValue(t - 0.005, prop)) * 100;',
 	'}'
 	].join('\n');
@@ -1467,7 +1438,8 @@ DuAEF.DuExpression.Library["Matrix"].expression = ['function Matrix() {',
 DuAEF.DuExpression.Library["Matrix"].requirements = [];
 
 /**
- * Translates a point with a layer, as if it was parented to it.
+ * Translates a point with a layer, as if it was parented to it.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @param {Layer} l The layer to get the translation from.
  * @param {float[]} [point=[0,0]] The [X,Y] point to translate (using world coordinates).
@@ -1477,8 +1449,6 @@ DuAEF.DuExpression.Library["Matrix"].requirements = [];
  */
 DuAEF.DuExpression.Library["translatePointWithLayer"] = {};
 DuAEF.DuExpression.Library["translatePointWithLayer"].expression = ['function translatePointWithLayer( l, point, startT, endT ) {',
-	'if (typeof startT === "undefined") startT = 0;',
-	'if (typeof endT === "undefined") endT = time;',
 	'try {',
 	'var pos = l.fromWorld( point, startT );',
 	'} catch ( e ) {',
