@@ -46,7 +46,7 @@ along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
  * Displays an invitation to enable file and network access.<br />
  * Use this method before loading any scripts which needs this authorization. 
  * @memberof DuAEF.DuScriptUI
- * @param {Panel|Window} ui	- A container to display the UI.constructor
+ * @param {Panel|Window} ui	- A container to display the UI.
  * @param {function} callback - The function to execute when the user has granted access to file and network.<br />
  * This function should be the one which loads the script.
  * @param {string} [scriptName=DuAEF.scriptName] - The name of the script, used in the UI.
