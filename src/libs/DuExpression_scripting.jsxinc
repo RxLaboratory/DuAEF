@@ -814,11 +814,7 @@ DuAEF.DuExpression.Library["isLayer"].requirements = [];
  */
 DuAEF.DuExpression.Library["isPosition"] = {};
 DuAEF.DuExpression.Library["isPosition"].expression = ['function isPosition(prop) {',
-	'if (!(prop.value instanceof Array)) return false;',
-	'if (prop.value.length > 3) return false;',
-	'if ( prop === transform.position ) return true;',
-	'if ( prop === position ) return true;',
-	'return false;',
+	'return  prop === position;',
 	'}'
 	].join('\n');
 DuAEF.DuExpression.Library["isPosition"].requirements = [];
@@ -1200,7 +1196,7 @@ DuAEF.DuExpression.Library["getPropWorldSpeed"].requirements = ["getPropWorldVel
  */
 DuAEF.DuExpression.Library["getPropWorldValue"] = {};
 DuAEF.DuExpression.Library["getPropWorldValue"].expression = ['function getPropWorldValue(t, prop) {',
-	'if (isPosition(prop)) return getLayerWorldPos(t);',
+	'if (isPosition(prop)) return getLayerWorldPos(t, thisLayer);',
 	'return thisLayer.toWorld(prop.valueAtTime(t), t);',
 	'}'
 	].join('\n');
