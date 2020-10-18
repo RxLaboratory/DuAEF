@@ -145,7 +145,7 @@ DuAEF.Duik.Animation.kleaner = function (prop,useExpression,easeStart,easeEnd,ef
 			'',
 			'//adjust parameters',
 			'var isThisSpatial = isSpatial(thisProperty);',
-			'var isThisPosition = thisProperty === transform.position;',
+			'var isThisPosition = thisProperty === position;',
 			'var simulate = false;',
 			'if (isThisSpatial) {',
 			'	doInterpolation = doInterpolation && spatialDoInterpolation;',
