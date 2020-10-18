@@ -60,7 +60,7 @@ DuAEF.DuScriptUI.askFilesAndNetworkAccess = function( ui, callback, scriptName, 
 
     if ( !DuAEF.DuAE.App.hasFilesAndNetworkAccess )
     {
-        var ui_accessFileAndNetworkGroup = DuAEF.DuScriptUI.addGroup( ui.contents, 'column' );
+        var ui_accessFileAndNetworkGroup = DuAEF.DuScriptUI.addGroup( ui, 'column' );
 
         var accessExplanation = scriptName + " needs to be allowed to write files or access the network to continue.\n\n" +
             "Please, check the box called 'Allow Scripts to write files...' in the preferences of After Effects.";
@@ -105,7 +105,7 @@ DuAEF.DuScriptUI.askFilesAndNetworkAccess = function( ui, callback, scriptName, 
         return;
     }
 
-    callback( ui );
+    callback( );
 }
 
 //low-level list of functions to be run when the user interacts with the UI
