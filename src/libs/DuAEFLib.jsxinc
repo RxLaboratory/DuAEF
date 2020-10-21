@@ -25,6 +25,19 @@
  * The Duduf After Effects ExtendScript Framework.<br />
  * by {@link https://rainboxlab.org Rainbox Lab}.
  * @example
+ * // MINIMAL EXAMPLE
+ * //encapsulate the script in a function to avoid global variables
+ * (function (thisObj) {
+ *
+ *     //================
+ *     #include DuAEF.jsxinc
+ *     DuAEF.init("Your Script Name", "1.0.2");
+ *
+ *     //YOUR CODE HERE
+ *
+ *     DuAEF.enterRunTime();
+ * }
+ * @example
  *   //encapsulate the script in a function to avoid global variables
  *   (function (thisObj) {
  *
