@@ -763,9 +763,10 @@ DuAEF.DuAE.Property.getExpressionLink = function ( prop, useThisComp, fromLayer 
  * Sets a value on a property, adjusting the dimensions if needed
  * @param {Property|PropertyInfo} prop - The property
  * @param {any} value - The value to set
+ * @param {float} defaultTime - The time at which to set the value if the property has keyframes
  * @return {boolean} True if the value has correctly been set, false otherwise.
  */
-DuAEF.DuAE.Property.setValue = function ( prop, value ) {
+DuAEF.DuAE.Property.setValue = function ( prop, value, defaultTime ) {
     var dimensions = 0;
     var editable = false;
     if ( prop instanceof PropertyInfo ) {
@@ -781,6 +782,9 @@ DuAEF.DuAE.Property.setValue = function ( prop, value ) {
         if ( prop.dimensionsSeparated ) return false;
 
     if ( !editable ) return false;
+
+    if (prop.numKeys > 0 && typeof defaultTime !== 'undefined') return DuAEF.DuAE.Property.setValueAtTime(prop, value, defaultTime);
+    else if (prop.numKeys > 0) return false;
 
     //check dimensions of the property
     if ( dimensions == 0 || dimensions == 1 ) {
@@ -815,6 +819,7 @@ DuAEF.DuAE.Property.setValue = function ( prop, value ) {
  * @param {Property|PropertyInfo} prop - The property
  * @param {any} value - The value to set
  * @param {float} [time] - The time of the new keyframe
+ * @return {boolean} True if the value has correctly been set, false otherwise.
  */
 DuAEF.DuAE.Property.setValueAtTime = function ( prop, value, time ) {
     var dimensions = 0;
@@ -830,19 +835,21 @@ DuAEF.DuAE.Property.setValueAtTime = function ( prop, value, time ) {
 
     if ( typeof time === 'undefined' ) time = propInfo.comp.time;
 
-    if ( !prop.canVaryOverTime ) return;
+    if ( !prop.canVaryOverTime ) return false;
     if ( prop.isSeparationLeader )
-        if ( prop.dimensionsSeparated ) return;
+        if ( prop.dimensionsSeparated ) return false;
 
-    if ( !editable ) return;
+    if ( !editable ) return false;
 
     //check dimensions of the property
     if ( dimensions == 0 || dimensions == 1 ) {
         if ( value instanceof Array ) value = value[ 0 ];
         try {
             prop.setValueAtTime( time, value );
+            return true;
         } catch ( e ) {
             if ( DuAEF.debug ) alert( e.description );
+            return false;
         }
     } else {
         if ( !( value instanceof Array ) ) value = [ value ];
@@ -854,8 +861,10 @@ DuAEF.DuAE.Property.setValueAtTime = function ( prop, value, time ) {
         }
         try {
             prop.setValueAtTime( time, value );
+            return true;
         } catch ( e ) {
             if ( DuAEF.debug ) alert( e.description );
+            return false;
         }
     }
 }
