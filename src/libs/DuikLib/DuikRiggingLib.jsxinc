@@ -420,11 +420,11 @@ DuAEF.Duik.Rigging.applyLocatorValues = function ( locator, disable )
 {
     disable = def(disable, true);
     var l = locator.locked;
-    locator.transform.anchorPoint.setValue( locator.transform.anchorPoint.valueAtTime(0, false));
-    locator.transform.position.setValue( locator.transform.position.valueAtTime(0, false));
-    locator.transform.scale.setValue( locator.transform.scale.valueAtTime(0, false));
-    locator.transform.rotation.setValue( locator.transform.rotation.valueAtTime(0, false));
-    locator.transform.opacity.setValue( locator.transform.opacity.valueAtTime(0, false));
+    DuAEF.DuAE.Property.setValue(locator.transform.anchorPoint, locator.transform.anchorPoint.valueAtTime(0, false), 0);
+    DuAEF.DuAE.Property.setValue(locator.transform.position, locator.transform.position.valueAtTime(0, false), 0);
+    DuAEF.DuAE.Property.setValue(locator.transform.scale, locator.transform.scale.valueAtTime(0, false), 0);
+    DuAEF.DuAE.Property.setValue(locator.transform.rotation, locator.transform.rotation.valueAtTime(0, false), 0);
+    DuAEF.DuAE.Property.setValue(locator.transform.opacity, locator.transform.opacity.valueAtTime(0, false), 0);
     if (disable) DuAEF.Duik.Rigging.disableLocator( locator );
     locator.locked = l;
 }
