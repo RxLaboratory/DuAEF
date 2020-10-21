@@ -46,7 +46,7 @@ along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
  * Displays an invitation to enable file and network access.<br />
  * Use this method before loading any scripts which needs this authorization. 
  * @memberof DuAEF.DuScriptUI
- * @param {Panel|Window} ui	- A container to display the UI.constructor
+ * @param {Panel|Window} ui	- A container to display the UI.
  * @param {function} callback - The function to execute when the user has granted access to file and network.<br />
  * This function should be the one which loads the script.
  * @param {string} [scriptName=DuAEF.scriptName] - The name of the script, used in the UI.
@@ -60,7 +60,7 @@ DuAEF.DuScriptUI.askFilesAndNetworkAccess = function( ui, callback, scriptName, 
 
     if ( !DuAEF.DuAE.App.hasFilesAndNetworkAccess )
     {
-        var ui_accessFileAndNetworkGroup = DuAEF.DuScriptUI.addGroup( ui.contents, 'column' );
+        var ui_accessFileAndNetworkGroup = DuAEF.DuScriptUI.addGroup( ui, 'column' );
 
         var accessExplanation = scriptName + " needs to be allowed to write files or access the network to continue.\n\n" +
             "Please, check the box called 'Allow Scripts to write files...' in the preferences of After Effects.";
@@ -105,7 +105,7 @@ DuAEF.DuScriptUI.askFilesAndNetworkAccess = function( ui, callback, scriptName, 
         return;
     }
 
-    callback( ui );
+    callback( );
 }
 
 //low-level list of functions to be run when the user interacts with the UI

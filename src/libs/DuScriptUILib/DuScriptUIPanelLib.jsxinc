@@ -312,7 +312,11 @@ DuAEF.DuScriptUI.createPopup = function( title, alignment )
             //we need a layout and resize to get the window frame size
             popup.layout.layout( true );
             popup.layout.resize( );
-            var location = DuAEF.DuScriptUI.moveInsideScreen( [x, y], popup.frameSize );
+            var location = [x,y];
+            if ( DuAEF.DuAE.App.isVersionHigherThan("CS6") )
+            {
+                location = DuAEF.DuScriptUI.moveInsideScreen( [x, y], popup.frameSize );
+            } 
             popup.location = location;
             popup.show();
         }, true);
@@ -461,6 +465,7 @@ DuAEF.DuScriptUI.showUI = function( ui, enterRunTime )
  * @param {bool} [addHelpButton=false] - Wether to create a button to open the help panel or not
  * @param {bool} [helpButtonOpensPanel=false] - The help button opens a help panel instead of the link to the documentation
  * @param {bool} [addSanityTestButton=false] - The sanity test button monitors the project sanity, and opens a panel to check what may be wrong
+ * @param {File} [scriptFile] - The main script file, needed for the refresh button in debug mode
  * @return {DuMainPanel} The panel created, either a ScriptUI Panel or a ScriptUI Window.
  * @example
  * var ui = DuAEF.DuScriptUI.createUI(this,"Test Script");
@@ -468,7 +473,7 @@ DuAEF.DuScriptUI.showUI = function( ui, enterRunTime )
  * refreshButton.onClick = function() { ui.refreshUI( new File($.fileName) ); }; //reloads the current script
  * DuAEF.DuScriptUI.showUI(ui);
  */
-DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHelpButton, helpButtonOpensPanel, addSanityTestButton )
+DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHelpButton, helpButtonOpensPanel, addSanityTestButton, scriptFile )
 {
     addSettingsButton = def(addSettingsButton, true);
     addHelpButton = def(addHelpButton, false);
@@ -479,11 +484,22 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
     panel.contents.orientation = 'stack';
     panel.contents.alignment = ['fill','fill'];
 
-    panel.mainGroup = DuAEF.DuScriptUI.addGroup(panel.contents, 'column');
-    panel.mainGroup.alignment = ['fill', 'top'];
+    var contentsMainGroup = DuAEF.DuScriptUI.addGroup(panel.contents, 'column');
+    contentsMainGroup.alignment = ['fill', 'fill'];
+    var contentsMainStack = DuAEF.DuScriptUI.addGroup(contentsMainGroup, 'column');
+    contentsMainStack.orientation = 'stack';
+    contentsMainStack.alignment = ['fill', 'fill'];
+
+    panel.mainGroup = DuAEF.DuScriptUI.addGroup(contentsMainStack, 'column');
+    panel.mainGroup.alignment = ['fill', 'fill'];
+
+    //a margin at the bottom (hidden by the bottom bar buttons)
+    var mainGroupMarginBottom = DuAEF.DuScriptUI.addGroup(contentsMainGroup, 'column');
+    mainGroupMarginBottom.alignment= ['fill', 'bottom'];
+    mainGroupMarginBottom.minimumSize = [0, 20];
     
     // == SETTINGS PANEL
-    var rootSettingsGroup = DuAEF.DuScriptUI.addGroup(panel.contents, 'column');
+    var rootSettingsGroup = DuAEF.DuScriptUI.addGroup(contentsMainStack, 'column');
     rootSettingsGroup.alignment = ['fill', 'fill'];
     rootSettingsGroup.visible = false;
     panel.settingsGroup = DuAEF.DuScriptUI.addGroup(rootSettingsGroup, 'column');
@@ -497,9 +513,8 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
     )
 
     // == SANITY PANEL
-    panel.sanityGroup = DuAEF.DuScriptUI.addGroup(panel.contents, 'column');
-    panel.sanityGroup.alignment = ['fill', 'fill'];
-    panel.sanityGroup.visible = false;
+    panel.sanityGroup = DuAEF.DuScriptUI.createPopup("Sanity Report", 'column');
+    panel.sanityGroup.pin(true);
 
     // == Bottom Line
     var bottomGroup = DuAEF.DuScriptUI.addGroup(panel.contents, 'row');
@@ -539,13 +554,11 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
             if (!rootSettingsGroup.visible)
             {
                 panel.mainGroup.visible = false;
-                panel.sanityGroup.visible = false;
                 rootSettingsGroup.visible = true;
             }
             else
             {
                 panel.mainGroup.visible = true;
-                panel.sanityGroup.visible = false;
                 rootSettingsGroup.visible = false;
             }
         }
@@ -586,35 +599,12 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
         sanityButton.onClick = function()
         {
             DuAEF.DuSanity.test();
-            if (!panel.sanityGroup.visible)
-            {
-                panel.mainGroup.visible = false;
-                panel.sanityGroup.visible = true;
-                rootSettingsGroup.visible = false;
-            }
-            else
-            {
-                panel.mainGroup.visible = true;
-                panel.sanityGroup.visible = false;
-                rootSettingsGroup.visible = false;
-            }
         }
+        panel.sanityGroup.tieTo(sanityButton);
 
         // Create UI
-        DuAEF.DuSanity.createUI( panel.sanityGroup );
-        var sanityBackButton = DuAEF.DuScriptUI.addButton(
-            panel.sanityGroup,
-            "Back",
-            DuAEF.DuBinary.toFile(w14_back_m),
-            "Close sanity report",
-            DuAEF.DuBinary.toFile(w14_back_l)
-        )
-
-        sanityBackButton.onClick = function () {
-            panel.sanityGroup.visible = false;
-            panel.mainGroup.visible = true;
-        }
-        
+        DuAEF.DuSanity.createUI( panel.sanityGroup.contents );
+       
         function checkSanity()
         {
             var level = DuAEF.DuSanity.currentLevel;
@@ -635,6 +625,18 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
         DuAEF.DuScriptUI.addEvent(checkSanity,1000);
 
         DuAEF.DuSanity.init();
+    }
+
+    //Refresh button
+    if ( DuAEF.debug && (scriptFile instanceof File) && scriptFile.exists )
+    {
+        var refreshButton = bottomGroup.add( 'button', undefined, 'R' );
+        refreshButton.alignment = [ 'right', 'bottom' ];
+        refreshButton.maximumSize = [ 20, 20 ];
+        refreshButton.onClick = function()
+        {
+            panel.refreshUI( thisScriptFile );
+        };
     }
 
     return panel;
