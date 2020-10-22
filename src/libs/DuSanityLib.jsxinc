@@ -956,10 +956,12 @@ DuAEF.DuSanity.tests = [
 
 /**
  * Runs all the sanity tests and updates the sanity Button
+ * @param {boolean} [refresh=false] Force running the tests instead of just getting the latest result
  * @return {DuAEF.DuSanity.Levels} The highest level.
  */
-DuAEF.DuSanity.test = function ()
+DuAEF.DuSanity.test = function ( refresh )
 {
+    refresh = def(refresh, false);
     var level = DuAEF.DuSanity.Levels.UNKNOWN;
 
     for (var i = 0, n = DuAEF.DuSanity.tests.length; i < n; i++)
@@ -968,6 +970,7 @@ DuAEF.DuSanity.test = function ()
         if (test.enabled)
         {
             var testLevel = test.currentLevel;
+            if (refresh) testLevel = test();
             if (testLevel > level) level = testLevel;
         }
     }
