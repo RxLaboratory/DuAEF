@@ -4,6 +4,8 @@
  */
 DuAEF.DuScriptUI.helpPanel = DuAEF.DuScriptUI.createPopup( "Help" );
 
+DuAEF.DuScriptUI.helpPanel.minimumSize.height = 300;
+
 //low-level undocumented flag. true if the help panel has been initialized (happens on first display)
 DuAEF.DuScriptUI.helpPanel.initialized = false;
 
