@@ -282,12 +282,13 @@ DuAEF.OCA.importLayer = function (oca, ocaLayer, folder, comp)
     {
         // create folder
         var framesFolder = folder.items.addFolder(ocaLayer.name + " | Frames");
+        // The expo Effect
+        var expoEffect = preCompLayer.property( 'ADBE Effect Parade' ).addProperty( 'ADBE Slider Control' );
+        expoEffect.name = "OCAnimation exposure";
         //import frames
         var importedFrames = [];
         for (var j = 0, nF = ocaLayer.frames.length; j < nF; j++)
         {
-            var expoEffect = preCompLayer.property( 'ADBE Effect Parade' ).addProperty( 'ADBE Slider Control' );
-            expoEffect.name = "OCAnimation exposure";
 
             var ocaFrame = ocaLayer.frames[j];
 
