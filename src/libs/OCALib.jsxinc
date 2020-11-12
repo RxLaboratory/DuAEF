@@ -44,6 +44,7 @@ along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
  * @classdesc An Open Cel Animation document<br />
  * This is not a real class, and cannot be instanciated.<br />
  * Use {@link DuAEF.OCA.load} to create an OCA object.
+ * @property {string} ocaVersion - The version of OCA used to export this document
  * @property {string} name - The name of this project
  * @property {int} width - The width, in pixels
  * @property {int} height - The height, in pixels
@@ -56,6 +57,7 @@ along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
  * @property {DuAEF.OCA.colorDepths} colorDepth - Bits per channel used in the document
  * @property {float[]} backgroundColor - The background color
  * @property {string} originApp - The application name from which the document was exported.
+ * @property {string} originAppVersion - The version of the origin application.
  * @property {Folder} folder - The folder containing the oca files.
  * @property {string} path - The URI to the folder containing the oca files.
  */
@@ -72,6 +74,7 @@ along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
  * @property {DuAEF.OCA.layerTypes} type - The type of the layer. See the Layer Types section below
  * @property {string} fileType -  The type of the files used for the frames. The file extension, without the initial dot.
  * @property {DuAEF.OCA.BlendingModes} blendingMode - The blending mode of the layer
+ * @property {bool} inheritAlpha - The inherit alpaha option (preserve transparency)
  * @property {bool} animated - Whether this layer is a single frame or not.
  * @property {int[]} position - The coordinates of the center of the layer, in pixels [X,Y] in the document coordinates. 
  * @property {int} width - The width, in pixels.
@@ -243,6 +246,7 @@ DuAEF.OCA.importLayer = function (oca, ocaLayer, folder, comp)
         l.startTime = ocaFrame.frameNumber / oca.frameRate;
         l.transform.opacity.setValue(ocaFrame.opacity * 100);
         l.transform.position.setValue(ocaFrame.position);
+        l.preserveTransparency = ocaLayer.inheritAlpha
         l.enabled = ocaLayer.visible;
         l.guideLayer = ocaLayer.reference;
         if (DuAEF.OCA.BlendingModes[ocaLayer.blendingMode]) l.blendingMode = DuAEF.OCA.BlendingModes[ocaLayer.blendingMode];
@@ -260,6 +264,7 @@ DuAEF.OCA.importLayer = function (oca, ocaLayer, folder, comp)
     preCompLayer.enabled = ocaLayer.visible;
     preCompLayer.guideLayer = ocaLayer.reference;
     preCompLayer.collapseTransformation = ocaLayer.passThrough;
+    preCompLayer.preserveTransparency = ocaLayer.inheritAlpha
 
     if (ocaLayer.label >= 0) preCompLayer.label = ocaLayer.label + 1; //Ae labels start at 1, OCA at 0
 
