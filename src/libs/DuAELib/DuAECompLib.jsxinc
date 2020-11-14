@@ -100,11 +100,14 @@ DuAEF.DuAE.Comp.setUniqueLayerNames = function ( layers, comp ) {
     layers = def(layers, comp.layers);
     var it = new Iterator( layers );
     it.do( function ( layer ) {
+        var locked = layer.locked;
+        layer.locked = false;
         //temporarily set another name to correctly generate a new unique name 
         var oldName = layer.name;
         layer.name = '***Duik-temp-name-xxx***';
         layer.name = DuAEF.DuAE.Comp.newUniqueLayerName( oldName, comp );
         app.project.autoFixExpressions(oldName, layer.name);
+        layer.locked = locked;
     } );
 }
 
