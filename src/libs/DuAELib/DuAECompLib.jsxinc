@@ -464,9 +464,11 @@ DuAEF.DuAE.Comp.checkLayerNames = function (comp) {
 
         if (duplicatedNames[name])
         {
-            duplicatedNames[name].push(layer);
+            try { duplicatedNames[name].push(layer); }
+            catch(e) {}
             continue;
         }
+        
         if ( layerNames[name] ) 
         {
             duplicatedNames[name] = [layerNames[name], layer];
