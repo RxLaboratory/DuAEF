@@ -353,10 +353,11 @@ DuAEF.Duik.Camera.create2DCam = function(comp,layers)
  * If multiple cameras, include the camera used in the array of the first argument<br />
  * If the layer is already linked, then the link is removed, it acts as a toggle.<br />
  * @param {LayerCollection|Layer[]} layers	- The layers to scale-link
+ * @return {int} 1 if OK, 0 if missing camera, -1 if no layer
  */
 DuAEF.Duik.Camera.toggleScaleZLink = function (layers)
 {
-	if (layers.length == 0) return;
+	if (layers.length == 0) return -1;
 
 	var camera = null;
 	//find camera
@@ -385,7 +386,7 @@ DuAEF.Duik.Camera.toggleScaleZLink = function (layers)
 		}
 	}
 
-	if (camera == null) return;
+	if (camera == null) return 0;
 
 	//go!
 	it.do(function (layer)
@@ -437,6 +438,8 @@ DuAEF.Duik.Camera.toggleScaleZLink = function (layers)
 			layer.name = 'SZL | ' + layer.name;
 		}
 	})
+
+	return 1;
 }
 
 /**
