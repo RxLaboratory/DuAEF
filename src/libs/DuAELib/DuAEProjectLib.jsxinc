@@ -168,12 +168,12 @@ DuAEF.DuAE.Project.checkCompNames = function () {
         if ( comp instanceof CompItem )
         {
             var name = comp.name;
-            if (typeof duplicatedNames[name] !== 'undefined' && duplicatedNames[name].length)
+            if (duplicatedNames.hasOwnProperty(name))
             {
                 duplicatedNames[name].push(comp);
                 continue;
             }
-            if ( compNames[name] ) 
+            if ( compNames.hasOwnProperty(name) ) 
             {
                 duplicatedNames[name] = [compNames[name], comp];
                 duplicatedNames.length++;

@@ -462,13 +462,13 @@ DuAEF.DuAE.Comp.checkLayerNames = function (comp) {
         var layer = comp.layer(i);
         var name = layer.name;
 
-        if (typeof duplicatedNames[name] !== 'undefined' && duplicatedNames[name].length)
+        if (duplicatedNames.hasOwnProperty(name))
         {
             duplicatedNames[name].push(layer);
             continue;
         }
         
-        if ( layerNames[name] ) 
+        if ( layerNames.hasOwnProperty(name) ) 
         {
             duplicatedNames[name] = [layerNames[name], layer];
             duplicatedNames.length++;
