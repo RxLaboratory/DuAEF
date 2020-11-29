@@ -168,7 +168,7 @@ DuAEF.DuAE.Project.checkCompNames = function () {
         if ( comp instanceof CompItem )
         {
             var name = comp.name;
-            if (duplicatedNames[name])
+            if (typeof duplicatedNames[name] !== 'undefined' && duplicatedNames[name].length)
             {
                 duplicatedNames[name].push(comp);
                 continue;
