@@ -103,6 +103,20 @@ DuAEF.DuAE.App.isVersionHigherThan = function (versionName)
     return DuAEF.DuAE.App.version.isHigherThan( DuAEF.DuAE.App.getAEVersion( versionName ) );
 }
 
+/**
+ * Gets the aerender binary
+ * @return {File|null} The aerender binary, or null if not found
+ */
+DuAEF.DuAE.App.getAeRender = function()
+{
+    var packageFolder = Folder.appPackage;
+    var aeRenderPath = packageFolder.absoluteURI + "/aerender";
+    if (DuAEF.win) aeRenderPath += ".exe"
+    var aeRenderFile = new File(aeRenderPath)
+    if (aeRenderFile.exists) return aeRenderFile;
+    else return null;
+}
+
 //low-level undocumented flag.
 //true if an undo group has been opened and has not been closed yet.
 DuAEF.DuAE.App.openedUndoGroup = false;
