@@ -63,6 +63,38 @@ DuAEF.DuSanity = {};
     if (typeof DuAEF.settings.data.sanity.fix.checkExpressionEngine === 'undefined') DuAEF.settings.data.sanity.fix.checkExpressionEngine = false;
     if (typeof DuAEF.settings.data.sanity.fix.checkProjectSize === 'undefined') DuAEF.settings.data.sanity.fix.checkProjectSize = true;
     if (typeof DuAEF.settings.data.sanity.fix.checkLayerNames === 'undefined') DuAEF.settings.data.sanity.fix.checkLayerNames = true;
+    //options
+    if (typeof DuAEF.settings.data.sanity.options === 'undefined') DuAEF.settings.data.sanity.options = {};
+    if (typeof DuAEF.settings.data.sanity.options.checkSave === 'undefined') DuAEF.settings.data.sanity.options.checkSave = {
+        "Time limit before saving (mn)": 30
+    }
+    if (typeof DuAEF.settings.data.sanity.options.checkProjectSize === 'undefined') DuAEF.settings.data.sanity.options.checkProjectSize = {
+        "Size limit (MB)": 20
+    }
+    if (typeof DuAEF.settings.data.sanity.options.checkNumItems === 'undefined') DuAEF.settings.data.sanity.options.checkNumItems = {
+        "Maximum number of items": 400
+    }
+    if (typeof DuAEF.settings.data.sanity.options.checkMemory === 'undefined') DuAEF.settings.data.sanity.options.checkMemory = {
+        "Maximum Memory (GB)": 8
+    }
+    if (typeof DuAEF.settings.data.sanity.options.checkMP === 'undefined') DuAEF.settings.data.sanity.options.checkMP = {
+        "Maximum number of Master Props in a comp.": 40
+    }
+    //timeOut
+    if (typeof DuAEF.settings.data.sanity.timeOut === 'undefined') DuAEF.settings.data.sanity.timeOut = {};
+    if (typeof DuAEF.settings.data.sanity.timeOut.checkSave === 'undefined') DuAEF.settings.data.sanity.timeOut.checkSave = 900000;
+    if (typeof DuAEF.settings.data.sanity.timeOut.checkCompNames === 'undefined') DuAEF.settings.data.sanity.timeOut.checkCompNames = 600000;
+    if (typeof DuAEF.settings.data.sanity.timeOut.checkUnusedComps === 'undefined') DuAEF.settings.data.sanity.timeOut.checkUnusedComps = 1800000;
+    if (typeof DuAEF.settings.data.sanity.timeOut.checkPrecomps === 'undefined') DuAEF.settings.data.sanity.timeOut.checkPrecomps = 600000;
+    if (typeof DuAEF.settings.data.sanity.timeOut.checkItemsUnused === 'undefined') DuAEF.settings.data.sanity.timeOut.checkItemsUnused = 1800000;
+    if (typeof DuAEF.settings.data.sanity.timeOut.checkItemSources === 'undefined') DuAEF.settings.data.sanity.timeOut.checkItemSources = 1800000;
+    if (typeof DuAEF.settings.data.sanity.timeOut.checkMP === 'undefined') DuAEF.settings.data.sanity.timeOut.checkMP = 300000;
+    if (typeof DuAEF.settings.data.sanity.timeOut.checkMemory === 'undefined') DuAEF.settings.data.sanity.timeOut.checkMemory = 300000;
+    if (typeof DuAEF.settings.data.sanity.timeOut.checkNumItems === 'undefined') DuAEF.settings.data.sanity.timeOut.checkNumItems = 600000;
+    if (typeof DuAEF.settings.data.sanity.timeOut.checkExpressionEngine === 'undefined') DuAEF.settings.data.sanity.timeOut.checkExpressionEngine = 1800000;
+    if (typeof DuAEF.settings.data.sanity.timeOut.checkProjectSize === 'undefined') DuAEF.settings.data.sanity.timeOut.checkProjectSize = 1800000;
+    if (typeof DuAEF.settings.data.sanity.timeOut.checkLayerNames === 'undefined') DuAEF.settings.data.sanity.timeOut.checkLayerNames = 60000;
+  
 })();
 
 /**
@@ -98,8 +130,12 @@ DuAEF.DuSanity.createUI = function (container)
     var mil = DuAEF.DuBinary.toFile(w18_screwdriver_l);
     var umim = DuAEF.DuBinary.toFile(w18_magic_m);
     var umil = DuAEF.DuBinary.toFile(w18_magic_l);
+    var om = DuAEF.DuBinary.toFile(w14_options_m);
+    var ol = DuAEF.DuBinary.toFile(w14_options_r);
+    var bm = DuAEF.DuBinary.toFile(w14_brain_m);
+    var bl = DuAEF.DuBinary.toFile(w14_brain_l);
 
-    function createReportText(t, test)
+    function createReportText(test)
     {
         var group = DuAEF.DuScriptUI.addGroup(ui_reportMainGroup, "row");
 
@@ -138,10 +174,83 @@ DuAEF.DuSanity.createUI = function (container)
             mb.visible = false;
         }
 
-        var label = DuAEF.DuScriptUI.addStaticText(group, t);
+        var label = DuAEF.DuScriptUI.addButton(group, test.testName);
         label.minimumSize = [200,0];
+        label.onClick = function () { test(); updateUI(); };
         var st = DuAEF.DuScriptUI.addStaticText(group, "");
         st.minimumSize = [120,0];
+
+        var ob = DuAEF.DuScriptUI.addButton(
+            group,
+            '',
+            om,
+            "Options",
+            ol
+        )
+
+        var optionsPopup = DuAEF.DuScriptUI.createPopup("Options (" + test.testName + ")");
+        var timeG = DuAEF.DuScriptUI.addGroup(optionsPopup.contents, 'row');
+        DuAEF.DuScriptUI.addStaticText(timeG, "Test every:");
+        var timeOut = DuAEF.settings.data.sanity.timeOut[test.stringId];
+        var timeOutStr = timeOut.toString();
+        var unit = " ms";
+        if (timeOut > 1000)
+        {
+            timeOutStr = (timeOut / 1000).toString();
+            unit = " s";
+        }
+        if (timeOut > 60000)
+        {
+            timeOutStr = (timeOut / 60000).toString();
+            unit = " mn";
+        }
+        var timeOutEdit = DuAEF.DuScriptUI.addEditText(
+            timeG,
+            timeOutStr,
+            "",
+            unit
+        )
+        timeOutEdit.onChange = function()
+        {
+            var t = parseInt(timeOutEdit.text);
+            if (unit == " s") t = t*1000;
+            if (unit == " mn") t = t*60000;
+            DuAEF.DuSanity.setTimeOut(test, t);
+        }
+
+        if (DuAEF.settings.data.sanity.options[test.stringId])
+        {
+            for(opt in DuAEF.settings.data.sanity.options[test.stringId])
+            {
+                var option = DuAEF.settings.data.sanity.options[test.stringId][opt];
+                var optG = DuAEF.DuScriptUI.addGroup(optionsPopup.contents, 'row');
+                var optT = optG.add('statictext', undefined, opt + ":");
+                if ( DuAEF.DuJS.typeof(option) == 'number' || DuAEF.DuJS.typeof(option) == 'string')
+                {
+                    var optB = DuAEF.DuScriptUI.addEditText(
+                        optG,
+                        option.toString()
+                    )
+                    optB.onChange = function () {
+                        DuAEF.settings.data.sanity.options[test.stringId][optT.text.replace(":","")] = optB.text;
+                        DuAEF.settings.save();
+                        test();
+                    }
+                }
+                else if ( DuAEF.DuJS.typeof(option) == 'boolean' )
+                {
+                    var optB = DuAEF.DuScriptUI.addSimpleCheckBox(  optG );
+                    optB.onClick = function () {
+                        DuAEF.settings.data.sanity.options[test.stringId][optT.text.replace(":","")] = optB.checked;
+                        DuAEF.settings.save();
+                        test();
+                    }
+                }
+            }
+        }
+
+        optionsPopup.tieTo(ob);
+        
 
         pb.onClick = function () {
             var c = pb.checked;
@@ -174,6 +283,10 @@ DuAEF.DuSanity.createUI = function (container)
 
         function updateUI()
         {
+            pb.setChecked( DuAEF.DuSanity.isGloballyEnabled(test) );
+            fpb.setChecked( DuAEF.DuSanity.isProjectEnabled(test) );
+            umb.setChecked( DuAEF.DuSanity.isLiveFixEnabled(test) );
+
             if (!test.enabled)
             {
                 st.text = "";
@@ -237,21 +350,66 @@ DuAEF.DuSanity.createUI = function (container)
         //First run
         updateUI();
         //add to events
-        DuAEF.DuScriptUI.addEvent(updateUI,3000);
+        DuAEF.DuScriptUI.addEvent(updateUI, 3000);
     }
 
-    createReportText("Composition Names:", DuAEF.DuSanity.checkCompNames );
-    createReportText("Layer Names:", DuAEF.DuSanity.checkLayerNames );
-    createReportText("Expression Engine:", DuAEF.DuSanity.checkExpressionEngine );
-    createReportText("Project Size:", DuAEF.DuSanity.checkProjectSize );
-    createReportText("Project Items:", DuAEF.DuSanity.checkNumItems );
-    createReportText("Duplicated Footages:", DuAEF.DuSanity.checkItemSources );
-    createReportText("Unused Footages:", DuAEF.DuSanity.checkItemsUnused );
-    createReportText("Precompositions:", DuAEF.DuSanity.checkPrecomps );
-    createReportText("Unused compositions:", DuAEF.DuSanity.checkUnusedComps );
-    createReportText("Memory in use:", DuAEF.DuSanity.checkMemory );
-    createReportText("Master properties in active comp:", DuAEF.DuSanity.checkMP );
-    createReportText("Time since last save:", DuAEF.DuSanity.checkSave );
+    createReportText( DuAEF.DuSanity.checkCompNames );
+    createReportText( DuAEF.DuSanity.checkLayerNames );
+    createReportText( DuAEF.DuSanity.checkExpressionEngine );
+    createReportText( DuAEF.DuSanity.checkProjectSize );
+    createReportText( DuAEF.DuSanity.checkNumItems );
+    createReportText( DuAEF.DuSanity.checkItemSources );
+    createReportText( DuAEF.DuSanity.checkItemsUnused );
+    createReportText( DuAEF.DuSanity.checkPrecomps );
+    createReportText( DuAEF.DuSanity.checkUnusedComps );
+    createReportText( DuAEF.DuSanity.checkMemory );
+    createReportText( DuAEF.DuSanity.checkMP );
+    createReportText( DuAEF.DuSanity.checkSave );
+
+    var globalButtonsGroup = DuAEF.DuScriptUI.addGroup(ui_reportMainGroup, 'row');
+    var globalButton = DuAEF.DuScriptUI.addButton(
+        globalButtonsGroup,
+        "Globally switch all tests.",
+        pim,
+        "Globally enable or disable all tests.",
+        pil);
+    var projectButton = DuAEF.DuScriptUI.addButton(
+        globalButtonsGroup,
+        "Switch all tests for the project.",
+        fpim,
+        "Enable or disable all tests for the current project.",
+        fpil);
+    var runAllButton = DuAEF.DuScriptUI.addButton(
+        globalButtonsGroup,
+        "Run all tests now.",
+        bm,
+        undefined,
+        bl
+        );
+
+    globalButton.onClick = function () {
+        var enable = true;
+        for (var i = 0, n = DuAEF.DuSanity.tests.length; i < n; i++)
+        {
+            var test = DuAEF.DuSanity.tests[i];
+            if (i == 0) enable = !DuAEF.DuSanity.isGloballyEnabled(test);
+            DuAEF.DuSanity.setGloballyEnabled(test, enable);
+            DuAEF.DuSanity.setEnabled(test, enable && DuAEF.DuSanity.isProjectEnabled(test));
+        }
+    }
+
+    projectButton.onClick = function () {
+        var enable = true;
+        for (var i = 0, n = DuAEF.DuSanity.tests.length; i < n; i++)
+        {
+            var test = DuAEF.DuSanity.tests[i];
+            if (i == 0) enable = !DuAEF.DuSanity.isProjectEnabled(test);
+            DuAEF.DuSanity.setProjectEnabled(test, enable);
+            DuAEF.DuSanity.setEnabled(test, enable);
+        }
+    }
+
+    runAllButton.onClick = function() { DuAEF.DuSanity.test(true); };
 }
 
 //low-level undocumented function: checks a value against a limit and sets the results in the UI
@@ -338,6 +496,15 @@ DuAEF.DuSanity.setLiveFixEnabled = function (test, enabled)
     DuAEF.settings.save();
 }
 
+DuAEF.DuSanity.setTimeOut = function (test, timeOut)
+{
+    var enabled = test.enabled;
+    DuAEF.DuSanity.setEnabled(test, false);
+    DuAEF.settings.data.sanity.timeOut[test.stringId] = timeOut;
+    DuAEF.settings.save();
+    DuAEF.DuSanity.setEnabled(test, enabled);
+}
+
 /**
  * Checks if a Sanity Test is enabled
  * @return {boolean}
@@ -365,7 +532,7 @@ DuAEF.DuSanity.setEnabled = function (test, enabled)
     {
          //First run
         test();
-        var timeOut = test.timeOut;
+        var timeOut = DuAEF.settings.data.sanity.timeOut[test.stringId];
         if (DuAEF.debug) timeOut = 3000;
         //Event
         test.id = DuAEF.DuScriptUI.addEvent(test, timeOut);
@@ -388,7 +555,7 @@ DuAEF.DuSanity.checkSave = function (dontFix)
     dontFix = def(dontFix, false);
     var proj = app.project;
     var f = app.project.file;
-    var limit = 1800000;
+    var limit = DuAEF.settings.data.sanity.options.checkSave["Time limit before saving (mn)"]*60000;
 
     if (!(f instanceof File) && app.project.numItems > 0)
     {
@@ -419,7 +586,7 @@ DuAEF.DuSanity.checkSave = function (dontFix)
     var elapsedStr = Math.round(elapsed/60000) + "mn";
 
     DuAEF.DuSanity.checkSave.info = elapsedStr;
-    DuAEF.DuSanity.checkSave.tip = "You should save the project at least every " + Math.round(limit/60000) + "mn.";
+    DuAEF.DuSanity.checkSave.tip = "You should save the project regularly.";
     DuAEF.DuSanity.checkSave.currentLevel = DuAEF.DuSanity.checkLevel(elapsed, limit);
 
     if (dontFix) return  DuAEF.DuSanity.checkSave.currentLevel;
@@ -434,10 +601,9 @@ DuAEF.DuSanity.checkSave.hasFix = true;
 DuAEF.DuSanity.checkSave.fix = function () {
     app.project.save();
 };
-DuAEF.DuSanity.checkSave.timeOut = 60000;
 DuAEF.DuSanity.checkSave.enabled = true;
 DuAEF.DuSanity.checkSave.id = 0;
-
+DuAEF.DuSanity.checkSave.testName = "Time since last save";
 
 /**
  * Checks if there are comps with the same name in the project.
@@ -488,10 +654,9 @@ DuAEF.DuSanity.checkCompNames.fix = function () {
         }
     }
 };
-DuAEF.DuSanity.checkCompNames.timeOut = 30000;
 DuAEF.DuSanity.checkCompNames.enabled = true;
 DuAEF.DuSanity.checkCompNames.id = 0;
-
+DuAEF.DuSanity.checkCompNames.testName = "Composition Names";
 
 /**
  * Checks if there are layers in the active comp which have the same name.
@@ -546,9 +711,9 @@ DuAEF.DuSanity.checkLayerNames.fix = function () {
         }
     }
 };
-DuAEF.DuSanity.checkLayerNames.timeOut = 10000;
 DuAEF.DuSanity.checkLayerNames.enabled = true;
 DuAEF.DuSanity.checkLayerNames.id = 0;
+DuAEF.DuSanity.checkLayerNames.testName = "Layer Names";
 
 
 /**
@@ -559,7 +724,7 @@ DuAEF.DuSanity.checkProjectSize = function (dontFix)
 {
     dontFix = def(dontFix, false);
     var size = DuAEF.DuAE.Project.getSize();
-    var sizeLimit = 20000000;
+    var sizeLimit = DuAEF.settings.data.sanity.options.checkProjectSize["Size limit (MB)"]*1000000;
 
     if (size < 0 && app.project.numItems > 0)
     {
@@ -591,9 +756,9 @@ DuAEF.DuSanity.checkProjectSize.info = "";
 DuAEF.DuSanity.checkProjectSize.tip = "";
 DuAEF.DuSanity.checkProjectSize.hasFix = false;
 DuAEF.DuSanity.checkProjectSize.fix = function () {};
-DuAEF.DuSanity.checkProjectSize.timeOut = 60000;
 DuAEF.DuSanity.checkProjectSize.enabled = true;
 DuAEF.DuSanity.checkProjectSize.id = 0;
+DuAEF.DuSanity.checkProjectSize.testName = "Project Size";
 
 
 /**
@@ -629,9 +794,9 @@ DuAEF.DuSanity.checkExpressionEngine.hasFix = true;
 DuAEF.DuSanity.checkExpressionEngine.fix = function () {
     app.project.expressionEngine = 'javascript-1.0';
 };
-DuAEF.DuSanity.checkExpressionEngine.timeOut = 60000;
 DuAEF.DuSanity.checkExpressionEngine.enabled = true;
 DuAEF.DuSanity.checkExpressionEngine.id = 0;
+DuAEF.DuSanity.checkExpressionEngine.testName = "Expression Engine";
 
 
 /**
@@ -642,7 +807,7 @@ DuAEF.DuSanity.checkNumItems = function (dontFix)
 {
     dontFix = def(dontFix, false);
     var n = app.project.numItems;
-    var limit = 400;
+    var limit = DuAEF.settings.data.sanity.options.checkNumItems["Maximum number of items"];
 
     DuAEF.DuSanity.checkNumItems.info = n + " items";
     DuAEF.DuSanity.checkNumItems.tip = "Try to keep the project small (e.g. do not animate several shots in the same project).";
@@ -658,9 +823,9 @@ DuAEF.DuSanity.checkNumItems.info = "";
 DuAEF.DuSanity.checkNumItems.tip = "";
 DuAEF.DuSanity.checkNumItems.hasFix = false;
 DuAEF.DuSanity.checkNumItems.fix = function () {};
-DuAEF.DuSanity.checkNumItems.timeOut = 30000;
 DuAEF.DuSanity.checkNumItems.enabled = true;
 DuAEF.DuSanity.checkNumItems.id = 0;
+DuAEF.DuSanity.checkNumItems.testName = "Project Items";
 
 
 /**
@@ -671,7 +836,7 @@ DuAEF.DuSanity.checkMemory = function (dontFix)
 {
     dontFix = def(dontFix, false);
     var mem = app.memoryInUse ;
-    var limit = 4294967296 ; //4GB 4294967296‬
+    var limit = DuAEF.settings.data.sanity.options.checkMemory["Maximum Memory (GB)"] * 1073741824 ;
 
     DuAEF.DuSanity.checkMemory.info = DuAEF.DuJS.String.fromSize(mem);
     DuAEF.DuSanity.checkMemory.tip = "If the memory used gets too high, it may be good to purge the cache and free some space.";
@@ -687,9 +852,9 @@ DuAEF.DuSanity.checkMemory.info = "";
 DuAEF.DuSanity.checkMemory.tip = "";
 DuAEF.DuSanity.checkMemory.hasFix = false;
 DuAEF.DuSanity.checkMemory.fix = function () {};
-DuAEF.DuSanity.checkMemory.timeOut = 5000;
 DuAEF.DuSanity.checkMemory.enabled = true;
 DuAEF.DuSanity.checkMemory.id = 0;
+DuAEF.DuSanity.checkMemory.testName = "Memory in use";
 
 
 /**
@@ -700,7 +865,7 @@ DuAEF.DuSanity.checkMP = function (dontFix)
 {
     dontFix = def(dontFix, false);
     var n = DuAEF.DuAE.Comp.numMasterProperties();
-    var limit = 40;
+    var limit = DuAEF.settings.data.sanity.options.checkMP["Maximum number of Master Props in a comp."];
 
     DuAEF.DuSanity.checkMP.info = n;
     DuAEF.DuSanity.checkMP.tip = "Having a lot of Master Properties in the current composition has a very bad impact on performance.";
@@ -716,9 +881,9 @@ DuAEF.DuSanity.checkMP.info = "";
 DuAEF.DuSanity.checkMP.tip = "";
 DuAEF.DuSanity.checkMP.hasFix = false;
 DuAEF.DuSanity.checkMP.fix = function () {};
-DuAEF.DuSanity.checkMP.timeOut = 5000;
 DuAEF.DuSanity.checkMP.enabled = true;
 DuAEF.DuSanity.checkMP.id = 0;
+DuAEF.DuSanity.checkMP.testName = "Master properties in active comp";
 
 
 /**
@@ -788,9 +953,9 @@ DuAEF.DuSanity.checkItemSources.info = "";
 DuAEF.DuSanity.checkItemSources.tip = "";
 DuAEF.DuSanity.checkItemSources.hasFix = false;
 DuAEF.DuSanity.checkItemSources.fix = function () {};
-DuAEF.DuSanity.checkItemSources.timeOut = 30000;
 DuAEF.DuSanity.checkItemSources.enabled = true;
 DuAEF.DuSanity.checkItemSources.id = 0;
+DuAEF.DuSanity.checkItemSources.testName = "Duplicated Footages";
 
 
 /**
@@ -838,9 +1003,9 @@ DuAEF.DuSanity.checkItemsUnused.info = "";
 DuAEF.DuSanity.checkItemsUnused.tip = "";
 DuAEF.DuSanity.checkItemsUnused.hasFix = false;
 DuAEF.DuSanity.checkItemsUnused.fix = function () {};
-DuAEF.DuSanity.checkItemsUnused.timeOut = 30000;
 DuAEF.DuSanity.checkItemsUnused.enabled = true;
 DuAEF.DuSanity.checkItemsUnused.id = 0;
+DuAEF.DuSanity.checkItemsUnused.testName = "Unused Footages";
 
 
 /**
@@ -886,9 +1051,9 @@ DuAEF.DuSanity.checkPrecomps.info = "";
 DuAEF.DuSanity.checkPrecomps.tip = "";
 DuAEF.DuSanity.checkPrecomps.hasFix = false;
 DuAEF.DuSanity.checkPrecomps.fix = function () {};
-DuAEF.DuSanity.checkPrecomps.timeOut = 10000;
 DuAEF.DuSanity.checkPrecomps.enabled = true;
 DuAEF.DuSanity.checkPrecomps.id = 0;
+DuAEF.DuSanity.checkPrecomps.testName = "Precompositions";
 
 
 /**
@@ -935,9 +1100,9 @@ DuAEF.DuSanity.checkUnusedComps.info = "";
 DuAEF.DuSanity.checkUnusedComps.tip = "";
 DuAEF.DuSanity.checkUnusedComps.hasFix = false;
 DuAEF.DuSanity.checkUnusedComps.fix = function () {};
-DuAEF.DuSanity.checkUnusedComps.timeOut = 10000;
 DuAEF.DuSanity.checkUnusedComps.enabled = true;
 DuAEF.DuSanity.checkUnusedComps.id = 0;
+DuAEF.DuSanity.checkUnusedComps.testName = "Unused compositions";
 
 DuAEF.DuSanity.tests = [
     DuAEF.DuSanity.checkSave,
@@ -950,7 +1115,7 @@ DuAEF.DuSanity.tests = [
     DuAEF.DuSanity.checkMP,
     DuAEF.DuSanity.checkItemSources,
     DuAEF.DuSanity.checkItemsUnused,
-    //DuAEF.DuSanity.checkPrecomps,
+    DuAEF.DuSanity.checkPrecomps,
     DuAEF.DuSanity.checkUnusedComps
 ];
 
@@ -990,15 +1155,7 @@ DuAEF.DuSanity.init = function ()
     for (var i = 0, n = DuAEF.DuSanity.tests.length; i < n; i++)
     {
         var test = DuAEF.DuSanity.tests[i];
-        if (DuAEF.DuSanity.isEnabled(test))
-        {
-            //First run
-            test();
-            var timeOut = test.timeOut;
-            if (DuAEF.debug) timeOut = 3000;
-            //Event
-            DuAEF.DuSanity.tests[i].id = DuAEF.DuScriptUI.addEvent(test, timeOut);
-        }
+        DuAEF.DuSanity.setEnabled( test, DuAEF.DuSanity.isEnabled(test) );
     }
 
     //First run
