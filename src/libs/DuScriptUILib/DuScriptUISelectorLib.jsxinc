@@ -297,7 +297,7 @@ DuAEF.DuScriptUI.addSelector = function( container, addRefreshButton )
     {
         e.stopPropagation();
         DuAEF.DuScriptUI.dimControls();
-        if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.refreshButton.image = selector.refreshImageOver;
+        if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess && addRefreshButton ) selector.refreshButton.image = selector.refreshImageOver;
         DuAEF.DuScriptUI.highlightedControls.push( selector );
     }
 
@@ -307,7 +307,7 @@ DuAEF.DuScriptUI.addSelector = function( container, addRefreshButton )
         DuAEF.DuScriptUI.setTextColor( selector.label, DuAEF.DuJS.Color.Colors.LIGHT_GREY );
         DuAEF.DuScriptUI.setBackgroundColor( selector, DuAEF.DuJS.Color.Colors.ABYSS_GREY );
         if ( selector.image != '' ) selector.icon.image = selector.image;
-        if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.refreshButton.image = selector.refreshImage;
+        if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess  && addRefreshButton ) selector.refreshButton.image = selector.refreshImage;
     }
 
     // Hack - CS6 Bugs on mouseover with images
