@@ -1457,19 +1457,35 @@ DuAEF.DuAE.Property.linkProperties = function ( childProp, parentProp, useThisCo
         var anim = DuAEF.DuAE.Property.getAnim( parentProp, false );
         if ( anim != null ) DuAEF.DuAE.Property.setAnim( childProp, anim, 0, true, true, false );
 
-        //set the link
-        var exp = DuAEF.Duik.expressionIds.LINK + '\n';
-        if ( timeLayer != null ) {
-            exp += 'var timeLayer = ' + DuAEF.DuAE.Property.getExpressionLink( timeLayer ) + ';\n' +
-                'var st = timeLayer.startTime;\n' +
-                'var t = time + st;\n' +
-                DuAEF.DuAE.Property.getExpressionLink( parentProp, useThisComp ) + '.valueAtTime(t);';
-
-        } else {
-            exp += DuAEF.DuAE.Property.getExpressionLink( parentProp, useThisComp ) + ';';
+        //add a time offset effect
+        var childLayer = DuAEF.DuAE.Property.getLayer(childProp);
+        var toEffect = childLayer.effect(tr("Link Time Offset"));
+        if (!toEffect)
+        {
+            toEffect = childLayer('ADBE Effect Parade').addProperty('ADBE Slider Control');
+            toEffect.name = tr("Link Time Offset");
+        }
+        
+        
+        //Set Time Offset
+        if ( timeLayer != null && toEffect(1).expression == "") {
+            var toExp = [DuAEF.Duik.expressionIds.LINK,
+                'var timeLayer = ' + DuAEF.DuAE.Property.getExpressionLink( timeLayer ) + ';',
+                'timeLayer.startTime;'
+                ].join('\n');
+            DuAEF.DuAE.Property.setExpression( toEffect(1), toExp, false );
         }
 
+        //set the link
+        var exp = [DuAEF.Duik.expressionIds.LINK,
+            'var to = effect("' + toEffect.name + '")(1);',
+            'var link = ' + DuAEF.DuAE.Property.getExpressionLink( parentProp, useThisComp ),
+            'if (to == 0) link.value;',
+            'else link.valueAtTime(time+to);'
+            ].join('\n');
+
         DuAEF.DuAE.Property.setExpression( childProp, exp, false );
+
     } else {
         if ( parentProp.isEffect ) {
             var insideData = 0;
@@ -1493,7 +1509,7 @@ DuAEF.DuAE.Property.linkProperties = function ( childProp, parentProp, useThisCo
         } else {
             for ( var p = 1, num = childProp.numProperties; p <= num; p++ ) {
                 try { DuAEF.DuAE.Property.linkProperties( childProp( p ), parentProp( p ), useThisComp, timeLayer ); }
-                catch(e) { if (DuAEF.debug) alert (chilProp.name + ' could not be linked.')};
+                catch(e) { if (DuAEF.debug) alert (childProp.name + ' could not be linked.\nError at line: ' + e.line + " in " + e.fileName + "\n" + e.description)};
             }
         }
     }

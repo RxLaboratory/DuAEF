@@ -576,7 +576,7 @@ DuAEF.Duik.Rigging.parent = function( children, parent, useMasterProperties )
                 var childLocator = childComp.layers.addNull();
                 childLocator.name = DuAEF.DuAE.Comp.newUniqueLayerName( locator.name, childComp );
                 DuAEF.Duik.setDuikMarker( childLocator, "Locator", DuAEF.Duik.LayerTypes.LOCATOR );
-                DuAEF.DuAE.Property.linkProperties( childLocator.transform, locator.transform );
+                DuAEF.DuAE.Property.linkProperties( childLocator.transform, locator.transform, undefined, precompLayer );
                 //lock and hide
                 childLocator.selected = false;
                 childLocator.enabled = false;
