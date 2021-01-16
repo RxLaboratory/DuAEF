@@ -188,14 +188,16 @@ DuAEF.DuScriptUI.createUI = function( container, scriptName, contentAlignment, b
  * @memberof DuAEF.DuScriptUI
  * @param {string} title The title of the popup
  * @param {string[]} [alignment=DuAEF.DuScriptUI.defaultColumnAlignment] The alignement of this window
+ * @param {boolean} [modal=false] Set the popup to a modal dialog
  * @return {DuPopup} The popup, a ScriptUI Window which is borderless, with a 'tieTo(control)' method.
  * @example
  * var popup = DuAEF.DuScriptUI.createPopup( );
  * var popupButton = DuAEF.DuScriptUI.addButton( myUI, "My Buttton for the popup" );
  * popup.tieTo( popupButton ); // will show the popup when the button is clicked, just above it.
  */
-DuAEF.DuScriptUI.createPopup = function( title, alignment )
+DuAEF.DuScriptUI.createPopup = function( title, alignment, modal )
 {
+    modal = def(modal, false);
     alignment = def( alignment, DuAEF.DuScriptUI.defaultColumnAlignment );
     title = def (title, "");
 
@@ -205,7 +207,9 @@ DuAEF.DuScriptUI.createPopup = function( title, alignment )
         title = tr( title );
     }
     
-    var popup = new Window( 'palette', title, undefined,
+    var type = 'palette';
+    if (modal) type = 'dialog'; 
+    var popup = new Window( type, title, undefined,
     {
         resizeable: false,
         borderless: true
@@ -282,6 +286,7 @@ DuAEF.DuScriptUI.createPopup = function( title, alignment )
     //add title
     var titleLabel = titleBar.add('statictext', undefined,  title);
     titleLabel.alignment = [ 'center', 'top' ];
+    if (modal) DuAEF.DuScriptUI.setTextColor(titleLabel, DuAEF.DuJS.Color.Colors.RAINBOX_RED)
     //add close button
     var closeButton = DuAEF.DuScriptUI.addButton(titleBar, '', DuAEF.DuBinary.toFile(w14_cancel_m), 'Close', DuAEF.DuBinary.toFile(w14_cancel_l));
     closeButton.alignment = [ 'right', 'top' ];
@@ -383,6 +388,8 @@ DuAEF.DuScriptUI.createPopup = function( title, alignment )
         DuAEF.DuScriptUI.eventFunctionsPaused = false;
     }
 
+    popup.cancel = hidePopup;
+
     popup.onDeactivate = function () { if (!popup.pinned) hidePopup(); };
     closeButton.onClick = hidePopup;
 
@@ -405,6 +412,8 @@ DuAEF.DuScriptUI.createPopup = function( title, alignment )
     titleLabel.addEventListener( "mousemove", moveTitle );
     titleLabel.addEventListener( "mouseup", endMoveState );
     titleLabel.addEventListener( "mouseout", endMoveState );
+
+    if (modal) popup.pin();
 
     return popup;
 }
