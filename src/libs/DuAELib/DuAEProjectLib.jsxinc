@@ -453,3 +453,102 @@ DuAEF.DuAE.Project.removeCompInExpressions = function( selectedComps )
         if (e.changed) e.expression = e.expression.replace( re, '$1thisComp' );
     }, false, selectedComps);
 }
+
+/**
+ * Gets the unused footages.
+ * @return {FootageItem[]} The list of unused items.
+ */
+DuAEF.DuAE.Project.getUnusedFootages = function ()
+{
+    var unused = [];
+    for (var i = 1, n = app.project.numItems; i <= n; i++)
+    {
+        var item = app.project.item(i);
+        if (item instanceof FootageItem)
+        {
+            if (item.usedIn.length == 0) unused.push(item);
+        }
+    }
+    return unused;
+}
+
+/**
+ * Gets a folder with its name. If name is "Project Root" or empty, returns the root of the project.
+ * @param {string} folderName The name of the folder
+ * @return {FolderItem|null} The folder or null if not found.
+ */
+DuAEF.DuAE.Project.getFolderItem = function(folderName)
+{
+    folderName = def(folderName, "");
+    if (folderName == "" || folderName == tr("Project Root")) return app.project.rootFolder;
+
+    for (var i = 1, n = app.project.numItems; i <= n; i++)
+    {
+        var item = app.project.item(i);
+        if (item instanceof FolderItem)
+        {
+            if (item.name == folderName) return item;
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Checks recursively if an item is in a specific folder
+ * @param {Item} item The item to check
+ * @param {FolderItem} folder The folder
+ * @return {boolean}
+ */
+DuAEF.DuAE.Project.isInFolder = function (item, folder)
+{
+    var pFolder = item.parentFolder;
+    while (pFolder && pFolder.id != app.project.rootFolder.id)
+    {
+        if (pFolder.id == folder.id) return true;
+        pFolder = pFolder.parentFolder;
+    }
+    return false;
+}
+
+/**
+ * Gets the unused compositions, except the ones in the given folder.
+ * @param {FolderItem} [folder] The folder to exclude.
+ * @return {CompItem[]} The unused compositions
+ */
+DuAEF.DuAE.Project.getUnusedComps = function (folder)
+{
+    var comps = []
+    folder = def(folder, null);
+    for (var i = 1, n = app.project.numItems; i <= n; i++ )
+    {
+        var item = app.project.item(i);
+        if (item instanceof CompItem)
+        {
+            if ( item.usedIn.length == 0 )
+            { 
+                if (folder && DuAEF.DuAE.Project.isInFolder(item, folder)) continue;
+                comps.push(item);
+            }
+        }
+    }
+    return comps;
+}
+
+/**
+ * Gets all the precompositions located at the root of the project.
+ * @return {CompItem[]}
+ */
+DuAEF.DuAE.Project.getPrecompsAtRoot = function()
+{
+    var precomps = [];
+    for (var i = 1, n = app.project.numItems; i <= n; i++ )
+    {
+        var item = app.project.item(i);
+        if (item instanceof CompItem)
+        {
+            if (item.parentFolder.id == app.project.rootFolder.id && item.usedIn.length != 0) precomps.push(item);
+        }
+    }
+    return precomps;
+}
