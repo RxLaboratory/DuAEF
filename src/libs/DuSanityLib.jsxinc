@@ -36,8 +36,7 @@ DuAEF.DuSanity = {};
 
     function addOption(group, option, value)
     {
-        if (typeof group === 'undefined') group = {};
-        if (typeof group[option] === 'undefined') group[option]  = value;
+        group[option] = def( group[option], value );
     }
 
     //internal use: shared settings defaults
@@ -71,11 +70,17 @@ DuAEF.DuSanity = {};
     if (typeof DuAEF.settings.data.sanity.fix.checkLayerNames === 'undefined') DuAEF.settings.data.sanity.fix.checkLayerNames = true;
     //options
     if (typeof DuAEF.settings.data.sanity.options === 'undefined') DuAEF.settings.data.sanity.options = {};
+    DuAEF.settings.data.sanity.options.checkSave = def(DuAEF.settings.data.sanity.options.checkSave, {});
     addOption(DuAEF.settings.data.sanity.options.checkSave, "Time limit before saving (mn)", 30 );
+    DuAEF.settings.data.sanity.options.checkProjectSize = def(DuAEF.settings.data.sanity.options.checkProjectSize, {});
     addOption(DuAEF.settings.data.sanity.options.checkProjectSize, "Size limit (MB)", 20 );
+    DuAEF.settings.data.sanity.options.checkNumItems = def(DuAEF.settings.data.sanity.options.checkNumItems, {});
     addOption(DuAEF.settings.data.sanity.options.checkNumItems, "Maximum number of items", 400 );
+    DuAEF.settings.data.sanity.options.checkMemory = def(DuAEF.settings.data.sanity.options.checkMemory, {});
     addOption(DuAEF.settings.data.sanity.options.checkMemory, "Maximum Memory (GB)", 8 );
+    DuAEF.settings.data.sanity.options.checkMP = def(DuAEF.settings.data.sanity.options.checkMP, {});
     addOption(DuAEF.settings.data.sanity.options.checkMP, "Maximum number of Master Props in a comp.", 40 );
+    DuAEF.settings.data.sanity.options.checkUnusedComps = def(DuAEF.settings.data.sanity.options.checkUnusedComps, {});
     addOption(DuAEF.settings.data.sanity.options.checkUnusedComps,  "Maximum unused compositions in the project", 1 );
     addOption(DuAEF.settings.data.sanity.options.checkUnusedComps, "Folder for main comps (leave empty for project root).", "Project Root" );
     DuAEF.settings.data.sanity.options.checkPrecomps = def(DuAEF.settings.data.sanity.options.checkPrecomps, {});
