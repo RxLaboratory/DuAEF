@@ -480,7 +480,9 @@ DuAEF.DuAE.Project.getUnusedFootages = function ()
 DuAEF.DuAE.Project.getFolderItem = function(folderName)
 {
     folderName = def(folderName, "");
-    if (folderName == "" || folderName == tr("Project Root")) return app.project.rootFolder;
+    if (folderName == "") return app.project.rootFolder;
+    if (DuAEF.DuJS.String.trim(folderName) == "") return app.project.rootFolder;
+    if ( folderName.toLowerCase() == tr("Project Root").toLowerCase() ) return app.project.rootFolder;
 
     for (var i = 1, n = app.project.numItems; i <= n; i++)
     {
@@ -495,7 +497,7 @@ DuAEF.DuAE.Project.getFolderItem = function(folderName)
 }
 
 /**
- * Checks recursively if an item is in a specific folder
+ * Checks recursively (except for root folder) if an item is in a specific folder
  * @param {Item} item The item to check
  * @param {FolderItem} folder The folder
  * @return {boolean}
@@ -503,6 +505,7 @@ DuAEF.DuAE.Project.getFolderItem = function(folderName)
 DuAEF.DuAE.Project.isInFolder = function (item, folder)
 {
     var pFolder = item.parentFolder;
+    if (pFolder.id == app.project.rootFolder.id && pFolder.id == folder.id) return true;
     while (pFolder && pFolder.id != app.project.rootFolder.id)
     {
         if (pFolder.id == folder.id) return true;
@@ -526,7 +529,8 @@ DuAEF.DuAE.Project.getUnusedComps = function (folder)
         if (item instanceof CompItem)
         {
             if ( item.usedIn.length == 0 )
-            { 
+            {
+                if (folder && folder.id == app.project.rootFolder.id && item.parentFolder == folder.id) continue;
                 if (folder && DuAEF.DuAE.Project.isInFolder(item, folder)) continue;
                 comps.push(item);
             }

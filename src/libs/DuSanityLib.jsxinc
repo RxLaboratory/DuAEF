@@ -58,7 +58,9 @@ DuAEF.DuSanity = {};
     if (typeof DuAEF.settings.data.sanity.fix === 'undefined') DuAEF.settings.data.sanity.fix = {};
     if (typeof DuAEF.settings.data.sanity.fix.checkSave === 'undefined') DuAEF.settings.data.sanity.fix.checkSave = true;
     if (typeof DuAEF.settings.data.sanity.fix.checkCompNames === 'undefined') DuAEF.settings.data.sanity.fix.checkCompNames = true;
-    if (typeof DuAEF.settings.data.sanity.fix.checkUnusedComps === 'undefined') DuAEF.settings.data.sanity.fix.checkUnusedComps = true;
+    //if (typeof DuAEF.settings.data.sanity.fix.checkUnusedComps === 'undefined') DuAEF.settings.data.sanity.fix.checkUnusedComps = false;
+    // Unused comps does not have live fix
+    DuAEF.settings.data.sanity.fix.checkUnusedComps = false;
     if (typeof DuAEF.settings.data.sanity.fix.checkPrecomps === 'undefined') DuAEF.settings.data.sanity.fix.checkPrecomps = true;
     if (typeof DuAEF.settings.data.sanity.fix.checkUnusedItems === 'undefined') DuAEF.settings.data.sanity.fix.checkUnusedItems = false;
     if (typeof DuAEF.settings.data.sanity.fix.checkItemSources === 'undefined') DuAEF.settings.data.sanity.fix.checkItemSources = true;
@@ -170,15 +172,11 @@ DuAEF.DuSanity.createUI = function (container)
             group,
             '',
             mim,
-            "Auto-fix now.",
+            "Fix now.",
             mil
             );
-
-        if (!test.hasFix)
-        {
-            umb.visible = false;
-            mb.visible = false;
-        }
+        mb.visible = test.hasFix;
+        umb.visible = test.hasAutoFix;
 
         var label = DuAEF.DuScriptUI.addButton(group, test.testName);
         label.minimumSize = [200,0];
@@ -235,7 +233,10 @@ DuAEF.DuSanity.createUI = function (container)
                 {
                     var optB = DuAEF.DuScriptUI.addEditText(
                         optG,
-                        option.toString()
+                        option.toString(),
+                        undefined,
+                        undefined,
+                        "Default"
                     )
                     optB.onChange = function () {
                         DuAEF.settings.data.sanity.options[test.stringId][optT.text.replace(":","")] = optB.text;
@@ -601,6 +602,7 @@ DuAEF.DuSanity.checkSave.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkSave.info = "";
 DuAEF.DuSanity.checkSave.tip = "";
 DuAEF.DuSanity.checkSave.hasFix = true;
+DuAEF.DuSanity.checkSave.hasAutoFix = true;
 DuAEF.DuSanity.checkSave.fix = function () {
     app.project.save();
 };
@@ -646,6 +648,7 @@ DuAEF.DuSanity.checkCompNames.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkCompNames.info = "";
 DuAEF.DuSanity.checkCompNames.tip = "";
 DuAEF.DuSanity.checkCompNames.hasFix = true;
+DuAEF.DuSanity.checkCompNames.hasAutoFix = true;
 DuAEF.DuSanity.checkCompNames.fix = function () {
     DuAEF.DuAE.App.beginUndoGroup( "Fix: " + DuAEF.DuSanity.checkCompNames.testName );
     var duplicatedNames = DuAEF.DuAE.Project.checkCompNames();
@@ -705,6 +708,7 @@ DuAEF.DuSanity.checkLayerNames.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkLayerNames.info = "";
 DuAEF.DuSanity.checkLayerNames.tip = "";
 DuAEF.DuSanity.checkLayerNames.hasFix = true;
+DuAEF.DuSanity.checkLayerNames.hasAutoFix = true;
 DuAEF.DuSanity.checkLayerNames.fix = function () {
     DuAEF.DuAE.App.beginUndoGroup( "Fix: " + DuAEF.DuSanity.checkLayerNames.testName );
     var duplicatedNames = DuAEF.DuAE.Comp.checkLayerNames();
@@ -762,6 +766,7 @@ DuAEF.DuSanity.checkProjectSize.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkProjectSize.info = "";
 DuAEF.DuSanity.checkProjectSize.tip = "";
 DuAEF.DuSanity.checkProjectSize.hasFix = false;
+DuAEF.DuSanity.checkProjectSize.hasAutoFix = false;
 DuAEF.DuSanity.checkProjectSize.fix = function () {};
 DuAEF.DuSanity.checkProjectSize.enabled = true;
 DuAEF.DuSanity.checkProjectSize.id = 0;
@@ -798,6 +803,7 @@ DuAEF.DuSanity.checkExpressionEngine.currentLevel = DuAEF.DuSanity.Levels.UNKNOW
 DuAEF.DuSanity.checkExpressionEngine.info = "";
 DuAEF.DuSanity.checkExpressionEngine.tip = "";
 DuAEF.DuSanity.checkExpressionEngine.hasFix = true;
+DuAEF.DuSanity.checkExpressionEngine.hasAutoFix = false;
 DuAEF.DuSanity.checkExpressionEngine.fix = function () {
     app.project.expressionEngine = 'javascript-1.0';
 };
@@ -829,6 +835,7 @@ DuAEF.DuSanity.checkNumItems.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkNumItems.info = "";
 DuAEF.DuSanity.checkNumItems.tip = "";
 DuAEF.DuSanity.checkNumItems.hasFix = false;
+DuAEF.DuSanity.checkNumItems.hasAutoFix = false;
 DuAEF.DuSanity.checkNumItems.fix = function () {};
 DuAEF.DuSanity.checkNumItems.enabled = true;
 DuAEF.DuSanity.checkNumItems.id = 0;
@@ -858,6 +865,7 @@ DuAEF.DuSanity.checkMemory.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkMemory.info = "";
 DuAEF.DuSanity.checkMemory.tip = "";
 DuAEF.DuSanity.checkMemory.hasFix = false;
+DuAEF.DuSanity.checkMemory.hasAutoFix = false;
 DuAEF.DuSanity.checkMemory.fix = function () {};
 DuAEF.DuSanity.checkMemory.enabled = true;
 DuAEF.DuSanity.checkMemory.id = 0;
@@ -887,6 +895,7 @@ DuAEF.DuSanity.checkMP.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkMP.info = "";
 DuAEF.DuSanity.checkMP.tip = "";
 DuAEF.DuSanity.checkMP.hasFix = false;
+DuAEF.DuSanity.checkMP.hasAutoFix = false;
 DuAEF.DuSanity.checkMP.fix = function () {};
 DuAEF.DuSanity.checkMP.enabled = true;
 DuAEF.DuSanity.checkMP.id = 0;
@@ -958,6 +967,7 @@ DuAEF.DuSanity.checkItemSources.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkItemSources.info = "";
 DuAEF.DuSanity.checkItemSources.tip = "";
 DuAEF.DuSanity.checkItemSources.hasFix = false;
+DuAEF.DuSanity.checkItemSources.hasAutoFix = false;
 DuAEF.DuSanity.checkItemSources.fix = function () {};
 DuAEF.DuSanity.checkItemSources.enabled = true;
 DuAEF.DuSanity.checkItemSources.id = 0;
@@ -1000,6 +1010,7 @@ DuAEF.DuSanity.checkUnusedItems.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkUnusedItems.info = "";
 DuAEF.DuSanity.checkUnusedItems.tip = "";
 DuAEF.DuSanity.checkUnusedItems.hasFix = true;
+DuAEF.DuSanity.checkUnusedItems.hasAutoFix = true;
 DuAEF.DuSanity.checkUnusedItems.fix = function () {
     DuAEF.DuAE.App.beginUndoGroup( "Fix: " + DuAEF.DuSanity.checkUnusedItems.testName );
     var unused = DuAEF.DuAE.Project.getUnusedFootages();
@@ -1048,6 +1059,7 @@ DuAEF.DuSanity.checkPrecomps.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkPrecomps.info = "";
 DuAEF.DuSanity.checkPrecomps.tip = "";
 DuAEF.DuSanity.checkPrecomps.hasFix = true;
+DuAEF.DuSanity.checkPrecomps.hasAutoFix = true;
 DuAEF.DuSanity.checkPrecomps.fix = function () {
     DuAEF.DuAE.App.beginUndoGroup( "Fix: " + DuAEF.DuSanity.checkPrecomps.testName );
     var precomps = DuAEF.DuAE.Project.getPrecompsAtRoot();
@@ -1070,7 +1082,9 @@ DuAEF.DuSanity.checkPrecomps.testName = "Precompositions";
  */
 DuAEF.DuSanity.checkUnusedComps = function (dontFix)
 {
-    dontFix = def(dontFix, false);
+    //dontFix = def(dontFix, false);
+    // No auto fix
+    dontfix = true;
     var unusedFolder = DuAEF.DuAE.Project.getFolderItem( DuAEF.settings.data.sanity.options.checkUnusedComps["Folder for main comps (leave empty for project root)."] );
     var comps = DuAEF.DuAE.Project.getUnusedComps(unusedFolder);
     var limit = DuAEF.settings.data.sanity.options.checkUnusedComps["Maximum unused compositions in the project"];
@@ -1099,6 +1113,7 @@ DuAEF.DuSanity.checkUnusedComps.currentLevel = DuAEF.DuSanity.Levels.UNKNOWN;
 DuAEF.DuSanity.checkUnusedComps.info = "";
 DuAEF.DuSanity.checkUnusedComps.tip = "";
 DuAEF.DuSanity.checkUnusedComps.hasFix = true;
+DuAEF.DuSanity.checkUnusedComps.hasAutoFix = false;
 DuAEF.DuSanity.checkUnusedComps.fix = function () {
     
     var unusedFolderName = DuAEF.settings.data.sanity.options.checkUnusedComps["Folder for main comps (leave empty for project root)."];
@@ -1112,7 +1127,7 @@ DuAEF.DuSanity.checkUnusedComps.fix = function () {
         slctr.addButton("Remove unused compositions");
         slctr.addButton("Collect unused comps. into folder:");
         slctr.setCurrentIndex(1);
-        var folderEdit =  DuAEF.DuScriptUI.addEditText(dlg.contents,unusedFolderName);
+        var folderEdit =  DuAEF.DuScriptUI.addEditText(dlg.contents,unusedFolderName, undefined, undefined, "Project Root");
         folderEdit.alignment = ['fill','top'];
         var validGrp = DuAEF.DuScriptUI.addGroup(dlg.contents, 'row');
         validGrp.alignment = ['fill','bottom'];
