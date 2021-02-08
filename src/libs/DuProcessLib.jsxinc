@@ -211,6 +211,7 @@ DuProcess.prototype.startCmd = function ( cmd ) {
         //create batch file
         var batName = 'DuProcess_' + new Date().getTime() + '.bat'
         var bat = new File( DuAEF.DuJS.Fs.duaefData.absoluteURI + '/' + batName );
+        bat.encoding = "CP437";
         cmd += '\ndel "' + DuAEF.DuJS.Fs.duaefData.fsName + '\\' + batName + '"';
         bat.open( 'w' );
         bat.write( cmd );
