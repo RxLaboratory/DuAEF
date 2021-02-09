@@ -112,6 +112,7 @@ DuAEF.DuScriptUI.addSelector = function( container, addRefreshButton )
 
     selector.addButton = function( text, image, helpTip, imageOver, localize )
     {
+        selector.popup.hide();
         text = def(text, '-');
         image = def(image, '');
         helpTip = def(helpTip, '');
@@ -139,16 +140,21 @@ DuAEF.DuScriptUI.addSelector = function( container, addRefreshButton )
             selector.popup.hide();
         };
         if ( button.icon ) button.icon.alignment = [ 'left', 'center' ];
+        selector.popup.layout.layout(true);
+        selector.popup.update();
     }
 
     selector.removeAll = function()
     {
+        selector.popup.hide();
         selector.items = [];
         selector.setCurrentIndex( 0 );
         for ( var i = selector.popup.buttons.children.length - 1; i >= 0; i-- )
         {
             selector.popup.buttons.remove( selector.popup.buttons.children[ i ] );
         }
+        selector.popup.layout.layout(true);
+        selector.popup.update();
     }
     selector.clear = selector.removeAll;
 
