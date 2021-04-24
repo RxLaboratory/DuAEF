@@ -650,6 +650,7 @@ DuAEF.Duik.Bone.addPinBone = function(prop, size)
 	{
 		propInfo = new PropertyInfo(prop);
 	}
+	if (typeof prop === 'undefined') return null;
 
 	var layer = propInfo.layer;
 	var comp = propInfo.comp;
@@ -789,7 +790,7 @@ DuAEF.Duik.Bone.addBone = function (prop,size,tangents)
 	if (prop.matchName == 'ADBE FreePin3 PosPin Atom') if (DuAEF.DuAE.Property.PuppetTool.isRiggable(prop))
 	{
 		var bone = DuAEF.Duik.Bone.addPinBone(prop,size);
-		bones.push(bone);
+		if (bone != null) bones.push(bone);
 		return bones;
 	}
 

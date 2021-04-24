@@ -156,6 +156,11 @@ function LayerAnim()
 function PropertyInfo(property)
 {
 	if (property instanceof PropertyInfo) return property;
+	if (typeof property === 'undefined') 
+	{
+		DuAEF.Debug.throwTypeError(property, "property", "Property", "PropertyInfo(property)");
+		return;
+	}
 	
 	var expressionEnabled = property.expressionEnabled;
 	if (property.propertyType == PropertyType.PROPERTY)
