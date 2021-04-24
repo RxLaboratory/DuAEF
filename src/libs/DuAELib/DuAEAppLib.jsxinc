@@ -157,8 +157,11 @@ DuAEF.DuAE.App.beginUndoGroup = function ( groupName, autoClose ) {
 /**
  * Ends an undoGroup.<br />
  * Using this method is safer than the native one, as DuAEF will try to avoid opening several undo groups at once.
+ * @param {string} [groupName] - The name of the Undo Group to end. Use this if you used  {@link DuAEF.DuAE.App.beginUndoGroup} with the 'autoClose' argument set to false before.
  */
-DuAEF.DuAE.App.endUndoGroup = function () {
+DuAEF.DuAE.App.endUndoGroup = function (groupName) {
+    groupName = def(groupName, "");
+    if (groupName != "" && DuAEF.DuAE.App.undoGroupName != groupName) return;
     app.endUndoGroup();
     DuAEF.DuAE.App.openedUndoGroup = false;
 }
