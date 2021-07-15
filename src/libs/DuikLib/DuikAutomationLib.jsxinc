@@ -6,6 +6,107 @@
 DuAEF.Duik.Automation = {};
 
 /**
+ * Adds a effect on the layer to control all the interpolations from all the properties from a single property.
+ * @param {PropertyBase[]|PropertyInfo[]} [props] The properties to control. All selected properties from current comp by default.
+ */
+DuAEF.Duik.Automation.interpolator = function (props)
+{
+	props = def(props, DuAEF.DuAE.Comp.getSelectedProps());
+	props = DuAEF.DuAE.getPropertyInfos( props );
+
+	if (props.length == 0) return;
+
+	//TODO if multiple layers, create a controller
+
+	//add the effect
+	var ctrlLayer = DuAEF.DuAE.Property.getLayer(props[0]);
+	var pE = DuAEF.Duik.PseudoEffects.INTERPOLATOR;
+	var effect = pE.apply( ctrlLayer );
+	effect(1).expression = [ DuAEF.Duik.expressionIds.INTERPOLATOR,
+		'var fx = thisProperty.propertyGroup(' + pE.index['Interpolation (frames)_Slider'] + ');',
+		'var interpolationType = fx(' + pE.index['Interpolation Type_Popup'] + ').value;',
+		'var bezierIn = fx(' + pE.index['Bézier_In_Slider'] + ').value;',
+		'var bezierOut = fx(' + pE.index['Bézier_Out_Slider'] + ').value;',
+		'var gaussianRate = fx(' + pE.index['Gaussian_Rate_Slider'] + ').value;',
+		'var xSheetMode = fx(' + pE.index['X-Sheet_Mode_Popup'] + ').value;',
+		'var xSheetFrameDuration = fx(' + pE.index['X-Sheet_Frame Duration_Slider'] + ').value;',
+		'var xSheet = fx(' + pE.index['X-Sheet_X-Sheet_Checkbox'] + ');',
+		'',
+		DuAEF.DuExpression.get(['bezierInterpolation', 'gaussianInterpolation', 'getNextKey', 'getPrevKey']),
+		'var duTime = time;',
+		'',
+		'function posterizeDuTime()',
+		'{',
+		'	function getTimeAtKey(prop)',
+		'	{',
+		'		if (prop.numKeys > 0)',
+		'		{',
+		'			var k = prop.nearestKey(time);',
+		'			if (k.time > time && k.index > 1) k = prop.key(k.index-1);',
+		'			return k.time;',
+		'		}',
+		'		else return time;',
+		'	}',
+		'',
+		'	if (xSheetMode == 1 && xSheetFrameDuration != 1)',
+		'	{',
+		'		xSheetFrameDuration = Math.round(xSheetFrameDuration);',
+		'		timef = timeToFrames(time);',
+		'		duTime = framesToTime( timef - timef%xSheetFrameDuration );',
+		'	}',
+		'	else if (xSheetMode == 2) duTime = getTimeAtKey(xSheetVal);',
+		'	else if (xSheetMode == 3) duTime = getTimeAtKey(thisLayer.marker);',
+		'	else duTime = getTimeAtKey(thisComp.marker);',
+		'}',
+		'',
+		'function interpolator()',
+		'{',
+		'	if (numKeys < 2) return value;',
+		'	if (duTime <= key(1).time) return value;',
+		'	if (duTime >= key(numKeys).time) return value;',
+		'	if (interpolationType == 1) return value;',
+		'	var startKey = getPrevKey();',
+		'	var endKey = getNextKey();',
+		'	if (interpolationType == 2)',
+		'	{',
+		'		return bezierInterpolation( duTime, startKey.time, endKey.time, startKey.value, endKey.value, [bezierOut/100, 0, (100-bezierIn)/100, 1]);',
+		'	}',
+		'	if (interpolationType == 3)',
+		'	{',
+		'		return gaussianInterpolation( duTime, startKey.time, endKey.time, startKey.value, endKey.value, gaussianRate);',
+		'	}',
+		'}',
+		'',
+		'posterizeDuTime();',
+		'var result = interpolator();',
+		'result;',
+		].join('\n');
+
+	var interpolatorKeys = [];
+	var interpolatorTimes = [];
+
+	new Iterator(props).do(function (prop)
+	{
+		if (prop.riggable)
+		{
+			var p = prop.getProperty();
+			for (var i = 1, n = p.numKeys; i <= n; i++)
+			{
+				interpolatorKeys.push( Math.round( p.keyTime(i)/ctrlLayer.containingComp.frameDuration ));
+				interpolatorTimes.push(p.keyTime(i));
+			}
+			p.expression = [ DuAEF.Duik.expressionIds.INTERPOLATOR,
+				'var fx = thisComp.layer("' + ctrlLayer.name + '").effect("' + effect.name + '");',
+				'var result = valueAtTime(framesToTime( fx(1) ) );',
+				'result;'
+			].join('\n');
+		}
+	});
+
+	effect(1).setValuesAtTimes(interpolatorTimes, interpolatorKeys);
+}
+
+/**
 	* Adds a list on a property
 	* @memberof DuAEF.Duik.Automation
 	* @param {PropertyInfo|Property} prop - The Property
