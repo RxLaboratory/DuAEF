@@ -1,9 +1,9 @@
 /* License
 	DuAEF - Duduf After Effects Framework
 
-	Copyright (c) 2008 - 2020 Nicolas Dufresne, Rainbox Productions
+	Copyright (c) 2008 - 2021 Nicolas Dufresne, RxLaboratory
 
-	https://rainboxlab.org
+	https://RxLaboratory.org
 
 	This file is part of DuAEF.
 
@@ -23,59 +23,10 @@
 
 /**
  * The Duduf After Effects ExtendScript Framework.<br />
- * by {@link https://rainboxlab.org Rainbox Lab}.
- * @example
- * // MINIMAL EXAMPLE
- * //encapsulate the script in a function to avoid global variables
- * (function (thisObj) {
- *
- *     //================
- *     #include DuAEF.jsxinc
- *     DuAEF.init("Your Script Name", "1.0.2");
- *
- *     //YOUR CODE HERE
- *
- *     DuAEF.enterRunTime();
- * }
- * @example
- *   //encapsulate the script in a function to avoid global variables
- *   (function (thisObj) {
- *
- *       //================
- *       #include DuAEF.jsxinc
- *       DuAEF.init("Your Script Name", "1.0.2");
- *
- *       DuAEF.forumURL = 'https://forum.rainboxlab.org';
- *       DuAEF.chatURL = 'http://chat.rainboxlab.org';
- *       DuAEF.bugReportURL = 'https://github.com/Rainbox-dev/DuAEF/issues/new?template=bug_report.md';
- *       DuAEF.featureRequestURL = 'https://github.com/Rainbox-dev/DuAEF/issues/new?template=feature_request.md';
- *       DuAEF.aboutURL = 'https://rainboxlab.org/tools/duik/';
- *       DuAEF.scriptAbout = 'The Duduf After Effects Framework\nDeveloped by Nicolas Dufresne and Contributors.\n\nLicensed under the GNU General Public License v3.';
- *       DuAEF.newsServer = 'rainboxprod.net'
- *       DuAEF.newsArgs = 'wp/?call_custom_simple_rss=1&csrp_show_meta=0&csrp_cat=20';
- *
- *       // ================ FUNCTIONS =============
- *       //MAIN
- *
- *
- *       //UI EVENTS
- *
- *
- *       // _______ UI SETUP _______
- *       var ui = DuAEF.DuScriptUI.createUI(thisObj);
- *
- *       // ============ UI CONTENT =================
- *       var contents = ui.contents;
- *       DuAEF.DuScriptUI.addStaticText(contents, "Welcome to " + DuAEF.scriptName);
- *
- *
- *       //Show UI
- *       DuAEF.DuScriptUI.showUI(ui);
- *       DuAEF.enterRunTime();
- *   })(this);
+ * by {@link https://RxLaboratory.org RxLaboratory} and {@link http://duduf.com Duduf}.
  * @namespace
  * @author Nicolas Dufresne and contributors
- * @copyright 2017 - 2020 Nicolas Dufresne, Rainbox Laboratory
+ * @copyright 2017 - 2021 Nicolas Dufresne, RxLaboratory
  * @version 1.0.0
  * @license GPL-3.0 <br />
  * DuAEF is free software: you can redistribute it and/or modify<br />
@@ -101,102 +52,12 @@ var DuAEF = {};
 DuAEF.version = new DuVersion('1.0.0');
 
 /**
- * Set to true and enable debug mode if you're a developper
- * @memberof DuAEF
- * @type {boolean}
- */
-DuAEF.debug = false;
-/**
- * The name of the script using this instance of DuAEF. Must be set by {@link  DuAEF.init}.
- * @memberof DuAEF
- * @type {string}
- * @readonly
- */
-DuAEF.scriptName = "DuAEF";
-/**
- * The version of the script using this instance of DuAEF. Must be set by {@link  DuAEF.init}.
- * @memberof DuAEF
- * @type {DuVersion}
- * @readonly
- */
-DuAEF.scriptVersion = new DuVersion('0.0.0');
-/**
  * True if the script is run for the first time (new or the version has changed since last run)
  * @memberof DuAEF
  * @type {boolean}
  * @readonly
  */
 DuAEF.scriptFirstRun = true;
-/**
- * An icon for this script
- */
-DuAEF.scriptIcon = '';
-/**
- * A mouseover icon for this script
- */
-DuAEF.scriptIconOver = '';
-/**
- * The url for the forum about the script
- */
-DuAEF.forumURL = '';
-/**
- * The url for a chat server about the script
- */
-DuAEF.chatURL = '';
-/**
- * The url for reporting bugs
- */
-DuAEF.bugReportURL = '';
-/**
- * The url for requesting features
- */
-DuAEF.featureRequestURL = '';
-/**
- * The url about the script
- */
-DuAEF.aboutURL = '';
-/**
- * The url to the documentation of the script
- */
-DuAEF.docURL = '';
-/**
- * The text about the script
- */
-DuAEF.scriptAbout = '';
-/**
- * The RSS server providing some news (only the domain name)
- * @default 'rainboxprod.net'
- */
-DuAEF.newsServer = 'rainboxprod.net';
-/**
- * The  subfolder and arguments needed to get the news
- */
-DuAEF.newsArgs = 'wp/feed';
-/**
- * The port of the RSS server
- * @default 80
- */
-DuAEF.newsPort = 80;
-/**
- * The user agent to use when getting news
- */
-DuAEF.newsUserAgentVersion = 'DuAEF/' + DuAEF.version.fullVersion;
-/**
- * The name of the company/organisation/individual developping this tool
- */
-DuAEF.companyName = 'Rainbox Laboratory';
-/**
- * The URL to the company's website
- */
-DuAEF.companyURL = 'https://rainboxlab.org';
-/**
- * An icon for this company
- */
-DuAEF.companyIcon = '';
-/**
- * A mouseover icon for this company
- */
-DuAEF.companyIconOver = '';
 
 /**
  * The current DuAEF File
@@ -211,7 +72,7 @@ DuAEF.file = new File( $.fileName );
  * @readonly
  * @enum {int}
  */
-DuAEF.States = {
+DuAEF.State = {
     NOT_SET: -1,
     INIT: 0,
     RUNTIME: 1
@@ -219,30 +80,9 @@ DuAEF.States = {
 
 /**
  * The current state of the script
- * @type {DuAEF.States}
+ * @type {DuAEF.State}
  */
-DuAEF.state = DuAEF.States.NOT_SET;
-
-//Initializes DuAEF
-( function()
-{
-    //detect OS Version
-    var mac = $.os.toLowerCase().indexOf( "mac" ) >= 0;
-    /**
-     * The current OS, true if we're on Mac OS
-     * @memberof DuAEF
-     * @readonly
-     * @type {boolean}
-     */
-    DuAEF.mac = mac;
-    /**
-     * The current OS, true if we're on Windows
-     * @memberof DuAEF
-     * @readonly
-     * @type {boolean}
-     */
-    DuAEF.win = !mac;
-} )();
+DuAEF.state = DuAEF.State.NOT_SET;
 
 /**
  * This method has to be called once at the very beginning of the script, just after the inclusion of DuAEF <code>#include DuAEF.jsxinc</code>
@@ -251,12 +91,9 @@ DuAEF.state = DuAEF.States.NOT_SET;
  */
 DuAEF.init = function( scriptName, scriptVersion )
 {
-    DuAEF.state = DuAEF.States.INIT;
+    DuAEF.state = DuAEF.State.INIT;
 
-    scriptName = def( scriptName, "DuAEF" );
-    scriptVersion = def( scriptVersion, "0.0.0" );
-    DuAEF.scriptName = scriptName;
-    DuAEF.scriptVersion = new DuVersion(scriptVersion);
+    // init DuESF
 
     // check if this script has already been run once
     // Check the version from latest run
@@ -273,7 +110,7 @@ DuAEF.init = function( scriptName, scriptVersion )
 DuAEF.enterRunTime = function()
 {
     app.settings.saveSetting( DuAEF.scriptName, "version", DuAEF.scriptVersion.fullVersion );
-    DuAEF.state = DuAEF.States.RUNTIME;
+    DuAEF.state = DuAEF.State.RUNTIME;
 
     //do post init methods if modules are included
     if (DuAEF.DuAE) DuAEF.DuAE.postInit();
