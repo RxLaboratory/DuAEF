@@ -119,6 +119,14 @@ DuAEF.DuScriptUI.addCheckBox = function( container, text, image, helpTip, imageC
     iconUncheckedOver = DuAEF.DuBinary.toFile( w14_unchecked_l );
     var checkbox; //the icon checkbox
 
+    //Add fillers to be able to click anywhere on the button
+    if ( text != '' )
+    {
+        duCheckBox.fillerL = duCheckBox.group.add( 'statictext', undefined, "" );
+        duCheckBox.fillerL.alignment = [ 'left', 'fill' ];
+        if ( image != '' ) duCheckBox.fillerL.size = [ 20, 0];
+    }
+
     //adjust appearance if there's some text
     if ( text != '')
     {
@@ -130,7 +138,7 @@ DuAEF.DuScriptUI.addCheckBox = function( container, text, image, helpTip, imageC
             checkbox.helpTip = helpTip;
         }
         //general appearance
-        DuAEF.DuScriptUI.setBackgroundColor( duCheckBox, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+        DuAEF.DuScriptUI.setBackgroundColor( duCheckBox, DuAEF.DuJS.Color.Colors.ABYSS_GREY );
         duCheckBox.alignment = [ 'fill', 'top' ];
         duCheckBox.alignChildren = [ 'fill', 'center' ];
     }
@@ -144,6 +152,14 @@ DuAEF.DuScriptUI.addCheckBox = function( container, text, image, helpTip, imageC
         duCheckBox.image.helpTip = helpTip;
     }
 
+    //Add fillers to be able to click anywhere on the button
+    if ( text != '' )
+    {
+        duCheckBox.fillerM = duCheckBox.group.add( 'statictext', undefined, "" );
+        duCheckBox.fillerM.alignment = [ 'left', 'fill' ];
+        if ( image != '' ) duCheckBox.fillerM.size = [ 20, 0];
+    }
+
     //add the label 
     //label
     if ( text != '')
@@ -155,6 +171,13 @@ DuAEF.DuScriptUI.addCheckBox = function( container, text, image, helpTip, imageC
         //label size
         if ( text.length < textChecked.length ) duCheckBox.label.characters = textChecked.length;
         else duCheckBox.label.characters = text.length;
+    }
+
+    //Add fillers to be able to click anywhere on the button
+    if ( text != '' )
+    {
+        duCheckBox.fillerR = duCheckBox.group.add( 'statictext', undefined, "" );
+        duCheckBox.fillerR.alignment = [ 'fill', 'fill' ];
     }
 
     /**
@@ -244,7 +267,7 @@ DuAEF.DuScriptUI.addCheckBox = function( container, text, image, helpTip, imageC
         if ( duCheckBox.image && duCheckBox.imageChecked != '' && duCheckBox.checked ) duCheckBox.image.image = duCheckBox.imageChecked;
         else if ( duCheckBox.image && duCheckBox.imageChecked != '' ) duCheckBox.image.image = duCheckBox.standardImage;
         //label
-        if ( duCheckBox.label ) DuAEF.DuScriptUI.setBackgroundColor( duCheckBox, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+        if ( duCheckBox.label ) DuAEF.DuScriptUI.setBackgroundColor( duCheckBox, DuAEF.DuJS.Color.Colors.ABYSS_GREY );
         //checkbox 
         if ( checkbox && duCheckBox.checked ) checkbox.image = iconChecked;
         else if ( checkbox ) checkbox.image = iconUnchecked;

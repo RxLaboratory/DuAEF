@@ -212,20 +212,20 @@ DuAEF.Duik.Automation.wiggle = function (prop,separateDimensions,effect)
 	if (!separateDimensions && dimensions > 1)
 	{
 		prop.getProperty().expression = '//Duik.1DMultiWiggle\n' + effectLink + '\n' +
-				'freq = fx(' + DuAEF.Duik.PseudoEffects.ONED_MULTIWIGGLE.frequencySlider + ');\n' +
-				'amp = fx(' + DuAEF.Duik.PseudoEffects.ONED_MULTIWIGGLE.amplitudeSlider + ');\n' +
-				'linked = fx(' + DuAEF.Duik.PseudoEffects.ONED_MULTIWIGGLE.linkDimensionsCheckbox + ').value;\n' +
-				'loop = fx(' + DuAEF.Duik.PseudoEffects.ONED_MULTIWIGGLE.loopSlider + ');\n' +
-				'complexity = fx(' + DuAEF.Duik.PseudoEffects.ONED_MULTIWIGGLE.complexitySlider + ');\n' +
-				'multiplier = fx(' + DuAEF.Duik.PseudoEffects.ONED_MULTIWIGGLE.multiplierSlider + ');\n' +
-				'seed = fx(' + DuAEF.Duik.PseudoEffects.ONED_MULTIWIGGLE.randomSeedSlider + ');\n' +
+				'var freq = fx(' + DuAEF.Duik.PseudoEffects.ONED_MULTIWIGGLE.frequencySlider + ');\n' +
+				'var amp = fx(' + DuAEF.Duik.PseudoEffects.ONED_MULTIWIGGLE.amplitudeSlider + ');\n' +
+				'var linked = fx(' + DuAEF.Duik.PseudoEffects.ONED_MULTIWIGGLE.linkDimensionsCheckbox + ').value;\n' +
+				'var loop = fx(' + DuAEF.Duik.PseudoEffects.ONED_MULTIWIGGLE.loopSlider + ');\n' +
+				'var complexity = fx(' + DuAEF.Duik.PseudoEffects.ONED_MULTIWIGGLE.complexitySlider + ');\n' +
+				'var multiplier = fx(' + DuAEF.Duik.PseudoEffects.ONED_MULTIWIGGLE.multiplierSlider + ');\n' +
+				'var seed = fx(' + DuAEF.Duik.PseudoEffects.ONED_MULTIWIGGLE.randomSeedSlider + ');\n' +
 				'seedRandom(seed);\n' +
 				'if (loop == 0) loop = thisComp.duration;\n' +
-				't = (time % loop)-loop;\n' +
-				'w1 = wiggle(freq,amp, complexity, multiplier, t);\n' +
-				'w2 = wiggle(freq,amp, complexity, multiplier, t - loop);\n' +
-				'w = ease(t, -loop,  0, w1, w2);\n' +
-				'result = [];\n' +
+				'var t = (time % loop)-loop;\n' +
+				'var w1 = wiggle(freq,amp, complexity, multiplier, t);\n' +
+				'var w2 = wiggle(freq,amp, complexity, multiplier, t - loop);\n' +
+				'var w = ease(t, -loop,  0, w1, w2);\n' +
+				'var result = [];\n' +
 				'if(linked) while (result.length < value.length) result.push(w[0]);\n' +
 				'else result = w;\n' +
 				'result + value - valueAtTime(0);';
@@ -233,68 +233,68 @@ DuAEF.Duik.Automation.wiggle = function (prop,separateDimensions,effect)
 	else if (dimensions == 3)
 	{
 		prop.getProperty().expression = '//Duik.3DWiggle\n' + effectLink + '\n' +
-				'Xfreq = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.xFrequencySlider + ');\n' +
-				'Yfreq = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.yFrequencySlider + ');\n' +
-				'Zfreq = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.zFrequencySlider + ');\n' +
-				'Xamp = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.xAmplitudeSlider + ');\n' +
-				'Yamp = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.yAmplitudeSlider + ');\n' +
-				'Zamp = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.zAmplitudeSlider + ');\n' +
-				'loop = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.loopSlider + ');\n' +
-				'complexity = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.complexitySlider + ');\n' +
-				'multiplier = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.multiplierSlider + ');\n' +
-				'seed = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.randomSeedSlider + ');\n' +
+				'var Xfreq = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.xFrequencySlider + ');\n' +
+				'var Yfreq = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.yFrequencySlider + ');\n' +
+				'var Zfreq = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.zFrequencySlider + ');\n' +
+				'var Xamp = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.xAmplitudeSlider + ');\n' +
+				'var Yamp = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.yAmplitudeSlider + ');\n' +
+				'var Zamp = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.zAmplitudeSlider + ');\n' +
+				'var loop = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.loopSlider + ');\n' +
+				'var complexity = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.complexitySlider + ');\n' +
+				'var multiplier = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.multiplierSlider + ');\n' +
+				'var seed = fx(' + DuAEF.Duik.PseudoEffects.THREED_WIGGLE.randomSeedSlider + ');\n' +
 				'seedRandom(seed);\n' +
 				'if (loop == 0) loop = thisComp.duration;\n' +
-				't = (time % loop)-loop;\n' +
-				'X1 = wiggle(Xfreq,Xamp, complexity, multiplier, t);\n' +
-				'Y1 = wiggle(Yfreq,Yamp, complexity, multiplier, t);\n' +
-				'Z1 = wiggle(Zfreq,Zamp, complexity, multiplier, t);\n' +
-				'w1 = [X1[0],Y1[1],Z1[2]];\n' +
-				'X2 = wiggle(Xfreq,Xamp, complexity, multiplier, t - loop);\n' +
-				'Y2 = wiggle(Yfreq,Yamp, complexity, multiplier, t - loop);\n' +
-				'Z2 = wiggle(Zfreq,Zamp, complexity, multiplier, t - loop);\n' +
-				'w2 = [X2[0],Y2[1],Z2[2]];\n' +
-				'w = ease(t, -loop,  0, w1, w2);\n' +
+				'var t = (time % loop)-loop;\n' +
+				'var X1 = wiggle(Xfreq,Xamp, complexity, multiplier, t);\n' +
+				'var Y1 = wiggle(Yfreq,Yamp, complexity, multiplier, t);\n' +
+				'var Z1 = wiggle(Zfreq,Zamp, complexity, multiplier, t);\n' +
+				'var w1 = [X1[0],Y1[1],Z1[2]];\n' +
+				'var Y2 = wiggle(Yfreq,Yamp, complexity, multiplier, t - loop);\n' +
+				'var X2 = wiggle(Xfreq,Xamp, complexity, multiplier, t - loop);\n' +
+				'var Z2 = wiggle(Zfreq,Zamp, complexity, multiplier, t - loop);\n' +
+				'var w2 = [X2[0],Y2[1],Z2[2]];\n' +
+				'var w = ease(t, -loop,  0, w1, w2);\n' +
 				'w + value - valueAtTime(0)';
 	}
 	else if (dimensions == 2)
 	{
 	 	prop.getProperty().expression = '//Duik.2DWiggle\n' + effectLink + '\n' +
-				'Xfreq = fx(' + DuAEF.Duik.PseudoEffects.TWOD_WIGGLE.xFrequencySlider + ');\n' +
-				'Yfreq = fx(' + DuAEF.Duik.PseudoEffects.TWOD_WIGGLE.yFrequencySlider + ');\n' +
-				'Xamp = fx(' + DuAEF.Duik.PseudoEffects.TWOD_WIGGLE.xAmplitudeSlider + ');\n' +
-				'Yamp = fx(' + DuAEF.Duik.PseudoEffects.TWOD_WIGGLE.yAmplitudeSlider + ');\n' +
-				'loop = fx(' + DuAEF.Duik.PseudoEffects.TWOD_WIGGLE.loopSlider + ');\n' +
-				'complexity = fx(' + DuAEF.Duik.PseudoEffects.TWOD_WIGGLE.complexitySlider + ');\n' +
-				'multiplier = fx(' + DuAEF.Duik.PseudoEffects.TWOD_WIGGLE.multiplierSlider + ');\n' +
-				'seed = fx(' + DuAEF.Duik.PseudoEffects.TWOD_WIGGLE.randomSeedSlider + ');\n' +
+				'var Xfreq = fx(' + DuAEF.Duik.PseudoEffects.TWOD_WIGGLE.xFrequencySlider + ');\n' +
+				'var Yfreq = fx(' + DuAEF.Duik.PseudoEffects.TWOD_WIGGLE.yFrequencySlider + ');\n' +
+				'var Xamp = fx(' + DuAEF.Duik.PseudoEffects.TWOD_WIGGLE.xAmplitudeSlider + ');\n' +
+				'var Yamp = fx(' + DuAEF.Duik.PseudoEffects.TWOD_WIGGLE.yAmplitudeSlider + ');\n' +
+				'var loop = fx(' + DuAEF.Duik.PseudoEffects.TWOD_WIGGLE.loopSlider + ');\n' +
+				'var complexity = fx(' + DuAEF.Duik.PseudoEffects.TWOD_WIGGLE.complexitySlider + ');\n' +
+				'var multiplier = fx(' + DuAEF.Duik.PseudoEffects.TWOD_WIGGLE.multiplierSlider + ');\n' +
+				'var seed = fx(' + DuAEF.Duik.PseudoEffects.TWOD_WIGGLE.randomSeedSlider + ');\n' +
 				'seedRandom(seed);\n' +
 				'if (loop == 0) loop = thisComp.duration;\n' +
-				't = (time % loop)-loop;\n' +
-				'X1 = wiggle(Xfreq,Xamp, complexity, multiplier, t);\n' +
-				'Y1 = wiggle(Yfreq,Yamp, complexity, multiplier, t);\n' +
-				'w1 = [X1[0],Y1[1]];\n' +
-				'X2 = wiggle(Xfreq,Xamp, complexity, multiplier, t - loop);\n' +
-				'Y2 = wiggle(Yfreq,Yamp, complexity, multiplier, t - loop);\n' +
-				'w2 = [X2[0],Y2[1]];\n' +
-				'w = ease(t, -loop,  0, w1, w2);\n' +
+				'var t = (time % loop)-loop;\n' +
+				'var X1 = wiggle(Xfreq,Xamp, complexity, multiplier, t);\n' +
+				'var Y1 = wiggle(Yfreq,Yamp, complexity, multiplier, t);\n' +
+				'var w1 = [X1[0],Y1[1]];\n' +
+				'var X2 = wiggle(Xfreq,Xamp, complexity, multiplier, t - loop);\n' +
+				'var Y2 = wiggle(Yfreq,Yamp, complexity, multiplier, t - loop);\n' +
+				'var w2 = [X2[0],Y2[1]];\n' +
+				'var w = ease(t, -loop,  0, w1, w2);\n' +
 				'w + value - valueAtTime(0)';
 	}
 	else if (dimensions == 1)
 	{
 		prop.getProperty().expression = '//Duik.1DWiggle\n' + effectLink + '\n' +
-				'freq = fx(' + DuAEF.Duik.PseudoEffects.ONED_WIGGLE.frequencySlider + ');\n' +
-				'amp = fx(' + DuAEF.Duik.PseudoEffects.ONED_WIGGLE.amplitudeSlider + ');\n' +
-				'loop = fx(' + DuAEF.Duik.PseudoEffects.ONED_WIGGLE.loopSlider + ');\n' +
-				'complexity = fx(' + DuAEF.Duik.PseudoEffects.ONED_WIGGLE.complexitySlider + ');\n' +
-				'multiplier = fx(' + DuAEF.Duik.PseudoEffects.ONED_WIGGLE.multiplierSlider + ');\n' +
-				'seed = fx(' + DuAEF.Duik.PseudoEffects.ONED_WIGGLE.randomSeedSlider + ');\n' +
+				'var freq = fx(' + DuAEF.Duik.PseudoEffects.ONED_WIGGLE.frequencySlider + ');\n' +
+				'var amp = fx(' + DuAEF.Duik.PseudoEffects.ONED_WIGGLE.amplitudeSlider + ');\n' +
+				'var loop = fx(' + DuAEF.Duik.PseudoEffects.ONED_WIGGLE.loopSlider + ');\n' +
+				'var complexity = fx(' + DuAEF.Duik.PseudoEffects.ONED_WIGGLE.complexitySlider + ');\n' +
+				'var multiplier = fx(' + DuAEF.Duik.PseudoEffects.ONED_WIGGLE.multiplierSlider + ');\n' +
+				'var seed = fx(' + DuAEF.Duik.PseudoEffects.ONED_WIGGLE.randomSeedSlider + ');\n' +
 				'seedRandom(seed);\n' +
 				'if (loop == 0) loop = thisComp.duration;\n' +
-				't = (time % loop)-loop;\n' +
-				'w1 = wiggle(freq,amp, complexity, multiplier, t);\n' +
-				'w2 = wiggle(freq,amp, complexity, multiplier, t - loop);\n' +
-				'w = ease(t, -loop,  0, w1, w2);\n' +
+				'var t = (time % loop)-loop;\n' +
+				'var w1 = wiggle(freq,amp, complexity, multiplier, t);\n' +
+				'var w2 = wiggle(freq,amp, complexity, multiplier, t - loop);\n' +
+				'var w = ease(t, -loop,  0, w1, w2);\n' +
 				'w + value - valueAtTime(0)';
 	}
 

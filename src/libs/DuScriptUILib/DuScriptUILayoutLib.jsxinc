@@ -78,7 +78,7 @@ DuAEF.DuScriptUI.addSeparator = function( container, name, checkable, drawLine )
     }
     else if ( drawLine )
     {
-        DuAEF.DuScriptUI.setBackgroundColor( separator, DuAEF.DuJS.Color.Colors.VERY_DARK_GREY );
+        DuAEF.DuScriptUI.setBackgroundColor( separator, DuAEF.DuJS.Color.Colors.ABYSS_GREY );
     }
 
     separator.addEventListener( "mouseover", DuAEF.DuScriptUI.dimControls );

@@ -156,6 +156,11 @@ function LayerAnim()
 function PropertyInfo(property)
 {
 	if (property instanceof PropertyInfo) return property;
+	if (typeof property === 'undefined') 
+	{
+		DuAEF.Debug.throwTypeError(property, "property", "Property", "PropertyInfo(property)");
+		return;
+	}
 	
 	var expressionEnabled = property.expressionEnabled;
 	if (property.propertyType == PropertyType.PROPERTY)
@@ -220,6 +225,8 @@ function PropertyExpression(property)
 	}
 
 	this.property = property;
+	this.layer = DuAEF.DuAE.Property.getLayer(property);
+	this.comp = this.layer.containingComp;
 	this.empty = false;
 
 	if ( !DuAEF.DuAE.Property.isRiggable(property) ) {
@@ -742,6 +749,11 @@ DuAEF.DuAE.LoopTypes =
 }
 
 /**
+ * List of file extensions whih may be imported as several items with the same source
+ */
+DuAEF.DuAE.LayeredTypes = ["psd","psb","ai","fla"];
+
+/**
  * Default color labels
  * @readonly
  * @todo get real labels (from pref file?)
@@ -818,9 +830,23 @@ DuAEF.DuAE.convertCollectionToArray = function (collection)
 	return arr;
 }
 
+/**
+	* Checks if the file is a layered type (psd, ai, psb, fla...)
+	* @memberof DuAEF.DuAE
+	* @param {String|File}	 [file]	- The file or the path
+	* @return {boolean} true if it's a layered file
+*/
+DuAEF.DuAE.isLayeredFile = function(file)
+{
+	var ext = DuAEF.DuJS.Fs.getExtension(file);
+	var yes = DuAEF.DuJS.Array.indexOf( DuAEF.DuAE.LayeredTypes , ext.toLowerCase() ) >= 0;
+	return yes;
+}
 
+#include "DuAEExpressionLib.jsxinc"
 #include "DuAEAppLib.jsxinc"
 #include "DuAEProjectLib.jsxinc"
+#include "DuAEProjectXMPLib.jsxinc"
 #include "DuAEItemLib.jsxinc"
 #include "DuAECompLib.jsxinc"
 #include "DuAELayerLib.jsxinc"

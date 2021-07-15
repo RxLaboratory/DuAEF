@@ -371,19 +371,16 @@ DuAEF.DuAE.Property.getAnim = function ( prop, selected, timeRange ) {
 }
 
 // low-level undocumented method to get all expressions and cache them
-//if compCache is true, add to the comp cache instead of the project cache
-DuAEF.DuAE.Property.addToExpressionCache = function ( prop , compCache) {
-    compCache = def(compCache, false);
+DuAEF.DuAE.Property.addToExpressionCache = function ( prop ) {
     //it it's a prop, add to cache
     if ( prop.propertyType === PropertyType.PROPERTY ) {
         var exp = new PropertyExpression(prop);
-        if ( !exp.empty && compCache) DuAEF.DuAE.Comp.expressionCache.push(exp);
-        else if (!exp.empty) DuAEF.DuAE.Project.expressionCache.push(exp);
+        if ( !exp.empty ) DuAEF.DuAE.Expression.cache.push(exp);
     }
     //if it's a group, get props inside
     else if ( prop.numProperties > 0 ) {
         for ( var p = 1; p <= prop.numProperties; p++ ) {
-            DuAEF.DuAE.Property.addToExpressionCache( prop.property(p), compCache );
+            DuAEF.DuAE.Property.addToExpressionCache( prop.property(p) );
         }
     }
 }
@@ -766,9 +763,10 @@ DuAEF.DuAE.Property.getExpressionLink = function ( prop, useThisComp, fromLayer 
  * Sets a value on a property, adjusting the dimensions if needed
  * @param {Property|PropertyInfo} prop - The property
  * @param {any} value - The value to set
+ * @param {float} defaultTime - The time at which to set the value if the property has keyframes
  * @return {boolean} True if the value has correctly been set, false otherwise.
  */
-DuAEF.DuAE.Property.setValue = function ( prop, value ) {
+DuAEF.DuAE.Property.setValue = function ( prop, value, defaultTime ) {
     var dimensions = 0;
     var editable = false;
     if ( prop instanceof PropertyInfo ) {
@@ -784,6 +782,9 @@ DuAEF.DuAE.Property.setValue = function ( prop, value ) {
         if ( prop.dimensionsSeparated ) return false;
 
     if ( !editable ) return false;
+
+    if (prop.numKeys > 0 && typeof defaultTime !== 'undefined') return DuAEF.DuAE.Property.setValueAtTime(prop, value, defaultTime);
+    else if (prop.numKeys > 0) return false;
 
     //check dimensions of the property
     if ( dimensions == 0 || dimensions == 1 ) {
@@ -818,6 +819,7 @@ DuAEF.DuAE.Property.setValue = function ( prop, value ) {
  * @param {Property|PropertyInfo} prop - The property
  * @param {any} value - The value to set
  * @param {float} [time] - The time of the new keyframe
+ * @return {boolean} True if the value has correctly been set, false otherwise.
  */
 DuAEF.DuAE.Property.setValueAtTime = function ( prop, value, time ) {
     var dimensions = 0;
@@ -833,19 +835,21 @@ DuAEF.DuAE.Property.setValueAtTime = function ( prop, value, time ) {
 
     if ( typeof time === 'undefined' ) time = propInfo.comp.time;
 
-    if ( !prop.canVaryOverTime ) return;
+    if ( !prop.canVaryOverTime ) return false;
     if ( prop.isSeparationLeader )
-        if ( prop.dimensionsSeparated ) return;
+        if ( prop.dimensionsSeparated ) return false;
 
-    if ( !editable ) return;
+    if ( !editable ) return false;
 
     //check dimensions of the property
     if ( dimensions == 0 || dimensions == 1 ) {
         if ( value instanceof Array ) value = value[ 0 ];
         try {
             prop.setValueAtTime( time, value );
+            return true;
         } catch ( e ) {
             if ( DuAEF.debug ) alert( e.description );
+            return false;
         }
     } else {
         if ( !( value instanceof Array ) ) value = [ value ];
@@ -857,8 +861,10 @@ DuAEF.DuAE.Property.setValueAtTime = function ( prop, value, time ) {
         }
         try {
             prop.setValueAtTime( time, value );
+            return true;
         } catch ( e ) {
             if ( DuAEF.debug ) alert( e.description );
+            return false;
         }
     }
 }
@@ -1437,6 +1443,7 @@ DuAEF.DuAE.Property.pickWhip = function ( childProp, parentProp, useThisComp ) {
  */
 DuAEF.DuAE.Property.linkProperties = function ( childProp, parentProp, useThisComp, timeLayer ) {
     if ( parentProp.name.toLowerCase() == 'data' ) return;
+
     if ( childProp.propertyType == PropertyType.PROPERTY && !childProp.elided && childProp.propertyValueType != PropertyValueType.NO_VALUE ) {
         if ( typeof timeLayer === 'undefined' ) timeLayer = null;
 
@@ -1449,25 +1456,30 @@ DuAEF.DuAE.Property.linkProperties = function ( childProp, parentProp, useThisCo
 
         //copy paste the animation / value
         var anim = DuAEF.DuAE.Property.getAnim( parentProp, false );
-        if ( anim != null ) DuAEF.DuAE.Property.setAnim( childProp, anim, 0, true, true, false );
-
-        //set the link
-        var exp = DuAEF.Duik.expressionIds.LINK + '\n';
+        if ( anim != null ) DuAEF.DuAE.Property.setAnim( childProp, anim, 0, true, true, false );      
+        
+        // Expression
+        var exp = [DuAEF.Duik.expressionIds.LINK,
+            'var link = ' + DuAEF.DuAE.Property.getExpressionLink( parentProp, useThisComp ) + ';'
+            ].join('\n');
         if ( timeLayer != null ) {
-            exp += 'var timeLayer = ' + DuAEF.DuAE.Property.getExpressionLink( timeLayer ) + ';\n' +
-                'var st = timeLayer.startTime;\n' +
-                'var t = time + st;\n' +
-                DuAEF.DuAE.Property.getExpressionLink( parentProp, useThisComp ) + '.valueAtTime(t);';
-
-        } else {
-            exp += DuAEF.DuAE.Property.getExpressionLink( parentProp, useThisComp ) + ';';
+            exp += [ '\nvar timeLayer = ' + DuAEF.DuAE.Property.getExpressionLink( timeLayer ) + ';',
+                'var timeOffset = timeLayer.startTime;',
+                'link.valueAtTime(time + timeOffset);'
+                ].join('\n');
+        }
+        else {
+            exp += '\nlink.value;';
         }
 
+        //set the link
         DuAEF.DuAE.Property.setExpression( childProp, exp, false );
+
     } else {
         if ( parentProp.isEffect ) {
             var insideData = 0;
             for ( var p = 1, num = childProp.numProperties; p <= num; p++ ) {
+                
                 var subProp = parentProp( p );
                 if ( subProp.propertyValueType == PropertyValueType.NO_VALUE ) {
                     if ( subProp.name.toLowerCase() == 'data' ) {
@@ -1481,13 +1493,15 @@ DuAEF.DuAE.Property.linkProperties = function ( childProp, parentProp, useThisCo
                         continue;
                     }
                 }
+                
                 if ( insideData == 0 ) DuAEF.DuAE.Property.linkProperties( childProp( p ), subProp, useThisComp, timeLayer );
                 else DuAEF.DuAE.Property.linkProperties( subProp, childProp( p ), useThisComp, timeLayer );
             }
         } else {
             for ( var p = 1, num = childProp.numProperties; p <= num; p++ ) {
+
                 try { DuAEF.DuAE.Property.linkProperties( childProp( p ), parentProp( p ), useThisComp, timeLayer ); }
-                catch(e) { if (DuAEF.debug) alert (chilProp.name + ' could not be linked.')};
+                catch(e) { if (DuAEF.debug) alert (childProp.name + ' could not be linked.\nError at line: ' + e.line + " in " + e.fileName + "\n" + e.description)};
             }
         }
     }

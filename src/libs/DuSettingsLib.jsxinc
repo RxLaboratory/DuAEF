@@ -38,15 +38,23 @@ function DuSettings(namespace,file)
 	namespace = def(namespace, DuAEF.scriptName);
 	if (DuAEF.DuJS.typeof( namespace ) != 'string') throw "Dusettings( namespace, file ): error\n\nnamespace must be a string";
 	if (namespace == "") throw "Dusettings( namespace, file ): error\n\nnamespace can not be an empty string";
-	var settingsFolder = new Folder(Folder.myDocuments.absoluteURI + "/" + namespace);
-	if (!settingsFolder.exists) settingsFolder.create();
-	file = def(file, new File(Folder.myDocuments.absoluteURI + "/" + namespace + "/" + namespace + "_settings.json"));
+	if (typeof file === 'undefined' && app.settings.haveSetting(namespace, "settingsFile"))
+	{
+		file = new File(app.settings.getSetting(namespace, "settingsFile"));
+	}
+	else if (typeof file === 'undefined')
+	{
+		var settingsFolder = new Folder(Folder.myDocuments.absoluteURI + "/" + namespace);
+		if (!settingsFolder.exists) settingsFolder.create();
+		file = new File(settingsFolder.absoluteURI + "/" + namespace + "_settings.json");
+	}
+	
 	this.namespace = namespace;
 	if (file instanceof File) this.file = file;
 	else this.file = new File(file);
 	this.file.encoding = 'UTF-8';
 	
-	app.settings.saveSetting( namespace,"settingsFile", file.absoluteURI );
+	app.settings.saveSetting( namespace,"settingsFile", this.file.absoluteURI );
 
 	this.data = {};
 	this.load();
@@ -76,3 +84,22 @@ DuSettings.prototype.save = function()
 	if (!DuAEF.DuAE.App.hasFilesAndNetworkAccess) return false;
 	return DuAEF.DuJS.Fs.saveJSON(this.data, this.file);
 }
+
+/**
+ * Sets the file to be used to save the settings
+ * @param {File|string} file The file or path to the file
+ */
+DuSettings.prototype.setFile = function(file)
+{
+	if (file instanceof File) this.file = file;
+	else this.file = new File(file);
+	if (file.exists) this.load();
+	else this.save();
+	app.settings.saveSetting( this.namespace,"settingsFile", this.file.absoluteURI );
+}
+
+/**
+ * Some settings shared with all DuAEF instances
+ * @type {DuSettings}
+ */
+DuAEF.settings = new DuSettings("DuAEF",DuAEF.DuJS.Fs.duaefData.absoluteURI + "/DuAEF_settings.json");

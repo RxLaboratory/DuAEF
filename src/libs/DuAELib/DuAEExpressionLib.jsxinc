@@ -1,0 +1,91 @@
+/**
+ * After Effects expression tools
+ * @namespace
+ * @memberof DuAEF.DuAE
+ */
+DuAEF.DuAE.Expression = {};
+
+//caches
+//this must be set to true during work on the cache to prevent it from updating
+DuAEF.DuAE.Expression.suspendCacheUpdates = false;
+
+// the expression cache is an array of PropertyExpression
+DuAEF.DuAE.Expression.cache = [];
+DuAEF.DuAE.Expression.lastCacheUpdateTime = 0;
+
+/**
+ * Updates the cache of the expressions used by Duik to speed up batch process of expressions in the whole project.<br />
+ * It's automatically run when needed if it's not been updated in a long time (1 mn) or if it's empty
+ * @param {bool} [currentComp=false] true: in current compositions, false: in all compositions of the project
+ * @param {bool} [selectedComps=false] When currentComp is false, true to replace only in selected compositions
+ * @param {bool} [selectedLayers=false] When currentComp is true, wether to replace only on selected layers
+ */
+DuAEF.DuAE.Expression.updateCache = function (currentComp, selectedComps, selectedLayers) {
+
+    if ( DuAEF.DuAE.Expression.suspendCacheUpdates ) return;
+
+    currentComp = def(currentComp, false);
+    selectedComps = def(selectedComps, false);
+    selectedLayers = def(selectedLayers, false);
+
+    //clear cache
+    DuAEF.DuAE.Expression.cache = [];
+
+    var comps = [];
+    if (currentComp) comps = [DuAEF.DuAE.Project.getActiveComp()];
+    else if (selectedComps) comps = app.project.selection;
+    else comps = DuAEF.DuAE.Project.getComps();
+
+    for ( var i = 0, num = comps.length; i < num; i++ ) {
+        var comp = comps[i];
+        if ( !( comp instanceof CompItem ) ) continue;
+
+        var layers = comp.layers;
+        if (selectedLayers) layers = comp.selectedLayers;
+
+        new Iterator(layers).do(function (layer) {
+            DuAEF.DuAE.Property.addToExpressionCache( layer );
+        });
+    }
+
+    DuAEF.DuAE.Expression.lastCacheUpdateTime = new Date().getTime();
+}
+
+/**
+ * Runs a function on all expressions
+ * @param {function} func The function to run, which takes one param, a {@link PropertyExpression} object.
+ * @param {bool} [currentComp=false] true: in current compositions, false: in all compositions of the project
+ * @param {bool} [selectedComps=false] When currentComp is false, true to replace only in selected compositions
+ * @param {bool} [selectedLayers=false] When currentComp is true, wether to replace only on selected layers
+ * @param {boolean} [updateCache=true] When false, the cache won't be updated before running the function. Set this to false if you already have updated the cache to improve performance.
+ * @param {boolean} [apply=true] When false, the cache won't be applied back to Ae. Set this to false if you need to run other methods on expressions before applying the result to improve performance.
+ */
+DuAEF.DuAE.Expression.doInExpresssions = function ( func, currentComp, selectedComps, selectedLayers, updateCache, apply )
+{
+    currentComp = def(currentComp, false);
+    selectedComps = def(selectedComps, false);
+    selectedLayers = def(selectedLayers, false);
+    updateCache = def(updateCache, true);
+    apply = def(apply, true);
+
+    if (updateCache) DuAEF.DuAE.Expression.updateCache( currentComp, selectedComps, selectedLayers );
+
+    for (var i = 0, num = DuAEF.DuAE.Expression.cache.length; i < num; i++) {
+        func( DuAEF.DuAE.Expression.cache[i] );
+    }
+
+    if (apply) DuAEF.DuAE.Expression.apply( );
+}
+
+//low-level undocumented method used to re-set expressions once they have been modified in the cache
+DuAEF.DuAE.Expression.apply = function ( ) {
+    for (var i = 0, num = DuAEF.DuAE.Expression.cache.length; i < num; i++)
+    {
+        var pExp = DuAEF.DuAE.Expression.cache[i];
+        if (pExp.layer.locked) continue;
+        if (!pExp.changed) continue;
+
+        var prop = pExp.getProperty();
+        prop.expression = pExp.expression;
+    } 
+}

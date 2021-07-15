@@ -261,10 +261,10 @@ DuAEF.Duik.Rigging.addLocator = function( layerOrComp )
         'try{ l = effect("' + layerfx.name + '")(1) } catch(e) { }',
         'if (l)',
         '{',
-        '    var sign = getScaleMirror( );',
-        '    var flip = getScaleUTurn( );',
+        '    var sign = getScaleMirror( thisLayer );',
+        '    var flip = getScaleUTurn( thisLayer );',
         '    result = getOrientation( l ) * sign + flip;',
-        '    result += dishineritRotation() - value;',
+        '    result += dishineritRotation( thisLayer ) - value;',
         '}',
         'result;'
         ].join('\n');
@@ -301,7 +301,7 @@ DuAEF.Duik.Rigging.addLocator = function( layerOrComp )
         DuAEF.DuExpression.get(['getScale','dishineritScale']),
         '',
         'var threeD = value.length == 3;',
-        'var result = dishineritScale() - value;',
+        'var result = dishineritScale( thisLayer ) - value;',
         'if (threeD) result += [100,100,100];',
         'else result += [100,100];',
         '',
@@ -420,11 +420,11 @@ DuAEF.Duik.Rigging.applyLocatorValues = function ( locator, disable )
 {
     disable = def(disable, true);
     var l = locator.locked;
-    locator.transform.anchorPoint.setValue( locator.transform.anchorPoint.valueAtTime(0, false));
-    locator.transform.position.setValue( locator.transform.position.valueAtTime(0, false));
-    locator.transform.scale.setValue( locator.transform.scale.valueAtTime(0, false));
-    locator.transform.rotation.setValue( locator.transform.rotation.valueAtTime(0, false));
-    locator.transform.opacity.setValue( locator.transform.opacity.valueAtTime(0, false));
+    DuAEF.DuAE.Property.setValue(locator.transform.anchorPoint, locator.transform.anchorPoint.valueAtTime(0, false), 0);
+    DuAEF.DuAE.Property.setValue(locator.transform.position, locator.transform.position.valueAtTime(0, false), 0);
+    DuAEF.DuAE.Property.setValue(locator.transform.scale, locator.transform.scale.valueAtTime(0, false), 0);
+    DuAEF.DuAE.Property.setValue(locator.transform.rotation, locator.transform.rotation.valueAtTime(0, false), 0);
+    DuAEF.DuAE.Property.setValue(locator.transform.opacity, locator.transform.opacity.valueAtTime(0, false), 0);
     if (disable) DuAEF.Duik.Rigging.disableLocator( locator );
     locator.locked = l;
 }
@@ -576,7 +576,7 @@ DuAEF.Duik.Rigging.parent = function( children, parent, useMasterProperties )
                 var childLocator = childComp.layers.addNull();
                 childLocator.name = DuAEF.DuAE.Comp.newUniqueLayerName( locator.name, childComp );
                 DuAEF.Duik.setDuikMarker( childLocator, "Locator", DuAEF.Duik.LayerTypes.LOCATOR );
-                DuAEF.DuAE.Property.linkProperties( childLocator.transform, locator.transform );
+                DuAEF.DuAE.Property.linkProperties( childLocator.transform, locator.transform, undefined, precompLayer );
                 //lock and hide
                 childLocator.selected = false;
                 childLocator.enabled = false;
@@ -613,7 +613,7 @@ DuAEF.Duik.Rigging.orientationConstraint = function( layer )
 
     layer.rotation.expression = [DuAEF.Duik.expressionIds.ORIENTATION,
         DuAEF.DuExpression.get(['sign','getOrientation','dishineritRotation','checkDuikEffect']),
-        'var result = dishineritRotation();',
+        'var result = dishineritRotation( thisLayer );',
         'for ( var i = 1; i <= thisLayer( "Effects" ).numProperties; i++ ) {',
         '    var fx = effect( i );',
         '    if ( !checkDuikEffect(fx, "' + effect.matchName.replace('Pseudo/','') + '") ) continue;',
@@ -790,7 +790,7 @@ DuAEF.Duik.Rigging.parentConstraint = function( layer )
         '    if ( fx(' + index['Weight_Slider'] + ').numKeys < 2 ) {',
         '        var w = fx(' + index['Weight_Slider'] + ').value / 100;',
         '        if ( w == 0 ) continue;',
-        '        var P = getOrientationAtTime( l );',
+        '        var P = getOrientationAtTime( l, time );',
         '        var oP = getOrientationAtTime( l, 0 );',
         '        result += ( P - oP ) * w;',
         '    } else {',
@@ -962,10 +962,12 @@ DuAEF.Duik.Rigging.connector = function( childProp, parentProp, parentEffect, mi
     // check if the current comp is the same than the comp containing the masterProperty
     var parentComp = parentLayer.containingComp;
     var childComp = DuAEF.DuAE.Property.getComp( childProp );
+    var comp = 'thisComp.';
+    if ( parentComp !== childComp ) comp = 'comp("' + parentComp.name + '").';
 
     var expr = '//Duik.connector\n' +
-        'var ctrlLayer = comp("' + parentComp.name + '").layer("' + parentLayer.name + '");\n' +
-        'var connectorLayer = comp("' + parentComp.name + '").layer("' + connectorLayer.name + '");\n' +
+        'var ctrlLayer = ' + comp + 'layer("' + parentLayer.name + '");\n' +
+        'var connectorLayer = ' + comp + 'layer("' + connectorLayer.name + '");\n' +
         'var ctrlValue = ctrlLayer' + DuAEF.DuAE.Property.getExpressionLink( parentProp.getProperty(), false, false ) + ';\n' +
         'var ctrlEffect = connectorLayer.effect("' + parentEffect.name + '");\n' +
         'var ctrlMin = ctrlEffect(2).value;\n' +
