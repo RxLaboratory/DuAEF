@@ -1,0 +1,855 @@
+﻿/**
+	* Constructs a new KeySpatialProperty
+	* @class KeySpatialProperties
+	* @classdesc Spatial properties of a {@linkcode KeyFrame}.
+	* @property {float[]|null}	  [inTangent=null]     - The incoming spatial tangent
+	* @property {float[]|null}    [outTangent=null]            -  The outgoing spatial tangent
+	* @property {boolean}      [_continuous=true]         - true if the specified keyframe has spatial continuity
+	* @property {boolean}	[_autoBezier=false]			- true if the specified keyframe has temporal auto-Bezier interpolation
+	* @property {boolean}	[_roving=false]	- true if the specified keyframe is roving
+*/
+function KeySpatialProperties (){
+	this.inTangent = null;
+	this.outTangent = null;
+	this._continuous = true;
+	this._autoBezier = false;
+	this._roving = false;
+}
+
+/**
+	 Constructs a new KeyFrame
+	* @class KeyFrame
+	* @classdesc Properties of an After Effects Keyframe, as returned by {@linkcode DuAEF.DuAE.Property.getKeyFrames} or {@linkcode DuAEF.DuAE.Property.getKeyFrameAtIndex} or {@linkcode DuAEF.DuAE.Property.getKeyFrameAtTime}.
+	* @property {float}	  _time     - The keyframe time
+	* @property {null|folat[]|float|MarkerValue|int|Shape|TextDocument}    value  -  The keyframe value
+	* @property {KeyframeInterpolationType}   _inInterpolationType  - The incoming temporal interpolation type
+	* @property {KeyframeInterpolationType}	_outInterpolationType		- The outgoing temporal interpolation type
+	* @property {boolean}	_spatial	- true if this keyframe has a spatial value
+	* @property {KeySpatialProperties}	spatialProperties	- the spatial properties {@linkcode KeySpatialProperties} of this keyframe
+	* @property {KeyframeEase[]}	inEase	- The incoming temporal ease. The number of objects in the Array depends on the value type
+	* @property {KeyframeEase[]}	outEase	- The outgoing temporal ease. The number of objects in the Array depends on the value type
+	* @property {boolean}	_continuous	- true if the keyframe has temporal continuity
+	* @property {boolean}	_autoBezier	- true if the keyframe has temporal auto-Bezier interpolation
+	* @property {int}		_index	- The index of the keyFrame. Warning: not updated when another key frame is added on the property some time before this key._time!
+*/
+function KeyFrame(){
+	this._time = 0;
+	this.value = null;
+	this._inInterpolationType = KeyframeInterpolationType.LINEAR;
+	this._outInterpolationType = KeyframeInterpolationType.LINEAR;
+	this._spatial = false;
+	this.spatialProperties = new KeySpatialProperties();
+	this.inEase = null;
+	this.outEase = null;
+	this._continuous = false;
+	this._autoBezier = false;
+	this._index = 0;
+}
+
+/**
+	* Constructs a new animation
+	* @class PropertyAnim
+	* @classdesc Describes the animation of an After Effects property
+	* @property {string}	  [_name=""]     - The property name
+	* @property {string}    [_matchName=""]  - The property matchName
+	* @property {KeyFrame[]}   [keys=[]]  - The keyframes of the animation
+	* @property {null|float[]|float|MarkerValue|int|Shape|TextDocument}	[startValue=null]		- The value at the beginning of the animation
+	* @property {string}	[expression=""]		- The expression on the property, if any.
+	* @property {string}   [type="anim"]  - Read Only.
+	* @property {float}   startTime  - Read Only. The starting time of the animation.
+	* @property {float}   endTime  - Read Only. The ending time of the animation.
+*/
+function PropertyAnim()
+{
+	this._name = "";
+	this._matchName = "";
+	this.keys = [];
+	this.startValue = null;
+	this.type = "anim";
+	this.expression = "";
+	this.dimensions = 0;
+	this.startTime = null;
+	this.endTime = null;
+}
+
+/**
+	* Constructs a new group animation
+	* @class PropertyGroupAnim
+	* @classdesc Contains all PropertyAnim from an After Effects PropertyGroup
+	* @property {string}	  [_name=""]     - The property name
+	* @property {string}    [_matchName=""]  - The property matchName
+	* @property {PropertyAnim[]|PropertyGroupAnim[]}   [anims=[]]  - The animations in the group
+	* @property {string}   [type="group"]  - Read Only.
+	* @property {float}   startTime  - Read Only. The starting time of the animation.
+	* @property {float}   endTime  - Read Only. The ending time of the animation.
+*/
+function PropertyGroupAnim()
+{
+	this._name = "";
+	this._matchName = "";
+	this.anims = [];
+	this.type = "group";
+	this.startTime = null;
+	this.endTile = null;
+}
+
+/**
+	* Constructs a new layer animation
+	* @class LayerAnim
+	* @classdesc Contains all PropertyGroupAnim from an After Effects Layer
+	* @property {string}	  [_name=""]     - The property name
+	* @property {int}    [_index=""]  - The index of the layer
+	* @property {PropertyGroupAnim[]} [anims=[]] - All the animations of the layer
+	* @property {float} [firstKeyFrameTime=0] - The time of the first keyframe
+	* @property {string}   [type="layer"]  - Read Only.
+	* @property {float}   startTime  - Read Only. The starting time of the animation.
+	* @property {float}   endTime  - Read Only. The ending time of the animation.
+*/
+function LayerAnim()
+{
+	this._name = "";
+	this._index = 0;
+	this.anims = [];
+	this.type = 'layer';
+	this.startTime = null;
+	this.endTile = null;
+}
+
+/**
+	* Constructs a new PropertyInfo
+	* @example
+	* var propInfo = new PropertyInfo(property);
+	* layer("ADBE effect parade").addProperty("ADBE layer control"); //now the property object is broken
+	* property = propInfo.getProperty(); // You can retrieve the property like this, fixed if it's an effect
+	* @class PropertyInfo
+	* @classdesc Get some handy informations about a property<br />
+	* This class is able to "fix" effects properties which have been broken by
+	* the addition of another effect on the same layer, as long as the class has been
+	* instanciated before the effect has been broken.
+	* @param {PropertyBase|PropertyInfo} property - The property. If a PropertyInfo is provided, the constructor returns it (it does not make a copy).<br />
+	* This makes it easy to avoid type checking, as you can always pass any property or PropertyInfo to the constructor to be sure to handle a PropertyInfo, without any impact on performance.<br />
+	* @example
+	* myFunction (prop) //This function can be passed either a property or a PropertyInfo
+	* {
+	* propInfo = new PropertyInfo(prop);
+	* prop = propInfo.getProperty();
+	* }
+	* @property {int} index - The propertyIndex
+	* @property {boolean} isEffect - true if this is an effect (sub)property
+	* @property {boolean} riggable  - true if this prop can be rigged (it's a value which can set expressions)
+	* @property {Layer} layer - The layer containing the property
+	* @property {int} dimensions - The number of dimensions, 0 if this is not a dimensionnal value (text, shape...)
+	* @property {string} name - The name of the property
+	* @property {string} matchName - The matchName of the property
+	* @property {PropertyGroup|null} effect - The effect containing the property
+	* @property {boolean} editable - true if the value of the property can be changed
+	* @property {boolean} numerical - true if the value is a number or an array of numbers
+	* @property {boolean} isPercent - true if the unit is a percentage
+	* @property {boolean} isAngle - true if the unit is a degree
+	* @property {boolean} isPixels - true if the unit is a pixel
+	* @property {int} numKeys - the number of keyframes on the property
+	* @property {bool} group - true if the property is a PropertyGroup
+	* @property {string} unitsText - the name of the unit (localized)
+	* @property {string} unit - the abbreviated unit, as displayed in the UI (localized)
+	* @property {string} expression - the expression in the property
+*/
+function PropertyInfo(property)
+{
+	if (property instanceof PropertyInfo) return property;
+	if (typeof property === 'undefined') 
+	{
+		DuESF.debug.throwTypeError(property, "property", "Property", "PropertyInfo(property)");
+		return;
+	}
+	
+	var expressionEnabled = property.expressionEnabled;
+	if (property.propertyType == PropertyType.PROPERTY)
+	{
+		this.numKeys = property.numKeys;
+		this.group = false;
+	}
+	else
+	{
+		this.group = true;
+		this.numKeys = 0;
+	}
+	this.property = property;
+	this.name = property.name;
+	this.matchName = property.matchName;
+	this.index = property.propertyIndex;
+	this.parentIndices  = [this.index];
+	this.isEffect = property.isEffect;
+	this.effect = null;
+	if (!this.isEffect)
+	{
+		var parentProp = property;
+		while (parentProp.parentProperty)
+		{
+			// Traverse up the property tree
+			parentProp = parentProp.parentProperty;
+			this.isEffect = parentProp.isEffect;
+			this.parentIndices.unshift(parentProp.propertyIndex);
+			if (this.isEffect) this.effect = parentProp;
+			if (this.isEffect) break;
+		}
+	}
+	else this.effect = property;
+
+	this.riggable = DuAEF.DuAE.Property.isRiggable(property);
+	this.numerical = DuAEF.DuAE.Property.isNumerical(property);
+	this.editable = DuAEF.DuAE.Property.isEditable(property);
+	this.layer = DuAEF.DuAE.Property.getLayer(property);
+	this.comp = this.layer.containingComp;
+	this.dimensions = DuAEF.DuAE.Property.getDimensions(property);
+	this.unitsText = property.unitsText;
+	this.isPercent = this.unitsText == localize("$$$/AE/TLW/GraphEditor/PercentSource=percent");
+	this.isAngle = this.unitsText == localize("$$$/AE/TLW/GraphEditor/DegreesSource=degrees");
+	this.isPixels = this.unitsText == localize("$$$/AE/TLW/GraphEditor/PixelsSource=pixels");
+	this.unit = "";
+	if (this.isPercent) this.unit = "%";
+	if (this.isAngle) this.unit = "°";
+	if (this.isPixels) this.unit = localize("$$$/AE/TLW/GraphEditor/PixelsDest=px");
+
+	if (this.riggable) {
+		this.expression = property.expression;
+	}
+}
+
+//undocumented object used for quick access to expressions in the cache
+function PropertyExpression(property)
+{
+	if (property instanceof PropertyExpression)
+	{
+		property.expression = property.getProperty().expression;
+		return property;
+	}
+
+	this.property = property;
+	this.layer = DuAEF.DuAE.Property.getLayer(property);
+	this.comp = this.layer.containingComp;
+	this.empty = false;
+
+	if ( !DuAEF.DuAE.Property.isRiggable(property) ) {
+		this.empty = true;
+		return;
+	} 
+	if (property.expression == '') {
+		this.empty = true;
+		return;
+	}
+	
+	this.parentIndices  = [property.propertyIndex];
+	this.isEffect = property.isEffect;
+	if (!this.isEffect)
+	{
+		var parentProp = property;
+		while (parentProp.parentProperty)
+		{
+			// Traverse up the property tree
+			parentProp = parentProp.parentProperty;
+			this.isEffect = parentProp.isEffect;
+			this.parentIndices.unshift(parentProp.propertyIndex);
+			if (this.isEffect) break;
+		}
+	}
+	this.layer = DuAEF.DuAE.Property.getLayer(property);
+	this.expression = property.expression;
+
+	this.changed = false;
+}
+
+/**
+	* Gets the original Property<br />
+	* Always works even if this PropertyInfo represents an effect which has been broken<br />
+	* ---AE Hack---
+	* @memberof PropertyInfo
+	* @return {PropertyBase} The property
+	* @todo When returning an effect, check if the matchName corresponds too.
+*/
+PropertyInfo.prototype.getProperty = function()
+{
+	if (this.isEffect)
+	{
+		var parentProp = this.layer("ADBE Effect Parade");
+		for (var i = 0 ; i < this.parentIndices.length ; i++)
+		{
+			parentProp = parentProp(this.parentIndices[i]);
+		}
+		this.property = parentProp;
+	}
+	return this.property;
+}
+
+PropertyExpression.prototype.getProperty = function()
+{
+	if (this.isEffect)
+	{
+		var parentProp = this.layer("ADBE Effect Parade");
+		for (var i = 0 ; i < this.parentIndices.length ; i++)
+		{
+			parentProp = parentProp(this.parentIndices[i]);
+		}
+		this.property = parentProp;
+	}
+	return this.property;
+}
+
+/**
+ * After Effects Tools
+ * @author Nicolas Dufresne, Kevin Masson and contributors
+ * @copyright 2017,2018 Nicolas Dufresne, Rainbox Productions<br />
+ * {@link https://rainboxprod.coop}
+ * @namespace
+ * @memberof DuAEF
+ * @license GPL-3.0 <br />
+ * DuAEF is free software: you can redistribute it and/or modify<br />
+ * it under the terms of the GNU General Public License as published by<br />
+ * the Free Software Foundation, either version 3 of the License, or<br />
+ * (at your option) any later version.<br />
+ *<br />
+ * DuAEF is distributed in the hope that it will be useful,<br />
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+ * GNU General Public License for more details.<br />
+ *<br />
+ * You should have received a copy of the GNU General Public License<br />
+ * along with DuAEF. If not, see {@link http://www.gnu.org/licenses/}.
+*/
+DuAEF.DuAE = {};
+
+
+// low-level undocumented method
+// Loads pseudo effects and presets
+// just before entering runtime
+DuAEF.DuAE.postInit = function()
+{
+
+	//PRESETS
+
+	#include "../pseudoEffects/duaef_magic.ffx.jsxinc"
+	duaef_magic = DuAEF.DuBinary.toFile(duaef_magic);
+
+	DuAEF.DuAE.Presets =
+	{
+		MAGIC: duaef_magic
+	};
+
+	//PSEUDO EFFECTS
+
+	
+}
+
+
+/**
+ * The axis or channels
+ * @enum {int}
+ * @readonly
+*/
+DuAEF.DuAE.Axis =
+{
+	X: 1,
+	Y: 2,
+	Z: 3,
+	RED: 4,
+	GREEN: 5,
+	BLUE: 6,
+	ALPHA: 7,
+	HUE: 8,
+	SATURATION: 9,
+	VALUE: 10
+}
+
+/**
+ * Types of values
+ * @enum {int}
+ * @readonly
+*/
+DuAEF.DuAE.Types =
+{
+	VALUE: 1,
+	VELOCITY: 2
+}
+
+/**
+ * Abbreviated units used in the UI.<br />
+ * These strings are localized based on internal After Effects dictionnaries.
+ * @enum {string}
+ * @readonly
+*/
+DuAEF.DuAE.Units =
+{
+	PIXELS: localize("$$$/AE/TLW/GraphEditor/PixelsDest=px"),
+	DEGREES: localize("$$$/AE/TLW/GraphEditor/DegreesDest=°"),
+	PERCENT: localize("$$$/AE/TLW/GraphEditor/PercentDest=%")
+}
+
+/**
+ * Units used in the UI<br />
+ * These strings are localized based on internal After Effects dictionnaries.
+ * @enum {string}
+ * @readonly
+*/
+DuAEF.DuAE.UnitsText =
+{
+	PERCENT: localize("$$$/AE/TLW/GraphEditor/PixelsSource=percent"),
+	DEGREES: localize("$$$/AE/TLW/GraphEditor/DegreesSource=degrees"),
+	PIXELS: localize("$$$/AE/TLW/GraphEditor/PercentSource=pixels")
+}
+
+/**
+	* Associative array that converts property match names to their compact English expression statements.
+	* @example
+	* DuAEF.DuAE.compactExpressions["ADBE Transform Group"]
+	* //returns "'transform'"
+	* @type {Object}
+*/
+DuAEF.DuAE.compactExpressions =
+{
+	"ADBE Transform Group":"'transform'",
+	// Handle camera/light vs. AV layers
+	"ADBE Anchor Point":"((prop.propertyGroup(prop.propertyDepth).property('intensity')!=null) || (prop.propertyGroup(prop.propertyDepth).property('zoom')!=null)) ? '.pointOfInterest' : '.anchorPoint'",
+	"ADBE Position":"'.position'",
+	"ADBE Scale":"'.scale'",
+	"ADBE Orientation":"'.orientation'",
+	"ADBE Rotate X":"'.xRotation'",
+	"ADBE Rotate Y":"'.yRotation'",
+	// Handle 3D vs. 2D layers
+	"ADBE Rotate Z":"(prop.propertyGroup(prop.propertyDepth).threeDLayer || (prop.propertyGroup(prop.propertyDepth).property('intensity')!=null) || (prop.propertyGroup(prop.propertyDepth).property('zoom')!=null)) ? '.zRotation' : '.rotation'",
+	"ADBE Opacity":"'.opacity'",
+	"ADBE Material Options Group":"'materialOption'",
+	"ADBE Casts Shadows":"'.castsShadows'",
+	"ADBE Light Transmission":"'.lightTransmission'",
+	"ADBE Accepts Shadows":"'.acceptsShadows'",
+	"ADBE Accepts Lights":"'.acceptsLights'",
+	"ADBE Ambient Coefficient":"'.ambient'",
+	"ADBE Diffuse Coefficient":"'.diffuse'",
+	"ADBE Specular Coefficient":"'.specular'",
+	"ADBE Shininess Coefficient":"'.shininess'",
+	"ADBE Metal Coefficient":"'.metal'",
+	"ADBE Light Options Group":"'lightOption'",
+	"ADBE Light Intensity":"'.intensity'",
+	"ADBE Light Color":"'.color'",
+	"ADBE Light Cone Angle":"'.coneAngle'",
+	"ADBE Light Cone Feather 2":"'.coneFeather'",
+	"ADBE Light Shadow Darkness":"'.shadowDarkness'",
+	"ADBE Light Shadow Diffusion":"'.shadowDiffusion'",
+	"ADBE Camera Options Group":"'cameraOption'",
+	"ADBE Camera Zoom":"'.zoom'",
+	"ADBE Camera Depth of Field":"'.depthOfField'",
+	"ADBE Camera Focus Distance":"'.focusDistance'",
+	"ADBE Camera Aperture":"'.aperture'",
+	"ADBE Camera Blur Level":"'.blurLevel'",
+	"ADBE Text Properties":"'text'",
+	"ADBE Text Document":"'.sourceText'",
+	"ADBE Text Path Options":"'.pathOption'",
+	"ADBE Text Path":"'.path'",
+	"ADBE Text Reverse Path":"'.reversePath'",
+	"ADBE Text Perpendicular To Path":"'.perpendicularToPath'",
+	"ADBE Text Force Align Path":"'.forceAlignment'",
+	"ADBE Text First Margin":"'.firstMargin'",
+	"ADBE Text Last Margin":"'.lastMargin'",
+	"ADBE Text More Options":"'.moreOption'",
+	"ADBE Text Anchor Point Option":"'.anchorPointGrouping'",
+	"ADBE Text Anchor Point Align":"'.groupingAlignment'",
+	"ADBE Text Render Order":"'.fillANdStroke'",
+	"ADBE Text Character Blend Mode":"'.interCharacterBlending'",
+	"ADBE Text Animators":"'.animator'",
+	"ADBE Text Selectors":"'.selector'",
+	"ADBE Text Percent Start":"'.start'",
+	"ADBE Text Percent End":"'.end'",
+	"ADBE Text Percent Offset":"'.offset'",
+	"ADBE Text Index Start":"'.start'",
+	"ADBE Text Index End":"'.end'",
+	"ADBE Text Index Offset":"'.offset'",
+	"ADBE Text Range Advanced":"'.advanced'",
+	"ADBE Text Range Units":"'.units'",
+	"ADBE Text Range Type2":"'.basedOn'",
+	"ADBE Text Selector Mode":"'.mode'",
+	"ADBE Text Selector Max Amount":"'.amount'",
+	"ADBE Text Range Shape":"'.shape'",
+	"ADBE Text Selector Smoothness":"'.smoothness'",
+	"ADBE Text Levels Max Ease":"'.easeHigh'",
+	"ADBE Text Levels Min Ease":"'.easeLow'",
+	"ADBE Text Randomize Order":"'.randomizeOrder'",
+	"ADBE Text Random Seed":"'.randomSeed'",
+	"ADBE Text Selector Mode":"'.mode'",
+	"ADBE Text Wiggly Max Amount":"'.maxAmount'",
+	"ADBE Text Wiggly Min Amount":"'.minAmount'",
+	"ADBE Text Range Type2":"'.basedOn'",
+	"ADBE Text Temporal Freq":"'.wigglesSecond'",
+	"ADBE Text Character Correlation":"'.correlation'",
+	"ADBE Text Temporal Phase":"'.temporalPhase'",
+	"ADBE Text Spatial Phase":"'.spatialPhase'",
+	"ADBE Text Wiggly Lock Dim":"'.lockDimensions'",
+	"ADBE Text Wiggly Random Seed":"'.randomSeed'",
+	"ADBE Text Range Type2":"'.basedOn'",
+	"ADBE Text Expressible Amount":"'.amount'",
+	"ADBE Text Animator Properties":"'.property'",
+	"ADBE Text Anchor Point 3D":"'.anchorPoint'",
+	"ADBE Text Position 3D":"'.position'",
+	"ADBE Text Scale 3D":"'.scale'",
+	"ADBE Text Skew":"'.skew'",
+	"ADBE Text Skew Axis":"'.skewAxis'",
+	"ADBE Text Rotation X":"'.xRotation'",
+	"ADBE Text Rotation Y":"'.yRotation'",
+	"ADBE Text Rotation":"'.zRotation'",
+	"ADBE Text Opacity":"'.opacity'",
+	"ADBE Text Fill Opacity":"'.fillOpacity'",
+	"ADBE Text Fill Color":"'.fillColor'",
+	"ADBE Text Fill Hue":"'.fillHue'",
+	"ADBE Text Fill Saturation":"'.fillSaturation'",
+	"ADBE Text Fill Brightness":"'.fillBrightness'",
+	"ADBE Text Stroke Opacity":"'.strokeOpacity'",
+	"ADBE Text Stroke Color":"'.strokeColor'",
+	"ADBE Text Stroke Hue":"'.strokeHue'",
+	"ADBE Text Stroke Saturation":"'.strokeSaturation'",
+	"ADBE Text Stroke Brightness":"'.strokeBrightness'",
+	"ADBE Text Stroke Width":"'.strokeWidth'",
+	"ADBE Text Line Anchor":"'.lineAnchor'",
+	"ADBE Text Line Spacing":"'.lineSpacing'",
+	"ADBE Text Track Type":"'.trackingType'",
+	"ADBE Text Tracking Amount":"'.trackingAmount'",
+	"ADBE Text Character Change Type":"'.characterAlignment'",
+	"ADBE Text Character Range":"'.characterRange'",
+	"ADBE Text Character Replace":"'.characterValue'",
+	"ADBE Text Character Offset":"'.characterOffset'",
+	"ADBE Text Blur":"'.blur'",
+	"ADBE Mask Parade":"'mask'",
+	"ADBE Mask Shape":"'.maskPath'",
+	"ADBE Mask Feather":"'.maskFeather'",
+	"ADBE Mask Opacity":"'.maskOpacity'",
+	"ADBE Mask Offset":"'.maskExpansion'",
+	"ADBE Effect Parade":"'effect'",
+	"ADBE Paint Group":"'.stroke'",
+	"ADBE Paint Shape":"'.path'",
+	"ADBE Paint Properties":"'.strokeOption'",
+	"ADBE Paint Begin":"'.start'",
+	"ADBE Paint End":"'.end'",
+	"ADBE Paint Color":"'.color'",
+	"ADBE Paint Diameter":"'.diameter'",
+	"ADBE Paint Angle":"'.angle'",
+	"ADBE Paint Hardness":"'.hardness'",
+	"ADBE Paint Roundness":"'.roundness'",
+	"ADBE Paint Tip Spacing":"'.spacing'",
+	"ADBE Paint Target Channels":"'.channels'",
+	"ADBE Paint Opacity":"'.opacity'",
+	"ADBE Paint Flow":"'.flow'",
+	"ADBE Paint Clone Layer":"'.cloneSource'",
+	"ADBE Paint Clone Position":"'.clonePosition'",
+	"ADBE Paint Clone Time":"'.cloneTime'",
+	"ADBE Paint Clone Time Shift":"'.cloneTimeShift'",
+	"ADBE Paint Transform":"'.transform'",
+	"ADBE Paint Anchor Point":"'.anchorPoint'",
+	"ADBE Paint Position":"'.position'",
+	"ADBE Paint Scale":"'.scale'",
+	"ADBE Paint Rotation":"'.rotation'",
+	"ADBE MTrackers":"'motionTracker'",
+	"ADBE MTracker Pt Feature Center":"'.featureCenter'",
+	"ADBE MTracker Pt Feature Size":"'.featureSize'",
+	"ADBE MTracker Pt Search Ofst":"'.searchOffset'",
+	"ADBE MTracker Pt Search Size":"'.searchSize'",
+	"ADBE MTracker Pt Confidence":"'.confidence'",
+	"ADBE MTracker Pt Attach Pt":"'.attachPoint'",
+	"ADBE MTracker Pt Attach Pt Ofst":"'.attachPointOffset'",
+	"ADBE Audio Group":"'audio'",
+	"ADBE Audio Levels":"'.audioLevels'",
+	"ADBE Time Remapping":"'timeRemap'",
+	"ADBE Layer Styles":"'layerStyle'",
+	"ADBE Blend Options Group":"'.blendingOption'",
+		"ADBE Global Angle2":"'.globalLightAngle'",
+		"ADBE Global Altitude2":"'.globalLightAltitude'",
+		"ADBE Adv Blend Group":"'.advancedBlending'",
+		"ADBE Layer Fill Opacity2":"'.fillOpacity'",
+		"ADBE R Channel Blend":"'.red'",
+		"ADBE G Channel Blend":"'.green'",
+		"ADBE B Channel Blend":"'.blue'",
+		"ADBE Blend Interior":"'.blendInteriorStylesAsGroup'",
+		"ADBE Blend Ranges":"'.useBlendRangesFromSource'",
+	"dropShadow/enabled":"'.dropShadow'",
+		"dropShadow/mode2":"'.blendMode'",
+		"dropShadow/color":"'.color'",
+		"dropShadow/opacity":"'.opacity'",
+		"dropShadow/useGlobalAngle":"'.useGlobalLight'",
+		"dropShadow/localLightingAngle":"'.angle'",
+		"dropShadow/distance":"'.distance'",
+		"dropShadow/chokeMatte":"'.spread'",
+		"dropShadow/blur":"'.size'",
+		"dropShadow/noise":"'.noise'",
+		"dropShadow/layerConceals":"'.layerKnocksOutDropShadow'",
+	"innerShadow/enabled":"'.innerShadow'",
+		"innerShadow/mode2":"'.blendMode'",
+		"innerShadow/color":"'.color'",
+		"innerShadow/opacity":"'.opacity'",
+		"innerShadow/useGlobalAngle":"'.useGlobalLight'",
+		"innerShadow/localLightingAngle":"'.angle'",
+		"innerShadow/distance":"'.distance'",
+		"innerShadow/chokeMatte":"'.choke'",
+		"innerShadow/blur":"'.size'",
+		"innerShadow/noise":"'.noise'",
+	"outerGlow/enabled":"'.outerGlow'",
+		"outerGlow/mode2":"'.blendMode'",
+		"outerGlow/opacity":"'.opacity'",
+		"outerGlow/noise":"'.noise'",
+		"outerGlow/AEColorChoice":"'.colorType'",
+		"outerGlow/color":"'.color'",
+		"outerGlow/gradientSmoothness":"'.gradientSmoothness'",
+		"outerGlow/glowTechnique":"'.technique'",
+		"outerGlow/chokeMatte":"'.spread'",
+		"outerGlow/blur":"'.size'",
+		"outerGlow/inputRange":"'.range'",
+		"outerGlow/shadingNoise":"'.jitter'",
+	"innerGlow/enabled":"'.innerGlow'",
+		"innerGlow/mode2":"'.blendMode'",
+		"innerGlow/opacity":"'.opacity'",
+		"innerGlow/noise":"'.noise'",
+		"innerGlow/AEColorChoice":"'.colorType'",
+		"innerGlow/color":"'.color'",
+		"innerGlow/gradientSmoothness":"'.gradientSmoothness'",
+		"innerGlow/glowTechnique":"'.technique'",
+		"innerGlow/innerGlowSource":"'.source'",
+		"innerGlow/chokeMatte":"'.choke'",
+		"innerGlow/blur":"'.size'",
+		"innerGlow/inputRange":"'.range'",
+		"innerGlow/shadingNoise":"'.jitter'",
+	"bevelEmboss/enabled":"'.bevelAndEmboss'",
+		"bevelEmboss/bevelStyle":"'.style'",
+		"bevelEmboss/bevelTechnique":"'.technique'",
+		"bevelEmboss/strengthRatio":"'.depth'",
+		"bevelEmboss/bevelDirection":"'.direction'",
+		"bevelEmboss/blur":"'.size'",
+		"bevelEmboss/softness":"'.soften'",
+		"bevelEmboss/useGlobalAngle":"'.useGlobalLight'",
+		"bevelEmboss/localLightingAngle":"'.angle'",
+		"bevelEmboss/localLightingAltitude":"'.altitude'",
+		"bevelEmboss/highlightMode":"'.highlightMode'",
+		"bevelEmboss/highlightColor":"'.highlightColor'",
+		"bevelEmboss/highlightOpacity":"'.highlightOpacity'",
+		"bevelEmboss/shadowMode":"'.shadowMode'",
+		"bevelEmboss/shadowColor":"'.shadowColor'",
+		"bevelEmboss/shadowOpacity":"'.shadowOpacity'",
+	"chromeFX/enabled":"'.satin'",
+		"chromeFX/mode2":"'.blendMode'",
+		"chromeFX/color":"'.color'",
+		"chromeFX/opacity":"'.opacity'",
+		"chromeFX/localLightingAngle":"'.angle'",
+		"chromeFX/distance":"'.distance'",
+		"chromeFX/blur":"'.size'",
+		"chromeFX/invert":"'.invert'",
+	"solidFill/enabled":"'.colorOverlay'",
+		"solidFill/mode2":"'.blendMode'",
+		"solidFill/color":"'.color'",
+		"solidFill/opacity":"'.opacity'",
+	"gradientFill/enabled":"'.gradientOverlay'",
+		"gradientFill/mode2":"'.blendMode'",
+		"gradientFill/opacity":"'.opacity'",
+		"gradientFill/gradientSmoothness":"'.gradientSmoothness'",
+		"gradientFill/angle":"'.angle'",
+		"gradientFill/type":"'.style'",
+		"gradientFill/reverse":"'.reverse'",
+		"gradientFill/align":"'.alignWithLayer'",
+		"gradientFill/scale":"'.scale'",
+		"gradientFill/offset":"'.offset'",
+	"patternFill/enabled":"'.patternOverlay'",
+		"patternFill/mode2":"'.blendMode'",
+		"patternFill/opacity":"'.opacity'",
+		"patternFill/align":"'.linkWithLayer'",
+		"patternFill/scale":"'.scale'",
+		"patternFill/phase":"'.offset'",
+	"frameFX/enabled":"'.stroke'",
+		"frameFX/mode2":"'.blendMode'",
+		"frameFX/color":"'.color'",
+		"frameFX/size":"'.size'",
+		"frameFX/opacity":"'.opacity'",
+		"frameFX/style":"'.position'",
+	"ADBE Layer Overrides":"'masterProperty'"
+};
+
+/**
+	* Menu Command Ids<br />
+	* These are the ids which can be found using <code>app.findMenuCommandID("insertMenuNameHere");</code><br />
+	* Use <code>app.executeCommand(id)</code> to run them.
+	* @enum {int}
+	* @readonly
+	* @example
+	* app.executeCommand(DuAEF.DuAE.menuCommandID.COPY); //copies the selection
+	* app.executeCommand(DuAEF.DuAE.menuCommandID.PASTE); //pastes the selection
+*/
+DuAEF.DuAE.menuCommandID =
+{
+	//EDIT menu
+	CUT: 18,
+	COPY: 19,
+	COPY_WITH_PROPERTY_LINKS: 10310,
+	PASTE: 20,
+	DUPLICATE: 2080,
+	UNDO: 16
+}
+
+/**
+	* How to place new layers
+	* @enum {int}
+	* @readonly
+*/
+DuAEF.DuAE.LayerPlacements =
+{
+	BOTTOM: 0,
+	UNDER_LAYER: 1,
+	ABOVE_LAYER: 2,
+	TOP: 3
+}
+
+/**
+ * Types of layers used by Ae
+ * @enum {string}
+ * @readonly
+*/
+DuAEF.DuAE.LayerTypes =
+{
+	NULL: 'null',
+	SOLID: 'solid',
+	SHAPE: 'shape',
+	TEXT: 'text',
+	ADJUSTMENT: 'adjustment',
+	LIGHT: 'light',
+	CAMERA: 'camera'
+}
+
+/**
+ * Attributes of layers in Ae
+ * @enum {string}
+ * @readonly
+*/
+DuAEF.DuAE.LayerAttributes =
+{
+	SELECTED: 'selected',
+	VISIBLE: 'visible',
+	AUDIO: 'audio',
+	SOLO: 'solo',
+	LOCKED: 'locked',
+	SHY: 'shy',
+	EFFECTS_ENABLED: 'effects',
+	MOTION_BLUR: 'motionblur',
+	THREE_D: '3d',
+	GUIDE: 'guide'
+}
+
+/**
+ * Loop types
+ * @enum {string}
+ * @readonly
+*/
+DuAEF.DuAE.LoopTypes = 
+{
+	HOLD: 'hold',
+	NONE: 'none',
+	CYCLE: 'cycle',
+	PINGPONG: 'pingpong',
+	OFFSET: 'offset',
+	CONTINUE: 'continue'
+}
+
+/**
+ * List of file extensions whih may be imported as several items with the same source
+ */
+DuAEF.DuAE.LayeredTypes = ["psd","psb","ai","fla"];
+
+/**
+ * Default color labels
+ * @readonly
+ * @todo get real labels (from pref file?)
+ */
+DuAEF.DuAE.ColorLabels = [];
+DuAEF.DuAE.ColorLabels[0]  = [0, 0, 0 ];	// 0. None
+DuAEF.DuAE.ColorLabels[1]  = [121/255, 058/255, 058/255 ];	// 1. Red
+DuAEF.DuAE.ColorLabels[2]  = [144/255, 138/255, 068/255 ];	// 2. Yellow
+DuAEF.DuAE.ColorLabels[3]  = [115/255, 132/255, 130/255 ];	// 3. Aqua
+DuAEF.DuAE.ColorLabels[4]  = [145/255, 124/255, 131/255 ];	// 4. Pink
+DuAEF.DuAE.ColorLabels[5]  = [115/255, 115/255, 131/255 ];	// 5. Lavender
+DuAEF.DuAE.ColorLabels[6]  = [146/255, 127/255, 109/255 ];	// 6. Peach
+DuAEF.DuAE.ColorLabels[7]  = [120/255, 130/255, 120/255 ];	// 7. Sea Foam
+DuAEF.DuAE.ColorLabels[8]  = [082/255, 093/255, 142/255 ];	// 8. Blue
+DuAEF.DuAE.ColorLabels[9]  = [067/255, 112/255, 068/255 ];	// 9. Green
+DuAEF.DuAE.ColorLabels[10] = [101/255, 052/255, 107/255 ];	// 10. Purple
+DuAEF.DuAE.ColorLabels[11] = [146/255, 103/255, 037/255 ];	// 11. Orange
+DuAEF.DuAE.ColorLabels[12] = [094/255, 065/255, 051/255 ];	// 12. Brown
+DuAEF.DuAE.ColorLabels[13] = [152/255, 085/255, 137/255 ];	// 13. Fuchsia
+DuAEF.DuAE.ColorLabels[14] = [061/255, 111/255, 113/255 ];	// 14. Cyan
+DuAEF.DuAE.ColorLabels[15] = [114/255, 105/255, 090/255 ];	// 15. Sandstone
+DuAEF.DuAE.ColorLabels[16] = [045/255, 062/255, 045/255 ];	// 16. DarkGreen
+
+/**
+	* Checks if the param is an AE collection or an Array
+	* @param {Array|Collection} collection - The list to check
+	* @return {boolean} true if collection is a collection, false if it's an array
+*/
+DuAEF.DuAE.isCollection = function (collection)
+{
+	return collection instanceof ItemCollection || collection instanceof LayerCollection || collection instanceof OMCollection || collection instanceof RQItemCollection;
+}
+
+/**
+	* Gets the PropertyInfo for the properties
+	* @param {PropertyBase[]} props - The Properties
+	* @return {PropertyInfo[]} The info
+*/
+DuAEF.DuAE.getPropertyInfos = function (props)
+{
+	//convert to propinfo
+	var propInfos = [];
+	for (var i = 0 ; i < props.length ; i++)
+	{
+		var propInfo;
+		if (props[i] instanceof PropertyInfo) propInfo = props[i];
+		else propInfo = new PropertyInfo(props[i]);
+		propInfos.push(propInfo);
+	}
+	return propInfos;
+}
+
+/**
+	* Converts an AE Collection to an Array<br />
+	* Should only be used in case you need an copy of the collection as an Array,<br />
+	* you should use an {@link Iterator} otherwise
+	* @param {Array|Collection} collection - The collection to convert
+	* @return {Array} The array
+*/
+DuAEF.DuAE.convertCollectionToArray = function (collection)
+{
+	var arr = [];
+	if (DuAEF.DuAE.isCollection(collection))
+	{
+		for (var i = 1;i<=collection.length;i++)
+		{
+			arr.push(collection[i]);
+		}
+	}
+	else
+	{
+		arr = collection;
+	}
+	return arr;
+}
+
+/**
+	* Checks if the file is a layered type (psd, ai, psb, fla...)
+	* @memberof DuAEF.DuAE
+	* @param {String|File}	 [file]	- The file or the path
+	* @return {boolean} true if it's a layered file
+*/
+DuAEF.DuAE.isLayeredFile = function(file)
+{
+	var ext = DuPath.getExtension(file);
+	var yes = DuAEF.DuJS.Array.indexOf( DuAEF.DuAE.LayeredTypes , ext.toLowerCase() ) >= 0;
+	return yes;
+}
+
+#include "DuAEExpressionLib.jsxinc"
+#include "DuAEAppLib.jsxinc"
+#include "DuAEProjectLib.jsxinc"
+#include "DuAEProjectXMPLib.jsxinc"
+#include "DuAEItemLib.jsxinc"
+#include "DuAECompLib.jsxinc"
+#include "DuAELayerLib.jsxinc"
+#include "DuAEPropertyLib.jsxinc"
+#include "DuAEShapeLib.jsxinc"
+#include "DuAERenderQueueLib.jsxinc"

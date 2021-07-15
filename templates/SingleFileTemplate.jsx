@@ -10,12 +10,12 @@ The script can be launched both from ScriptUI Panels or the File/Scripts/Run Scr
 	#include DuAEF.jsxinc
 	DuAEF.init("Your Script Name", "1.0.2");
 
-	DuAEF.forumURL = 'https://forum.rainboxlab.org';
-    DuAEF.chatURL = 'http://chat.rainboxlab.org';
-    DuAEF.bugReportURL = 'https://github.com/Rainbox-dev/DuAEF_Duik/issues/new?template=bug_report.md';
-    DuAEF.featureRequestURL = 'https://github.com/Rainbox-dev/DuAEF_Duik/issues/new?template=feature_request.md';
-    DuAEF.aboutURL = 'https://rainboxlab.org/tools/duik/';
-    DuAEF.scriptAbout = 'The Duduf After Effects Framework\nDeveloped by Nicolas Dufresne and Contributors.\n\nLicensed under the GNU General Public License v3.';
+	DuESF.forumURL = 'https://forum.rainboxlab.org';
+    DuESF.chatURL = 'http://chat.rainboxlab.org';
+    DuESF.bugReportURL = 'https://github.com/Rainbox-dev/DuAEF_Duik/issues/new?template=bug_report.md';
+    DuESF.featureRequestURL = 'https://github.com/Rainbox-dev/DuAEF_Duik/issues/new?template=feature_request.md';
+    DuESF.aboutURL = 'https://rainboxlab.org/tools/duik/';
+    DuESF.scriptAbout = 'The Duduf After Effects Framework\nDeveloped by Nicolas Dufresne and Contributors.\n\nLicensed under the GNU General Public License v3.';
     DuAEF.newsServer = 'rainboxprod.net'
 	DuAEF.newsArgs = 'wp/?call_custom_simple_rss=1&csrp_show_meta=0&csrp_cat=20';
 
@@ -31,7 +31,7 @@ The script can be launched both from ScriptUI Panels or the File/Scripts/Run Scr
 
 	// ============ UI CONTENT =================
 	var contents = ui.contents;
-	DuAEF.DuScriptUI.addStaticText(contents, "Welcome to " + DuAEF.scriptName);
+	DuAEF.DuScriptUI.addStaticText(contents, "Welcome to " + DuESF.scriptName);
 
 
 	//Show UI

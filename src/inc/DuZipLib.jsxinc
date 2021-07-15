@@ -1,0 +1,79 @@
+/**
+ * Zip lib
+ * @author Nicolas Dufresneand contributors
+ * @copyright 2019 Nicolas Dufresne, Rainbox Productions<br />
+ * {@link https://rainboxlab.org}
+ * @namespace
+ * @memberof DuAEF
+ * @license GPL-3.0 <br />
+ * DuAEF is free software: you can redistribute it and/or modify<br />
+ * it under the terms of the GNU General Public License as published by<br />
+ * the Free Software Foundation, either version 3 of the License, or<br />
+ * (at your option) any later version.<br />
+ *<br />
+ * DuAEF is distributed in the hope that it will be useful,<br />
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+ * GNU General Public License for more details.<br />
+ *<br />
+ * You should have received a copy of the GNU General Public License<br />
+ * along with DuAEF. If not, see {@link http://www.gnu.org/licenses/}.
+ */
+DuAEF.Zip = {};
+
+if ( DuESF.win ) DuAEF.Zip.processArgs = ['a', '-mx9'];
+else DuAEF.Zip.processArgs = ['-r', '-X'];
+
+/**
+ * The path to 7za.exe or 7z.exe (windows only, mac uses the internal command 'zip')
+ * @default '7za.exe'
+ */
+DuAEF.Zip.processPath = '';
+
+if ( DuESF.win ) DuAEF.Zip.processPath = DuESF.file.parent.absoluteURI + '/7za.exe';
+else DuAEF.Zip.processPath = 'zip';
+
+/**
+ * Compresses the content of a folder
+ * @param {Folder} folder The folder to zip
+ * @param {string} [archiveName=folder.name + ".zip"] The archive name
+ * @param {boolean} [wipeFolder=false] Set to true to remove the original folder as soon as the zip is ready
+ * @return {File} The zip file
+ */
+DuAEF.Zip.compressFolderContent = function (folder, archiveName, wipeFolder) {
+    wipeFolder = def (wipeFolder, true);
+    archiveName = def(archiveName, DuPath.getName(folder) + ".zip");
+    if (archiveName == '') archiveName = folder.name + ".zip";
+
+    var folderPath = folder.fsName;
+    if (DuESF.win) folderPath += "\\*";
+
+    var args = DuAEF.Zip.processArgs.concat( [folder.parent.fsName + "/" + archiveName, folderPath ] );
+
+    if ( DuESF.win && !new File(DuAEF.Zip.processPath).exists ) {
+        alert("7zip not found. Cannot zip folder: " + folder.fsName);
+        return null;
+    }
+
+    var processes = [ new DuProcess(DuAEF.Zip.processPath, args) ];
+
+    if (wipeFolder) {
+        var wipeProcessPath = '';
+        var wipeProcessArgs = [];
+        if (DuESF.win) {
+            wipeProcessPath = 'rmdir';
+            wipeProcessArgs = [ '/Q', '/S', folder.fsName];
+        }
+        else {
+            wipeProcessPath = 'rmdir';
+            //TODO test on mac. For safety, set to interactive mode. change the flags to '-rf' when tests are run succesfully
+            wipeProcessArgs = [ '-ir', folder.fsName];
+        }
+        processes.push( new DuProcess( wipeProcessPath, wipeProcessArgs ) );
+    }
+
+    var processQueue = new DuProcessQueue(processes);
+    processQueue.start();
+
+    return new File( folder.parent.fsName + "/" + archiveName );
+}

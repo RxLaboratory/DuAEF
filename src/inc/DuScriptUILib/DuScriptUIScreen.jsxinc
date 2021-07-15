@@ -1,0 +1,80 @@
+/*
+DuScriptUILib
+Library with ScriptUI tools.
+Copyright (c) 2017-2019 Nicolas Dufresne, Rainbox Laboratory and Contributors
+https://rainboxlab.org
+
+_Contributors:_
+Nicolas Dufresne - Lead developer
+
+This file is part of DuAEF.
+
+DuAEF is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+DuAEF is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+/**
+ * Moves the coordinates so that the size completely fits inside an existing screen
+ * @param {int[]} location The coordinates [top, left]
+ * @param {Dimension} size The rectangle size, an object which has two properties: width and height
+ * @return {int[]} the new location
+ */ 
+DuAEF.DuScriptUI.moveInsideScreen = function (location, size)
+{
+    var screen = DuAEF.DuScriptUI.getClosestScreen(location);
+
+    var result = location;
+    var left = location[0];
+    var right = location[0] + size.width;
+    var top = location[1];
+    var bottom = location[1] + size.height;
+    // if outside on the left
+    if (screen.left > location[0]) result[0] += ( screen.left - left );
+    if (screen.right < right) result[0] += ( screen.right - right );
+    if (screen.top > top) result[1] += ( screen.top - top );
+    if (screen.bottom < bottom) result[1] += ( screen.bottom - bottom );
+    return result;
+}
+
+/**
+ * Gets the corners of the screen the closest (or containing) the location
+ * @param {int[]} location The coordinates
+ * @return {Object} The screen object with a top, left, right and bottom property. 
+ */
+DuAEF.DuScriptUI.getClosestScreen = function(location)
+{
+    var screen = null;
+    var distance = 999999999;
+    for (var i = 0, n = $.screens.length; i < n; i++)
+    {
+        var s = $.screens[i];
+
+        // check if the location is inside the screen
+        if (location[0] > s.left && location[0] < s.right && location[1] > s.top && location[1] < s.bottom)
+        {
+            return s;
+        }
+
+        //get the center
+        var c = [ (s.left + s.right)/2, (s.top + s.bottom) / 2];
+        //get the distance
+        var d = DuMath.getLength(c, location);
+        if (d < distance)
+        {
+            screen = s;
+            distance = d;
+        }
+    }
+    return screen;
+}

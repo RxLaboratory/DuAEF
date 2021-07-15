@@ -34,10 +34,10 @@
 				(code > 64 && code < 91) || // upper alpha (A-Z)
 				(code > 96 && code < 123) || // lower alpha (a-z)
 				code == 46))  // .git for example
-			resolved = DuAEF.DuJS.String.pathJoin([folder, resolved]);
+			resolved = DuPath.join([folder, resolved]);
 		
 		// Checks if exists
-		if(!DuAEF.DuJS.Fs.fileExists(resolved))
+		if(!DuFile.exists(resolved))
 		{
 			removedPaths.push(resolved);
 			continue;
@@ -51,7 +51,7 @@
 			};
 			
 		if (data[resolved]['name'] == "")        
-			data[resolved]['name'] = DuAEF.DuJS.Fs.getBasename(resolved);
+			data[resolved]['name'] = DuPath.getBasename(resolved);
 		
 		data[resolved]['originals'] .push(path);
 	}
@@ -108,8 +108,8 @@
 		{
 			if(!skipFilter && DuAEF.DuJS.Array.indexOf(filter, resolved) != -1)
 				continue;
-			var name = DuAEF.DuJS.Fs.getBasename(resolved) + ".jsxinc";
-			var path = DuAEF.DuJS.String.pathJoin([outputFolder, name], "/");
+			var name = DuPath.getBasename(resolved) + ".jsxinc";
+			var path = DuPath.join([outputFolder, name], "/");
 			debug += tr("{#} has been exported to {#}", false, [resolved, path]) + "\n";
 			scriptPrefix += "#include \"" + name + "\"\n";
 			DuAEF.DuBinary.convertToIncludeFile(new File(resolved),  "", path, data[resolved]["name"]);
@@ -127,7 +127,7 @@
 		var replace = "";
 		for(var resolved in data)
 		{                
-				if(DuAEF.DuJS.String.endsWith(resolved, ".png"))
+				if(DuString.endsWith(resolved, ".png"))
 					replace = data[resolved]["name"] + ".binAsString";
 				else
 					replace = "DuAEF.DuBinary.toFile(" + data[resolved]["name"] + ")";

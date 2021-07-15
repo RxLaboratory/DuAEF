@@ -1,0 +1,141 @@
+/*
+DuRSSLib
+Library for reading RSS feeds.
+Copyright (c) 2017-2018 Nicolas Dufresne, Rainbox Productions
+https://rainboxprod.coop
+
+_Contributors:_
+Nicolas Dufresne - Lead developer
+
+This file is part of DuAEF.
+
+DuAEF is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+DuAEF is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/**
+ * @class DuRSSItem
+ * @name DuRSSItem
+ * @classdesc an item from an RSS feed
+ * This is not a real class, and cannot be instanciated, it does not have a constructor.<br />
+ * Use {@link DuAEF.DuRSS.get} to get items from an RSS feed.<br />
+ * @property {string} title - The title.
+ * @property {string} link - The link to the article.
+ * @property {string} comments - The link to the comments.
+ * @property {string} description - The extract/description of the article.
+ * @property {Date} pubDate - The date of publication.
+ */
+
+/**
+ * @class DuRSSChannel
+ * @name DuRSSChannel
+ * @classdesc an RSS channel
+ * This is not a real class, and cannot be instanciated, it does not have a constructor.<br />
+ * Use {@link DuAEF.DuRSS.get} to get items from an RSS feed.<br />
+ * @property {string} title - The title.
+ * @property {string} link - The link to the site.
+ * @property {string} description - The extract/description of the article.
+ * @property {DuRSSItem[]} items - The items in the channel.
+ */
+
+/**
+ * ScriptUI tools
+ * @namespace
+ * @memberof DuAEF
+ */
+DuAEF.DuRSS = {};
+
+/**
+* Gets the RSS content from a feed url, and returns it as a JS object.<br />
+* DuRSS uses a cache system and gets the content online only if more time than a given interval has passed, otherwise it gets the contents from cache.
+* @memberof DuAEF.DuRSS
+* @param {string} url - The url of the server.
+* @param {string} [subfolder='feed'] - The subdirectory of the feed (without a leading '/')
+* @param {string} [userAgentVersion='DUAEF/0.0.0'] - Your script version name and number to be used as a user agent to connect to the server
+* @param {int} [port=80] - The server port.
+* @param {float} [updateInterval=3600] - The minimum interval between two updates of the feed (in seconds).
+* @return {DuRSSChannel|null}	The content of the RSS feed
+*/
+DuAEF.DuRSS.get = function ( url, subfolder, userAgentVersion, port, updateInterval ) {
+    if ( !DuAEF.DuAE.App.hasFilesAndNetworkAccess ) return null;
+
+    userAgentVersion = def (userAgentVersion, 'DuAEF/' + DuESF.version.fullVersion);
+    subfolder = def (subfolder, 'feed');
+    port = def (port, 80);
+    updateInterval = def (updateInterval, 3600);
+
+    //get cache
+    var rssCacheFolder = new Folder( DuFolder.duesfData.absoluteURI + '/RSSCache/');
+    if ( !rssCacheFolder.exists ) rssCacheFolder.create();
+    var rssCacheFile = new File( rssCacheFolder.absoluteURI + '/' + DuPath.fixName(url + '.' + subfolder + '.json') );
+    var now = new Date().getTime();
+    var DuRSSChannel = DuFile.parseJSON( rssCacheFile );
+
+    if ( DuRSSChannel.lastCheck ) {
+        if ( now - DuRSSChannel.lastCheck < updateInterval*1000 ) return DuRSSChannel;
+    }
+
+    //socket
+    conn = new Socket;
+    conn.encoding = 'UTF-8';
+    if ( !conn.open( url + ':' + port ) ) return null;
+
+    var reply = '';
+
+    var userAgent = 'User-Agent: ' + userAgentVersion + ' (' + $.os + ')' + ' AE/' + DuAEF.DuAE.App.version.version;
+
+    if ( conn.writeln( 'GET /' + subfolder + '  HTTP/1.0\n' + userAgent + '\nHost: ' + url + '\n' ) ) {
+        reply = conn.read( 100000 );
+    }
+
+    conn.close();
+
+    //strip html header
+    reply = reply.substring( reply.indexOf( '<?xml' ) );
+
+    var DuRSSChannel = {};
+    DuRSSChannel.title = "";
+    DuRSSChannel.link = "";
+    DuRSSChannel.description = "";
+    DuRSSChannel.items = [];
+    DuRSSChannel.lastCheck = new Date().getTime();
+
+    try {
+        reply = new XML( reply );
+    } catch ( e ) {
+        if ( DuESF.debug ) alert( e );
+        return DuRSSChannel;
+    }
+
+    var xmlChannel = reply.channel;
+    DuRSSChannel.title = DuAEF.DuXML.getValue( xmlChannel.title );
+    DuRSSChannel.link = DuAEF.DuXML.getValue( xmlChannel.link );
+    DuRSSChannel.description = DuAEF.DuXML.getValue( xmlChannel.description );
+
+    var xmlItems = xmlChannel.child( 'item' );
+
+    for ( var i = 0, num = xmlItems.length(); i < num; i++ ) {
+        var item = {};
+        var xmlItem = xmlItems[ i ];
+        item.title = DuAEF.DuXML.getValue( xmlItem.title );
+        item.link = DuAEF.DuXML.getValue( xmlItem.link );
+        item.comments = DuAEF.DuXML.getValue( xmlItem.comments );
+        item.description = DuAEF.DuXML.getValue( xmlItem.description );
+        item.pubDate = DuAEF.DuXML.getValue( xmlItem.pubDate, 'date' );
+        DuRSSChannel.items.push( item );
+    }
+
+    DuFile.saveJSON(DuRSSChannel, rssCacheFile);
+
+    return DuRSSChannel;
+}

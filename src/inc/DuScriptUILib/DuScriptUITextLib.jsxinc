@@ -1,0 +1,229 @@
+
+/**
+ * @class
+ * @name DuEditText
+ * @classdesc For use with {@link DuAEF.DuScriptUI}.<br />
+ * A Nice EditText.<br />
+ * This is not a real class, and cannot be instanciated.<br />
+ * Use {@link DuAEF.DuScriptUI.addEditText} to create a Nice EditText.<br />
+ * The Nice EditText inherits the Group object from ScriptUI and has all of its properties and methods.
+ * @property {string} text - Read-Only | The text displayed
+ * @property {DuEditText~onActivate} onActivate - Function to execute when activated
+ * @property {DuEditText~onDeactivate} onDeactivate - Function to execute when deactivated
+ * @property {DuEditText~onChange} onChange - Function to execute when text changed
+ */
+
+/**
+ * The function to execute when the text is changed.
+ * @callback DuEditText~onChange
+ * @memberof DuEditText
+ */
+
+/**
+ * The function to execute when the box is activated.
+ * @callback DuEditText~onActivate
+ * @memberof DuEditText
+ */
+
+/**
+ * The function to execute when the box is deactivated.
+ * @callback DuEditText~onDeactivate
+ * @memberof DuEditText
+ */
+
+/**
+ * Changes the text
+ * @method
+ * @memberof DuEditText
+ * @name setText
+ * @param {string} text - The new text
+ */
+
+ /**
+ * Changes the prefix
+ * @method
+ * @memberof DuEditText
+ * @name setPrefix
+ * @param {string} prefix - The new prefix
+ */
+
+ /**
+ * Changes the suffix
+ * @method
+ * @memberof DuEditText
+ * @name setSuffix
+ * @param {string} suffix - The new suffix
+ */
+
+/**
+ * Creates a nice edittext where the edit text is shown only on click.
+ * @memberof DuAEF.DuScriptUI
+ * @param {Window|Panel|Group}	container		- The ScriptUI Object which will contain and display the nice edit text.
+ * @param {string} text - The initial text in the edit.
+ * @param {string} [prefix=""] - A text prefix to display.
+ * @param {string} [suffix=""] - A text suffix to display.
+ * @param {string} [placeHolder=""] - A place holder default text.
+ * @param {string} [helpTip=""] The helpTip of this control
+ * @param {bool} [translatable=true] Wether to translate the texts of this control
+ * @return {DuEditText}	The custom Group containing the edit text.
+ */
+DuAEF.DuScriptUI.addEditText = function( container, text, prefix, suffix, placeHolder, helpTip, translatable )
+{
+    if ( prefix == undefined ) prefix = '';
+    if ( suffix == undefined ) suffix = '';
+    if ( placeHolder == undefined ) placeHolder = '';
+    if ( helpTip == undefined ) helpTip = '';
+
+    if ( typeof translatable === 'undefined' ) translatable = true;
+    if ( translatable )
+    {
+        if ( text != '' ) DuAEF.DuScriptUI.uiStrings.push( text );
+        if ( prefix != '' ) DuAEF.DuScriptUI.uiStrings.push( prefix );
+        if ( suffix != '' ) DuAEF.DuScriptUI.uiStrings.push( suffix );
+        if ( placeHolder != '' ) DuAEF.DuScriptUI.uiStrings.push( placeHolder );
+        text = tr( text );
+        prefix = tr( prefix );
+        suffix = tr( suffix );
+        placeHolder = tr( placeHolder );
+    }
+
+    var niceEditText = container.add( 'group' );
+    niceEditText.orientation = 'stack';
+    niceEditText.margins = 0;
+    niceEditText.alignChildren = [ 'fill', 'fill' ];
+    niceEditText.placeHolder = placeHolder;
+    var staticText = text;
+    if ( text == "" && placeHolder != "" ) staticText = placeHolder;
+    niceEditText.static = niceEditText.add( 'statictext', undefined, prefix + staticText + suffix );
+    niceEditText.static.alignment = [ 'fill', 'center' ];
+    if ( text == "" && placeHolder != "" ) DuAEF.DuScriptUI.setTextColor( niceEditText.static, DuColor.Color.LIGHT_PURPLE );
+    else DuAEF.DuScriptUI.setTextColor( niceEditText.static, DuColor.Color.AFTER_EFFECTS_BLUE );
+    niceEditText.edit = niceEditText.add( 'edittext', undefined, text );
+    niceEditText.edit.visible = false;
+    niceEditText.prefix = prefix;
+    niceEditText.suffix = suffix;
+
+    niceEditText.text = text;
+    niceEditText.editing = false;
+
+    niceEditText.onActivate = function() {};
+    niceEditText.onDeactivate = function() {};
+    niceEditText.onChange = function() {};
+    niceEditText.onChanging = function() {};
+
+    niceEditText.clicked = function()
+    {
+        if ( niceEditText.editing ) return;
+        else
+        {
+            niceEditText.static.visible = false;
+            niceEditText.edit.visible = true;
+            niceEditText.editing = true;
+            niceEditText.edit.active = true;
+        }
+    }
+
+    niceEditText.changed = function()
+    {
+        niceEditText.editing = false;
+        var staticText = '';
+        if ( niceEditText.edit.text == '' && niceEditText.placeHolder != '' )
+        {
+            DuAEF.DuScriptUI.setTextColor( niceEditText.static, DuColor.Color.LIGHT_PURPLE );
+            staticText = niceEditText.placeHolder;
+        }
+        else
+        {
+            if ( niceEditText.placeHolder != '' ) DuAEF.DuScriptUI.setTextColor( niceEditText.static, DuColor.Color.AFTER_EFFECTS_BLUE );
+            staticText = niceEditText.edit.text;
+        }
+        niceEditText.static.text = niceEditText.prefix + staticText + niceEditText.suffix;
+        niceEditText.text = niceEditText.edit.text;
+        niceEditText.edit.visible = false;
+        niceEditText.static.visible = true;
+        niceEditText.edit.active = false;
+        niceEditText.onChange();
+    }
+    niceEditText.changing = function()
+    {
+        niceEditText.text = niceEditText.edit.text;
+        niceEditText.onChanging();
+    }
+
+    niceEditText.setText = function( text )
+    {
+        niceEditText.edit.text = niceEditText.text = text;
+        niceEditText.static.text = niceEditText.prefix + text + niceEditText.suffix;
+    }
+
+    niceEditText.setPrefix = function( prefix )
+    {
+        niceEditText.prefix = prefix;
+        niceEditText.setText(niceEditText.text);
+    }
+
+    niceEditText.setSuffix = function( suffix )
+    {
+        niceEditText.suffix = suffix;
+        niceEditText.setText(niceEditText.text);
+    }
+
+    niceEditText.edit.onActivate = function()
+    {
+        niceEditText.onActivate();
+    }
+    niceEditText.edit.onDeactivate = function()
+    {
+        niceEditText.changed();
+        niceEditText.onDeactivate();
+    }
+    niceEditText.edit.onChange = niceEditText.changed;
+    niceEditText.edit.onChanging = niceEditText.changing;
+    niceEditText.addEventListener( "mousedown", niceEditText.clicked, true );
+
+    niceEditText.addEventListener( "mouseover", DuAEF.DuScriptUI.dimControls );
+
+    niceEditText.helpTip = helpTip;
+
+    return niceEditText;
+}
+
+/**
+ * Creates a statictext (with an optionnal color).
+ * @memberof DuAEF.DuScriptUI
+ * @param {Window|Panel|Group} container - The ScriptUI Object which will contain and display the nice edit text.
+ * @param {string} text - The initial text in the edit.
+ * @param {int[]} [color] - The color of the text.
+ * @param {bool} [translatable=true] - Set this to false to never translate this text.
+ * @param {bool} [multiline] - Set this to true to add a multiline text.
+ * @return {StaticText} The ScriptUI StaticText created.
+ */
+DuAEF.DuScriptUI.addStaticText = function( container, text, color, helpTip, translatable, multiline )
+{
+    if ( typeof helpTip === 'undefined' ) helpTip = '';
+    if ( typeof multiline === 'undefined' )
+    {
+        if ( text.indexOf( "\n" ) >= 0 ) multiline = true;
+        else multiline = false;
+    }
+
+    if ( typeof translatable === 'undefined' ) translatable = true;
+    if ( translatable )
+    {
+        if ( text != '' ) DuAEF.DuScriptUI.uiStrings.push( text );
+        text = tr( text );
+    }
+
+    var t = container.add( 'statictext', undefined, text,
+    {
+        multiline: multiline
+    } );
+
+    if ( typeof color !== 'undefined' ) DuAEF.DuScriptUI.setTextColor( t, color );
+
+    t.helpTip = helpTip;
+
+    t.setText = function (txt) { t.text = txt; };
+
+    return t;
+}

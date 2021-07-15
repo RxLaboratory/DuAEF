@@ -1,0 +1,313 @@
+/**
+ * Ramses
+ * @author Nicolas Dufresneand contributors
+ * @copyright 2019 Nicolas Dufresne, Rainbox Productions<br />
+ * {@link https://rainboxlab.org}
+ * @namespace
+ * @memberof DuAEF
+ * @license GPL-3.0 <br />
+ * DuAEF is free software: you can redistribute it and/or modify<br />
+ * it under the terms of the GNU General Public License as published by<br />
+ * the Free Software Foundation, either version 3 of the License, or<br />
+ * (at your option) any later version.<br />
+ *<br />
+ * DuAEF is distributed in the hope that it will be useful,<br />
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+ * GNU General Public License for more details.<br />
+ *<br />
+ * You should have received a copy of the GNU General Public License<br />
+ * along with DuAEF. If not, see {@link http://www.gnu.org/licenses/}.
+ */
+DuAEF.Ramses = {};
+
+/**
+ * Enum for archiving modes.
+ * @readonly
+ * @enum {int}
+ */
+DuAEF.Ramses.ArchiveModes = {
+    ONE_FOR_ALL: 0,
+    ONE_PER_FOLDER: 1,
+    ONE_PER_AEP: 2
+}
+
+/**
+ * Suffix for wip files 
+ */
+DuAEF.Ramses.wipName = 'WIP';
+
+/**
+ * Name of the folder for version history
+ */
+DuAEF.Ramses.versionFolderName = '_versions';
+
+/**
+ * Gets the folder used to store version history 
+ * @return {Folder}
+ */
+DuAEF.Ramses.getVersionFolder = function() {
+    var projectFolder = app.project.file.parent;
+    var versionFolder = new Folder(projectFolder.absoluteURI + "/" + DuAEF.Ramses.versionFolderName);
+    if ( !versionFolder.exists ) versionFolder.create();
+    return versionFolder;
+}
+
+/**
+ * Gets the name of the project, without the wip part
+ * @return {string}
+ */
+DuAEF.Ramses.getProjectName = function () {
+    var projectFile = app.project.file;
+    projectName = DuPath.getBasename( projectFile );
+    if ( DuString.endsWith( projectName, DuAEF.Ramses.wipName ) ) {
+        projectName = projectName.substring( 0, projectName.length - DuAEF.Ramses.wipName.length - 1 );
+    }
+    return projectName;
+}
+
+/**
+ * Gets the current version number of the project 
+ * @return {int}
+ */
+DuAEF.Ramses.getCurrentProjectVersion = function () {
+    var versionFolder = DuAEF.Ramses.getVersionFolder();
+
+    var currentVersion = 0;
+    // gets all existing versions
+    var projectVersionFiles = versionFolder.getFiles( projectName + "_wip*.aep" );
+    projectVersionFiles = projectVersionFiles.concat( versionFolder.getFiles( projectName + "_pub*.aep" ) );
+    for ( var i = 0, num = projectVersionFiles.length; i < num; i++ ) {
+        var f = projectVersionFiles[ i ];
+        if ( f instanceof File ) {
+            var fName = DuPath.getBasename( f );
+            var v = fName.replace( projectName + "_wip", '' );
+            v = v.replace( projectName + "_pub", '' );
+            v = v.replace( ".aepx", '' );
+            v = v.replace( ".aep", '' );
+            v = parseInt( v, 10 );
+            if ( !isNaN( v ) ) {
+                if ( v > currentVersion ) currentVersion = v;
+            }
+        }
+    }
+    return currentVersion;
+}
+
+
+/**
+ * Saves the current project, and copies a backup file.
+ * @param {boolean} [increment=false] Set to true to increment the current version.
+ * @param {boolean} [publish=false] Set to true to publish the current project (remove the WIP part)
+ * @param {int} [timeout=120] A timeout in minutes before the project is automatically saved with an incrementation
+ * @return {File} The backup file.
+ */
+DuAEF.Ramses.saveProject = function ( increment, publish, timeout ) {
+
+    increment = def(increment, false);
+    publish = def(publish, false);
+    timeout = def(timeout, 120);
+
+    var projectFile = app.project.file;
+    
+    var projectName = '';
+    var projectPath = '';
+
+    // == save WIP project ==
+
+    if ( projectFile ) {
+        projectName = DuAEF.Ramses.getProjectName();
+        // timeout for increment
+        if (!increment && !publish) {
+            var date = projectFile.modified.getTime();
+            var now = new Date().getTime();
+            var elapsed =  now - date;
+            if (elapsed > timeout/60/1000) increment = true;
+        }
+    } else {
+        throw ( 'Please save this project with After Effects once before using Ramses.' );
+        return;
+    }
+
+    projectPath = projectFile.path;
+
+    var saveName = projectPath + '/' + projectName;
+    if ( !publish ) saveName += '_' + DuAEF.Ramses.wipName;
+    saveName += '.aep';
+    projectFile = new File( saveName );
+    app.project.save( projectFile );
+
+    // == Copy version ==
+
+    var versionFolder = DuAEF.Ramses.getVersionFolder();
+
+    // gets current version
+    var currentVersion = DuAEF.Ramses.getCurrentProjectVersion();
+
+    // increment
+    if ( increment || currentVersion == 0 ) currentVersion++;
+
+    // copy version
+    var currentVersionString = DuNumber.toString( currentVersion, 3 );
+    var versionPath = versionFolder.absoluteURI + "/" + projectName;
+    if ( publish ) versionPath += "_pub";
+    else versionPath += "_wip";
+    versionPath += currentVersionString + ".aep";
+    var successful = projectFile.copy( versionPath );
+    if ( !successful ) alert( "Warning - Error writing file\nThe version could not be backed up properly." );
+    return new File( versionPath );
+}
+
+/**
+ * Collect the files from the current project. Gets both the WIP and the publish versions.
+ * @param {Folder} [destination] The folder where to save the files. The project files will be collected in a subfolder called "project name.aep.archive" or "project name.aep.zip". If not provided, will use the current folder.
+ * @param {boolean} [reduce=true] Will reduce the project before collecting files, using all comps found at first level in the project (not in subfolders)
+ * @param {boolean} [selectedComps=false] Use selected comps to reduce the project, if any.
+ * @param {boolean} [zip=false] Set to true to automatically zip the archive.
+ * @param {File} [projectFile=app.project.file] The project to archive. The currently opened project if omitted.
+ * @param {boolean} [createProjectFolder=true] Wether to create a folder for this project or use the destination as is.
+ * @return {File|Folder} Thwe zip file or the folder containing the collected files.
+ */
+DuAEF.Ramses.archiveProject = function ( destination, reduce, selectedComps, zip, projectFile, createProjectFolder ) {
+    projectFile = def (projectFile, app.project.file);
+    if (!projectFile) return;
+    destination = def (destination, projectFile.parent);
+    selectedComps = def (selectedComps, true);
+    zip = def (zip, false);
+    reduce = def(reduce, true);
+    createProjectFolder = def(createProjectFolder, true);
+
+    app.project.close( CloseOptions.PROMPT_TO_SAVE_CHANGES );
+    app.open( projectFile );
+    //save it right away in case this was a project with a different version
+    if (!app.project.file) {
+        var name = DuPath.getBasename(projectFile);
+        projectFile = new File(projectFile.parent.absoluteURI + '/' + name + " (converted).aep");
+        app.project.save( projectFile );
+    }
+    
+    if (reduce) {
+        if (selectedComps) DuAEF.DuAE.Project.reduceSelected();
+        else DuAEF.DuAE.Project.reduce();
+    }
+
+    DuAEF.DuAE.Project.collectFiles( destination, false, zip, createProjectFolder);
+
+    app.project.close( CloseOptions.DO_NOT_SAVE_CHANGES );
+}
+
+/**
+ * Reduces and collects the files for all projects in a given folder. Keeps only the comps at the root of the project. 
+ * @param {Folder} inputFolder The folder to scan for projects
+ * @param {Folder} outputFolder The folder where to save the archives
+ * @param {boolean} [recursive=true] Scan for subfolders too. Folders named '_versions' and 'old' will be ignored, as long as auto-save folders from After Effects
+ * @param {boolean} [zip=false] Set to true to automatically zip the archives.
+ * @param {boolean} [reduce=true] Will reduce the project before collecting files, using all comps found at first level in the project (not in subfolders)
+ * @param {DuAEF.Ramses.ArchiveModes} [archiveMode=DuAEF.Ramses.ArchiveModes.ONE_PER_FOLDER] Creates only one archive for each subfolder. This is a nice way to not duplicate dependencies, as they will be shared between projects from the same folder.
+ */
+DuAEF.Ramses.archiveFolder = function ( inputFolder, outputFolder, recursive, zip, reduce, archiveMode ) {
+
+    if (!(inputFolder instanceof Folder)) {
+        DuESF.debug.throwTypeError(inputFolder, 'inputFolder', 'Folder', 'DuAEF.Ramses.archiveFolder( inputFolder, outputFolder, recursive, zip, archiveMode )');
+        return;
+    }
+    if (!(outputFolder instanceof Folder)) {
+        DuESF.debug.throwTypeError(outputFolder, 'outputFolder', 'Folder', 'DuAEF.Ramses.archiveFolder( inputFolder, outputFolder, recursive, zip, archiveMode )');
+        return;
+    }
+
+    recursive = def(recursive, true);
+    zip = def(zip, true);
+    archiveMode = def(archiveMode, DuAEF.Ramses.ArchiveModes.ONE_PER_FOLDER);
+    reduce = def(reduce, true);
+
+    // suppress dialogs
+
+    app.beginSuppressDialogs();
+
+    //if we're doing only one zip for all, create a temp subfolder to be zipped at the end
+    if (zip && archiveMode == DuAEF.Ramses.ArchiveModes.ONE_FOR_ALL ) {
+        outputFolder = new Folder (outputFolder.absoluteURI + "/" + outputFolder.name);
+        outputFolder.create();
+    }
+
+    //if we're doing one zip per subfolder, we need to separate aeps from subfolders.
+    //Let's create a folder for aeps
+    var aepFolder = new Folder(outputFolder.absoluteURI + "/" + "Ramses_aep_temp");
+    if ( zip && archiveMode == DuAEF.Ramses.ArchiveModes.ONE_PER_FOLDER ) {
+        aepFolder.create();
+    }
+
+    function isAepOrFolder (file) {
+        //recursive and a folder
+        if ( file instanceof Folder && recursive ) {
+            //let's ignore old, '_versions' and autosaves
+            var fileName = file.name;
+            if (fileName.toLowerCase() == 'old') return false;
+            if (fileName == DuAEF.Ramses.versionFolderName) return false;
+            if ( DuAEF.DuAE.App.isAutoSaveFolder(file) ) return false;
+            return true;
+        }
+        //if not recursive
+        if ( file instanceof Folder ) return false;
+
+        //get aep, aet, and aepx
+        var ext = DuPath.getExtension( file ).toLowerCase();
+        if (ext == 'aep' || ext == 'aet' || ext == 'aepx') return true;
+
+        //ignore other files
+        return false;
+    }
+
+    //scan for files and folders in the inputFolder 
+    var files = inputFolder.getFiles( isAepOrFolder );
+
+    if (files.length == 0) {
+        aepFolder.remove();
+        return;
+    } 
+
+    for (var f = 0, numF = files.length; f < numF; f++) {
+        var file = files[f];
+
+        if (file instanceof Folder ) {
+            //if one archive for all, don't keep hierarchy and continue without zipping yet
+            if ( archiveMode == DuAEF.Ramses.ArchiveModes.ONE_FOR_ALL ) {
+                DuAEF.Ramses.archiveFolder( file, outputFolder, recursive, false, reduce, archiveMode );
+            }
+            else {
+                //create a destination subfolder to keep hierarchy
+                var subFolder = new Folder( outputFolder.absoluteURI + '/' + file.name );
+                subFolder.create();
+                DuAEF.Ramses.archiveFolder( file, subFolder, recursive, zip, reduce, archiveMode );
+            }
+        }
+        else {
+            //if one archive per aep, archive it in it own folder and zip it right away
+            if ( archiveMode == DuAEF.Ramses.ArchiveModes.ONE_PER_AEP ) {
+                DuAEF.Ramses.archiveProject( outputFolder, reduce, false, zip, file, true );
+            }
+            //one per folder, if zipped, keep the aeps apart to zip them later
+            else if ( zip && archiveMode == DuAEF.Ramses.ArchiveModes.ONE_PER_FOLDER ) {
+                DuAEF.Ramses.archiveProject( aepFolder, reduce, false, false, file, false );
+            }
+            //else, don't create its own folder and don't zip it yet
+            else {
+                DuAEF.Ramses.archiveProject( outputFolder, reduce, false, false, file, false );
+            }
+        }
+    }
+
+    //now it's finished, we can zip the main outputFolder if one archive for all 
+    if ( archiveMode == DuAEF.Ramses.ArchiveModes.ONE_FOR_ALL && zip) {
+        DuAEF.Zip.compressFolderContent( outputFolder, undefined, true );
+    }
+
+    //and zip the aep folder 
+    if ( archiveMode == DuAEF.Ramses.ArchiveModes.ONE_PER_FOLDER && zip) {
+        //remove the folder if empty
+        if ( !aepFolder.remove() ) DuAEF.Zip.compressFolderContent( aepFolder, DuPath.getName(outputFolder) + ".zip", true );
+    }
+
+    app.endSuppressDialogs(false);
+}

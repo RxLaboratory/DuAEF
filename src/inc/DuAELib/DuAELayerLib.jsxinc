@@ -1,0 +1,1107 @@
+/**
+ * After Effects layer methods
+ * @namespace
+ * @memberof DuAEF.DuAE
+ */
+DuAEF.DuAE.Layer = {};
+
+/**
+ * Runs a function on all the layers
+ * @param {function} method - The function to run on the layers, which takes a layer as its only argument.
+ * @param {string} [undoGroupName] - The name of the undoGroup created before the execution. If not provided, there will not be any undoGroup created.
+ */
+DuAEF.DuAE.Layer.doLayers = function ( layers, method, undoGroupName ) {
+    if ( typeof undoGroupName === 'undefined' ) undoGroupName = "";
+    // run
+    if ( undoGroupName != "" ) DuAEF.DuAE.App.beginUndoGroup( undoGroupName );
+    new Iterator( layers ).do( method );
+    if ( undoGroupName != "" ) DuAEF.DuAE.App.endUndoGroup();
+}
+
+/**
+ * Generates a new unique name for an effect
+ * @param {string} newName	- The wanted new name
+ * @param {Layer} layer 	- The layer
+ * @param {boolean} [increment=true] - true to automatically increment the new name if it already ends with a digit
+ * @return {string}	The unique name, with a new number at the end if needed.
+ */
+DuAEF.DuAE.Layer.newUniqueEffectName = function ( newName, layer, increment ) {
+    if ( !layer ) throw new Error( "Needs a layer to generate a new unique effect name", "DuAECOreLib", 645 );
+    if ( increment == undefined ) increment = true;
+    if ( newName == undefined ) return "";
+    if ( newName == "" ) return "";
+    var effectNames = [];
+    for ( var i = 1; i <= layer.effect.numProperties; i++ ) {
+        effectNames.push( layer.effect( i ).name );
+    }
+    return DuString.generateUnique( newName, effectNames, increment );
+}
+
+/**
+ * Generates a new unique name for a marker for this comp
+ * @param {string} newName	- The wanted new name
+ * @param {Layer} layer 	- The comp
+ * @param {boolean} [increment=true] - true to automatically increment the new name if it already ends with a digit
+ * @return {string}	The unique name, with a new number at the end if needed.
+ */
+DuAEF.DuAE.Layer.newUniqueMarkerName = function ( newName, layer, increment ) {
+    if ( increment == undefined ) increment = true;
+    var markerNames = [];
+    for ( var i = 1, num = layer.property( 'ADBE Marker' ).numKeys; i <= num; i++ ) {
+        markerNames.push( layer.property( 'ADBE Marker' ).keyValue( i ).comment );
+    }
+    return DuString.generateUnique( newName, markerNames, increment );
+}
+
+/**
+ * Gets the After Effects selected properties in the layer
+ * @param {Layer}	layer	- The layer
+ * @param {PropertyType|PropertyValueType|string|function}	 [filter]	- A filter to get only a certain type, or value type, or property name or matchName.<br />
+ * A function which take one PropertyBase as argument can be used to filter the properties: the Property will be returned if the function returns true.
+ * @param {boolean}	[strict=false]	- If a string filter is provided, wether to search for the exact name/matchName or if it contains the filter.
+ * @param {boolean}	[caseSensitive=true]	- If a string filter is provided, and not strict is false, does the search have to be case sensitive?
+ * @return {PropertyBase[]} The selected properties, an empty Array if nothing active or selected
+ */
+DuAEF.DuAE.Layer.getSelectedProps = function ( layer, filter, strict, caseSensitive ) {
+    if ( typeof strict === 'undefined' ) strict = false;
+    if ( typeof caseSensitive === 'undefined' ) caseSensitive = true;
+
+    var props = [];
+
+    if ( !caseSensitive && typeof filter === "string" ) filter = filter.toLowerCase();
+
+    var selectedProps = layer.selectedProperties;
+    if ( typeof filter === 'undefined' ) {
+        props = props.concat( selectedProps );
+    } else {
+        for ( var j = 0; j < selectedProps.length; j++ ) {
+            var prop = selectedProps[ j ];
+
+            var name = prop.name;
+            var matchName = prop.matchName;
+            if ( !caseSensitive ) {
+                name = name.toLowerCase();
+                matchName = matchName.toLowerCase();
+            }
+
+            if ( strict && name === filter ) {
+                props.push( prop );
+            } else if ( strict && matchName === filter ) {
+                props.push( prop );
+            } else if ( typeof filter === "string" ) {
+                if ( name.indexOf( filter ) >= 0 ) props.push( prop );
+                else if ( matchName.indexOf( filter ) >= 0 ) props.push( prop );
+            } else if ( prop.propertyType == PropertyType.PROPERTY ) {
+                if ( prop.propertyValueType == filter ) props.push( prop );
+            } else if ( props.length == 0 && filter == PropertyValueType.SHAPE ) {
+                if ( matchName == 'ADBE Mask Atom' ) props.push( prop.property( 'ADBE Mask Shape' ) );
+                else if ( matchName == 'ADBE Vector Shape - Group' ) props.push( prop.property( 'ADBE Vector Shape' ) );
+            } else if ( prop.propertyType == filter ) {
+                props.push( prop );
+            } else if ( typeof filter === "function" ) {
+                if ( filter( prop ) ) props.push( prop );
+            };
+        }
+    }
+    return DuAEF.DuAE.getPropertyInfos( props );
+}
+
+/**
+ * Gets all animations on the layer in the whole timeline or in the time range<br />
+ * The first KeyFrame._time will be adjusted relatively to the start of the time range (if provided) instead of the startTime of the composition.
+ * @param {Layer}	layer	- The layer.
+ * @param {boolean}	[selected=false]	- true to get only selected keyframes.
+ * @param {float[]}	[timeRange]	- The time range, an array of two time values, in seconds.
+ * @return {LayerAnim}	The animation.
+ */
+DuAEF.DuAE.Layer.getAnim = function ( layer, selected, timeRange ) {
+    var anim = new LayerAnim();
+    anim._name = layer.name;
+    anim._index = layer.index;
+    anim.anims = [];
+    for ( var propIndex = 1; propIndex <= layer.numProperties; propIndex++ ) {
+        var prop = layer.property( propIndex );
+        if ( prop.matchName == 'ADBE Marker' ) continue;
+
+        var subAnim = DuAEF.DuAE.Property.getAnim( prop, selected, timeRange );
+        if ( subAnim != null ) {
+            if ( anim.startTime == null ) anim.startTime = subAnim.startTime;
+            else if ( anim.startTime > subAnim.startTime ) anim.startTime = subAnim.startTime;
+            if ( anim.endTime == null ) anim.endTime = subAnim.endTime;
+            else if ( anim.endTime > subAnim.endTime ) anim.endTime = subAnim.endTimeendTime;
+            anim.anims.push( subAnim );
+        }
+
+    }
+    return anim;
+}
+
+/**
+ * Gets all animations on the layers in the whole timeline or in the time range<br />
+ * The first KeyFrame._time will be adjusted relatively to the start of the time range (if provided) instead of the startTime of the composition.
+ * @param {Layer[]|LayerCollection}	layers	- The layers.
+ * @param {boolean}	[selected=false]	- true to get only selected keyframes.
+ * @param {float[]}	[timeRange]	- The time range, an array of two time values, in seconds.
+ * @return {LayerAnim[]}	The animations.
+ */
+DuAEF.DuAE.Layer.getAnims = function ( layers, selected, timeRange ) {
+    var anims = [];
+    new Iterator( layers ).do( function ( layer ) {
+        anims.push( DuAEF.DuAE.Layer.getAnim( layer, selected, timeRange ) );
+    } );
+    return anims;
+}
+
+/**
+ * Sets the property animation on the property
+ * @param {Layer}	layer	- The layer.
+ * @param {LayerAnim} anims	- The animation
+ * @param {float}	[time=comp.time]	- The time where to begin the animation
+ * @param {boolean}	[ignoreName=false]	- true to set the anim even if name of the property do not match the name of the animation.<br />
+ * This way, only the type of property (i.e. matchName) is checked.
+ * @param {boolean}	[setExpression=false]	- Set the expression on the property
+ * @param {boolean}	[onlyKeyframes=true]	- If false, the value of properties without keyframes will be set too.
+ * @param {boolean}	[replace=false]	- true to remove any existing keyframe on the properties before adding new keyframes
+ * @param {string[]}	[propertyWhiteList]	- A list of matchNames used as a white list for properties to set anims.<br />
+ * Can be the matchName of a propertyGroup to set all the subproperties.
+ * @param {boolean}	[offset=false]	- true to offset the current value, instead of replacing it
+ * @param {boolean}	[reverse=false]	- true to reverse the keyframes (in time)
+ * @return {boolean} true if the anim was actually set.
+ */
+DuAEF.DuAE.Layer.setAnim = function ( layer, anim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse ) {
+    if ( typeof time === 'undefined' ) time = layer.containingComp.time;
+    if ( typeof ignoreName === 'undefined' ) ignoreName = false;
+    if ( typeof setExpression === 'undefined' ) setExpression = false;
+    if ( typeof onlyKeyframes === 'undefined' ) onlyKeyframes = false;
+    if ( typeof replace === 'undefined' ) replace = false;
+    if ( typeof offset === 'undefined' ) offset = false;
+
+    if ( reverse ) DuAEF.DuAE.Layer.reverseAnims( anim );
+
+    for ( var i = 0; i < anim.anims.length; i++ ) {
+        var subAnim = anim.anims[ i ];
+        for ( var propIndex = 1; propIndex <= layer.numProperties; propIndex++ ) {
+            var subProp = layer.property( propIndex );
+            if ( subProp == null ) continue;
+            if ( subProp.matchName == subAnim._matchName && subProp.matchName != 'ADBE Marker' ) {
+                var ok = DuAEF.DuAE.Property.setGroupAnim( subProp, subAnim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse );
+                if ( ok ) break;
+            }
+        }
+    }
+}
+
+/**
+ * Sets the animations on the layers.<br />
+ * If you need to set only on the same layers (same index, same name), use {@link DuAEF.DuAE.Layer.setAnims}.
+ * @param {Layer[]|LayerCollection}	layers	- The layers.<br />
+ * If there are more layers than animations, the layers array will be truncated.
+ * @param {LayerAnim[]} anims	- The layer animations.<br />
+ * If there are more animations than layers, the animations array will be truncated.
+ * @param {float}	[time=comp.time]	- The time where to begin the animation
+ * @param {boolean}	[ignoreName=false]	- true to set the anim even if name of the property do not match the name animation.<br />
+ * This way, only the type of property (i.e. matchName) is checked.
+ * @param {boolean}	[setExpression=false]	- Set the expression on the property
+ * @param {boolean}	[onlyKeyframes=true]	- If false, the value of properties without keyframes will be set too.
+ * @param {boolean}	[replace=false]	- true to remove any existing keyframe on the properties before adding new keyframes
+ * @param {string[]}	[whiteList]	- A list of matchNames used as a white list for properties to set anims.<br />
+ * Can be the matchName of a propertyGroup to set all the subproperties.
+ * @param {boolean}	[offset=false]	- true to offset the current value, instead of replacing it
+ * @param {boolean}	[reverse=false]	- true to reverse the keyframes (in time)<br />
+ * Note: the remaining animations which are returned will already be reversed, do not set this to true again if you plan to set them later.
+ */
+DuAEF.DuAE.Layer.setAllAnims = function ( layers, anims, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse ) {
+    layers = DuAEF.DuAE.convertCollectionToArray( layers );
+    var num = anims.length;
+    if ( num > layers.length ) num = layers.length;
+
+    if ( reverse ) DuAEF.DuAE.Layer.reverseAnims( anims );
+
+    for ( var i = 0; i < num; i++ ) {
+        var layer = layers[ i ];
+        if ( layer ) DuAEF.DuAE.Layer.setAnim( layer, anims[ i ], time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, false );
+    }
+}
+
+/**
+ * Sets the animations on the corresponding layers.<br />
+ * The animation will be set only on layers with the same name and index.<br />
+ * To set all animations on all layers, not checking their names or indices, use {@link DuAEF.DuAE.Layer.setAllAnims}.
+ * @param {Layer[]|LayerCollection}	layers	- The layers.
+ * @param {LayerAnim[]} anims	- The layer animations
+ * @param {float}	[time=comp.time]	- The time where to begin the animation
+ * @param {boolean}	[ignoreName=false]	- true to set the anim even if name of the property do not match the name animation.<br />
+ * This way, only the type of property (i.e. matchName) is checked.
+ * @param {boolean}	[setExpression=false]	- Set the expression on the property
+ * @param {boolean}	[onlyKeyframes=true]	- If false, the value of properties without keyframes will be set too.
+ * @param {boolean}	[replace=false]	- true to remove any existing keyframe on the properties before adding new keyframes
+ * @param {string[]}	[whiteList]	- A list of matchNames used as a white list for properties to set anims.<br />
+ * Can be the matchName of a propertyGroup to set all the subproperties.
+ * @param {boolean}	[offset=false]	- true to offset the current value, instead of replacing it
+ * @param {boolean}	[reverse=false]	- true to reverse the keyframes (in time)<br />
+ * Note: the remaining animations which are returned will already be reversed, do not set this to true again if you plan to set them later.
+ * @return {LayerAnim[]} The animations which were not set (no corresponding layers)
+ */
+DuAEF.DuAE.Layer.setAnims = function ( layers, anims, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse ) {
+    //clone the array
+    var remaining = anims.slice();
+
+    if ( reverse ) DuAEF.DuAE.Layer.reverseAnims( anims );
+
+    //for each layeranim, search for the layer and apply anim
+    for ( var i = remaining.length - 1; i >= 0; i-- ) {
+        var anim = remaining[ i ];
+        var it = new Iterator( layers );
+        var ok = false;
+        while ( layer = it.next() ) {
+            if ( layer.name == anim._name && layer.index == anim._index ) {
+                DuAEF.DuAE.Layer.setAnim( layer, anim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, false );
+                ok = true;
+                break;
+            }
+        }
+        if ( ok ) remaining.pop();
+    }
+
+    return remaining;
+}
+
+/**
+ * Reverses the times of the keyframes to reverse the animation
+ * @param {LayerAnim[]|LayerAnim} anims The animation
+ */
+DuAEF.DuAE.Layer.reverseAnims = function ( anims ) {
+    if ( anims instanceof LayerAnim ) anims = [ anims ];
+
+    var it = new Iterator( anims );
+
+    //get times
+    var startTime = null;
+    var endTime = null;
+    it.do( function ( anim ) {
+        if ( startTime == null ) startTime = anim.startTime;
+        else if ( startTime > anim.startTime ) startTime = anim.startTime;
+        if ( endTime == null ) endTime = anim.endTime;
+        else if ( endTime > anim.endTime ) endTime = anim.endTime;
+    } );
+
+    var duration = endTime - startTime;
+
+
+    //recursive function to reverse keyframes in anim
+    function reverse( anim ) {
+        if ( anim.type == 'anim' ) {
+            //reverse the array
+            anim.keys = anim.keys.reverse();
+            //set the new times
+            for ( var i = 0, num = anim.keys.length; i < num; i++ ) {
+                var ratio = 1 - ( ( anim.keys[ i ]._time - startTime ) / duration );
+                anim.keys[ i ]._time = ratio * duration + startTime;
+                var sV = anim.endValue;
+                anim.endValue = anim.startValue;
+                anim.startValue = sV;
+            }
+        } else if ( anim.anims ) {
+            for ( var i = 0, num = anim.anims.length; i < num; i++ ) {
+                reverse( anim.anims[ i ] );
+            }
+        }
+    }
+
+    //reverse keyframes and times
+    it.do( reverse );
+}
+
+/**
+ * Gets the children of a layer
+ * @param {Layer}	layer	- The layer.
+ * @return {Layer[]} All the children of the layer
+ */
+DuAEF.DuAE.Layer.getChildren = function ( layer ) {
+    var comp = layer.containingComp;
+    var children = [];
+    for ( var i = 1; i <= comp.layers.length; i++ ) {
+        var l = comp.layer( i );
+        if ( l.index == layer.index ) continue;
+        if ( l.parent == null ) continue;
+        if ( l.parent.index == layer.index ) children.push( l );
+    }
+    return children;
+}
+
+/**
+ * Checks if a layer is a descendant of another layer
+ * @param {Layer} layer1 - The first layer
+ * @param {Layer} layer2 - The second layer
+ * @return {int|null} the degree of relation. 0 if layer1 is not a relative of layer2,<br />
+ * negative if layer2 is a descendant of layer1, positive if layer2 is an ancestor.<br />
+ * null if the two layers are not in the same composition or if they are the same layer.
+ */
+DuAEF.DuAE.Layer.getRelation = function ( layer1, layer2 ) {
+    var comp1 = layer1.containingComp;
+    var comp2 = layer2.containingComp;
+    if ( comp1 !== comp2 ) return null;
+    if ( layer1.index == layer2.index ) return null;
+    if ( layer1.parent == null && layer2.parent == null ) return 0;
+    //check
+    var degree = 0;
+    var parent = layer1.parent;
+    while ( parent ) {
+        degree++;
+        if ( layer2.index == parent.index ) return degree;
+        parent = parent.parent;
+    }
+    var parent = layer2.parent;
+    degree = 0;
+    while ( parent ) {
+        degree++;
+        if ( layer1.index == parent.index ) return -degree;
+        parent = parent.parent;
+    }
+    return 0;
+}
+
+/**
+ * Measures the distance between two layers
+ * @param {Layer} layer1 - The first layer
+ * @param {Layer} layer2 - The second layer
+ * @return {int} The distance (in pixels)
+ */
+DuAEF.DuAE.Layer.getDistance = function ( layer1, layer2 ) {
+    var O = DuAEF.DuAE.Layer.getWorldPos( layer1 );
+    var A = DuAEF.DuAE.Layer.getWorldPos( layer2 );
+    var OA = DuMath.getLength( O, A );
+
+    return Math.round( OA );
+}
+
+/**
+ * Gets the world coordinates of the point of a layer
+ * @param {Layer} layer - The layer
+ * @param {float[]} [point=layer.transform.anchorPoint.value] - the point
+ * @return {float[]} The world coordinates of the layer
+ */
+DuAEF.DuAE.Layer.getWorldPos = function ( layer, point ) {
+    if ( layer instanceof CameraLayer || layer instanceof LightLayer || layer.threeDLayer ) {
+        var parent = layer.parent;
+        layer.parent = null;
+        var pos = layer.transform.position.value;
+        layer.parent = parent;
+        return pos;
+    }
+
+    var matrix = DuAEF.DuAE.Layer.getTransformMatrix( layer );
+    if ( typeof point === 'undefined' ) {
+        if ( layer.transform.anchorPoint ) point = layer.transform.anchorPoint.value;
+    }
+
+    return matrix.applyToPoint( point );
+}
+
+/**
+ * Adds an animation preset on the layer.<br />
+ * Be careful as layer selection will be kept but not properties selection,<br />
+ * and this can result in an "invalid object" if referencing a property.
+ * @param {Layer} layer - The layer
+ * @param {File} preset - The preset file
+ * @param {string} matchName - The pseudo Effect matchName
+ * @return {PropertyGroup|null} The effect corresponding to matchName or null if anything went wrong
+ */
+DuAEF.DuAE.Layer.applyPreset = function ( layer, preset, matchName ) {
+    if ( typeof layer === 'undefined' ) return null;
+    if ( typeof preset === 'undefined' ) return null;
+    if ( typeof matchName === 'undefined' ) matchName = '';
+    if ( !preset.exists ) throw new Error( "The pseudo effect file does not exist" );
+
+    //remove layer selection
+    var comp = layer.containingComp;
+    var selection = [];
+    for ( var i = 1, num = comp.numLayers; i <= num; i++ ) {
+        var l = comp.layer( i );
+        selection.push( l.selected );
+        l.selected = false;
+    }
+
+    layer.selected = true;
+    layer.applyPreset( preset );
+
+    //applying a presets gets out of progress mode
+    if (DuAEF.DuAE.Project.progressMode) DuAEF.DuAE.Project.setProgressMode( true );
+
+    var effect = null;
+    if ( matchName != '' ) effect = layer.property( "ADBE Effect Parade" )( matchName );
+
+    //restore selection
+    for ( var i = 1, num = comp.numLayers; i <= num; i++ ) {
+        var l = comp.layer( i );
+        l.selected = selection[ i - 1 ];
+    }
+
+    return effect;
+}
+
+/**
+ * This method is a workaround to AE API method layer.applyPreset to work like addProperty when adding pseudoEffects
+ * @param {Layer} layer - The layer
+ * @param {File} preset - The preset file
+ * @param {string} matchName - The pseudo Effect matchName.
+ * @param {string} [name] - The name to set on the effect
+ * @return {PropertyGroup|null} The effect or null if anything went wrong
+ */
+DuAEF.DuAE.Layer.addPseudoEffect = function ( layer, preset, matchName, name ) {
+    var typeofPreset = jstype( preset );
+    if ( typeofPreset != 'File' ) throw new Error( "DuAEF.DuAE.Layer.addPseudoEffect( layer, preset, matchName, name): error. preset has to be a File object, got a " + typeofPreset + "." );
+    if ( !preset.exists ) throw new Error( "DuAEF.DuAE.Layer.addPseudoEffect( layer, preset, matchName, name): error. The pseudo effect file does not exist" );
+    if ( layer == undefined ) return null;
+    if ( preset == undefined ) return null;
+    if ( matchName == undefined ) return null;
+
+    var effects = layer( "ADBE Effect Parade" );
+    //add the preset to a temp comp if not available as an effect
+    if ( !effects.canAddProperty( matchName ) || DuESF.debug ) {
+        //create comp
+        var comp = app.project.items.addComp( "DuAEF Temp", 10, 10, 1, 1, 24 );
+        //add null
+        var n = comp.layers.addNull();
+        //apply preset
+        n.applyPreset( preset );
+        //remove all
+        var nullSource = n.source;
+        n.remove();
+        nullSource.remove();
+        comp.remove();
+    }
+
+    if ( !effects.canAddProperty( matchName ) ) {
+        throw new Error( "Invalid pseudo effect file or match name" );
+    }
+
+    //add the pseudoEffect as a property
+    var newEffectName = "";
+    newEffectName = DuAEF.DuAE.Layer.newUniqueEffectName( name, layer );
+    var effect = effects.addProperty( matchName );
+    if ( newEffectName != "" ) effect.name = newEffectName;
+    return effect;
+}
+
+/**
+ * Checks if the layers have some selected keyframes
+ * @param {Layer[]|LayerCollection} layers - The layers
+ * @return {boolean} true if the layers have at least one selected keyframe
+ */
+DuAEF.DuAE.Layer.haveSelectedKeys = function ( layers ) {
+    var it = new Iterator( layers );
+    if ( it.length == 0 ) return;
+    while ( layer = it.next() ) {
+        if ( DuAEF.DuAE.Property.hasSelectedKeys( layer ) ) return true;
+    }
+    return false;
+}
+
+/**
+ * Gets the time of the first keyFrame
+ * @param {Layer[]|LayerCollection} layer - The layer
+ * @param {boolean} selected - true to check selected keyframes only
+ * @return {float|null} The keyframe time or null if there are no keyframe
+ */
+DuAEF.DuAE.Layer.firstKeyFrameTime = function ( layers, selected ) {
+    var it = new Iterator( layers );
+    var time = null;
+    for ( var i = it.min; i <= it.max; i++ ) {
+        var test = DuAEF.DuAE.Property.firstKeyFrameTime( layers[ i ], selected );
+        if ( time == null ) time = test;
+        else if ( test != null ) {
+            if ( time > test ) time = test;
+        }
+    }
+    return time;
+}
+
+/**
+ * Sort the layers by their parenting (root at first index 0)
+ * @param {Layer[]|Collection} layers - The layers to sort
+ * @return {Layer[]} The sorted array
+ */
+DuAEF.DuAE.Layer.sortByParent = function ( layers ) {
+    var sortedLayers = [];
+    var layersToSort = DuAEF.DuAE.convertCollectionToArray( layers );
+
+    //add layers with a parent outside
+    //those with a parent outside of the selection
+    for ( var i = layersToSort.length - 1; i >= 0; i-- ) {
+        var l = layersToSort[ i ];
+        var parent = l.parent;
+        if ( parent == null ) continue;
+        var isParentOutside = true;
+        for ( var j = 0; j < layersToSort.length; j++ ) {
+            if ( parent.index == layersToSort[ j ].index ) {
+                isParentOutside = false;
+                break;
+            }
+        }
+        if ( isParentOutside ) {
+            sortedLayers.push( l );
+            layersToSort.splice( i, 1 );
+        }
+    }
+
+    //add layers with no parents
+    for ( var i = layersToSort.length - 1; i >= 0; i-- ) {
+        var l = layersToSort[ i ];
+        if ( l.parent == null ) {
+            sortedLayers.push( l );
+            layersToSort.splice( i, 1 );
+        }
+    }
+
+    //sort the rest
+    while ( layersToSort.length > 0 ) {
+        for ( var i = layersToSort.length - 1; i >= 0; i-- ) {
+            var l = layersToSort[ i ];
+            for ( var j = 0; j < sortedLayers.length; j++ ) {
+                var sL = sortedLayers[ j ];
+                if ( l.parent.index == sL.index ) {
+                    sortedLayers.push( l );
+                    layersToSort.splice( i, 1 );
+                    break;
+                }
+            }
+        }
+    }
+    return sortedLayers;
+
+}
+
+/**
+ * Sort the layers by their indices. Returns a new Array, the original array or collection is not changed.
+ * @param {Layer[]|LayerCollection} layers - The layers to sort
+ * @return {Layer[]} The sorted array
+ */
+DuAEF.DuAE.Layer.sortByIndex = function ( layers ) {
+    var sortedLayers = DuAEF.DuAE.convertCollectionToArray( layers );
+
+    function compareLayerIndices( lay1, lay2 ) {
+        return lay1.index - lay2.index;
+    }
+    return sortedLayers.sort( compareLayerIndices );
+}
+
+/**
+ * Parents all the layers together beginning by the end of the array
+ * @param {Layer[]} layers - The layers to parent
+ */
+DuAEF.DuAE.Layer.parentChain = function ( layers ) {
+    //unparent  all but the first
+    var layersUnparent = [];
+    for ( var i = 1; i < layers.length; i++ ) {
+        layersUnparent.push( layers[ i ] );
+    }
+    DuAEF.DuAE.Layer.unparent( layersUnparent );
+
+    for ( var i = layers.length - 1; i >= 1; i-- ) {
+        try { layers[ i ].parent = layers[ i - 1 ]; }
+        catch (e) { alert(e); }
+    }
+}
+
+/**
+ * Un-parents all the layers
+ * @param {Layer[]} layers - The layers
+ */
+DuAEF.DuAE.Layer.unparent = function ( layers ) {
+    for ( var i = layers.length - 1; i >= 0; i-- ) {
+        layers[ i ].parent = null;
+    }
+}
+
+/**
+ * (Un)parent the children of the layer.< br/>
+ * When children are unparented, an effect is added and the name of the layer is changed to show the "edit mode" is enabled.<br />
+ * When toggled again, the effect is removed, and the name is restored.
+ * @param {Layer} layer - The layer to toggle.
+ */
+DuAEF.DuAE.Layer.toggleEditMode = function ( layer ) {
+    //a reg exp to retrieve the list of children
+    var reChildren = / \|Duik::ChildrenLayers:([\d,]*)\|/;
+
+    var setEditMode = !reChildren.test( layer.comment );
+
+    var comp = layer.containingComp;
+
+    if ( setEditMode ) {
+        var children = DuAEF.DuAE.Layer.getChildren( layer );
+        layer.comment = layer.comment + ' |Duik::ChildrenLayers:';
+        for ( var j = 0, num = children.length; j < num; j++ ) {
+            var child = children[ j ];
+            layer.comment = layer.comment + child.index;
+            if ( j < children.length - 1 ) layer.comment = layer.comment + ',';
+            child.parent = null;
+        }
+        layer.comment = layer.comment + "|";
+        layer.name = '=EDIT= ' + layer.name;
+        var tint = layer.property( 'ADBE Effect Parade' ).addProperty( 'ADBE Tint' );
+        tint.name = 'DUIK EDIT MODE';
+        tint( 1 ).setValue( [ 0.5, 0, 0, 1 ] );
+        tint( 2 ).setValue( [ 1, 0, 0, 1 ] );
+    } else {
+        var match = reChildren.exec( layer.comment );
+        if ( match.length == 2 ) {
+            var indices = match[ 1 ].split( ',' );
+            //reparent
+            if ( indices.length > 0 ) {
+                for ( var i = 0; i < indices.length; i++ ) {
+                    var index = parseInt( indices[ i ] );
+                    if ( isNaN( index ) ) continue;
+                    comp.layer( index ).parent = layer;
+                }
+            }
+            //remove comment
+            layer.comment = layer.comment.replace( match[ 0 ], '' );
+            layer.name = layer.name.replace( '=EDIT= ', '' );
+            var tint = layer.property( 'ADBE Effect Parade' ).property( 'ADBE Tint' );
+            if ( tint )
+                if ( tint.name == 'DUIK EDIT MODE' ) tint.remove();
+        }
+    }
+}
+
+/**
+ * Creates a sequence with the layers, but using opacities.
+ * This enables more possibilities to rig them, like with the Connector
+ * @param {Layer[]|LayerCollection} layers - The layers
+ * @param {string} [expr] - An expression to add to the opacity of the layers
+ */
+DuAEF.DuAE.Layer.sequence = function ( layers, expr ) {
+    if ( layers.length == 0 ) return;
+    if ( expr == undefined ) expr = '';
+    var comp = layers[ 0 ].containingComp;
+    var it = new Iterator( layers );
+    it.do( function ( layer ) {
+        while ( layer.transform.opacity.numKeys > 0 ) {
+            layer.transform.opacity.removeKey( layer.transform.opacity.numKeys );
+        }
+        var i = it.current;
+        var t = i * comp.frameDuration;
+        var endTime = ( layers.length - 1 ) * comp.frameDuration;
+        layer.transform.opacity.setValueAtTime( 0, 0 );
+        layer.transform.opacity.setValueAtTime( endTime, 0 );
+        layer.transform.opacity.setValueAtTime( t, 100 );
+        if ( i < layers.length - 1 ) layer.transform.opacity.setValueAtTime( t + comp.frameDuration, 0 );
+        for ( var keyIndex = 1; keyIndex <= layer.transform.opacity.numKeys; keyIndex++ ) {
+            layer.transform.opacity.setInterpolationTypeAtKey( keyIndex, KeyframeInterpolationType.HOLD, KeyframeInterpolationType.HOLD );
+        }
+        layer.transform.opacity.expression = expr;
+    } );
+}
+
+/**
+ * Adds a new Null object just above a layer, at the same position
+ * @param {Layer} layer - The layer
+ * @return {Layer} the null
+ */
+DuAEF.DuAE.Layer.addNull = function ( layer ) {
+    if ( layer == undefined ) return null;
+    var nullLayer = layer.containingComp.layers.addNull();
+    layerParent = layer.parent;
+    layer.parent = null;
+    nullLayer.transform.position.setValue( layer.transform.position.value );
+    layer.parent = layerParent;
+    nullLayer.moveBefore( layer );
+    nullLayer.name = "N | " + layer.name;
+    return nullLayer;
+}
+
+/**
+ * Locks the scale with an expression so its value cannot be changed
+ * @param {Layer} layer - The layer
+ * @param {bool} [allAEVersions=false] - true to lock scale even on CS6 and older<br />
+ * Those older versions will display the scale property when typing the "U" shorcut when it's locked.
+ */
+DuAEF.DuAE.Layer.lockScale = function ( layer, allAEVersions ) {
+    if ( typeof allAEVersions == "undefined" ) allAEVersions = false;
+    if ( allAEVersions || DuAEF.DuAE.App.version.version > 12 ) DuAEF.DuAE.Property.lock( layer.transform.scale );
+}
+
+/**
+ * Copies the layers to another comp
+ * @param {Layer[]} layers - The layers to copy and paste
+ * @param {CompItem} destinationComp - The composition to copy to
+ * @param {boolean} [withPropertyLinks=false] - Add expressions on the properties to link them to the orriginal layers<br />
+ * Works only on 12.0 and above, ignored on 11.0 (CS6) and below
+ * @return {Layer[]} The new layers
+ */
+DuAEF.DuAE.Layer.copyToComp = function ( layers, destinationComp, withPropertyLinks ) {
+    if ( DuAEF.DuAE.App.version.version < 12.0 ) withPropertyLinks = false;
+    if ( typeof withPropertyLinks === 'undefined' ) withPropertyLinks = false;
+
+    if ( layers.length == 0 ) return;
+
+    var it = new Iterator( layers );
+
+    var previousActiveComp = DuAEF.DuAE.Project.getActiveComp();
+
+    //activate the origin comp
+    var originComp = it.firstItem().containingComp;
+    originComp.openInViewer();
+
+    //select the layers
+    var previousSelection = DuAEF.DuAE.Comp.unselectLayers( originComp );
+    DuAEF.DuAE.Comp.selectLayers( layers );
+
+    //copy
+    if ( withPropertyLinks ) DuAEF.DuAE.App.copyWithPropertyLinks();
+    else DuAEF.DuAE.App.copy();
+
+    //destination
+    destinationComp.openInViewer();
+
+    //unselect layers in destination
+    var previousSelectionDestination = DuAEF.DuAE.Comp.unselectLayers( destinationComp );
+
+    //paste
+    DuAEF.DuAE.App.paste();
+
+    //keep new layers to return them
+    var newLayers = destinationComp.selectedLayers;
+
+    //restore previous state
+    DuAEF.DuAE.Comp.selectLayers( previousSelection );
+    previousActiveComp.openInViewer();
+    DuAEF.DuAE.Comp.selectLayers( previousSelectionDestination );
+
+    return newLayers;
+}
+
+/**
+ * Parents all (unparented) layers
+ * @param {Layer|LayerCollection|Layer[]} layers - The layers to parent
+ * @param {Layer} [parent] - The parent. If not defined, will use the last layer of the list
+ * @param {boolean} [unparentedOnly=true] - True to parent only layers which do not have a parent yet 
+ * @param {boolean} [insert=false] - When true, the parent will be parented to the previous parent of the given layer (or first layer if the layers param is a list)
+ */
+DuAEF.DuAE.Layer.parent = function ( layers, parent, unparentedOnly, insert ) {
+    unparentedOnly = def( unparentedOnly, true );
+    insert = def( insert, false );
+
+    if ( typeof parent === 'undefined' ) {
+        if ( !layers.length ) return;
+        if ( layers.length == 1 ) return;
+        parent = layers.pop();
+    }
+
+    if ( !layers.length ) layers = [layers];
+
+    if (insert) parent.parent = layers[0].parent;
+    
+    var it = new Iterator( layers );
+    it.do( function ( layer ) {
+        var locked = layer.locked;
+        layer.locked = false;
+        if ( ( layer.parent == null && unparentedOnly ) || !unparentedOnly ) {
+            if ( layer.parent != parent ) layer.parent = parent;
+        }
+        layer.locked = locked;
+    } );
+}
+
+/**
+ * Gets all the (selected) puppet pins found on the layer.<br />
+ * Will return all puppet pins if there is no puppet selection.
+ * @param {Layer} layer - The layer
+ * @return {PropertyInfo[]} The properties
+ */
+DuAEF.DuAE.Layer.getPuppetPins = function ( layer ) {
+    var pins = [];
+    var selectedProps = layer.selectedProperties;
+
+    function getPins( puppet ) {
+        //get pins
+        var mesh = puppet.property( "ADBE FreePin3 ARAP Group" ).property( "ADBE FreePin3 Mesh Group" ).property( "ADBE FreePin3 Mesh Atom" ).property( "ADBE FreePin3 PosPins" );
+        for ( var i = 1, num = mesh.numProperties; i <= num; i++ ) {
+            pins.push( new PropertyInfo( mesh.property( i ) ) );
+        }
+    }
+
+    if ( selectedProps == 0 ) {
+        //look for puppet effects
+        for ( var i = 1, num = layer( 'ADBE Effect Parade' ).numProperties; i <= num; i++ ) {
+            var effect = layer.effect( i );
+            if ( effect.matchName == 'ADBE FreePin3' ) {
+                getPins( effect );
+            }
+        }
+    } else {
+        //get any selected pin
+        var itProps = new Iterator( selectedProps );
+        itProps.do( function ( prop ) {
+            if ( prop.matchName == 'ADBE FreePin3 PosPin Atom' ) pins.push( new PropertyInfo( prop ) );
+        } );
+        //try to find selected puppets
+        if ( pins.length == 0 ) {
+            itProps.do( function ( prop ) {
+                if ( prop.matchName == 'ADBE FreePin3' ) getPins( prop );
+            } );
+        }
+    }
+
+
+    return pins;
+}
+
+/**
+ * Aligns a layer in position to another layer
+ * @param {Layer} layer - The layer to align.
+ * @param {Layer} target - The reference layer.
+ */
+DuAEF.DuAE.Layer.alignPosition = function ( layer, target ) {
+    //parent to target
+    var layerParent = layer.parent;
+    if ( layerParent != target ) layer.parent = target;
+
+    var comp = layer.containingComp;
+
+    //TODO if dimensions dimensions separated
+    //TODO if 3D
+
+    //set position
+    if ( layer.transform.position.numKeys == 0 ) layer.transform.position.setValue( target.transform.anchorPoint.value );
+    else layer.transform.position.setValueAtTime( comp.time, target.transform.anchorPoint.value );
+
+    //reparent
+    if ( layerParent != target ) layer.parent = layerParent;
+}
+
+/**
+ * Aligns a layer's orientation to another layer
+ * @param {Layer} layer - The layer to align.
+ * @param {Layer} target - The reference layer.
+ */
+DuAEF.DuAE.Layer.alignOrientation = function ( layer, target ) {
+    //parent to target
+    var layerParent = layer.parent;
+    if ( layerParent != target ) layer.parent = target;
+
+    var comp = layer.containingComp;
+
+    //TODO if 3D/2D
+
+    //set rotation
+    if ( layer.transform.rotation.numKeys == 0 ) layer.transform.rotation.setValue( 0 );
+    else layer.transform.rotation.setValueAtTime( comp.time, 0 );
+
+    //reparent
+    if ( layerParent != target ) layer.parent = layerParent;
+}
+
+/**
+ * Aligns a layer's scale to another layer
+ * @param {Layer} layer - The layer to align.
+ * @param {Layer} target - The reference layer.
+ */
+DuAEF.DuAE.Layer.alignScale = function ( layer, target ) {
+    //parent to target
+    var layerParent = layer.parent;
+    if ( layerParent != target ) layer.parent = target;
+
+    var comp = layer.containingComp;
+
+    //TODO 3D
+
+    //set scale
+    if ( layer.transform.scale.numKeys == 0 ) layer.transform.scale.setValue( [ 100, 100 ] );
+    else layer.transform.scale.setValueAtTime( comp.time, [ 100, 100 ] );
+
+    //reparent
+    if ( layerParent != target ) layer.parent = layerParent;
+}
+
+/**
+ * Aligns a layer's opcaity to another layer
+ * @param {Layer} layer - The layer to align.
+ * @param {Layer} target - The reference layer.
+ */
+DuAEF.DuAE.Layer.alignOpacity = function ( layer, target ) {
+    var comp = layer.containingComp;
+
+    //set scale
+    if ( layer.transform.opacity.numKeys == 0 ) layer.transform.opacity.setValue( target.transform.opacity.value );
+    else layer.transform.opacity.setValueAtTime( comp.time, target.transform.opacity.value );
+}
+
+/**
+ * Aligns the layers' transformations (position, rotation, scale) to another layer
+ * @param {Layer[]|LayerCollection} layers - The layers to align.
+ * @param {Layer} target - The reference layer.
+ * @param {boolean} [position=true] - True to align position.
+ * @param {boolean} [rotation=true] - True to align orientation.
+ * @param {boolean} [scale=true] - True to align scale.
+ * @param {boolean} [opacity=false] - True to align opcacity.
+ */
+DuAEF.DuAE.Layer.align = function ( layers, target, position, rotation, scale, opacity ) {
+    if ( typeof position === 'undefined' ) position = true;
+    if ( typeof rotation === 'undefined' ) rotation = true;
+    if ( typeof scale === 'undefined' ) scale = true;
+    if ( typeof opacity === 'undefined' ) opacity = false;
+
+    var it = new Iterator( layers );
+
+
+    var comp = layers[ 0 ].containingComp;
+
+    var targetParent = target.parent;
+    target.parent = null;
+
+    //unparent all layers
+    var parents = [];
+    it.do( function ( layer ) {
+        if ( layer == target ) return;
+        //parent to target
+        parents[ it.current ] = layer.parent;
+
+        layer.parent = target;
+    } );
+
+    //set values
+    it.do( function ( layer ) {
+        if ( layer == target ) return;
+
+        if ( position ) DuAEF.DuAE.Layer.alignPosition( layer, target );
+        if ( rotation ) DuAEF.DuAE.Layer.alignOrientation( layer, target );
+        if ( scale ) DuAEF.DuAE.Layer.alignScale( layer, target );
+        if ( opacity ) DuAEF.DuAE.Layer.alignOpacity( layer, target );
+    } );
+
+    //re-parent
+    it.do( function ( layer ) {
+        if ( layer == target ) return;
+        //reparent
+        layer.parent = parents[ it.current ];
+    } );
+
+    target.parent = targetParent;
+}
+
+/**
+ * Gets the transformation matrix of the layer from the compostion.<br />
+ * Use Matrix.applyToPoint(point) to transform any coordinate with the matrix returned by this method.
+ * @param {Layer[]} layer - the layer
+ * @return {Matrix} The coordinates.
+ */
+DuAEF.DuAE.Layer.getTransformMatrix = function ( layer ) {
+    var matrix = new Matrix();
+
+    //get the ancestors
+    var layers = [ layer ];
+    var parent = layer.parent;
+    while ( parent ) {
+        layers.push( parent );
+        parent = parent.parent;
+    }
+
+    //apply transforms from the ancestor
+    for ( var i = layers.length - 1; i >= 0; i-- ) {
+        var l = layers[ i ];
+
+        //position
+        matrix.translate( l.transform.position.value );
+
+        //rotation
+        if ( l.threeDLayer || l instanceof CameraLayer ) matrix.rotate( l.transform.zRotation.value );
+        else matrix.rotate( l.transform.rotation.value );
+
+        if ( !( l instanceof CameraLayer ) ) {
+            //anchor point inverse transform, taking scale into account
+            var aPX = -( l.transform.anchorPoint.value[ 0 ] * l.transform.scale.value[ 0 ] / 100 );
+            var aPY = -( l.transform.anchorPoint.value[ 1 ] * l.transform.scale.value[ 1 ] / 100 );
+
+            matrix.translate( [ aPX, aPY ] );
+
+            //scale
+            matrix.scale( l.transform.scale.value / 100 );
+        }
+    }
+
+    return matrix;
+}
+
+/**
+ * Moves a layer to the coordinates of a spatial property
+ * @param {Layer} layer - The layer
+ * @param {Property|PropertyInfo} prop - The property
+ */
+DuAEF.DuAE.Layer.moveLayerToProperty = function ( layer, prop ) {
+    var propInfo;
+    if ( prop instanceof PropertyInfo ) {
+        propInfo = prop;
+        prop = propInfo.getProperty();
+    } else {
+        propInfo = new PropertyInfo( prop );
+    }
+
+    var propLayer = propInfo.layer;
+    var comp = propInfo.comp;
+
+    if ( !( propLayer instanceof ShapeLayer ) ) {
+        var matrix = DuAEF.DuAE.Layer.getTransformMatrix( propLayer );
+        var pos = matrix.applyToPoint( prop.value );
+        var parent = layer.parent;
+        layer.parent = null;
+        layer.position.setValue( pos );
+        layer.parent = parent;
+    } else {
+        var parent = layer.parent;
+        layer.parent = null;
+        layer.position.setValue( prop.value );
+        layer.parent = parent;
+    }
+}
+
+/**
+ * Sets the In and Out points of a layer according to its opacity (cuts at 0%)
+ * @param {Layer} layer - The layer
+ * @param {boolean} [preExpression=false] - Whether to check for the opacity post or pre-expression value
+ */
+DuAEF.DuAE.Layer.autoDuration = function ( layer, preExpression ) {
+    if ( typeof preExpression === 'undefined' ) preExpression = false;
+
+    var comp = layer.containingComp;
+
+    var inPoint = layer.inPoint;
+    var outPoint = layer.outPoint;
+    var inFrame = inPoint / comp.frameDuration;
+    var outFrame = outPoint / comp.frameDuration;
+
+    //search in
+    if ( layer.transform.opacity.valueAtTime( inPoint, preExpression ) == 0 ) {
+        for ( var i = inFrame; i < outFrame; i++ ) {
+            var time = i * comp.frameDuration;
+            if ( layer.transform.opacity.valueAtTime( time, preExpression ) == 0 ) inPoint = time + comp.frameDuration;
+            else break;
+        }
+    }
+
+    //search out 
+    if ( layer.transform.opacity.valueAtTime( outPoint, preExpression ) == 0 ) {
+        for ( var i = outFrame; i > inFrame; i-- ) {
+            var time = i * comp.frameDuration;
+            if ( layer.transform.opacity.valueAtTime( time, preExpression ) == 0 ) outPoint = time;
+            else break;
+        }
+    }
+
+    //set new in and out points
+    if ( inPoint != layer.inPoint ) layer.inPoint = inPoint;
+    if ( outPoint != layer.outPoint ) layer.outPoint = outPoint;
+}
+
+/**
+ * Checks if a layer is 3D (ie is a threeDLayer or a camera or a light)
+ * @param {Layer} layer - The layer
+ * @return {bool} true if the layer is a 3D layer
+ */
+DuAEF.DuAE.Layer.isThreeD = function ( layer ) {
+    if (layer.threeDLayer) return true;
+    if (layer instanceof CameraLayer) return true;
+    if (layer instanceof LightLayer) return true;
+    return false;
+}
