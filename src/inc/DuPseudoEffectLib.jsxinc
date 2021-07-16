@@ -29,7 +29,7 @@
 	* @classdesc Describes a pseudo effect<br />
     * The indices of the properties in the effect are stored as their display names + type.<br />
     * <code>pseudoEffect.index["amplitude_Angle"]</code> is the index of an Angle property named "amplitude"
-	* @param {DuBinaryFile} binaryFile - The ffx file
+	* @param {DuBinary} binaryFile - The ffx file
 	* @param {string} [matchName=""] - The matchName
 	* @param {string} [name=""] - The default name
 	* @property {File} file - The ffx file
