@@ -1,6 +1,32 @@
 # DuAEF
 Duduf After Effects ExtendScript Framework
 
+## Current refactor: split and move ES functions to DuESF
+
+### To be moved
+
+- [ ] Scriptui (except ae related controls)
+- [ ] DuBinary
+- [ ] DuDebug
+- [ ] DuProcess
+- [ ] DuQuant
+- [ ] DuRSS
+- [ ] DuSettings
+- [ ] DuSystem <- move DuESF.win and DuESF.mac there
+- [ ] DuXML
+- [ ] DuXMP
+- [ ] DuZip
+- [ ] DuOCA -> Split Ae related and non-Ae functions
+
+### Re-check, don't know what to do
+
+- [ ] DuFFMpeg
+
+### Move to their own repo / Check what to do
+
+- [ ] Dugr
+- [ ] Duik
+
 ## What's this?
 
 ***DuAEF*** is a set of **classes**, **methods** and **tools** to ease the scripting process in **After Effects**, as long as adding features (like [pngquant](https://pngquant.org/), [ffmpeg](https://ffmpeg.org/), or [json](http://json.org/)) not available in After Effects/ExtendScript.
