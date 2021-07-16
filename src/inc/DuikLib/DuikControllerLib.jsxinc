@@ -236,7 +236,7 @@ DuAEF.Duik.Controller = {};
 
 /**
  * Translatable strings used to name layers and effects<br />
- * These strings are translated at init time using the {@link tr} function from {@link DuAEF.Dutranslator}.
+ * These strings are translated at init time using the {@link tr} function from {@link DuTranslator}.
  * @enum {string}
  * @readonly
  */
