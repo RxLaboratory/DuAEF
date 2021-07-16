@@ -84,7 +84,7 @@ DuAEF.Duik.Autorig.checkLayerTags = function (layers)
 {
 	if (layers.length == 0) return [];
 	var untagged = [];
-	var it = new Iterator(layers);
+	var it = new DuList(layers);
 	it.do(function(layer){
 		var param = DuAEF.Duik.getDuikMarkerParameters(layer);
 		if (!param)
@@ -370,7 +370,7 @@ DuAEF.Duik.Autorig.getCreateController = function ( layer, comp, type, controlle
 	var ctrl = null;
 
 	//look for an existing controller
-	var it = new Iterator(controllers);
+	var it = new DuList(controllers);
 	while(it.next())
 	{
 		var controller = controllers[it.current];
@@ -434,7 +434,7 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 	var tailsCtrl = [];
 
 	//Sort layers, load data
-	var it = new Iterator(layers);
+	var it = new DuList(layers);
 	it.do(function (layer){
 		var params = DuAEF.Duik.getDuikMarkerParameters(layer);
 		if (!params) return;
@@ -867,7 +867,7 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 
 	// ==================== TAIL ======================
 
-	var itTails = new Iterator(tails);
+	var itTails = new DuList(tails);
 	itTails.do(function(tail){
 
 		//sort the tail
@@ -953,7 +953,7 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 
 	// ================ LEGS ==========================
 
-	var itLegs = new Iterator(legs);
+	var itLegs = new DuList(legs);
 	itLegs.do(function(leg){
 
 		//unparent
@@ -1226,7 +1226,7 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 
 	// =============== ARMS ================================
 
-	var itArms = new Iterator(arms);
+	var itArms = new DuList(arms);
 	itArms.do(function(arm){
 
 		//unparent
@@ -1609,7 +1609,7 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 
 	// =============== CUSTOM STRUCTURES ================================
 
-	var itStructures = new Iterator(customStructures);
+	var itStructures = new DuList(customStructures);
 	itStructures.do(function(structureLayers)
 	{
 		var structure = new Structure(structureLayers);
@@ -1693,7 +1693,7 @@ DuAEF.Duik.Autorig.rig = function (layers, longChainType, threeAsOneAndTwo)
 	//move controllers to the top of the comp
 	if (useNull) 
 	{
-		new Iterator(allCtrls).do(function(ctrl)
+		new DuList(allCtrls).do(function(ctrl)
 		{
 			ctrl.layer.moveToBeginning();
 		});
@@ -1843,7 +1843,7 @@ DuAEF.Duik.Autorig.detectLimbSide = function (handCtrl1,handCtrl2,footCtrl1,foot
 DuAEF.Duik.Autorig.detectCharacterSide = function (controllers)
 {
 	if (controllers.length == 0) return;
-	var it = new Iterator(controllers);
+	var it = new DuList(controllers);
 
 	//detect left and right
 	var h1 = null;

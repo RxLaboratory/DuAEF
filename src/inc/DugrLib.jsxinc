@@ -205,7 +205,7 @@ DuAEF.Dugr.getLayers = function (groups, invert)
 
 	var layers = [];
 
-	var testLayers = new Iterator(comp.layers);
+	var testLayers = new DuList(comp.layers);
 
 	testLayers.do(function (layer)
 	{
@@ -253,7 +253,7 @@ DuAEF.Dugr.getGroups = function ()
 	//the regexp to find groups
 	var re = /\|[^\|\n\r]+\| /g;
 
-	var layers = new Iterator(comp.layers);
+	var layers = new DuList(comp.layers);
 	layers.do(function(layer)
 	{
 		var newGroups = layer.comment.match(re);

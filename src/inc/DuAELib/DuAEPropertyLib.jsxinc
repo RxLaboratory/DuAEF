@@ -1302,10 +1302,10 @@ DuAEF.DuAE.Property.cleanKeyframes = function ( property ) {
         var remove = false;
         for ( var j = 0; j < currentKey.inEase.length; j++ ) {
             remove = false
-            if ( i > 1 && !DuMath.compare( prevKey.outEase[ j ].speed, 0, 4 ) ) break;
-            if ( i > 1 && !DuMath.compare( currentKey.inEase[ j ].speed, 0, 4 ) ) break;
-            if ( i < prop.numKeys && !DuMath.compare( currentKey.outEase[ j ].speed, 0, 4 ) ) break;
-            if ( i < prop.numKeys && !DuMath.compare( nextKey.inEase[ j ].speed, 0, 4 ) ) break;
+            if ( i > 1 && !DuMath.equals( prevKey.outEase[ j ].speed, 0, 4 ) ) break;
+            if ( i > 1 && !DuMath.equals( currentKey.inEase[ j ].speed, 0, 4 ) ) break;
+            if ( i < prop.numKeys && !DuMath.equals( currentKey.outEase[ j ].speed, 0, 4 ) ) break;
+            if ( i < prop.numKeys && !DuMath.equals( nextKey.inEase[ j ].speed, 0, 4 ) ) break;
             remove = true;
         }
         //remove key
@@ -1585,7 +1585,7 @@ DuAEF.DuAE.Property.addToEGP = function ( prop ) {
 
             //rename the master property if >=15.1 and < 16.1
             if ( DuAEF.DuAE.App.version.version >= 15.1 && DuAEF.DuAE.App.version.version < 16.1 ) {
-                var it = new Iterator( comp.usedIn );
+                var it = new DuList( comp.usedIn );
                 it.do( function ( mainComp ) {
                     //search the layer of the precomp
                     for ( var i = 1, num = mainComp.numLayers; i <= num; i++ ) {
@@ -1633,7 +1633,7 @@ DuAEF.DuAE.Property.addToEGP = function ( prop ) {
  * @param {PropertyBase|PropertyInfo|PropertyBase[]|PropertyInfo[]} properties - The property or properties
  */
 DuAEF.DuAE.Property.lock = function ( properties ) {
-    var it = new Iterator( properties );
+    var it = new DuList( properties );
     it.do( function ( property ) {
         var p = property;
         var riggable = false;

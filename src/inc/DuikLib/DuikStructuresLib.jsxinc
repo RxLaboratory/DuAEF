@@ -154,7 +154,7 @@ Structure.prototype.duplicate = function()
     DuAEF.DuAE.App.duplicate();
     //get topmost element
     var topIndex = comp.numLayers;
-    var it = new Iterator( this.elements );
+    var it = new DuList( this.elements );
     while ( element = it.next() )
     {
         if ( element.index < topIndex ) topIndex = element.index;
@@ -174,7 +174,7 @@ Structure.prototype.duplicate = function()
 
     var autorigId = new Date().getTime() + 1;
 
-    new Iterator( newLayers ).do( function( layer )
+    new DuList( newLayers ).do( function( layer )
     {
         layer.moveBefore( comp.layer( topIndex ) );
         //set display link
@@ -395,7 +395,7 @@ DuAEF.Duik.Structure.addStructures = function( num, comp, name, forceNum, revers
         var layerPositions = [];
 
         //get selected props
-        var it = new Iterator( layers );
+        var it = new DuList( layers );
         it.do( function( layer )
         {
             //get paths
@@ -424,7 +424,7 @@ DuAEF.Duik.Structure.addStructures = function( num, comp, name, forceNum, revers
         } );
 
         //create structures on selected props
-        it = new Iterator( propsByLayer );
+        it = new DuList( propsByLayer );
         it.do( function( propsLayer )
         {
             if ( propsLayer.length == 0 ) return;
@@ -432,7 +432,7 @@ DuAEF.Duik.Structure.addStructures = function( num, comp, name, forceNum, revers
             //get paths
             if ( propsLayer[ 0 ].matchName == "ADBE Vector Shape - Group" || propsLayer[ 0 ].matchName == "ADBE Mask Atom" )
             {
-                new Iterator( propsLayer ).do( function( prop )
+                new DuList( propsLayer ).do( function( prop )
                 {
                     structures.push( DuAEF.Duik.Structure.addStructureToPath( prop, num, forceNum, reverseAutoLink ) );
                 } );
@@ -449,7 +449,7 @@ DuAEF.Duik.Structure.addStructures = function( num, comp, name, forceNum, revers
             //puppet effect
             if ( propsLayer[ 0 ].matchName == "ADBE FreePin3" )
             {
-                new Iterator( propsLayer ).do( function( prop )
+                new DuList( propsLayer ).do( function( prop )
                 {
                     if ( prop.matchName != "ADBE FreePin3" ) return;
                     structures.push( DuAEF.Duik.Structure.addStructureToPuppetEffect( prop, num, forceNum, reverseAutoLink ) );
@@ -1111,7 +1111,7 @@ DuAEF.Duik.Structure.getStructures = function( comp, selectionMode )
 
     if ( layers.length == 0 ) return structures;
 
-    var it = new Iterator( layers );
+    var it = new DuList( layers );
 
     if ( selectionMode == DuAEF.Duik.Structure.SelectionModes.ELEMENT )
     {
@@ -1132,7 +1132,7 @@ DuAEF.Duik.Structure.getStructures = function( comp, selectionMode )
 
         if ( elementLayers.length == 0 ) return structures;
 
-        var itElements = new Iterator( elementLayers );
+        var itElements = new DuList( elementLayers );
         itElements.do( function( element )
         {
             var elementId = -1;
@@ -1281,10 +1281,10 @@ DuAEF.Duik.Structure.selectStructures = function( comp, selectionMode )
 
     DuAEF.DuAE.Comp.unselectLayers( comp );
 
-    var itStr = new Iterator( structures );
+    var itStr = new DuList( structures );
     itStr.do( function( structure )
     {
-        var itElmts = new Iterator( structure.elements );
+        var itElmts = new DuList( structure.elements );
         itElmts.do( function( element )
         {
             element.selected = true;
@@ -1337,7 +1337,7 @@ DuAEF.Duik.Structure.createArm = function( shoulder, humerus, radius, hand, claw
 
     var structures = DuAEF.Duik.Structure.addStructures( numElements, comp, undefined, true, forceLink );
 
-    new Iterator( structures ).do( function( structure )
+    new DuList( structures ).do( function( structure )
     {
         //element index we're working on
         var currentElement = 0;
@@ -1502,9 +1502,9 @@ DuAEF.Duik.Structure.createLeg = function( femur, tibia, foot, toes, left, type,
     if ( numElements == 0 ) return null;
 
     var structures = DuAEF.Duik.Structure.addStructures( numElements, comp, undefined, true, forceLink );
-    //need copy the type locally to make it available for the function in the iterator
+    //need copy the type locally to make it available for the function in the DuList
     var legType = type;
-    new Iterator( structures ).do( function( structure )
+    new DuList( structures ).do( function( structure )
     {
         //name and move
 
@@ -1640,7 +1640,7 @@ DuAEF.Duik.Structure.createSpine = function( hips, spineCount, neckCount, head, 
     if ( numElements == 0 ) return null;
 
     var structures = DuAEF.Duik.Structure.addStructures( numElements, comp, undefined, true, forceLink );
-    new Iterator(structures).do( function( structure )
+    new DuList(structures).do( function( structure )
     {
         //name and move
 
@@ -1731,7 +1731,7 @@ DuAEF.Duik.Structure.createTail = function( elementCount, comp, forceLink )
     if ( elementCount == 0 ) return;
 
     var structures = DuAEF.Duik.Structure.addStructures( elementCount, comp, undefined, true, forceLink );
-    new Iterator( structures ).do( function( structure )
+    new DuList( structures ).do( function( structure )
     {
         var tailLayer = [];
         var tipLayer;
@@ -1766,7 +1766,7 @@ DuAEF.Duik.Structure.resetTransform = function( layer )
 {
     if ( !DuAEF.Duik.isLayerType( layer, DuAEF.Duik.LayerTypes.STRUCTURE ) ) return;
     var children = DuAEF.DuAE.Layer.getChildren( layer );
-    var it = new Iterator( children );
+    var it = new DuList( children );
     it.do( function( child )
     {
         var locked = child.locked;

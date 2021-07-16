@@ -261,7 +261,7 @@ DuAEF.Krita.importCSV = function( file )
     var framesFolder = app.project.items.addFolder( krita.name + " | Frames" );
 
     //import frames
-    new Iterator( kritaLayers ).do( function( kritaLayer )
+    new DuList( kritaLayers ).do( function( kritaLayer )
     {
         //create comp
         var kritaLayerComp = layerFolder.items.addComp( kritaLayer.name, krita.width, krita.height, krita.pixelAspect, duration, krita.frameRate );
@@ -275,7 +275,7 @@ DuAEF.Krita.importCSV = function( file )
         var importedFrames = [];
         var prevFrame = '';
         //current time
-        var itFrames = new Iterator( kritaLayer.frames );
+        var itFrames = new DuList( kritaLayer.frames );
         itFrames.do( function( frame )
         {
             var currentTime = itFrames.current / krita.frameRate;

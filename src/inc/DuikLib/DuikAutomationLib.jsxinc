@@ -85,7 +85,7 @@ DuAEF.Duik.Automation.interpolator = function (props)
 	var interpolatorKeys = [];
 	var interpolatorTimes = [];
 
-	new Iterator(props).do(function (prop)
+	new DuList(props).do(function (prop)
 	{
 		if (prop.riggable)
 		{
@@ -1257,7 +1257,7 @@ DuAEF.Duik.Automation.autoWalk = function(controllers,comp)
 	var rFootCtrl = null;
 	var lFootCtrl = null;
 
-	var it = new Iterator(controllers);
+	var it = new DuList(controllers);
 	it.do(function(controller)
 	{
 		var layer = controller;
@@ -1752,7 +1752,7 @@ DuAEF.Duik.Automation.Randomize.startTimes = function (layers,fromCurrentVal,min
 		if (layers == undefined) return;
 		if (layers.length == 0 ) return;
 
-		var it = new Iterator(layers);
+		var it = new DuList(layers);
 
 		while (!it.atEnd)
 		{
@@ -1777,7 +1777,7 @@ DuAEF.Duik.Automation.Randomize.inPoints = function (layers,fromCurrentVal,min,m
 	if (layers == undefined) return;
 	if (layers.length == 0 ) return;
 
-	var it = new Iterator(layers);
+	var it = new DuList(layers);
 
 	while (!it.atEnd)
 	{
@@ -1802,7 +1802,7 @@ DuAEF.Duik.Automation.Randomize.outPoints = function (layers,fromCurrentVal,min,
 	if (layers == undefined) return;
 	if (layers.length == 0 ) return;
 
-	var it = new Iterator(layers);
+	var it = new DuList(layers);
 
 	for (var i = it.min; i<= it.max;i++)
 	{
@@ -1827,7 +1827,7 @@ DuAEF.Duik.Automation.Randomize.indices = function (layers,fromCurrentVal,min,ma
 	if (layers == undefined) return;
 	if (layers.length == 0 ) return;
 
-	var it = new Iterator(layers);
+	var it = new DuList(layers);
 
 	while (!it.atEnd)
 	{

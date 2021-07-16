@@ -114,7 +114,7 @@ DuAEF.DuAE.Project.XMP.setPropertyValue = function(prop, value)
  */
 DuAEF.DuAE.Project.XMP.getSettings = function ()
 {
-    var json = DuAEF.JSON.parse(DuAEF.DuAE.Project.XMP.getPropertyValue("DuAEF"));
+    var json = JSON.parse(DuAEF.DuAE.Project.XMP.getPropertyValue("DuAEF"));
     if (!json) json = {};
     return json;
 }
@@ -125,7 +125,7 @@ DuAEF.DuAE.Project.XMP.getSettings = function ()
  */
 DuAEF.DuAE.Project.XMP.saveSettings = function (settings)
 {
-    var str = DuAEF.JSON.stringify(settings);
+    var str = JSON.stringify(settings);
     DuAEF.DuAE.Project.XMP.setPropertyValue("DuAEF", str);
 }
 

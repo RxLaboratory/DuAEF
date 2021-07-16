@@ -98,7 +98,7 @@ DuAEF.DuAE.Comp.setUniqueLayerNames = function ( layers, comp ) {
     comp = def( comp, DuAEF.DuAE.Project.getActiveComp() );
     if (!comp) return;
     layers = def(layers, comp.layers);
-    var it = new Iterator( layers );
+    var it = new DuList( layers );
     it.do( function ( layer ) {
         var locked = layer.locked;
         layer.locked = false;
@@ -127,7 +127,7 @@ DuAEF.DuAE.Comp.getSelectedProps = function ( filter, strict, caseSensitive ) {
     //if no filter, get all using AE native API
     if ( typeof filter === 'undefined' ) {
         var layers = comp.selectedLayers;
-        var itLayers = new Iterator( layers );
+        var itLayers = new DuList( layers );
         itLayers.do( function ( layer ) {
             props = props.concat( layer.selectedProperties );
         } );
@@ -211,7 +211,7 @@ DuAEF.DuAE.Comp.getAnimatedProps = function ( filter, strict, caseSensitive, sel
     if ( selectedLayersOnly ) layers = comp.selectedLayers;
     else layers = comp.layers;
 
-    var it = new Iterator( layers );
+    var it = new DuList( layers );
     it.do( function ( layer ) {
         props = props.concat( DuAEF.DuAE.Property.getAnimatedProps( layer, filter, strict, caseSensitive ) );
     } );
@@ -263,7 +263,7 @@ DuAEF.DuAE.Comp.unselectLayers = function ( comp ) {
  * @param {Layer[]} layers - The layers
  */
 DuAEF.DuAE.Comp.selectLayers = function ( layers ) {
-    new Iterator( layers ).do( function ( layer ) {
+    new DuList( layers ).do( function ( layer ) {
         if ( layer == undefined ) return;
         if ( layer == null ) return;
         layer.selected = true;
@@ -366,7 +366,7 @@ DuAEF.DuAE.Comp.getRelatives = function ( comp, recursive ) {
 DuAEF.DuAE.Comp.getPrecomps = function ( comp, recursive ) {
     if ( typeof recursive === 'undefined' ) recursive = true;
     var precomps = [];
-    var it = new Iterator( comp.layers );
+    var it = new DuList( comp.layers );
     it.do( function ( layer ) {
         var precomp = layer.source;
         if ( precomp instanceof CompItem ) {
@@ -386,7 +386,7 @@ DuAEF.DuAE.Comp.getPrecomps = function ( comp, recursive ) {
  */
 DuAEF.DuAE.Comp.getParentComps = function ( item ) {
     var parentComps = item.usedIn;
-    new Iterator( parentComps ).do( function ( parentComp ) {
+    new DuList( parentComps ).do( function ( parentComp ) {
         parentComps = parentComps.concat( DuAEF.DuAE.Comp.getParentComps( parentComp ) );
     } );
     DuList.removeDuplicates( parentComps );
@@ -403,7 +403,7 @@ DuAEF.DuAE.Comp.getAudioLayers = function ( comp, audioActiveOnly ) {
     if ( typeof audioActiveOnly === 'undefined' ) audioActiveOnly = false;
     var layers = comp.layers;
     var audioLayers = [];
-    var it = new Iterator( layers );
+    var it = new DuList( layers );
     it.do( function ( layer ) {
         if ( layer.hasAudio ) {
             if ( audioActiveOnly && layer.audioEnabled || !audioActiveOnly ) {

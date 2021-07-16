@@ -29,7 +29,7 @@
 DuAEF.DuExpression.get = function( functions )
 {
 	var exp = functions;
-	new Iterator(functions).do(function(functionName)
+	new DuList(functions).do(function(functionName)
 	{
 		var r = DuAEF.DuExpression.getRequirements( functionName );
 		exp = exp.concat(r);
@@ -39,7 +39,7 @@ DuAEF.DuExpression.get = function( functions )
 
 	var expString = '';
 
-	new Iterator(exp).do(function(expName)
+	new DuList(exp).do(function(expName)
 	{
 		expString += DuAEF.DuExpression.Library[ expName ].expression + '\n';
 	});

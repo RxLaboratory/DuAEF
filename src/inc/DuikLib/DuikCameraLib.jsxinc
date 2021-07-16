@@ -361,7 +361,7 @@ DuAEF.Duik.Camera.toggleScaleZLink = function (layers)
 
 	var camera = null;
 	//find camera
-	var it  = new Iterator(layers);
+	var it  = new DuList(layers);
 	while(layer = it.next())
 	{
 		if (layer instanceof CameraLayer)

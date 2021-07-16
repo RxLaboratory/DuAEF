@@ -111,7 +111,7 @@ DuAEF.WUStoryboarder.loadStoryboard = function(file)
 	if (!data.boards) return null;
 
 	//update board durations
-	var it = new Iterator(data.boards);
+	var it = new DuList(data.boards);
 	it.do( function(board) {
 		if (!board.duration) board.duration = data.defaultBoardTiming;
 		//update duration to a number

@@ -703,7 +703,7 @@ DuAEF.Duik.getLayers = function( layerType, selectedOnly, comp )
 
     if ( layers.length == 0 ) return [];
 
-    var it = new Iterator( layers );
+    var it = new DuList( layers );
     var found = [];
     it.do( function( layer )
     {
@@ -733,7 +733,7 @@ DuAEF.Duik.getLayer = function( layerType, selectedOnly, comp )
 
     if ( layers.length == 0 ) return null;
 
-    var it = new Iterator( layers );
+    var it = new DuList( layers );
     while ( layer = it.next() )
     {
         var params = DuAEF.Duik.getDuikMarkerParameters( layer );

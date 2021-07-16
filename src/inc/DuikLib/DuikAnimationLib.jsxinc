@@ -933,7 +933,7 @@ DuAEF.Duik.Animation.timeRemap = function (layers, loopInType, loopOutType)
 	if (typeof loopInType === 'undefined') loopOutType = DuAEF.DuAE.LoopTypes.HOLD;
 
 	if (layers.length == 0 ) return;
-	var it = new Iterator(layers);
+	var it = new DuList(layers);
 	while (!it.atEnd)
 	{
 		it.next();
@@ -1292,7 +1292,7 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 	DuAEF.DuAE.Comp.setUniqueCompName(comp);
 	DuAEF.DuAE.Comp.setUniqueCompName(preComp);
 
-	var itCtrls = new Iterator(controllers);
+	var itCtrls = new DuList(controllers);
 	var controller;
 	var ctrlLayers = [];
 	var newCtrlLayers = [];
@@ -1418,7 +1418,7 @@ DuAEF.Duik.Animation.extractControllersFromComp = function(preComposition,useMas
 			DuAEF.DuAE.Property.addToEGP(ctrlLayer('ADBE Effect Parade'));
 			// get master properties
 			var mps = DuAEF.DuAE.Property.getProps( preComposition('ADBE Layer Overrides'), PropertyType.PROPERTY );
-			var it = new Iterator(mps);
+			var it = new DuList(mps);
 			//links
 			it.do( function(mp) {
 				//get prop name
@@ -1483,7 +1483,7 @@ DuAEF.Duik.Animation.unExtractControllersFromComp = function( preComposition )
 	}
 
 	//for each controller
-	var itCtrl = new Iterator(extractedControllers);
+	var itCtrl = new DuList(extractedControllers);
 	itCtrl.do(function(extractedController)
 	{
 		var controller = null;
@@ -1700,7 +1700,7 @@ DuAEF.Duik.AnimationBlender.setup = function(setupComp,controlComp,selectedPrope
 		'result;';
 
 	//set expression
-	new Iterator(props).do(function(prop)
+	new DuList(props).do(function(prop)
 	{
 		prop = prop.getProperty();
 		prop.expression = exp;

@@ -313,7 +313,7 @@ DuAEF.TVPaint.importClip = function( clipFile, askLayers )
 			return layerA.position - layerB.position;
 		});
 
-		var itLayers = new Iterator(data.project.clip.layers);
+		var itLayers = new DuList(data.project.clip.layers);
 		itLayers.do(function (layer)
 		{
 			var name = '';
@@ -378,7 +378,7 @@ DuAEF.TVPaint.importData = function( data )
 	clipComp.bgColor = bgColor;
 
 	//create layers 
-	var itLayers = new Iterator(layers);
+	var itLayers = new DuList(layers);
 	itLayers.do(function (layer)
 	{
 		//create layer composition
@@ -392,7 +392,7 @@ DuAEF.TVPaint.importData = function( data )
 		//import frames
 		var layerFolder = app.project.items.addFolder( layer.name );
 		layerFolder.parentFolder = layersFolderItem;
-		var itFrames = new Iterator(layer.link);
+		var itFrames = new DuList(layer.link);
 		//add frames to comp
 		itFrames.do(function (frame)
 		{

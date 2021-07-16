@@ -167,7 +167,7 @@ DuAEF.DuPseudoEffect.convertToIncludeFile = function(ffxFile,xmlFile,category,ou
 
 	var duBinary = DuAEF.DuBinary.toObj(ffxFile,category);
 	var jsString = 'var ' + varName + ' = ';
-	jsString += '{"binAsString":"' + duBinary.binAsString + '","fileName":"' + duBinary.fileName + '","category":"' + duBinary.category + '","xml":' + DuAEF.JSON.stringify( xmlString ) + '}';
+	jsString += '{"binAsString":"' + duBinary.binAsString + '","fileName":"' + duBinary.fileName + '","category":"' + duBinary.category + '","xml":' + JSON.stringify( xmlString ) + '}';
 	jsString += ';\r\n';
 	jsString += varName + ';\r\n';
 

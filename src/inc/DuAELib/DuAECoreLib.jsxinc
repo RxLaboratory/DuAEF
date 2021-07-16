@@ -809,7 +809,7 @@ DuAEF.DuAE.getPropertyInfos = function (props)
 /**
 	* Converts an AE Collection to an Array<br />
 	* Should only be used in case you need an copy of the collection as an Array,<br />
-	* you should use an {@link Iterator} otherwise
+	* you should use an {@link DuList} otherwise
 	* @param {Array|Collection} collection - The collection to convert
 	* @return {Array} The array
 */

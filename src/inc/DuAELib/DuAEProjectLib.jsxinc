@@ -77,7 +77,7 @@ DuAEF.DuAE.Project.setProgressMode = function ( inProgress ) {
 DuAEF.DuAE.Project.getComps = function ( rootOnly ) {
     rootOnly = def( rootOnly, false );
     var comps = [];
-    var it = new Iterator( app.project.items );
+    var it = new DuList( app.project.items );
     it.do( function ( comp ) {
         if ( comp instanceof CompItem ) {
             if ( rootOnly && comp.parentFolder != app.project.rootFolder ) return;
@@ -110,7 +110,7 @@ DuAEF.DuAE.Project.getActiveComp = function () {
  */
 DuAEF.DuAE.Project.getItemById = function ( id ) {
 
-    var it = new Iterator( app.project.items );
+    var it = new DuList( app.project.items );
     while ( item = it.next() ) {
         if ( item.id == id ) return item;
     }
@@ -122,7 +122,7 @@ DuAEF.DuAE.Project.getItemById = function ( id ) {
  * @return {Item|null} The item
  */
 DuAEF.DuAE.Project.getItemByName = function ( name ) {
-    var it = new Iterator( app.project.items );
+    var it = new DuList( app.project.items );
     while ( item = it.next() ) {
         if ( item.name == name ) return item;
     }
@@ -139,7 +139,7 @@ DuAEF.DuAE.Project.getItemByName = function ( name ) {
 DuAEF.DuAE.Project.newUniqueCompName = function ( newName, increment ) {
     if ( typeof increment == 'undefined' ) increment = true;
     var compNames = [];
-    var it = new Iterator( app.project.items );
+    var it = new DuList( app.project.items );
     it.do( function ( comp ) {
         if ( comp instanceof CompItem ) compNames.push( comp.name );
     } );
@@ -213,7 +213,7 @@ DuAEF.DuAE.Project.expressionEngine = function ()
  */
 DuAEF.DuAE.Project.setUniqueCompNames = function ( comps ) {
     comps = def( comps, DuAEF.DuAE.Project.getComps() );
-    var it = new Iterator( comps );
+    var it = new DuList( comps );
     it.do( function ( comp ) {
         //temporarily set another name to correctly generate a new unique name 
         var oldName = comp.name;

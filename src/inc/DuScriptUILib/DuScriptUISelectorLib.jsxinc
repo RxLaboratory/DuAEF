@@ -504,7 +504,7 @@ DuAEF.DuScriptUI.addLayerSelector = function( container )
         var prevIndex = selector.index;
         selector.popup.list.removeAll();
         selector.popup.list.add( 'item', "None" );
-        var it = new Iterator( layers );
+        var it = new DuList( layers );
         it.do( function( layer )
         {
             selector.popup.list.add( 'item', layer.index + ' | ' + layer.name );
@@ -817,7 +817,7 @@ DuAEF.DuScriptUI.addCompSelector = function( container )
         selector.popup.list.removeAll();
         var itemNone = selector.popup.list.add( 'item', "None" );
         itemNone.id = 0;
-        var it = new Iterator( comps );
+        var it = new DuList( comps );
         it.do( function( comp )
         {
             var item = selector.popup.list.add( 'item', comp.name );

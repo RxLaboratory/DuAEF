@@ -343,7 +343,7 @@ DuAEF.Duik.Rigging.extractLocators = function( preCompLayer, useMasterProperties
 
     var locs = [];
 
-    var it = new Iterator( preCompLocs );
+    var it = new DuList( preCompLocs );
     it.do( function( preCompLoc )
     {
         locs.push( DuAEF.Duik.Rigging.extractLocator( preCompLoc, preCompLayer, useMasterProperties ) );
@@ -385,7 +385,7 @@ DuAEF.Duik.Rigging.extractLocator = function( locator, preCompLayer, useMasterPr
         DuAEF.DuAE.Property.addToEGP(locator.transform);
         // get master properties
         var mps = DuAEF.DuAE.Property.getProps(preCompLayer('ADBE Layer Overrides'), PropertyType.PROPERTY );
-        var it = new Iterator(mps);
+        var it = new DuList(mps);
         //links
         it.do( function(mp) {
             //get prop name
@@ -457,7 +457,7 @@ DuAEF.Duik.Rigging.disableLocators = function (comp, disable)
     disable = def(disable, true);
     if (!comp) return;
     var locators = DuAEF.Duik.getLayers( DuAEF.Duik.LayerTypes.LOCATOR, false, comp );
-    new Iterator(locators).do(function(locator) {
+    new DuList(locators).do(function(locator) {
         DuAEF.Duik.Rigging.disableLocator(locator, disable)
         });
 }
@@ -473,7 +473,7 @@ DuAEF.Duik.Rigging.applyLocatorsValues = function ( comp, disable )
     disable = def(disable, true);
     if (!comp) return;
     var locators = DuAEF.Duik.getLayers( DuAEF.Duik.LayerTypes.LOCATOR, false, comp );
-    new Iterator(locators).do(function(locator) {
+    new DuList(locators).do(function(locator) {
         DuAEF.Duik.Rigging.applyLocatorValues(locator, disable)
         });
 }
@@ -496,7 +496,7 @@ DuAEF.Duik.Rigging.parent = function( children, parent, useMasterProperties )
     //the children locators
     var childLocators = [];
 
-    new Iterator( children ).do( function( child )
+    new DuList( children ).do( function( child )
     {
         var childComp = child.containingComp;
 
@@ -1105,7 +1105,7 @@ DuAEF.Duik.Rigging.quickConnector = function( childProps )
         'result;';
 
 
-    var it = new Iterator( childProps );
+    var it = new DuList( childProps );
     it.do( function( childProp )
     {
         if ( !( childProp instanceof PropertyInfo ) ) childProp = new PropertyInfo( childProp );
@@ -1150,7 +1150,7 @@ DuAEF.Duik.Rigging.ik = function( layers, controller, forceBezier, threeAsOneAnd
     //sort layers and parent them
     layers = DuAEF.DuAE.Layer.sortByParent( layers );
     //reset rotation and scale if structures
-    var it = new Iterator( layers );
+    var it = new DuList( layers );
     it.do( DuAEF.Duik.Structure.resetTransform );
     DuAEF.DuAE.Layer.parentChain( layers );
 
@@ -2905,7 +2905,7 @@ DuAEF.Duik.Rigging.fkOverlap = function( layers, controller )
     //sort layers and parent them
     var layers = DuAEF.DuAE.Layer.sortByParent( layers );
     //reset rotation and scale if structures
-    var it = new Iterator( layers )
+    var it = new DuList( layers )
     it.do( DuAEF.Duik.Structure.resetTransform );
     DuAEF.DuAE.Layer.parentChain( layers );
 
@@ -2929,7 +2929,7 @@ DuAEF.Duik.Rigging.fkOverlap = function( layers, controller )
     var fkEffectName = fkEffect.name;
 
     //rig layers
-    var it = new Iterator( layers );
+    var it = new DuList( layers );
     it.do( function( layer )
     {
         //add Data

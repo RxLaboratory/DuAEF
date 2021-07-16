@@ -14,7 +14,7 @@ DuAEF.DuAE.Layer.doLayers = function ( layers, method, undoGroupName ) {
     if ( typeof undoGroupName === 'undefined' ) undoGroupName = "";
     // run
     if ( undoGroupName != "" ) DuAEF.DuAE.App.beginUndoGroup( undoGroupName );
-    new Iterator( layers ).do( method );
+    new DuList( layers ).do( method );
     if ( undoGroupName != "" ) DuAEF.DuAE.App.endUndoGroup();
 }
 
@@ -146,7 +146,7 @@ DuAEF.DuAE.Layer.getAnim = function ( layer, selected, timeRange ) {
  */
 DuAEF.DuAE.Layer.getAnims = function ( layers, selected, timeRange ) {
     var anims = [];
-    new Iterator( layers ).do( function ( layer ) {
+    new DuList( layers ).do( function ( layer ) {
         anims.push( DuAEF.DuAE.Layer.getAnim( layer, selected, timeRange ) );
     } );
     return anims;
@@ -251,7 +251,7 @@ DuAEF.DuAE.Layer.setAnims = function ( layers, anims, time, ignoreName, setExpre
     //for each layeranim, search for the layer and apply anim
     for ( var i = remaining.length - 1; i >= 0; i-- ) {
         var anim = remaining[ i ];
-        var it = new Iterator( layers );
+        var it = new DuList( layers );
         var ok = false;
         while ( layer = it.next() ) {
             if ( layer.name == anim._name && layer.index == anim._index ) {
@@ -273,7 +273,7 @@ DuAEF.DuAE.Layer.setAnims = function ( layers, anims, time, ignoreName, setExpre
 DuAEF.DuAE.Layer.reverseAnims = function ( anims ) {
     if ( anims instanceof LayerAnim ) anims = [ anims ];
 
-    var it = new Iterator( anims );
+    var it = new DuList( anims );
 
     //get times
     var startTime = null;
@@ -490,7 +490,7 @@ DuAEF.DuAE.Layer.addPseudoEffect = function ( layer, preset, matchName, name ) {
  * @return {boolean} true if the layers have at least one selected keyframe
  */
 DuAEF.DuAE.Layer.haveSelectedKeys = function ( layers ) {
-    var it = new Iterator( layers );
+    var it = new DuList( layers );
     if ( it.length == 0 ) return;
     while ( layer = it.next() ) {
         if ( DuAEF.DuAE.Property.hasSelectedKeys( layer ) ) return true;
@@ -505,7 +505,7 @@ DuAEF.DuAE.Layer.haveSelectedKeys = function ( layers ) {
  * @return {float|null} The keyframe time or null if there are no keyframe
  */
 DuAEF.DuAE.Layer.firstKeyFrameTime = function ( layers, selected ) {
-    var it = new Iterator( layers );
+    var it = new DuList( layers );
     var time = null;
     for ( var i = it.min; i <= it.max; i++ ) {
         var test = DuAEF.DuAE.Property.firstKeyFrameTime( layers[ i ], selected );
@@ -675,7 +675,7 @@ DuAEF.DuAE.Layer.sequence = function ( layers, expr ) {
     if ( layers.length == 0 ) return;
     if ( expr == undefined ) expr = '';
     var comp = layers[ 0 ].containingComp;
-    var it = new Iterator( layers );
+    var it = new DuList( layers );
     it.do( function ( layer ) {
         while ( layer.transform.opacity.numKeys > 0 ) {
             layer.transform.opacity.removeKey( layer.transform.opacity.numKeys );
@@ -736,12 +736,12 @@ DuAEF.DuAE.Layer.copyToComp = function ( layers, destinationComp, withPropertyLi
 
     if ( layers.length == 0 ) return;
 
-    var it = new Iterator( layers );
+    var it = new DuList( layers );
 
     var previousActiveComp = DuAEF.DuAE.Project.getActiveComp();
 
     //activate the origin comp
-    var originComp = it.firstItem().containingComp;
+    var originComp = it.first().containingComp;
     originComp.openInViewer();
 
     //select the layers
@@ -793,7 +793,7 @@ DuAEF.DuAE.Layer.parent = function ( layers, parent, unparentedOnly, insert ) {
 
     if (insert) parent.parent = layers[0].parent;
     
-    var it = new Iterator( layers );
+    var it = new DuList( layers );
     it.do( function ( layer ) {
         var locked = layer.locked;
         layer.locked = false;
@@ -832,7 +832,7 @@ DuAEF.DuAE.Layer.getPuppetPins = function ( layer ) {
         }
     } else {
         //get any selected pin
-        var itProps = new Iterator( selectedProps );
+        var itProps = new DuList( selectedProps );
         itProps.do( function ( prop ) {
             if ( prop.matchName == 'ADBE FreePin3 PosPin Atom' ) pins.push( new PropertyInfo( prop ) );
         } );
@@ -943,7 +943,7 @@ DuAEF.DuAE.Layer.align = function ( layers, target, position, rotation, scale, o
     if ( typeof scale === 'undefined' ) scale = true;
     if ( typeof opacity === 'undefined' ) opacity = false;
 
-    var it = new Iterator( layers );
+    var it = new DuList( layers );
 
 
     var comp = layers[ 0 ].containingComp;
