@@ -256,7 +256,7 @@ DuAEF.DuAE.Project.reduce = function ( comps, keepExpressionOnly ) {
     for ( i = app.project.numItems; i > 0; i-- ) {
         var item = app.project.item( i );
         //if it's one of the comp, ignore
-        if ( DuAEF.DuJS.Array.indexOf( comps, item, DuAEF.DuAE.Item.compareItems ) >= 0 ) continue;
+        if ( DuList.indexOf( comps, item, DuAEF.DuAE.Item.compareItems ) >= 0 ) continue;
         //if AVItem
         if ( item instanceof CompItem || item instanceof FootageItem ) {
             var usedIn = DuAEF.DuAE.Item.usedIn( item, true, keepExpressionOnly );
@@ -270,7 +270,7 @@ DuAEF.DuAE.Project.reduce = function ( comps, keepExpressionOnly ) {
 
             for ( j = 0, num = usedIn.length; j < num; j++ ) {
                 //if there's one of the comp to keep, do not remove
-                if ( DuAEF.DuJS.Array.indexOf( comps, usedIn[ j ], DuAEF.DuAE.Item.compareItems ) >= 0 ) {
+                if ( DuList.indexOf( comps, usedIn[ j ], DuAEF.DuAE.Item.compareItems ) >= 0 ) {
                     remove = false;
                     break;
                 }

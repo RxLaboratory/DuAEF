@@ -132,7 +132,7 @@ DuAEF.DuAE.Item.usedIn = function (item, recursive, keepExpressionOnly ) {
         }
     }
 
-    DuAEF.DuJS.Array.removeDuplicates(usedIn, DuAEF.DuAE.Item.compareItems);
+    DuList.removeDuplicates(usedIn, DuAEF.DuAE.Item.compareItems);
 
     if (cacheSuspended) DuAEF.DuAE.Project.suspendCacheUpdates = false;
 
@@ -154,6 +154,6 @@ DuAEF.DuAE.Item.isImageSequence = function (item) {
     var extension = DuPath.getExtension(item.file);
     extension = extension.toLowerCase();
 
-    return DuAEF.DuJS.Array.indexOf( DuAEF.DuAE.Item.stillFormats, extension ) >= 0;
+    return DuList.indexOf( DuAEF.DuAE.Item.stillFormats, extension ) >= 0;
 
 }

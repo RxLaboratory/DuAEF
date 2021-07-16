@@ -35,7 +35,7 @@ DuAEF.DuExpression.get = function( functions )
 		exp = exp.concat(r);
 	});
 
-	DuAEF.DuJS.Array.removeDuplicates(exp);
+	DuList.removeDuplicates(exp);
 
 	var expString = '';
 

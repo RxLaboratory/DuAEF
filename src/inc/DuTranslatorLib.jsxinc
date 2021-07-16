@@ -361,7 +361,7 @@ DuAEF.Dutranslator.generateTranslationFile = function (file,translations,appName
  */
 DuAEF.Dutranslator.generateTranslations = function (strings)
 {
-	DuAEF.DuJS.Array.removeDuplicates(strings);
+	DuList.removeDuplicates(strings);
 	var translations = [];
 	for (var i = 0, num = strings.length; i < num ; i++)
 	{

@@ -17,7 +17,7 @@
 	}
  
     // Remove duplicates
-    DuAEF.DuJS.Array.removeDuplicates(paths);
+    DuList.removeDuplicates(paths);
  
 	var data = {};
 	// Data contains for each real path, the list of original script paths and js var name
@@ -106,7 +106,7 @@
 		
 		for(var resolved in data)
 		{
-			if(!skipFilter && DuAEF.DuJS.Array.indexOf(filter, resolved) != -1)
+			if(!skipFilter && DuList.indexOf(filter, resolved) != -1)
 				continue;
 			var name = DuPath.getBasename(resolved) + ".jsxinc";
 			var path = DuPath.join([outputFolder, name], "/");

@@ -782,7 +782,7 @@ DuAEF.DuAE.ColorLabels[16] = [045/255, 062/255, 045/255 ];	// 16. DarkGreen
 	* @param {Array|Collection} collection - The list to check
 	* @return {boolean} true if collection is a collection, false if it's an array
 */
-DuAEF.DuAE.isCollection = function (collection)
+DuList.isAECollection = function (collection)
 {
 	return collection instanceof ItemCollection || collection instanceof LayerCollection || collection instanceof OMCollection || collection instanceof RQItemCollection;
 }
@@ -816,7 +816,7 @@ DuAEF.DuAE.getPropertyInfos = function (props)
 DuAEF.DuAE.convertCollectionToArray = function (collection)
 {
 	var arr = [];
-	if (DuAEF.DuAE.isCollection(collection))
+	if (DuList.isAECollection(collection))
 	{
 		for (var i = 1;i<=collection.length;i++)
 		{
@@ -839,7 +839,7 @@ DuAEF.DuAE.convertCollectionToArray = function (collection)
 DuAEF.DuAE.isLayeredFile = function(file)
 {
 	var ext = DuPath.getExtension(file);
-	var yes = DuAEF.DuJS.Array.indexOf( DuAEF.DuAE.LayeredTypes , ext.toLowerCase() ) >= 0;
+	var yes = DuList.indexOf( DuAEF.DuAE.LayeredTypes , ext.toLowerCase() ) >= 0;
 	return yes;
 }
 

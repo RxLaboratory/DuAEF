@@ -375,7 +375,7 @@ DuAEF.DuAE.Comp.getPrecomps = function ( comp, recursive ) {
         }
     } );
     //remove duplicates
-    DuAEF.DuJS.Array.removeDuplicates( precomps );
+    DuList.removeDuplicates( precomps );
     return precomps;
 }
 
@@ -389,7 +389,7 @@ DuAEF.DuAE.Comp.getParentComps = function ( item ) {
     new Iterator( parentComps ).do( function ( parentComp ) {
         parentComps = parentComps.concat( DuAEF.DuAE.Comp.getParentComps( parentComp ) );
     } );
-    DuAEF.DuJS.Array.removeDuplicates( parentComps );
+    DuList.removeDuplicates( parentComps );
     return parentComps;
 }
 
