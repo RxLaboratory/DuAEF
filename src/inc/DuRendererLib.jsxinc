@@ -58,7 +58,7 @@ function DuRenderer(defaultOutputTemplate,defaultPostRenderAction,pngquant)
 
 	// get aerender
 	var aerenderBinName = "aerender";
-	if (DuESF.win) aerenderBinName += ".exe";
+	if (DuSystem.win) aerenderBinName += ".exe";
 	this.aerender = new DuProcess(Folder.appPackage.absoluteURI + "/" + aerenderBinName,['-continueOnMissingFootage']);
 
 	//get pngquant-batch

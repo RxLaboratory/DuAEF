@@ -111,7 +111,7 @@ DuAEF.DuAE.App.getAeRender = function()
 {
     var packageFolder = Folder.appPackage;
     var aeRenderPath = packageFolder.absoluteURI + "/aerender";
-    if (DuESF.win) aeRenderPath += ".exe"
+    if (DuSystem.win) aeRenderPath += ".exe"
     var aeRenderFile = new File(aeRenderPath)
     if (aeRenderFile.exists) return aeRenderFile;
     else return null;
@@ -255,7 +255,7 @@ DuAEF.DuAE.App.isAutoSaveFolder = function ( folder ) {
     }
 
     var folderName = folder.fsName.toLowerCase();
-    if (DuESF.win) folderName = folderName.split('\\').pop();
+    if (DuSystem.win) folderName = folderName.split('\\').pop();
     else folderName = folderName.split('/').pop();
     
     var aaeString = 'adobe after effects';

@@ -21,7 +21,7 @@
  */
 DuAEF.Zip = {};
 
-if ( DuESF.win ) DuAEF.Zip.processArgs = ['a', '-mx9'];
+if ( DuSystem.win ) DuAEF.Zip.processArgs = ['a', '-mx9'];
 else DuAEF.Zip.processArgs = ['-r', '-X'];
 
 /**
@@ -30,7 +30,7 @@ else DuAEF.Zip.processArgs = ['-r', '-X'];
  */
 DuAEF.Zip.processPath = '';
 
-if ( DuESF.win ) DuAEF.Zip.processPath = DuESF.file.parent.absoluteURI + '/7za.exe';
+if ( DuSystem.win ) DuAEF.Zip.processPath = DuESF.file.parent.absoluteURI + '/7za.exe';
 else DuAEF.Zip.processPath = 'zip';
 
 /**
@@ -46,11 +46,11 @@ DuAEF.Zip.compressFolderContent = function (folder, archiveName, wipeFolder) {
     if (archiveName == '') archiveName = folder.name + ".zip";
 
     var folderPath = folder.fsName;
-    if (DuESF.win) folderPath += "\\*";
+    if (DuSystem.win) folderPath += "\\*";
 
     var args = DuAEF.Zip.processArgs.concat( [folder.parent.fsName + "/" + archiveName, folderPath ] );
 
-    if ( DuESF.win && !new File(DuAEF.Zip.processPath).exists ) {
+    if ( DuSystem.win && !new File(DuAEF.Zip.processPath).exists ) {
         alert("7zip not found. Cannot zip folder: " + folder.fsName);
         return null;
     }
@@ -60,7 +60,7 @@ DuAEF.Zip.compressFolderContent = function (folder, archiveName, wipeFolder) {
     if (wipeFolder) {
         var wipeProcessPath = '';
         var wipeProcessArgs = [];
-        if (DuESF.win) {
+        if (DuSystem.win) {
             wipeProcessPath = 'rmdir';
             wipeProcessArgs = [ '/Q', '/S', folder.fsName];
         }

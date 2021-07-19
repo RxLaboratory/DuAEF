@@ -66,8 +66,8 @@ DuAEF.DuScriptUI.initHelpPanel = function()
         DuAEF.DuScriptUI.helpPanel.helpMoreButton = DuAEF.DuScriptUI.addButton( helpGroup, "More...", DuBinary.toFile( w14_url_m ), "Read more details online", DuBinary.toFile( w14_url_l ) );
         DuAEF.DuScriptUI.helpPanel.helpMoreButton.alignment = ['fill','bottom'];
 
-        DuAEF.DuScriptUI.helpPanel.helpMoreButton.onClick = function () { DuAEF.DuSystem.openURL( DuAEF.DuScriptUI.helpPanel.link ); };
-        DuAEF.DuScriptUI.helpPanel.helpMoreButton.onAltClick = function () { DuAEF.DuSystem.openURL( 'https://bat-ultra-bunny.tumblr.com/' ); };
+        DuAEF.DuScriptUI.helpPanel.helpMoreButton.onClick = function () { DuSystem.openURL( DuAEF.DuScriptUI.helpPanel.link ); };
+        DuAEF.DuScriptUI.helpPanel.helpMoreButton.onAltClick = function () { DuSystem.openURL( 'https://bat-ultra-bunny.tumblr.com/' ); };
     }
 
     newsTab.build = function ( newsGroup ) {
@@ -97,8 +97,8 @@ DuAEF.DuScriptUI.initHelpPanel = function()
         DuAEF.DuScriptUI.helpPanel.moreButton = DuAEF.DuScriptUI.addButton( aboutGroup, "More...", DuBinary.toFile( w14_url_m ), "Read more details online", DuBinary.toFile( w14_url_l ) );
         DuAEF.DuScriptUI.helpPanel.moreButton.alignment = ['fill','bottom'];
 
-        DuAEF.DuScriptUI.helpPanel.moreButton.onClick = function () { DuAEF.DuSystem.openURL( DuESF.aboutURL ); };
-        DuAEF.DuScriptUI.helpPanel.moreButton.onAltClick = function () { DuAEF.DuSystem.openURL( 'https://bat-ultra-bunny.tumblr.com/' ); };
+        DuAEF.DuScriptUI.helpPanel.moreButton.onClick = function () { DuSystem.openURL( DuESF.aboutURL ); };
+        DuAEF.DuScriptUI.helpPanel.moreButton.onAltClick = function () { DuSystem.openURL( 'https://bat-ultra-bunny.tumblr.com/' ); };
     }
 
     var urlButtonsGroup = DuAEF.DuScriptUI.addGroup( DuAEF.DuScriptUI.helpPanel.contents, 'row' );
@@ -111,7 +111,7 @@ DuAEF.DuScriptUI.initHelpPanel = function()
         DuAEF.DuScriptUI.helpPanel.forumButton = DuAEF.DuScriptUI.addButton( socialButtonsGroup1, "Forum", DuBinary.toFile( w18_forum_l ), "Visit our forum", DuBinary.toFile( w18_forum_r ) );
         DuAEF.DuScriptUI.helpPanel.forumButton.onClick = function ()
         {
-            DuAEF.DuSystem.openURL( DuESF.forumURL );
+            DuSystem.openURL( DuESF.forumURL );
         }
     }
     if (DuESF.featureRequestURL != '') DuAEF.DuScriptUI.addFeatureRequestButton(socialButtonsGroup1, true);
@@ -123,7 +123,7 @@ DuAEF.DuScriptUI.initHelpPanel = function()
         DuAEF.DuScriptUI.helpPanel.discordButton = DuAEF.DuScriptUI.addButton( socialButtonsGroup2, "Live chat", DuBinary.toFile( w18_discord_l ), "Come and have a chat!", DuBinary.toFile( w18_discord_r ) );
         DuAEF.DuScriptUI.helpPanel.discordButton.onClick = function ()
         {
-            DuAEF.DuSystem.openURL( DuESF.chatURL );
+            DuSystem.openURL( DuESF.chatURL );
         }
     }
     if (DuESF.bugReportURL != '') DuAEF.DuScriptUI.addBugButton(socialButtonsGroup2, true);
@@ -250,7 +250,7 @@ DuAEF.DuScriptUI.addVersionButton = function( container, image, imageOver )
     if (image) button.add('statictext', undefined, 'v' + DuESF.scriptVersion.fullVersion);
 
     if (DuESF.aboutURL != '') button.onClick = function() {
-        DuAEF.DuSystem.openURL(DuESF.aboutURL);
+        DuSystem.openURL(DuESF.aboutURL);
         };
 
     return button;
@@ -282,7 +282,7 @@ DuAEF.DuScriptUI.addBugButton = function( container, showLabel )
         DuBinary.toFile( w18_bugreport_r ) );
     button.onClick = function ()
     {
-        DuAEF.DuSystem.openURL( DuESF.bugReportURL );
+        DuSystem.openURL( DuESF.bugReportURL );
     }
     return button;
 }
@@ -313,7 +313,7 @@ DuAEF.DuScriptUI.addFeatureRequestButton = function( container, showLabel )
         DuBinary.toFile( w18_featurerequest_r ) );
     button.onClick = function ()
     {
-        DuAEF.DuSystem.openURL( DuESF.featureRequestURL );
+        DuSystem.openURL( DuESF.featureRequestURL );
     }
     return button;
 }
@@ -349,7 +349,7 @@ DuAEF.DuScriptUI.addHelpButton = function( container, showLabel, opensPanel )
     button.onClick = function ()
     {
         if (opensPanel) DuAEF.DuScriptUI.showAbout();
-        else DuAEF.DuSystem.openURL( DuESF.docURL );
+        else DuSystem.openURL( DuESF.docURL );
     }
     return button;
 }

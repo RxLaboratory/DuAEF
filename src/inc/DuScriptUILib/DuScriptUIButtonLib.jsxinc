@@ -231,7 +231,7 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
         }
         else if (imageButton.help.link != '')
         {
-            DuAEF.DuSystem.openURL(imageButton.help.link);
+            DuSystem.openURL(imageButton.help.link);
         }
     }
 

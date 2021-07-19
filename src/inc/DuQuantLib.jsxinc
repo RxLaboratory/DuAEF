@@ -132,7 +132,7 @@ DuQuant.prototype.setPngquantPath = function (pngquantPath)
 	if (pngquantPath === undefined) pngquantPath = "";
 	var pngquantFile = new File(pngquantPath);
 	var pngquantBinName = '';
-	if (DuESF.win) pngquantBinName = 'pngquant.exe';
+	if (DuSystem.win) pngquantBinName = 'pngquant.exe';
 	else pngquantBinName = 'pngquant';
 	//extract
 	if(!pngquantFile.exists)

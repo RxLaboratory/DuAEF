@@ -83,7 +83,7 @@ function DuFFMpeg(options)
 
 	//try to detect the ffmpeg path
 	var ffmpegBinName = '';
-	if (DuESF.win) ffmpegBinName = 'ffmpeg.exe';
+	if (DuSystem.win) ffmpegBinName = 'ffmpeg.exe';
 	else ffmpegBinName = 'ffmpeg';
 	//first, in the same dir
 	var thisScriptFile = new File($.fileName);
@@ -142,14 +142,14 @@ DuFFMpeg.prototype.launch = function ()
 
 	var ffmpegCmd = '';
 
-	if (DuESF.win) ffmpegCmd += '"' + this.ffmpegPath + '"';
+	if (DuSystem.win) ffmpegCmd += '"' + this.ffmpegPath + '"';
 	else
 	{
 	  var ffmpegFile = new File(this.ffmpegPath);
 	  ffmpegCmd += '"' + ffmpegFile.parent.fsName + '"/./' + ffmpegFile.name;
 	}
 
-	if (DuESF.win) cmd += 'cmd.exe /c "';
+	if (DuSystem.win) cmd += 'cmd.exe /c "';
 
 	//add RenderItems
 	for (var i = 0 ; i < this.queue.length ; i++)
@@ -169,17 +169,17 @@ DuFFMpeg.prototype.launch = function ()
 		}
 	}
 
-	if (DuESF.win) cmd += '"';
+	if (DuSystem.win) cmd += '"';
 
 	//launch!
 
 	// mac hack, do not wait for ffmpeg as it freezes AE
-	if (DuESF.mac) cmd = cmd + ' && ';
+	if (DuSystem.mac) cmd = cmd + ' && ';
 
 	system.callSystem(cmd);
 
 	// mac hack, but let's wait anyway
-	if (DuESF.mac)
+	if (DuSystem.mac)
 	{
 		//timeout
 		var currentDate = new Date();

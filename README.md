@@ -10,7 +10,7 @@ Duduf After Effects ExtendScript Framework
 - [x] DuDebug
 - [x] DuProcess
 - [x] DuRSS
-- [ ] DuSystem <- move DuESF.win and DuESF.mac there
+- [ ] DuSystem <- move DuSystem.win and DuSystem.mac there
 - [ ] DuXML
 - [ ] DuXMP
 - [ ] DuZip

@@ -196,14 +196,14 @@ DuAEF.DuScriptUI.addRSSPanel = function( container, updateInterval, rssUrl, titl
     {
         if (rssPanel.currentItemURL == '') return;
 
-        DuAEF.DuSystem.openURL( rssPanel.currentItemURL );
+        DuSystem.openURL( rssPanel.currentItemURL );
     }
 
     //connect events
     ui_prevButton.onClick = rssPanel.previous;
     ui_nextButton.onClick = rssPanel.next;
     ui_newsOpenButton.onClick = rssPanel.openCurrentLink;
-    ui_newsOpenButton.onAltClick = function () { DuAEF.DuSystem.openURL( 'https://bat-ultra-bunny.tumblr.com/' ) };
+    ui_newsOpenButton.onAltClick = function () { DuSystem.openURL( 'https://bat-ultra-bunny.tumblr.com/' ) };
 
     rssPanel.updateRSS();
     return rssPanel;
