@@ -9,7 +9,7 @@ Duduf After Effects ExtendScript Framework
 - [x] DuBinary (extract)
 - [x] DuDebug
 - [x] DuProcess
-- [ ] DuRSS
+- [x] DuRSS
 - [ ] DuSystem <- move DuESF.win and DuESF.mac there
 - [ ] DuXML
 - [ ] DuXMP

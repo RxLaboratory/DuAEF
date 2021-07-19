@@ -139,7 +139,7 @@ DuAEF.DuScriptUI.addRSSPanel = function( container, updateInterval, rssUrl, titl
         userAgentVersion = def( userAgentVersion, rssPanel.userAgentVersion );
         port = def( port, rssPanel.port );
 
-        rssPanel.channel = DuAEF.DuRSS.get( url, args, userAgentVersion, port, rssPanel.updateInterval );
+        rssPanel.channel = DuRSS.get( url, args, userAgentVersion, port, rssPanel.updateInterval );
         rssPanel.setCurrentIndex(0);
 
         rssPanel.url = url;
