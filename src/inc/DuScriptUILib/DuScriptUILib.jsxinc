@@ -1,47 +1,3 @@
-﻿/*
-DuScriptUILib
-Library with ScriptUI tools.
-Copyright (c) 2017-2019 Nicolas Dufresne, Rainbox Laboratory and Contributors
-https://rainboxlab.org
-
-_Contributors:_
-Nicolas Dufresne - Lead developer
-
-This file is part of DuAEF.
-
-DuAEF is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-DuAEF is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with DuAEF. If not, see <http://www.gnu.org/licenses/>.
-*/
-
-#include 'DuScriptUIIcons.jsxinc'
-#include 'DuScriptUIDefaults.jsxinc'
-#include 'DuScriptUILowLevelLib.jsxinc'
-#include 'DuScriptUIScreen.jsxinc'
-#include 'DuScriptUIStyleLib.jsxinc'
-#include 'DuScriptUIPanelLib.jsxinc'
-#include 'DuScriptUILayoutLib.jsxinc'
-#include 'DuScriptUIButtonLib.jsxinc'
-#include 'DuScriptUICheckboxLib.jsxinc'
-#include 'DuScriptUIFileSelectorLib.jsxinc'
-#include 'DuScriptUIFormLib.jsxinc'
-#include 'DuScriptUIHelpLib.jsxinc'
-#include 'DuScriptUILayerPickerLib.jsxinc'
-#include 'DuScriptUISelectorLib.jsxinc'
-#include 'DuScriptUISliderLib.jsxinc'
-#include 'DuScriptUITabLib.jsxinc'
-#include 'DuScriptUITextLib.jsxinc'
-#include 'DuScriptUIRSSLib.jsxinc'
-
 /**
  * Displays an invitation to enable file and network access.<br />
  * Use this method before loading any scripts which needs this authorization. 
@@ -60,7 +16,7 @@ DuAEF.DuScriptUI.askFilesAndNetworkAccess = function( ui, callback, scriptName, 
 
     if ( !DuAEF.DuAE.App.hasFilesAndNetworkAccess )
     {
-        var ui_accessFileAndNetworkGroup = DuAEF.DuScriptUI.addGroup( ui, 'column' );
+        var ui_accessFileAndNetworkGroup = DuScriptUI.group( ui, 'column' );
 
         var accessExplanation = scriptName + " needs to be allowed to write files or access the network to continue.\n\n" +
             "Please, check the box called 'Allow Scripts to write files...' in the preferences of After Effects.";
@@ -101,45 +57,29 @@ DuAEF.DuScriptUI.askFilesAndNetworkAccess = function( ui, callback, scriptName, 
             }
         }
 
-        DuAEF.DuScriptUI.showUI( ui, false );
+        DuScriptUI.showUI( ui, false );
         return;
     }
 
     callback( );
 }
 
-//low-level list of functions to be run when the user interacts with the UI
-DuAEF.DuScriptUI.eventFunctions = [];
 
 /**
- * Adds a function to be run periodically, which will be connected to several UI events, fired when the user interacts with the UI.
- * @param {function} func The function to connect to the UI
- * @param {int} [timeOut=3000] A timeOut in milliseconds which prevents the function to be run too often
- * @return {int} a unique identifier to be used to remove the function later, with {@link DuAEF.DuScriptUI.removeEvent}.
+ * Adjust the color according to the brightness setting of After Effects
+ * @memberof DuAEF.DuScriptUI
+ * @param {float[]} color - The color [R,V,B,A] Array
+ * @return {float[]} - The new color [R,V,B,A] Array
  */
-DuAEF.DuScriptUI.addEvent = function (func, timeOut)
+DuAEF.DuScriptUI.adjustColor = function( color )
 {
-    timeOut = def(timeOut, 3000);
-    func.id = new Date().getTime();
-    func.timeOut = timeOut;
-    func.lastFire = func.id;
-    DuAEF.DuScriptUI.eventFunctions.push(func);
-    return func.id;
-}
-
-/**
- * Removes a function previously added with {@link DuAEF.DuScriptUI.addEvent}.
- * @param {int} id The id of the function
- */
-DuAEF.DuScriptUI.removeEvent = function (id)
-{
-    for (var i = 0, n = DuAEF.DuScriptUI.eventFunctions.length; i < n; i++)
-    {
-        var f = DuAEF.DuScriptUI.eventFunctions[i];
-        if (f.id == id)
-        {
-            DuAEF.DuScriptUI.eventFunctions.splice(i,1);
-            break;
-        }
-    }
+    if ( !DuColor.isValid(color, true) ) return color;
+    if (color.length == 3) color.push(1);
+    //gets the main application color
+    var q = app.themeColor( 78 )[ 0 ];
+    //the darkest one is 0.15000000596046
+    q = q - 0.15000000596046;
+    var newColor = color + [ q, q, q, 0 ];
+    newColor = DuMath.clamp( newColor );
+    return newColor;
 }

@@ -139,7 +139,7 @@ DuAEF.DuAE.App.beginUndoGroup = function ( groupName, autoClose ) {
     autoClose = def( autoClose, true );
 
     if ( groupName != "" ) {
-        DuAEF.DuScriptUI.uiStrings.push( groupName );
+        DuScriptUI.uiStrings.push( groupName );
         groupName = tr( groupName );
     }
 

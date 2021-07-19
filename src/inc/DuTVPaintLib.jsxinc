@@ -244,25 +244,25 @@ DuAEF.TVPaint.importClip = function( clipFile, askLayers )
 	{
 		//build dialog
 		var title = "Select the layers to import";
-		DuAEF.DuScriptUI.uiStrings.push(title);
+		DuScriptUI.uiStrings.push(title);
 		var layerWindow = new Window('dialog', tr(title), undefined, {"resizeable":true});
-		layerWindow.margins = DuAEF.DuScriptUI.defaultMargins;
-		layerWindow.spacing = DuAEF.DuScriptUI.defaultSpacing;
+		layerWindow.margins = DuScriptUI.defaultMargins;
+		layerWindow.spacing = DuScriptUI.defaultSpacing;
 		layerWindow.alignChildren = ['fill','fill'];
 
-		var selectGroup = DuAEF.DuScriptUI.addGroup(layerWindow);
+		var selectGroup = DuScriptUI.group(layerWindow);
 		selectGroup.alignment = ['fill','top'];
-		var selectAllButton = DuAEF.DuScriptUI.addButton(selectGroup, "Select all");
-		var selectNoneButton = DuAEF.DuScriptUI.addButton(selectGroup, "Select none");
+		var selectAllButton = DuScriptUI.button(selectGroup, "Select all");
+		var selectNoneButton = DuScriptUI.button(selectGroup, "Select none");
 
 		DuAEF.DuScriptUI.addStaticText(layerWindow, "Double click a layer to (de)select it.");
 
 		var layerList = layerWindow.add('listbox');
 
-		var validGroup = DuAEF.DuScriptUI.addGroup(layerWindow);
+		var validGroup = DuScriptUI.group(layerWindow);
 		validGroup.alignment = ['fill','bottom'];
-		var cancelButton = DuAEF.DuScriptUI.addButton(validGroup, "Cancel");
-		var validButton = DuAEF.DuScriptUI.addButton(validGroup, "Import");
+		var cancelButton = DuScriptUI.button(validGroup, "Cancel");
+		var validButton = DuScriptUI.button(validGroup, "Import");
 
 		//events
 		layerList.onDoubleClick = function(){

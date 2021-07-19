@@ -27,7 +27,7 @@ The script can be launched both from ScriptUI Panels or the File/Scripts/Run Scr
 
 
 	// _______ UI SETUP _______
-	var ui = DuAEF.DuScriptUI.createUI(thisObj);
+	var ui = DuScriptUI.mainPanel(thisObj);
 
 	// ============ UI CONTENT =================
 	var contents = ui.contents;
@@ -35,6 +35,6 @@ The script can be launched both from ScriptUI Panels or the File/Scripts/Run Scr
 
 
 	//Show UI
-	DuAEF.DuScriptUI.showUI(ui);
+	DuScriptUI.showUI(ui);
 	DuAEF.enterRunTime();
 })(this);

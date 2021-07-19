@@ -127,7 +127,7 @@ DuAEF.DuSanity.createUI = function (container)
 {
     DuAEF.DuSanity.init();
 
-    var ui_reportMainGroup = DuAEF.DuScriptUI.addGroup(container, "column");
+    var ui_reportMainGroup = DuScriptUI.group(container, "column");
 
     // icons
     var pim = DuBinary.toFile(w18_poweroff_m);
@@ -145,30 +145,30 @@ DuAEF.DuSanity.createUI = function (container)
 
     function createReportText(test)
     {
-        var group = DuAEF.DuScriptUI.addGroup(ui_reportMainGroup, "row");
+        var group = DuScriptUI.group(ui_reportMainGroup, "row");
 
-        var pb = DuAEF.DuScriptUI.addCheckBox(
+        var pb = DuScriptUI.checkBox(
             group,
             '',
             pim,
             "Globally enable or disable this test.",
             pil
             );
-        var fpb = DuAEF.DuScriptUI.addCheckBox(
+        var fpb = DuScriptUI.checkBox(
             group,
             '',
             fpim,
             "Enable or disable this test for the current project.",
             fpil
             );
-        var umb = DuAEF.DuScriptUI.addCheckBox(
+        var umb = DuScriptUI.checkBox(
             group,
             '',
             umim,
             "Enable or disable live-fix.",
             umil
             );
-        var mb = DuAEF.DuScriptUI.addButton(
+        var mb = DuScriptUI.button(
             group,
             '',
             mim,
@@ -178,13 +178,13 @@ DuAEF.DuSanity.createUI = function (container)
         mb.visible = test.hasFix;
         umb.visible = test.hasAutoFix;
 
-        var label = DuAEF.DuScriptUI.addButton(group, test.testName);
+        var label = DuScriptUI.button(group, test.testName);
         label.minimumSize = [200,0];
         label.onClick = function () { test(); updateUI(); };
         var st = DuAEF.DuScriptUI.addStaticText(group, "");
         st.minimumSize = [120,0];
 
-        var ob = DuAEF.DuScriptUI.addButton(
+        var ob = DuScriptUI.button(
             group,
             '',
             om,
@@ -192,8 +192,8 @@ DuAEF.DuSanity.createUI = function (container)
             ol
         )
 
-        var optionsPopup = DuAEF.DuScriptUI.createPopup("Options (" + test.testName + ")");
-        var timeG = DuAEF.DuScriptUI.addGroup(optionsPopup.contents, 'row');
+        var optionsPopup = DuScriptUI.popUp("Options (" + test.testName + ")");
+        var timeG = DuScriptUI.group(optionsPopup.contents, 'row');
         DuAEF.DuScriptUI.addStaticText(timeG, "Test every:");
         var timeOut = DuAEF.settings.data.sanity.timeOut[test.stringId];
         var timeOutStr = timeOut.toString();
@@ -227,7 +227,7 @@ DuAEF.DuSanity.createUI = function (container)
             for(opt in DuAEF.settings.data.sanity.options[test.stringId])
             {
                 var option = DuAEF.settings.data.sanity.options[test.stringId][opt];
-                var optG = DuAEF.DuScriptUI.addGroup(optionsPopup.contents, 'row');
+                var optG = DuScriptUI.group(optionsPopup.contents, 'row');
                 var optT = optG.add('statictext', undefined, opt + ":");
                 if ( jstype(option) == 'number' || jstype(option) == 'string')
                 {
@@ -246,7 +246,7 @@ DuAEF.DuSanity.createUI = function (container)
                 }
                 else if ( jstype(option) == 'boolean' )
                 {
-                    var optB = DuAEF.DuScriptUI.addSimpleCheckBox(  optG );
+                    var optB = DuScriptUI.simpleCheckBox(  optG );
                     optB.onClick = function () {
                         DuAEF.settings.data.sanity.options[test.stringId][optT.text.replace(":","")] = optB.checked;
                         DuAEF.settings.save();
@@ -297,7 +297,7 @@ DuAEF.DuSanity.createUI = function (container)
             if (!test.enabled)
             {
                 st.text = "";
-                DuAEF.DuScriptUI.setTextColor(st, DuColor.Color.DARK_GREY);
+                DuScriptUI.setTextColor(st, DuColor.Color.DARK_GREY);
                 umb.enabled = false;
                 mb.enabled = false;
                 label.enabled = false;
@@ -311,37 +311,37 @@ DuAEF.DuSanity.createUI = function (container)
             if (test.currentLevel == DuAEF.DuSanity.Levels.UNKNOWN)
             {
                 st.text = "";
-                DuAEF.DuScriptUI.setTextColor(st, DuColor.Color.DARK_GREY);
+                DuScriptUI.setTextColor(st, DuColor.Color.DARK_GREY);
             }
             else if (test.currentLevel == DuAEF.DuSanity.Levels.OK)
             {
                 st.text = "OK";
-                DuAEF.DuScriptUI.setTextColor(st, DuColor.Color.LIGHT_GREY);
+                DuScriptUI.setTextColor(st, DuColor.Color.LIGHT_GREY);
             }
             else if (test.currentLevel == DuAEF.DuSanity.Levels.INFO)
             {
                 st.text = "INFO";
-                DuAEF.DuScriptUI.setTextColor(st, DuColor.Color.AFTER_EFFECTS_BLUE);
+                DuScriptUI.setTextColor(st, DuColor.Color.AFTER_EFFECTS_BLUE);
             }
             else if (test.currentLevel == DuAEF.DuSanity.Levels.WARNING)
             {
                 st.text = "WARNING";
-                DuAEF.DuScriptUI.setTextColor(st, DuColor.Color.YELLOW);
+                DuScriptUI.setTextColor(st, DuColor.Color.YELLOW);
             }
             else if (test.currentLevel == DuAEF.DuSanity.Levels.BAD)
             {
                 st.text = "BAD";
-                DuAEF.DuScriptUI.setTextColor(st, DuColor.Color.ORANGE);
+                DuScriptUI.setTextColor(st, DuColor.Color.ORANGE);
             }
             else if (test.currentLevel == DuAEF.DuSanity.Levels.CRITICAL)
             {
                 st.text = "CRITICAL";
-                DuAEF.DuScriptUI.setTextColor(st, DuColor.Color.RAINBOX_RED);
+                DuScriptUI.setTextColor(st, DuColor.Color.RAINBOX_RED);
             }
             else if (test.currentLevel == DuAEF.DuSanity.Levels.FATAL)
             {
                 st.text = "FATAL";
-                DuAEF.DuScriptUI.setTextColor(st, DuColor.Color.RAINBOX_PURPLE);
+                DuScriptUI.setTextColor(st, DuColor.Color.RAINBOX_PURPLE);
             }
             
             if (test.info != "") st.text += " - " + test.info;
@@ -354,7 +354,7 @@ DuAEF.DuSanity.createUI = function (container)
         //First run
         updateUI();
         //add to events
-        DuAEF.DuScriptUI.addEvent(updateUI, 3000);
+        DuScriptUI.addEvent(updateUI, 3000);
     }
 
     createReportText( DuAEF.DuSanity.checkCompNames );
@@ -370,20 +370,20 @@ DuAEF.DuSanity.createUI = function (container)
     createReportText( DuAEF.DuSanity.checkMP );
     createReportText( DuAEF.DuSanity.checkSave );
 
-    var globalButtonsGroup = DuAEF.DuScriptUI.addGroup(ui_reportMainGroup, 'row');
-    var globalButton = DuAEF.DuScriptUI.addButton(
+    var globalButtonsGroup = DuScriptUI.group(ui_reportMainGroup, 'row');
+    var globalButton = DuScriptUI.button(
         globalButtonsGroup,
         "Globally switch all tests.",
         pim,
         "Globally enable or disable all tests.",
         pil);
-    var projectButton = DuAEF.DuScriptUI.addButton(
+    var projectButton = DuScriptUI.button(
         globalButtonsGroup,
         "Switch all tests for the project.",
         fpim,
         "Enable or disable all tests for the current project.",
         fpil);
-    var runAllButton = DuAEF.DuScriptUI.addButton(
+    var runAllButton = DuScriptUI.button(
         globalButtonsGroup,
         "Run all tests now.",
         bm,
@@ -539,12 +539,12 @@ DuAEF.DuSanity.setEnabled = function (test, enabled)
         var timeOut = parseInt(DuAEF.settings.data.sanity.timeOut[test.stringId]);
         if (DuESF.debug) timeOut = 3000;
         //Event
-        test.id = DuAEF.DuScriptUI.addEvent(test, timeOut);
+        test.id = DuScriptUI.addEvent(test, timeOut);
         test.enabled = true;
     }
     else 
     {
-        DuAEF.DuScriptUI.removeEvent(test.id);
+        DuScriptUI.removeEvent(test.id);
         test.id = 0;
         test.enabled = false;
     }
@@ -1121,7 +1121,7 @@ DuAEF.DuSanity.checkUnusedComps.fix = function () {
     var comps = DuAEF.DuAE.Project.getUnusedComps(unusedFolder);
     if (comps.length > 0)
     {
-        var dlg = DuAEF.DuScriptUI.createPopup("Fix Unused Compositions", 'column', true);
+        var dlg = DuScriptUI.popUp("Fix Unused Compositions", 'column', true);
         DuAEF.DuScriptUI.addStaticText(dlg.contents, comps.length + " seemingly unused comps. have been found in this project.\nWhat do you want to do with them?");
         var slctr = DuAEF.DuScriptUI.addSelector(dlg.contents);
         slctr.addButton("Remove unused compositions");
@@ -1129,10 +1129,10 @@ DuAEF.DuSanity.checkUnusedComps.fix = function () {
         slctr.setCurrentIndex(1);
         var folderEdit =  DuAEF.DuScriptUI.addEditText(dlg.contents,unusedFolderName, undefined, undefined, "Project Root");
         folderEdit.alignment = ['fill','top'];
-        var validGrp = DuAEF.DuScriptUI.addGroup(dlg.contents, 'row');
+        var validGrp = DuScriptUI.group(dlg.contents, 'row');
         validGrp.alignment = ['fill','bottom'];
-        var cnclBtn = DuAEF.DuScriptUI.addButton(validGrp, "Cancel");
-        var okBtn = DuAEF.DuScriptUI.addButton(validGrp, "Fix");
+        var cnclBtn = DuScriptUI.button(validGrp, "Cancel");
+        var okBtn = DuScriptUI.button(validGrp, "Fix");
         slctr.onChange = function() {
             folderEdit.enabled = slctr.index == 1;
         }
@@ -1234,6 +1234,6 @@ DuAEF.DuSanity.init = function ()
     //First run
     DuAEF.DuSanity.test( false );
     //add to events
-    DuAEF.DuScriptUI.addEvent(DuAEF.DuSanity.test,3000);
+    DuScriptUI.addEvent(DuAEF.DuSanity.test,3000);
     DuAEF.DuSanity.isInitialized = true;
 }

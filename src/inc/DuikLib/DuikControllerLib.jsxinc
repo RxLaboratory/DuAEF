@@ -282,7 +282,7 @@ DuAEF.Duik.Controller.postInit = function()
     for ( i in DuAEF.Duik.Controller.Strings )
     {
         var str = DuAEF.Duik.Controller.Strings[ i ];
-		DuAEF.DuScriptUI.uiStrings.push( str );
+		DuScriptUI.uiStrings.push( str );
         DuAEF.Duik.Controller.Strings[ i ] = tr( str );
     }
 }

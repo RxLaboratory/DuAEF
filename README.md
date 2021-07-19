@@ -3,6 +3,26 @@ Duduf After Effects ExtendScript Framework
 
 ## Current refactor: split and move ES functions to DuESF
 
+### TODO First
+
+- change icons "light" color to #b1b1b1 by default
+- set imageChecked for checkboxes with an image and remove the checkbox
+- background on mouseover for checkboxes should be obsidian
+- set buttons icon size to 16*16px
+- set bottom bar buttons icon size to 12px
+- fix optionsbutton bug
+- change options button icon to cogs at 12px
+- change bugreport icon
+- change feature request icon
+- add settings directly from DuESF:
+    - settings file (stored in DuESF.settings, other settings stored in DuESF.scriptSettings)
+    - highlight color (ae blue, rx purple, rx red, custom)
+    - language (if several found)
+    - dev & debug mode
+    - reset defaults button
+    - apply button next to back button
+- Prepare the doc for the new Duik (and changelog for 17 with refactor & ui changes)
+
 ### To be moved
 
 - [x] DuSettings
@@ -15,7 +35,7 @@ Duduf After Effects ExtendScript Framework
 - [x] DuXMP
 - [x] DuZip
 - [x] DuOCA -> Split Ae related and non-Ae functions
-- [ ] Scriptui (except ae related controls)
+- [WIP] Scriptui (except ae related controls)
 
 ### Re-check, don't know what to do
 

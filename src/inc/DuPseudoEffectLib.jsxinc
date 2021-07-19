@@ -48,7 +48,7 @@ function PseudoEffect(binaryFile,matchName,name)
 
 	this.file = DuBinary.toFile(binaryFile);
 	this.matchName = matchName;
-	if (name != '') DuAEF.DuScriptUI.uiStrings.push(name);
+	if (name != '') DuScriptUI.uiStrings.push(name);
 	this.name = tr(name);
 
 	var xml = '';
@@ -64,7 +64,7 @@ function PseudoEffect(binaryFile,matchName,name)
 		{
 			name = eval('xmlData.@name');
 			name = name.split("=").pop();
-			DuAEF.DuScriptUI.uiStrings.push(name);
+			DuScriptUI.uiStrings.push(name);
 			this.name = tr(name);
 		}
 

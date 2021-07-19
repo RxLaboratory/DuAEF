@@ -17,4 +17,4 @@
 	DuAEF.newsArgs = 'wp/?call_custom_simple_rss=1&csrp_show_meta=0&csrp_cat=20';
 
     // _______ UI SETUP _______
-	var ui = DuAEF.DuScriptUI.createUI(thisObj);
+	var ui = DuScriptUI.mainPanel(thisObj);
