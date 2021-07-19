@@ -14,7 +14,7 @@ Duduf After Effects ExtendScript Framework
 - [x] DuXML
 - [x] DuXMP
 - [x] DuZip
-- [ ] DuOCA -> Split Ae related and non-Ae functions
+- [x] DuOCA -> Split Ae related and non-Ae functions
 - [ ] Scriptui (except ae related controls)
 
 ### Re-check, don't know what to do
