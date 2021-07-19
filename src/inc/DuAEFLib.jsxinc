@@ -49,40 +49,15 @@ var DuAEF = {};
  * @memberof DuAEF
  * @type {string}
  */
-DuESF.version = new DuVersion('1.0.0');
-
-/**
- * True if the script is run for the first time (new or the version has changed since last run)
- * @memberof DuAEF
- * @type {boolean}
- * @readonly
- */
-DuAEF.scriptFirstRun = true;
-
+DuAEF.version = new DuVersion('1.0.0');
 /**
  * The current DuAEF File
  * @readonly
  * @memberof DuAEF
  * @type {File}
  */
-DuESF.file = new File( $.fileName );
+DuAEF.file = new File( $.fileName );
 
-/**
- * Enum for states.
- * @readonly
- * @enum {int}
- */
-DuAEF.State = {
-    NOT_SET: -1,
-    INIT: 0,
-    RUNTIME: 1
-};
-
-/**
- * The current state of the script
- * @type {DuAEF.State}
- */
-DuAEF.state = DuAEF.State.NOT_SET;
 
 //Initializes DuAEF
 ( function()
@@ -99,19 +74,9 @@ DuAEF.state = DuAEF.State.NOT_SET;
  * @param {string} [scriptName="DuAEF"] - The name of your script, as it has to be displayed in the UI and the filesystem
  * @param {string} [scriptVersion="0.0.0"] - The version of your script, in the form "XX.XX.XX-Comment", for example "1.0.12-Beta". The "-Comment" part is optional.
  */
-DuAEF.init = function( scriptName, scriptVersion )
+DuAEF.init = function( scriptName, scriptVersion, companyName )
 {
-    DuAEF.state = DuAEF.State.INIT;
-
-    DuESF.init(scriptName, scriptVersion);
-
-    // check if this script has already been run once
-    // Check the version from latest run
-    if ( app.settings.haveSetting( DuESF.scriptName, "version" ) )
-    {
-        var prevVersion = app.settings.getSetting( DuESF.scriptName, "version" );
-        if ( prevVersion == scriptVersion ) DuAEF.scriptFirstRun = false;
-    }
+    DuESF.init(scriptName, scriptVersion, companyName);
 }
 
 /**
@@ -119,8 +84,7 @@ DuAEF.init = function( scriptName, scriptVersion )
  */
 DuAEF.enterRunTime = function()
 {
-    app.settings.saveSetting( DuESF.scriptName, "version", DuESF.scriptVersion.fullVersion );
-    DuAEF.state = DuAEF.State.RUNTIME;
+    DuESF.enterRunTime();
 
     //do post init methods if modules are included
     if (DuAEF.DuAE) DuAEF.DuAE.postInit();

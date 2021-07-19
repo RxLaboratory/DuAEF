@@ -5,13 +5,13 @@ Duduf After Effects ExtendScript Framework
 
 ### Change
 
-- [ ] don't use app.settings at all anymore, always use appdata + json (DuFolder.duesfData) and DuSettings  
-- [ ] move scriptFirstRun to DuESF
+- [x] don't use app.settings at all anymore, always use appdata + json (DuFolder.duesfData) and DuSettings  
+- [x] move scriptFirstRun to DuESF
     - [ ] Change in DuBinary.extract
 
 ### To be moved
 
-- [ ] DuSettings
+- [x] DuSettings
 - [x] DuBinary (extract)
 - [ ] Scriptui (except ae related controls)
 - [ ] DuDebug
