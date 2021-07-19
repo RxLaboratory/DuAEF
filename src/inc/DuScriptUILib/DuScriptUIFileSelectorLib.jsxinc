@@ -46,9 +46,9 @@ DuAEF.DuScriptUI.addFolderSelector = function ( container, text, textField, help
     folderSelector.button = DuAEF.DuScriptUI.addButton(
         folderSelector,
         text,
-        DuAEF.DuBinary.toFile(w14_folder_m),
+        DuBinary.toFile(w14_folder_m),
         helpTip,
-        DuAEF.DuBinary.toFile(w14_folder_r)
+        DuBinary.toFile(w14_folder_r)
         );
     folderSelector.button.alignment = ['left','fill'];
 

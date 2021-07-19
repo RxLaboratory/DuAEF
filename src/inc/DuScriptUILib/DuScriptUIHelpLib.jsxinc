@@ -33,21 +33,21 @@ DuAEF.DuScriptUI.initHelpPanel = function()
     //add tabs
     var helpTab = tabPanel.addTab(
         "Help",
-        DuAEF.DuBinary.toFile( w14_help_m ),
+        DuBinary.toFile( w14_help_m ),
         '',
-        DuAEF.DuBinary.toFile( w14_help_l )
+        DuBinary.toFile( w14_help_l )
     );
     var newsTab = tabPanel.addTab(
         "News",
-        DuAEF.DuBinary.toFile( w14_news_m ),
+        DuBinary.toFile( w14_news_m ),
         '',
-        DuAEF.DuBinary.toFile( w14_news_l )
+        DuBinary.toFile( w14_news_l )
     );
     var aboutTab = tabPanel.addTab(
         "About",
-        DuAEF.DuBinary.toFile( w14_help_m ),
+        DuBinary.toFile( w14_help_m ),
         '',
-        DuAEF.DuBinary.toFile( w14_help_l )
+        DuBinary.toFile( w14_help_l )
     );
 
     helpTab.build = function ( helpGroup ) {
@@ -63,7 +63,7 @@ DuAEF.DuScriptUI.initHelpPanel = function()
         DuAEF.DuScriptUI.helpPanel.help.alignment = [ 'fill', 'fill' ];
 
         //more button
-        DuAEF.DuScriptUI.helpPanel.helpMoreButton = DuAEF.DuScriptUI.addButton( helpGroup, "More...", DuAEF.DuBinary.toFile( w14_url_m ), "Read more details online", DuAEF.DuBinary.toFile( w14_url_l ) );
+        DuAEF.DuScriptUI.helpPanel.helpMoreButton = DuAEF.DuScriptUI.addButton( helpGroup, "More...", DuBinary.toFile( w14_url_m ), "Read more details online", DuBinary.toFile( w14_url_l ) );
         DuAEF.DuScriptUI.helpPanel.helpMoreButton.alignment = ['fill','bottom'];
 
         DuAEF.DuScriptUI.helpPanel.helpMoreButton.onClick = function () { DuAEF.DuSystem.openURL( DuAEF.DuScriptUI.helpPanel.link ); };
@@ -94,7 +94,7 @@ DuAEF.DuScriptUI.initHelpPanel = function()
         DuAEF.DuScriptUI.helpPanel.about.help.alignment = [ 'fill', 'fill' ];
 
         //more button
-        DuAEF.DuScriptUI.helpPanel.moreButton = DuAEF.DuScriptUI.addButton( aboutGroup, "More...", DuAEF.DuBinary.toFile( w14_url_m ), "Read more details online", DuAEF.DuBinary.toFile( w14_url_l ) );
+        DuAEF.DuScriptUI.helpPanel.moreButton = DuAEF.DuScriptUI.addButton( aboutGroup, "More...", DuBinary.toFile( w14_url_m ), "Read more details online", DuBinary.toFile( w14_url_l ) );
         DuAEF.DuScriptUI.helpPanel.moreButton.alignment = ['fill','bottom'];
 
         DuAEF.DuScriptUI.helpPanel.moreButton.onClick = function () { DuAEF.DuSystem.openURL( DuESF.aboutURL ); };
@@ -108,7 +108,7 @@ DuAEF.DuScriptUI.initHelpPanel = function()
     socialButtonsGroup1.alignment= ['fill','bottom'];
     if (DuESF.forumURL != '')
     {
-        DuAEF.DuScriptUI.helpPanel.forumButton = DuAEF.DuScriptUI.addButton( socialButtonsGroup1, "Forum", DuAEF.DuBinary.toFile( w18_forum_l ), "Visit our forum", DuAEF.DuBinary.toFile( w18_forum_r ) );
+        DuAEF.DuScriptUI.helpPanel.forumButton = DuAEF.DuScriptUI.addButton( socialButtonsGroup1, "Forum", DuBinary.toFile( w18_forum_l ), "Visit our forum", DuBinary.toFile( w18_forum_r ) );
         DuAEF.DuScriptUI.helpPanel.forumButton.onClick = function ()
         {
             DuAEF.DuSystem.openURL( DuESF.forumURL );
@@ -120,7 +120,7 @@ DuAEF.DuScriptUI.initHelpPanel = function()
     socialButtonsGroup2.alignment= ['fill','bottom'];
     if (DuESF.chatURL != '')
     {
-        DuAEF.DuScriptUI.helpPanel.discordButton = DuAEF.DuScriptUI.addButton( socialButtonsGroup2, "Live chat", DuAEF.DuBinary.toFile( w18_discord_l ), "Come and have a chat!", DuAEF.DuBinary.toFile( w18_discord_r ) );
+        DuAEF.DuScriptUI.helpPanel.discordButton = DuAEF.DuScriptUI.addButton( socialButtonsGroup2, "Live chat", DuBinary.toFile( w18_discord_l ), "Come and have a chat!", DuBinary.toFile( w18_discord_r ) );
         DuAEF.DuScriptUI.helpPanel.discordButton.onClick = function ()
         {
             DuAEF.DuSystem.openURL( DuESF.chatURL );
@@ -277,9 +277,9 @@ DuAEF.DuScriptUI.addBugButton = function( container, showLabel )
     var button = DuAEF.DuScriptUI.helpPanel.bugReportButton = DuAEF.DuScriptUI.addButton(
         container,
         showLabel ? label : "",
-        DuAEF.DuBinary.toFile( w18_bugreport_l ),
+        DuBinary.toFile( w18_bugreport_l ),
         helpTip,
-        DuAEF.DuBinary.toFile( w18_bugreport_r ) );
+        DuBinary.toFile( w18_bugreport_r ) );
     button.onClick = function ()
     {
         DuAEF.DuSystem.openURL( DuESF.bugReportURL );
@@ -308,9 +308,9 @@ DuAEF.DuScriptUI.addFeatureRequestButton = function( container, showLabel )
     var button = DuAEF.DuScriptUI.helpPanel.bugReportButton = DuAEF.DuScriptUI.addButton(
         container,
         showLabel ? label : "",
-        DuAEF.DuBinary.toFile( w18_featurerequest_l ),
+        DuBinary.toFile( w18_featurerequest_l ),
         helpTip,
-        DuAEF.DuBinary.toFile( w18_featurerequest_r ) );
+        DuBinary.toFile( w18_featurerequest_r ) );
     button.onClick = function ()
     {
         DuAEF.DuSystem.openURL( DuESF.featureRequestURL );
@@ -341,9 +341,9 @@ DuAEF.DuScriptUI.addHelpButton = function( container, showLabel, opensPanel )
     var button = DuAEF.DuScriptUI.helpPanel.bugReportButton = DuAEF.DuScriptUI.addButton(
         container,
         showLabel ? label : "",
-        DuAEF.DuBinary.toFile( w18_help_l ),
+        DuBinary.toFile( w18_help_l ),
         helpTip,
-        DuAEF.DuBinary.toFile( w18_help_r )
+        DuBinary.toFile( w18_help_r )
     );
 
     button.onClick = function ()

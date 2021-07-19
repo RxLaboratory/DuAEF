@@ -12,7 +12,7 @@ Duduf After Effects ExtendScript Framework
 ### To be moved
 
 - [ ] DuSettings
-- [WIP] DuBinary (extract)
+- [x] DuBinary (extract)
 - [ ] Scriptui (except ae related controls)
 - [ ] DuDebug
 - [ ] DuProcess

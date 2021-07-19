@@ -178,8 +178,8 @@ DuAEF.DuScriptUI.createLayerPickerDialog = function( title )
     //add buttons
     var validGroup = dialog.add( 'group' );
     validGroup.alignment = [ 'fill', 'bottom' ];
-    var validGroupCancelButton = DuAEF.DuScriptUI.addButton( validGroup, "Cancel", DuAEF.DuBinary.toFile( w25_back_m ), "Cancel", DuAEF.DuBinary.toFile( w25_back_r ) );
-    var validGroupValidButton = DuAEF.DuScriptUI.addButton( validGroup, "OK", DuAEF.DuBinary.toFile( w25_check_g ), "OK", DuAEF.DuBinary.toFile( w25_check_r ) );
+    var validGroupCancelButton = DuAEF.DuScriptUI.addButton( validGroup, "Cancel", DuBinary.toFile( w25_back_m ), "Cancel", DuBinary.toFile( w25_back_r ) );
+    var validGroupValidButton = DuAEF.DuScriptUI.addButton( validGroup, "OK", DuBinary.toFile( w25_check_g ), "OK", DuBinary.toFile( w25_check_r ) );
 
     validGroupValidButton.onClick = function()
     {

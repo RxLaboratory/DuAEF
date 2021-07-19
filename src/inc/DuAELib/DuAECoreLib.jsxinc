@@ -327,7 +327,7 @@ DuAEF.DuAE.postInit = function()
 	//PRESETS
 
 	#include "../pseudoEffects/duaef_magic.ffx.jsxinc"
-	duaef_magic = DuAEF.DuBinary.toFile(duaef_magic);
+	duaef_magic = DuBinary.toFile(duaef_magic);
 
 	DuAEF.DuAE.Presets =
 	{

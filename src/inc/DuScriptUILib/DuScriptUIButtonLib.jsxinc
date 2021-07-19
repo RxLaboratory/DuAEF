@@ -144,9 +144,9 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
         optionsButton = DuAEF.DuScriptUI.addButton(
             imageButton,
             '',
-            DuAEF.DuBinary.toFile(w14_options_m),
+            DuBinary.toFile(w14_options_m),
             text + '\nOptions',
-            DuAEF.DuBinary.toFile(w14_options_r)
+            DuBinary.toFile(w14_options_r)
         )
         if (optionsButtonUnder) optionsButton.alignment = ['center', 'bottom'];
         else optionsButton.alignment = ['right', 'center'];
@@ -158,9 +158,9 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
         optionsValidButton = DuAEF.DuScriptUI.addButton(
             optionsPanel.contents,
             text,
-            DuAEF.DuBinary.toFile(w25_check_g),
+            DuBinary.toFile(w25_check_g),
             text,
-            DuAEF.DuBinary.toFile(w25_check_r)
+            DuBinary.toFile(w25_check_r)
         )
     }
 

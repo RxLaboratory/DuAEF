@@ -46,7 +46,7 @@ function PseudoEffect(binaryFile,matchName,name)
 	if(typeof name == 'undefined') name = '';
 	if(typeof matchName == 'undefined') matchName = '';
 
-	this.file = DuAEF.DuBinary.toFile(binaryFile);
+	this.file = DuBinary.toFile(binaryFile);
 	this.matchName = matchName;
 	if (name != '') DuAEF.DuScriptUI.uiStrings.push(name);
 	this.name = tr(name);
@@ -165,7 +165,7 @@ DuAEF.DuPseudoEffect.convertToIncludeFile = function(ffxFile,xmlFile,category,ou
     }
 
 
-	var duBinary = DuAEF.DuBinary.toObj(ffxFile,category);
+	var duBinary = DuBinary.fromFile(ffxFile,category);
 	var jsString = 'var ' + varName + ' = ';
 	jsString += '{"binAsString":"' + duBinary.binAsString + '","fileName":"' + duBinary.fileName + '","category":"' + duBinary.category + '","xml":' + JSON.stringify( xmlString ) + '}';
 	jsString += ';\r\n';

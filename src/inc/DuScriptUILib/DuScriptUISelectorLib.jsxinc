@@ -102,8 +102,8 @@ DuAEF.DuScriptUI.addSelector = function( container, addRefreshButton )
     //the refresh button
     if (addRefreshButton)
     {
-        selector.refreshImage = DuAEF.DuBinary.toFile( w14_update_m );
-        selector.refreshImageOver = DuAEF.DuBinary.toFile( w14_update_l );
+        selector.refreshImage = DuBinary.toFile( w14_update_m );
+        selector.refreshImageOver = DuBinary.toFile( w14_update_l );
         if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.refreshButton = selector.add( 'image', undefined, selector.refreshImage );
         else selector.refreshButton = selector.add( 'statictext', undefined, 'R' );
         selector.refreshButton.alignment = [ 'right', 'center' ];
@@ -197,8 +197,8 @@ DuAEF.DuScriptUI.addSelector = function( container, addRefreshButton )
     }
 
     //the menu button
-    selector.menuImage = DuAEF.DuBinary.toFile( w14_menu_m );
-    selector.menuImageOver = DuAEF.DuBinary.toFile( w14_menu_l );
+    selector.menuImage = DuBinary.toFile( w14_menu_m );
+    selector.menuImageOver = DuBinary.toFile( w14_menu_l );
     if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.menuButton = selector.mainGroup.add( 'image', undefined, selector.menuImage );
     else selector.menuButton = selector.mainGroup.add( 'statictext', undefined, 'M' );
     selector.menuButton.alignment = [ 'left', 'center' ];
@@ -408,7 +408,7 @@ DuAEF.DuScriptUI.addLayerSelector = function( container )
     if ( cs6 )
     {
         //the menu button
-        selector.menuImage = DuAEF.DuBinary.toFile( w14_layers_m );
+        selector.menuImage = DuBinary.toFile( w14_layers_m );
         selector.menuButton = selector.mainGroup.add( 'image', undefined, selector.menuImage );
         selector.menuButton.alignment = [ 'left', 'center' ];
 
@@ -418,16 +418,16 @@ DuAEF.DuScriptUI.addLayerSelector = function( container )
         selector.popup.list.alignment = [ 'fill', 'center' ];
 
         //the refresh button
-        selector.refreshImage = DuAEF.DuBinary.toFile( w14_update_m );
-        selector.refreshImageOver = DuAEF.DuBinary.toFile( w14_update_l );
+        selector.refreshImage = DuBinary.toFile( w14_update_m );
+        selector.refreshImageOver = DuBinary.toFile( w14_update_l );
         selector.refreshButton = selector.add( 'image', undefined, selector.refreshImage );
         selector.refreshButton.alignment = [ 'right', 'center' ];
     }
     else
     {
         //the menu button
-        selector.menuImage = DuAEF.DuBinary.toFile( w14_layers_m );
-        selector.menuImageOver = DuAEF.DuBinary.toFile( w14_layers_l );
+        selector.menuImage = DuBinary.toFile( w14_layers_m );
+        selector.menuImageOver = DuBinary.toFile( w14_layers_l );
         if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.menuButton = selector.mainGroup.add( 'image', undefined, selector.menuImage );
         else selector.menuButton = selector.mainGroup.add( 'statictext', undefined, 'L' );
         selector.menuButton.alignment = [ 'left', 'center' ];
@@ -477,8 +477,8 @@ DuAEF.DuScriptUI.addLayerSelector = function( container )
     }
 
     //the pick button
-    selector.pickImage = DuAEF.DuBinary.toFile( w14_eyedropper_m );
-    selector.pickImageOver = DuAEF.DuBinary.toFile( w14_eyedropper_l );
+    selector.pickImage = DuBinary.toFile( w14_eyedropper_m );
+    selector.pickImageOver = DuBinary.toFile( w14_eyedropper_l );
     if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.pickButton = selector.add( 'image', undefined, selector.pickImage );
     else selector.pickButton = selector.add( 'statictext', undefined, 'P' );
     selector.pickButton.alignment = [ 'right', 'center' ];
@@ -729,7 +729,7 @@ DuAEF.DuScriptUI.addCompSelector = function( container )
     if ( cs6 )
     {
         //the menu button
-        selector.menuImage = DuAEF.DuBinary.toFile( w14_comp_m );
+        selector.menuImage = DuBinary.toFile( w14_comp_m );
         selector.menuButton = selector.mainGroup.add( 'image', undefined, selector.menuImage );
         selector.menuButton.alignment = [ 'left', 'center' ];
 
@@ -743,8 +743,8 @@ DuAEF.DuScriptUI.addCompSelector = function( container )
         //the menu button
         if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess )
         {
-            selector.menuImage = DuAEF.DuBinary.toFile( w14_comp_m );
-            selector.menuImageOver = DuAEF.DuBinary.toFile( w14_comp_l );
+            selector.menuImage = DuBinary.toFile( w14_comp_m );
+            selector.menuImageOver = DuBinary.toFile( w14_comp_l );
             selector.menuButton = selector.mainGroup.add( 'image', undefined, selector.menuImage );
             selector.menuButton.alignment = [ 'left', 'center' ];
         }
@@ -791,15 +791,15 @@ DuAEF.DuScriptUI.addCompSelector = function( container )
     }
 
     //the pick & refresh buttons
-    selector.pickImage = DuAEF.DuBinary.toFile( w14_eyedropper_m );
-    selector.pickImageOver = DuAEF.DuBinary.toFile( w14_eyedropper_l );
+    selector.pickImage = DuBinary.toFile( w14_eyedropper_m );
+    selector.pickImageOver = DuBinary.toFile( w14_eyedropper_l );
     if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.pickButton = selector.add( 'image', undefined, selector.pickImage );
     else selector.pickButton = selector.add( 'statictext', undefined, 'P' );
     selector.pickButton.alignment = [ 'right', 'center' ];
 
     //the refresh button
-    selector.refreshImage = DuAEF.DuBinary.toFile( w14_update_m );
-    selector.refreshImageOver = DuAEF.DuBinary.toFile( w14_update_l );
+    selector.refreshImage = DuBinary.toFile( w14_update_m );
+    selector.refreshImageOver = DuBinary.toFile( w14_update_l );
     if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.refreshButton = selector.add( 'image', undefined, selector.refreshImage );
     else selector.refreshButton = selector.add( 'statictext', undefined, 'R' );
     selector.refreshButton.alignment = [ 'right', 'center' ];

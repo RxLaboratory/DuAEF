@@ -281,14 +281,14 @@ DuAEF.DuScriptUI.createPopup = function( title, alignment, modal )
     titleBar.alignment = ['fill','top'];
     DuAEF.DuScriptUI.setBackgroundColor( titleBar, DuColor.Color.DARK_GREY );
     //add pin
-    var pinButton = DuAEF.DuScriptUI.addCheckBox(titleBar, '', DuAEF.DuBinary.toFile(w14_pin_m), 'Pin window', DuAEF.DuBinary.toFile(w14_pin_r));
+    var pinButton = DuAEF.DuScriptUI.addCheckBox(titleBar, '', DuBinary.toFile(w14_pin_m), 'Pin window', DuBinary.toFile(w14_pin_r));
     pinButton.alignment = [ 'left', 'top' ];
     //add title
     var titleLabel = titleBar.add('statictext', undefined,  title);
     titleLabel.alignment = [ 'center', 'top' ];
     if (modal) DuAEF.DuScriptUI.setTextColor(titleLabel, DuColor.Color.RAINBOX_RED)
     //add close button
-    var closeButton = DuAEF.DuScriptUI.addButton(titleBar, '', DuAEF.DuBinary.toFile(w14_cancel_m), 'Close', DuAEF.DuBinary.toFile(w14_cancel_l));
+    var closeButton = DuAEF.DuScriptUI.addButton(titleBar, '', DuBinary.toFile(w14_cancel_m), 'Close', DuBinary.toFile(w14_cancel_l));
     closeButton.alignment = [ 'right', 'top' ];
 
     popup.contents = mainColumn.add( 'group' );
@@ -523,9 +523,9 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
     var settingsBackButton = DuAEF.DuScriptUI.addButton(
         rootSettingsGroup,
         "Back",
-        DuAEF.DuBinary.toFile(w14_back_m),
+        DuBinary.toFile(w14_back_m),
         "Close settings",
-        DuAEF.DuBinary.toFile(w14_back_l)
+        DuBinary.toFile(w14_back_l)
     )
 
     // == SANITY PANEL
@@ -559,9 +559,9 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
         var settingsButton = DuAEF.DuScriptUI.addButton(
             bottomGroup,
             '',
-            DuAEF.DuBinary.toFile(w18_settings_l),
+            DuBinary.toFile(w18_settings_l),
             "Change the settings",
-            DuAEF.DuBinary.toFile(w18_settings_r)
+            DuBinary.toFile(w18_settings_r)
             );
         settingsButton.alignment = ['right', 'fill'];
 
@@ -593,12 +593,12 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
         helpButton.alignment = ['right', 'fill'];
     }
     
-    var buttonM = DuAEF.DuBinary.toFile(w14_brain_m);
-    var buttonB = DuAEF.DuBinary.toFile(w14_brain_b);
-    var buttonY = DuAEF.DuBinary.toFile(w14_brain_y);
-    var buttonO = DuAEF.DuBinary.toFile(w14_brain_o);
-    var buttonR = DuAEF.DuBinary.toFile(w14_brain_r);
-    var buttonP = DuAEF.DuBinary.toFile(w14_brain_p);
+    var buttonM = DuBinary.toFile(w14_brain_m);
+    var buttonB = DuBinary.toFile(w14_brain_b);
+    var buttonY = DuBinary.toFile(w14_brain_y);
+    var buttonO = DuBinary.toFile(w14_brain_o);
+    var buttonR = DuBinary.toFile(w14_brain_r);
+    var buttonP = DuBinary.toFile(w14_brain_p);
     var sanityButton;
 
     if (addSanityTestButton)

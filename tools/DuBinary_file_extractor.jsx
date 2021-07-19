@@ -16,6 +16,6 @@
 
 	var outputFileName = file.path + '/' + obj.category + '/' + obj.fileName;
 
-	DuAEF.DuBinary.toFile(obj,outputFileName);
+	DuBinary.toFile(obj,outputFileName);
 
 })();

@@ -30,7 +30,7 @@
         var outputFileName = folder.absoluteURI + '/' + file.name + '.jsxinc';
         var category = '';
         if (folder !== f) category = f.name;
-        DuAEF.DuBinary.convertToIncludeFile(file,f.name,outputFileName);
+        DuBinary.toJsxincFile(file,f.name,outputFileName);
       }
     }
   }

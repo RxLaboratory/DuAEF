@@ -130,18 +130,18 @@ DuAEF.DuSanity.createUI = function (container)
     var ui_reportMainGroup = DuAEF.DuScriptUI.addGroup(container, "column");
 
     // icons
-    var pim = DuAEF.DuBinary.toFile(w18_poweroff_m);
-    var pil = DuAEF.DuBinary.toFile(w18_poweroff_l);
-    var fpim = DuAEF.DuBinary.toFile(w18_file_m);
-    var fpil = DuAEF.DuBinary.toFile(w18_file_l);
-    var mim = DuAEF.DuBinary.toFile(w18_screwdriver_m);
-    var mil = DuAEF.DuBinary.toFile(w18_screwdriver_l);
-    var umim = DuAEF.DuBinary.toFile(w18_magic_m);
-    var umil = DuAEF.DuBinary.toFile(w18_magic_l);
-    var om = DuAEF.DuBinary.toFile(w14_options_m);
-    var ol = DuAEF.DuBinary.toFile(w14_options_r);
-    var bm = DuAEF.DuBinary.toFile(w14_brain_m);
-    var bl = DuAEF.DuBinary.toFile(w14_brain_l);
+    var pim = DuBinary.toFile(w18_poweroff_m);
+    var pil = DuBinary.toFile(w18_poweroff_l);
+    var fpim = DuBinary.toFile(w18_file_m);
+    var fpil = DuBinary.toFile(w18_file_l);
+    var mim = DuBinary.toFile(w18_screwdriver_m);
+    var mil = DuBinary.toFile(w18_screwdriver_l);
+    var umim = DuBinary.toFile(w18_magic_m);
+    var umil = DuBinary.toFile(w18_magic_l);
+    var om = DuBinary.toFile(w14_options_m);
+    var ol = DuBinary.toFile(w14_options_r);
+    var bm = DuBinary.toFile(w14_brain_m);
+    var bl = DuBinary.toFile(w14_brain_l);
 
     function createReportText(test)
     {

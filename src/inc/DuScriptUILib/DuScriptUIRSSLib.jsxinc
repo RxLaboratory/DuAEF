@@ -87,16 +87,16 @@ DuAEF.DuScriptUI.addRSSPanel = function( container, updateInterval, rssUrl, titl
     ui_prevButton = DuAEF.DuScriptUI.addButton(
         newsNavGroup,
         tr( "Previous" ),
-        DuAEF.DuBinary.toFile( w14_back_m ),
+        DuBinary.toFile( w14_back_m ),
         '',
-        DuAEF.DuBinary.toFile( w14_back_l )
+        DuBinary.toFile( w14_back_l )
     );
     ui_nextButton = DuAEF.DuScriptUI.addButton(
         newsNavGroup,
         tr( "Next" ),
-        DuAEF.DuBinary.toFile( w14_next_m ),
+        DuBinary.toFile( w14_next_m ),
         '',
-        DuAEF.DuBinary.toFile( w14_next_l )
+        DuBinary.toFile( w14_next_l )
     );
 
     //content
@@ -107,9 +107,9 @@ DuAEF.DuScriptUI.addRSSPanel = function( container, updateInterval, rssUrl, titl
     var ui_newsOpenButton = DuAEF.DuScriptUI.addButton(
         rssPanel,
         'Read More...',
-        DuAEF.DuBinary.toFile( w14_url_m ),
+        DuBinary.toFile( w14_url_m ),
         "Read more details online",
-        DuAEF.DuBinary.toFile( w14_url_l )
+        DuBinary.toFile( w14_url_l )
         );
     ui_newsOpenButton.alignment = ['fill','bottom'];
 

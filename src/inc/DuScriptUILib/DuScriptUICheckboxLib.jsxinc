@@ -113,10 +113,10 @@ DuAEF.DuScriptUI.addCheckBox = function( container, text, image, helpTip, imageC
     duCheckBox.defaultText = text;
     duCheckBox.text = text;
 
-    iconChecked = DuAEF.DuBinary.toFile( w14_checked_m );
-    iconCheckedOver = DuAEF.DuBinary.toFile( w14_checked_l );
-    iconUnchecked = DuAEF.DuBinary.toFile( w14_emptysquare_m );
-    iconUncheckedOver = DuAEF.DuBinary.toFile( w14_unchecked_l );
+    iconChecked = DuBinary.toFile( w14_checked_m );
+    iconCheckedOver = DuBinary.toFile( w14_checked_l );
+    iconUnchecked = DuBinary.toFile( w14_emptysquare_m );
+    iconUncheckedOver = DuBinary.toFile( w14_unchecked_l );
     var checkbox; //the icon checkbox
 
     //Add fillers to be able to click anywhere on the button
