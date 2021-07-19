@@ -218,7 +218,7 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
     //events
     imageButton.clicked = function()
     {
-        DuESF.debug.safeRun(imageButton.onClick);
+        DuDebug.safeRun(imageButton.onClick);
     }
 
     imageButton.shiftClicked = function()
@@ -237,17 +237,17 @@ DuAEF.DuScriptUI.addButton = function( container, text, image, helpTip, imageOve
 
     imageButton.altClicked = function()
     {
-        DuESF.debug.safeRun(imageButton.onAltClick);
+        DuDebug.safeRun(imageButton.onAltClick);
     }
 
     imageButton.ctrlAltClicked = function()
     {
-        DuESF.debug.safeRun(imageButton.onCtrlAltClick);
+        DuDebug.safeRun(imageButton.onCtrlAltClick);
     }
 
     imageButton.ctrlClicked = function()
     {
-        DuESF.debug.safeRun(imageButton.onCtrlClick);
+        DuDebug.safeRun(imageButton.onCtrlClick);
     }
 
     imageButton.highlight = function( e )
@@ -412,7 +412,7 @@ DuAEF.DuScriptUI.addSmallButton = function( container, text, helpTip, value )
     //events
     smallButton.clicked = function()
     {
-        DuESF.debug.safeRun(smallButton.onClick, smallButton.value);
+        DuDebug.safeRun(smallButton.onClick, smallButton.value);
     }
 
     smallButton.shiftClicked = function()
@@ -427,17 +427,17 @@ DuAEF.DuScriptUI.addSmallButton = function( container, text, helpTip, value )
 
     smallButton.altClicked = function()
     {
-        DuESF.debug.safeRun(smallButton.onAltClick);
+        DuDebug.safeRun(smallButton.onAltClick);
     }
 
     smallButton.ctrlAltClicked = function()
     {
-        DuESF.debug.safeRun(smallButton.onCtrlAltClick);
+        DuDebug.safeRun(smallButton.onCtrlAltClick);
     }
 
     smallButton.ctrlClicked = function()
     {
-        DuESF.debug.safeRun(smallButton.onCtrlClick);
+        DuDebug.safeRun(smallButton.onCtrlClick);
     }
 
     smallButton.highlight = function( e )

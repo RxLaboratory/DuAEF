@@ -429,11 +429,11 @@ DuAEF.DuScriptUI.showUI = function( ui, enterRunTime )
 {
     enterRunTime = def( enterRunTime, true);
 
-    DuESF.debug.log( "DuAEF.DuScriptUI.showUI" );
+    DuDebug.log( "DuAEF.DuScriptUI.showUI" );
 
-    DuESF.debug.log( "DuAEF.DuScriptUI.showUI: Defining layout" );
+    DuDebug.log( "DuAEF.DuScriptUI.showUI: Defining layout" );
     ui.layout.layout( true );
-    DuESF.debug.log( "DuAEF.DuScriptUI.showUI: Resizing" );
+    DuDebug.log( "DuAEF.DuScriptUI.showUI: Resizing" );
     ui.layout.resize();
     ui.onResizing = ui.onResize = function()
     {
@@ -444,15 +444,15 @@ DuAEF.DuScriptUI.showUI = function( ui, enterRunTime )
         catch ( e )
         {}
     }
-    DuESF.debug.log( "DuAEF.DuScriptUI.showUI: UI Ready" );
+    DuDebug.log( "DuAEF.DuScriptUI.showUI: UI Ready" );
 
     // If it's a Window, it needs to be shown
     if ( ui instanceof Window )
     {
-        DuESF.debug.log( "DuAEF.DuScriptUI.showUI: Showing window" );
+        DuDebug.log( "DuAEF.DuScriptUI.showUI: Showing window" );
         //ui.center();
         ui.show();
-        DuESF.debug.log( "DuAEF.DuScriptUI.showUI: Window visible." );
+        DuDebug.log( "DuAEF.DuScriptUI.showUI: Window visible." );
     }
 
     DuAEF.DuScriptUI.uiShown = true;
@@ -642,7 +642,7 @@ DuAEF.DuScriptUI.createMainPanel = function( container, addSettingsButton, addHe
             }
             catch (e)
             {
-                DuESF.debug.error(e);
+                DuDebug.error(e);
             }
         }
 

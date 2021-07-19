@@ -208,11 +208,11 @@ DuAEF.Ramses.archiveProject = function ( destination, reduce, selectedComps, zip
 DuAEF.Ramses.archiveFolder = function ( inputFolder, outputFolder, recursive, zip, reduce, archiveMode ) {
 
     if (!(inputFolder instanceof Folder)) {
-        DuESF.debug.throwTypeError(inputFolder, 'inputFolder', 'Folder', 'DuAEF.Ramses.archiveFolder( inputFolder, outputFolder, recursive, zip, archiveMode )');
+        DuDebug.throwTypeError(inputFolder, 'inputFolder', 'Folder', 'DuAEF.Ramses.archiveFolder( inputFolder, outputFolder, recursive, zip, archiveMode )');
         return;
     }
     if (!(outputFolder instanceof Folder)) {
-        DuESF.debug.throwTypeError(outputFolder, 'outputFolder', 'Folder', 'DuAEF.Ramses.archiveFolder( inputFolder, outputFolder, recursive, zip, archiveMode )');
+        DuDebug.throwTypeError(outputFolder, 'outputFolder', 'Folder', 'DuAEF.Ramses.archiveFolder( inputFolder, outputFolder, recursive, zip, archiveMode )');
         return;
     }
 

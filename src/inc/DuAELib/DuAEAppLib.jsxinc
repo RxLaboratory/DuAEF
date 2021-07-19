@@ -250,7 +250,7 @@ DuAEF.DuAE.App.undo = function () {
 DuAEF.DuAE.App.isAutoSaveFolder = function ( folder ) {
     if (jstype(folder).toLowerCase() == 'string' ) folder = new Folder(folder);
     if (!(folder instanceof Folder)) {
-        DuESF.debug.throwTypeError( folder, 'folder', 'Folder/string', 'DuAEF.DuAE.App.isAutoSaveFolder( folder )');
+        DuDebug.throwTypeError( folder, 'folder', 'Folder/string', 'DuAEF.DuAE.App.isAutoSaveFolder( folder )');
         return false;
     }
 

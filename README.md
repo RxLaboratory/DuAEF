@@ -3,18 +3,11 @@ Duduf After Effects ExtendScript Framework
 
 ## Current refactor: split and move ES functions to DuESF
 
-### Change
-
-- [x] don't use app.settings at all anymore, always use appdata + json (DuFolder.duesfData) and DuSettings  
-- [x] move scriptFirstRun to DuESF
-    - [ ] Change in DuBinary.extract
-
 ### To be moved
 
 - [x] DuSettings
 - [x] DuBinary (extract)
-- [ ] Scriptui (except ae related controls)
-- [ ] DuDebug
+- [x] DuDebug
 - [ ] DuProcess
 - [ ] DuQuant
 - [ ] DuRSS
@@ -22,6 +15,7 @@ Duduf After Effects ExtendScript Framework
 - [ ] DuXML
 - [ ] DuXMP
 - [ ] DuZip
+- [ ] Scriptui (except ae related controls)
 - [ ] DuOCA -> Split Ae related and non-Ae functions
 
 ### Re-check, don't know what to do

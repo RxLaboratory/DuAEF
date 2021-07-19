@@ -158,7 +158,7 @@ function PropertyInfo(property)
 	if (property instanceof PropertyInfo) return property;
 	if (typeof property === 'undefined') 
 	{
-		DuESF.debug.throwTypeError(property, "property", "Property", "PropertyInfo(property)");
+		DuDebug.throwTypeError(property, "property", "Property", "PropertyInfo(property)");
 		return;
 	}
 	

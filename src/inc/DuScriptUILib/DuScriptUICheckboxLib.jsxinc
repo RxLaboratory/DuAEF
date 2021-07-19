@@ -236,12 +236,12 @@ DuAEF.DuScriptUI.addCheckBox = function( container, text, image, helpTip, imageC
         }
 
         duCheckBox.setChecked( !duCheckBox.checked );
-        DuESF.debug.safeRun(duCheckBox.onClick);
+        DuDebug.safeRun(duCheckBox.onClick);
     }
 
     duCheckBox.altClicked = function()
     {
-        DuESF.debug.safeRun(duCheckBox.onAltClick);
+        DuDebug.safeRun(duCheckBox.onAltClick);
     }
 
     duCheckBox.highlight = function( e )
@@ -377,13 +377,13 @@ DuAEF.DuScriptUI.addSimpleCheckBox = function( container, text, helpTip, color )
     niceCheckBox.labelClicked = function( e )
     {
         niceCheckBox.setChecked( !niceCheckBox.checked );
-        DuESF.debug.safeRun(niceCheckBox.onClick);
+        DuDebug.safeRun(niceCheckBox.onClick);
     }
 
     niceCheckBox.checkBoxClicked = function( e )
     {
         niceCheckBox.checked = niceCheckBox.value = niceCheckBox.checkBox.value;
-        DuESF.debug.safeRun(niceCheckBox.onClick);
+        DuDebug.safeRun(niceCheckBox.onClick);
     }
 
     niceCheckBox.highlight = function( e )
