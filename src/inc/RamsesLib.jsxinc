@@ -300,13 +300,13 @@ DuAEF.Ramses.archiveFolder = function ( inputFolder, outputFolder, recursive, zi
 
     //now it's finished, we can zip the main outputFolder if one archive for all 
     if ( archiveMode == DuAEF.Ramses.ArchiveModes.ONE_FOR_ALL && zip) {
-        DuAEF.Zip.compressFolderContent( outputFolder, undefined, true );
+        DuZIP.compressFolderContent( outputFolder, undefined, true );
     }
 
     //and zip the aep folder 
     if ( archiveMode == DuAEF.Ramses.ArchiveModes.ONE_PER_FOLDER && zip) {
         //remove the folder if empty
-        if ( !aepFolder.remove() ) DuAEF.Zip.compressFolderContent( aepFolder, DuPath.getName(outputFolder) + ".zip", true );
+        if ( !aepFolder.remove() ) DuZIP.compressFolderContent( aepFolder, DuPath.getName(outputFolder) + ".zip", true );
     }
 
     app.endSuppressDialogs(false);

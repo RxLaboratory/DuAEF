@@ -13,9 +13,9 @@ Duduf After Effects ExtendScript Framework
 - [x] DuSystem <- move DuSystem.win and DuSystem.mac there
 - [x] DuXML
 - [x] DuXMP
-- [ ] DuZip
-- [ ] Scriptui (except ae related controls)
+- [x] DuZip
 - [ ] DuOCA -> Split Ae related and non-Ae functions
+- [ ] Scriptui (except ae related controls)
 
 ### Re-check, don't know what to do
 
