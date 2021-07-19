@@ -37,7 +37,7 @@ DuAEF.DuAE.Project.XMP = {};
  */
 DuAEF.DuAE.Project.XMP.getXmp = function()
 {
-    DuAEF.XMP.init();
+    DuXMP.init();
     if (!app.project.file) return null;
     return new XMPMeta(app.project.xmpPacket)
 }
