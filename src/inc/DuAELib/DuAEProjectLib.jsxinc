@@ -399,7 +399,7 @@ DuAEF.DuAE.Project.collectFiles = function ( destination, overwrite, zip, create
     if (zip) {
         app.project.close( CloseOptions.DO_NOT_SAVE_CHANGES );
         app.open( projectFile );
-        var zipFile = DuZIP.compressFolderContent( projectFolder, projectName + ".zip", true );
+        var zipFile = DuZip.compressFolderContent( projectFolder, projectName + ".zip", true );
     }
 }
 
