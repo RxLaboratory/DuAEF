@@ -8,8 +8,7 @@ Duduf After Effects ExtendScript Framework
 - [x] DuSettings
 - [x] DuBinary (extract)
 - [x] DuDebug
-- [ ] DuProcess
-- [ ] DuQuant
+- [x] DuProcess
 - [ ] DuRSS
 - [ ] DuSystem <- move DuESF.win and DuESF.mac there
 - [ ] DuXML
@@ -21,6 +20,7 @@ Duduf After Effects ExtendScript Framework
 ### Re-check, don't know what to do
 
 - [ ] DuFFMpeg
+- [ ] DuQuant
 
 ### Move to their own repo / Check what to do
 
