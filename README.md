@@ -5,14 +5,7 @@ Duduf After Effects ExtendScript Framework
 
 ### TODO First
 
-- fix optionsbutton bug
-- add settings directly from DuESF:
-    - settings file (stored in DuESF.settings, other settings stored in DuESF.scriptSettings)
-    - highlight color (ae blue, rx purple, rx red, custom)
-    - language (if several found)
-    - dev & debug mode
-    - reset defaults button
-    - apply button next to back button
+- Use an image for checkboxes
 - Prepare the doc for the new Duik (and changelog for 17 with refactor & ui changes)
 
 ### To be moved

@@ -1123,7 +1123,7 @@ DuAEF.DuSanity.checkUnusedComps.fix = function () {
     {
         var dlg = DuScriptUI.popUp("Fix Unused Compositions", 'column', true);
         DuAEF.DuScriptUI.addStaticText(dlg.contents, comps.length + " seemingly unused comps. have been found in this project.\nWhat do you want to do with them?");
-        var slctr = DuAEF.DuScriptUI.addSelector(dlg.contents);
+        var slctr = DuScriptUI.selector(dlg.contents);
         slctr.addButton("Remove unused compositions");
         slctr.addButton("Collect unused comps. into folder:");
         slctr.setCurrentIndex(1);
