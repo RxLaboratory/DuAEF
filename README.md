@@ -3,29 +3,6 @@ Duduf After Effects ExtendScript Framework
 
 ## Current refactor: split and move ES functions to DuESF
 
-### TODO
-
-- Prepare the doc for the new Duik (and changelog for 17 with refactor & ui changes)
-
-### To be moved
-
-- [x] DuSettings
-- [x] DuBinary (extract)
-- [x] DuDebug
-- [x] DuProcess
-- [x] DuRSS
-- [x] DuSystem <- move DuSystem.win and DuSystem.mac there
-- [x] DuXML
-- [x] DuXMP
-- [x] DuZip
-- [x] DuOCA -> Split Ae related and non-Ae functions
-- [x] Scriptui (except ae related controls added by duaef)
-
-### Re-check, don't know what to do
-
-- [ ] DuFFMpeg
-- [ ] DuQuant
-
 ### Move to their own repo / Check what to do
 
 - [ ] Dugr
