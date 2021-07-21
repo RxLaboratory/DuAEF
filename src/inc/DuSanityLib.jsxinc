@@ -181,7 +181,7 @@ DuAEF.DuSanity.createUI = function (container)
         var label = DuScriptUI.button(group, test.testName);
         label.minimumSize = [200,0];
         label.onClick = function () { test(); updateUI(); };
-        var st = DuAEF.DuScriptUI.addStaticText(group, "");
+        var st = DuScriptUI.staticText(group, "");
         st.minimumSize = [120,0];
 
         var ob = DuScriptUI.button(
@@ -194,7 +194,7 @@ DuAEF.DuSanity.createUI = function (container)
 
         var optionsPopup = DuScriptUI.popUp("Options (" + test.testName + ")");
         var timeG = DuScriptUI.group(optionsPopup.contents, 'row');
-        DuAEF.DuScriptUI.addStaticText(timeG, "Test every:");
+        DuScriptUI.staticText(timeG, "Test every:");
         var timeOut = DuAEF.settings.data.sanity.timeOut[test.stringId];
         var timeOutStr = timeOut.toString();
         var unit = " ms";
@@ -208,7 +208,7 @@ DuAEF.DuSanity.createUI = function (container)
             timeOutStr = (timeOut / 60000).toString();
             unit = " mn";
         }
-        var timeOutEdit = DuAEF.DuScriptUI.addEditText(
+        var timeOutEdit = DuScriptUI.editText(
             timeG,
             timeOutStr,
             "",
@@ -231,7 +231,7 @@ DuAEF.DuSanity.createUI = function (container)
                 var optT = optG.add('statictext', undefined, opt + ":");
                 if ( jstype(option) == 'number' || jstype(option) == 'string')
                 {
-                    var optB = DuAEF.DuScriptUI.addEditText(
+                    var optB = DuScriptUI.editText(
                         optG,
                         option.toString(),
                         undefined,
@@ -1122,12 +1122,12 @@ DuAEF.DuSanity.checkUnusedComps.fix = function () {
     if (comps.length > 0)
     {
         var dlg = DuScriptUI.popUp("Fix Unused Compositions", 'column', true);
-        DuAEF.DuScriptUI.addStaticText(dlg.contents, comps.length + " seemingly unused comps. have been found in this project.\nWhat do you want to do with them?");
+        DuScriptUI.staticText(dlg.contents, comps.length + " seemingly unused comps. have been found in this project.\nWhat do you want to do with them?");
         var slctr = DuScriptUI.selector(dlg.contents);
         slctr.addButton("Remove unused compositions");
         slctr.addButton("Collect unused comps. into folder:");
         slctr.setCurrentIndex(1);
-        var folderEdit =  DuAEF.DuScriptUI.addEditText(dlg.contents,unusedFolderName, undefined, undefined, "Project Root");
+        var folderEdit =  DuScriptUI.editText(dlg.contents,unusedFolderName, undefined, undefined, "Project Root");
         folderEdit.alignment = ['fill','top'];
         var validGrp = DuScriptUI.group(dlg.contents, 'row');
         validGrp.alignment = ['fill','bottom'];

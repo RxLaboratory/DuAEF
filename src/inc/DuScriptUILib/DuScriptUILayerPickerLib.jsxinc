@@ -1,0 +1,196 @@
+
+/**
+ * @class
+ * @name LayerPicker
+ * @classdesc For use with {@link DuAEF.DuScriptUI}.<br />
+ * A picker for layers with labels.<br />
+ * This is not a real class, and cannot be instanciated.<br />
+ * Use {@link DuAEF.DuScriptUI.createLayerPicker} to create a picker.<br />
+ * The picker inherits the Group object from ScriptUI and has all of its properties and methods.
+ * @property {LayerSelector[]} selectors  - The layer selectors
+ * @property {string[]} inputs - The labels texts
+ */
+
+/**
+ * Empties the LayerPicker
+ * @method
+ * @memberof LayerPicker
+ * @name removeAll
+ */
+
+/**
+ * Adds a new line on the LayerPicker
+ * @method
+ * @memberof LayerPicker
+ * @name addSelector
+ * @return {LayerSelector} The added LayerSelector
+ */
+
+/**
+ * Creates a two-columns group to allow the user to pick layers
+ * @memberof DuAEF.DuScriptUI
+ * @param {Window|Panel|Group} container - The ScriptUI Object which will contain and display the selector.
+ * @return {LayerPicker} The picker.
+ */
+DuAEF.DuScriptUI.addLayerPicker = function( container )
+{
+    var name = "Select layers";
+    DuScriptUI.uiStrings.push( name );
+    name = tr( name );
+    var layerPicker = container.add( 'group' );
+    layerPicker.orientation = 'row';
+    layerPicker.margins = 0;
+    layerPicker.spacing = DuScriptUI.defaultSpacing;
+    layerPicker.alignment = [ 'fill', 'top' ];
+
+    layerPicker.labelsGroup = layerPicker.add( 'group' );
+    layerPicker.labelsGroup.orientation = 'column';
+    layerPicker.labelsGroup.margins = 0;
+    layerPicker.labelsGroup.spacing = DuScriptUI.defaultSpacing;
+    layerPicker.labelsGroup.alignment = [ 'left', 'fill' ];
+    layerPicker.labelsGroup.alignChildren = [ 'left', 'fill' ];
+
+    layerPicker.selectorsGroup = layerPicker.add( 'group' );
+    layerPicker.selectorsGroup.orientation = 'column';
+    layerPicker.selectorsGroup.margins = 0;
+    layerPicker.selectorsGroup.spacing = DuScriptUI.defaultSpacing;
+    layerPicker.selectorsGroup.alignment = [ 'fill', 'fill' ];
+
+    layerPicker.selectors = [];
+    layerPicker.inputs = [];
+
+    layerPicker.removeAll = function()
+    {
+        layerPicker.selectors = [];
+        layerPicker.inputs = [];
+        for ( var i = layerPicker.labelsGroup.children.length - 1; i >= 0; i-- )
+        {
+            layerPicker.labelsGroup.remove( layerPicker.labelsGroup.children[ i ] );
+            layerPicker.selectorsGroup.remove( layerPicker.selectorsGroup.children[ i ] );
+        }
+    }
+
+    layerPicker.addSelector = function( inputLabel )
+    {
+        DuScriptUI.uiStrings.push( inputLabel );
+        inputLabel = tr( inputLabel );
+        var l = layerPicker.labelsGroup.add( 'statictext', undefined, inputLabel );
+
+        var sel = DuScriptUI.layerSelector( layerPicker.selectorsGroup );
+        layerPicker.selectors.push( sel );
+        sel.alignment = [ 'fill', 'fill' ];
+
+        //l.minimumSize.height = l.maximumSize.height = 18;
+
+        return sel;
+    }
+
+    return layerPicker;
+}
+
+/**
+ * @class
+ * @name LayerPickerDialog
+ * @classdesc For use with {@link DuAEF.DuScriptUI}.<br />
+ * A picker for layers with labels.<br />
+ * This is not a real class, and cannot be instanciated.<br />
+ * Use {@link DuAEF.DuScriptUI.createLayerPicker} to create a picker.<br />
+ * The picker inherits the Group object from ScriptUI and has all of its properties and methods.
+ * @property {LayerPicker} layerPicker The layer picker inside the dialog.
+ * @property {bool} accepted This property is true if the user has clicked the OK button, false otherwise.
+ */
+
+/**
+ * Empties the LayerPicker<br />
+ * This is a convenience function equivalent to {@link LayerPickerDialog.layerPicker.removeAll}.
+ * @method
+ * @memberof LayerPickerDialog
+ * @name removeAll
+ */
+
+/**
+ * Adds a new line on the LayerPicker
+ * This is a convenience function equivalent to {@link LayerPickerDialog.layerPicker.addSelector}.
+ * @method
+ * @memberof LayerPickerDialog
+ * @name addSelector
+ * @return {LayerSelector} The added LayerSelector
+ */
+
+/**
+ * Gets the layers picked by the user.
+ * @method
+ * @memberof LayerPickerDialog
+ * @name getLayers
+ * @return {Layer[]} The layers picked (null if the user has set none in the selector), in the display order.
+ */
+
+/**
+ * Gets the layers picked by the user.
+ * @method
+ * @memberof LayerPickerDialog
+ * @name getLayers
+ * @return {Layer[]} The layers picked (null if the user has set none in the selector), in the display order.
+ */
+
+/**
+ * The function called when the dialog is accepted.
+ * @callback LayerPickerDialog~onAccept
+ * @memberof LayerPickerDialog
+ */
+
+/**
+ * Creates a dialog with a LayerPicker<br />
+ * Use {@link DuScriptUI.showUI} to show it after creation.
+ * @memberof DuAEF.DuScriptUI
+ * @param {string} title - The title of the dialog.
+ * @return {LayerPickerDialog} The dialog window.
+ */
+DuAEF.DuScriptUI.createLayerPickerDialog = function( title )
+{
+    var dialog = new Window( 'palette', title, undefined,
+    {
+        resizeable: true
+    } );
+    dialog.minimumSize.width = 300;
+
+    dialog.margins = DuScriptUI.defaultMargins;
+    dialog.orientation = 'column';
+
+    dialog.layerPicker = DuAEF.DuScriptUI.addLayerPicker( dialog );
+
+    dialog.onAccept = function() {};
+    dialog.removeAll = dialog.layerPicker.removeAll;
+    dialog.addSelector = dialog.layerPicker.addSelector;
+    dialog.getLayers = function()
+    {
+        var layers = [];
+        for ( var i = 0, num = dialog.layerPicker.selectors.length; i < num; i++ )
+        {
+            var sel = dialog.layerPicker.selectors[ i ];
+            layers.push( sel.getLayer() );
+        }
+        return layers;
+    }
+
+    dialog.accepted = false;
+
+    //add buttons
+    var validGroup = dialog.add( 'group' );
+    validGroup.alignment = [ 'fill', 'bottom' ];
+    var validGroupCancelButton = DuScriptUI.button( validGroup, "Cancel", DuBinary.toFile( w25_back_m ), "Cancel", DuBinary.toFile( w25_back_r ) );
+    var validGroupValidButton = DuScriptUI.button( validGroup, "OK", DuBinary.toFile( w25_check_g ), "OK", DuBinary.toFile( w25_check_r ) );
+
+    validGroupValidButton.onClick = function()
+    {
+        dialog.accepted = true;
+        dialog.hide();
+        dialog.onAccept();
+    };
+    validGroupCancelButton.onClick = function()
+    {
+        dialog.hide();
+    };
+
+    return dialog;
+}

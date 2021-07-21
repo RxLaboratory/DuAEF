@@ -31,7 +31,7 @@ The script can be launched both from ScriptUI Panels or the File/Scripts/Run Scr
 
 	// ============ UI CONTENT =================
 	var contents = ui.contents;
-	DuAEF.DuScriptUI.addStaticText(contents, "Welcome to " + DuESF.scriptName);
+	DuScriptUI.staticText(contents, "Welcome to " + DuESF.scriptName);
 
 
 	//Show UI

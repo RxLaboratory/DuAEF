@@ -1,3 +1,11 @@
+
+// Add this to the tab buttons (with a callback in tabpanel to detect tab addition)
+button.onAltClick = function()
+{
+    DuAEF.DuAE.App.openScriptUIPanel(tab.scriptUIPanel);
+}
+
+
 /**
  * Displays an invitation to enable file and network access.<br />
  * Use this method before loading any scripts which needs this authorization. 

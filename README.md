@@ -3,9 +3,8 @@ Duduf After Effects ExtendScript Framework
 
 ## Current refactor: split and move ES functions to DuESF
 
-### TODO First
+### TODO
 
-- Use an image for checkboxes
 - Prepare the doc for the new Duik (and changelog for 17 with refactor & ui changes)
 
 ### To be moved
@@ -20,7 +19,7 @@ Duduf After Effects ExtendScript Framework
 - [x] DuXMP
 - [x] DuZip
 - [x] DuOCA -> Split Ae related and non-Ae functions
-- [WIP] Scriptui (except ae related controls)
+- [x] Scriptui (except ae related controls added by duaef)
 
 ### Re-check, don't know what to do
 

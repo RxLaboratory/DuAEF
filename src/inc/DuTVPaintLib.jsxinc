@@ -255,7 +255,7 @@ DuAEF.TVPaint.importClip = function( clipFile, askLayers )
 		var selectAllButton = DuScriptUI.button(selectGroup, "Select all");
 		var selectNoneButton = DuScriptUI.button(selectGroup, "Select none");
 
-		DuAEF.DuScriptUI.addStaticText(layerWindow, "Double click a layer to (de)select it.");
+		DuScriptUI.staticText(layerWindow, "Double click a layer to (de)select it.");
 
 		var layerList = layerWindow.add('listbox');
 
