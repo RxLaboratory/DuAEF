@@ -1,23 +1,6 @@
 # DuAEF
 Duduf After Effects ExtendScript Framework
 
-## Current refactor: split and move ES functions to DuESF
-
-### Move to their own repo
-
-each module must have a init file which includes DuAEF, and a submodule which includes everything else
-
-- [ ] DugrLib -> Dugr
-- [x] DuikLib -> Duik
-- [x] DuAuditionLib -> DuIO
-- [x] DuInterchangeLib -> DuIO
-- [x] DuKritaLib -> DuIO
-- [ ] DuSanityLib -> DuSan
-- [x] DuTVPaintLib -> DuIO
-- [x] DuWUStoryboarderLib -> DuIO
-- [x] OCALib -> DuIO
-- [x] RamsesLib -> Ramses
-
 ## What's this?
 
 ***DuAEF*** is a set of **classes**, **methods** and **tools** to ease the scripting process in **After Effects**, as long as adding features (like [pngquant](https://pngquant.org/), [ffmpeg](https://ffmpeg.org/), or [json](http://json.org/)) not available in After Effects/ExtendScript.
