@@ -16,7 +16,7 @@ each module must have a init file which includes DuAEF, and a submodule which in
 - [x] DuTVPaintLib -> DuIO
 - [x] DuWUStoryboarderLib -> DuIO
 - [x] OCALib -> DuIO
-- [ ] RamsesLib -> Ramses
+- [x] RamsesLib -> Ramses
 
 ## What's this?
 
