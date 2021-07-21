@@ -1,4 +1,0 @@
-
-    DuScriptUI.showUI(ui);
-    DuAEF.enterRunTime();
-})(this);
