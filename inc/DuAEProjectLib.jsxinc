@@ -3,13 +3,13 @@
  * @namespace
  * @memberof DuAEF.DuAE
  */
-DuAEF.DuAE.Project = {};
+DuAE.Project = {};
 
 //undocumented flags
-DuAEF.DuAE.Project.progressMode = false;
-DuAEF.DuAE.Project.activeComp = null;
-DuAEF.DuAE.Project.progressComp = null;
-DuAEF.DuAE.Project.viewerMaximized = false;
+DuAE.Project.progressMode = false;
+DuAE.Project.activeComp = null;
+DuAE.Project.progressComp = null;
+DuAE.Project.viewerMaximized = false;
 
 // ========== DEPRECATED =============
 
@@ -20,9 +20,9 @@ DuAEF.DuAE.Project.viewerMaximized = false;
  * @param {bool} [currentComp=false] true: in current compositions, false: in all compositions of the project
  * @param {bool} [selectedComps=false] When currentComp is false, true to replace only in selected compositions
  * @param {bool} [selectedLayers=false] When currentComp is true, wether to replace only on selected layers
- * @deprecated since v0.7.0; Use {@link DuAEF.DuAE.Expression.updateCache DuAEF.DuAE.Expression.updateCache(true, false, selectedLayers)}.
+ * @deprecated since v0.7.0; Use {@link DuAE.Expression.updateCache DuAE.Expression.updateCache(true, false, selectedLayers)}.
  */
-DuAEF.DuAE.Project.updateExpressionCache = DuAEF.DuAE.Expression.updateCache;
+DuAE.Project.updateExpressionCache = DuAE.Expression.updateCache;
 
 // ========== ========== =============
 
@@ -30,41 +30,41 @@ DuAEF.DuAE.Project.updateExpressionCache = DuAEF.DuAE.Expression.updateCache;
  * Sets the project in "waiting mode" to speed up things.
  * @param {bool} [inProgress=true] - True to set progress mode, false to stop it.
  */
-DuAEF.DuAE.Project.setProgressMode = function ( inProgress ) {
+DuAE.Project.setProgressMode = function ( inProgress ) {
     inProgress = def (inProgress, true);
-    if ( !inProgress && !DuAEF.DuAE.Project.progressMode ) return;
+    if ( !inProgress && !DuAE.Project.progressMode ) return;
 
     if ( inProgress ) {
 
         //if not already in progress, create temp comp etc
-        if (!DuAEF.DuAE.Project.progressMode || !Object.isValid(DuAEF.DuAE.Project.progressComp))
+        if (!DuAE.Project.progressMode || !Object.isValid(DuAE.Project.progressComp))
         {
             //store the current comp
-            DuAEF.DuAE.Project.activeComp = DuAEF.DuAE.Project.getActiveComp();
+            DuAE.Project.activeComp = DuAE.Project.getActiveComp();
 
-            if ( app.activeViewer != null ) DuAEF.DuAE.Project.viewerMaximized = app.activeViewer.maximized;
+            if ( app.activeViewer != null ) DuAE.Project.viewerMaximized = app.activeViewer.maximized;
 
             //create a temp comp, open it
-            DuAEF.DuAE.Project.progressComp = app.project.items.addComp( "MAGIC IS HAPPENING...", 500, 500, 1, 1, 1 );
+            DuAE.Project.progressComp = app.project.items.addComp( "MAGIC IS HAPPENING...", 500, 500, 1, 1, 1 );
 
-            var tempL = DuAEF.DuAE.Project.progressComp.layers.addShape();
-            tempL.applyPreset( DuAEF.DuAE.Presets.MAGIC );
+            var tempL = DuAE.Project.progressComp.layers.addShape();
+            tempL.applyPreset( DuAE.Presets.MAGIC );
             tempL.selected = false;
         }
 
         //open and maximize the temp comp
-        DuAEF.DuAE.Project.progressComp.openInViewer();
+        DuAE.Project.progressComp.openInViewer();
         if ( app.activeViewer != null ) app.activeViewer.maximized = true;
 
-        DuAEF.DuAE.Project.progressMode = true;
+        DuAE.Project.progressMode = true;
     } else {
         //remove temp comp
-        if ( DuAEF.DuAE.Project.progressComp != null ) DuAEF.DuAE.Project.progressComp.remove();
+        if ( DuAE.Project.progressComp != null ) DuAE.Project.progressComp.remove();
         //re-activate previous comp
-        if ( DuAEF.DuAE.Project.activeComp != null ) DuAEF.DuAE.Project.activeComp.openInViewer();
-        if ( app.activeViewer != null ) app.activeViewer.maximized = DuAEF.DuAE.Project.viewerMaximized;
+        if ( DuAE.Project.activeComp != null ) DuAE.Project.activeComp.openInViewer();
+        if ( app.activeViewer != null ) app.activeViewer.maximized = DuAE.Project.viewerMaximized;
 
-        DuAEF.DuAE.Project.progressMode = false;
+        DuAE.Project.progressMode = false;
     }
 
 }
@@ -74,7 +74,7 @@ DuAEF.DuAE.Project.setProgressMode = function ( inProgress ) {
  * @param {boolean} [rootOnly=false] Set to true to get only comps from the root of the project
  * @return {CompItem[]} The compositions
  */
-DuAEF.DuAE.Project.getComps = function ( rootOnly ) {
+DuAE.Project.getComps = function ( rootOnly ) {
     rootOnly = def( rootOnly, false );
     var comps = [];
     var it = new DuList( app.project.items );
@@ -91,8 +91,8 @@ DuAEF.DuAE.Project.getComps = function ( rootOnly ) {
  * Gets the After Effects current composition
  * @return {CompItem|null} The current composition or null if there's no current comp
  */
-DuAEF.DuAE.Project.getActiveComp = function () {
-    if ( DuAEF.DuAE.Project.progressMode ) return DuAEF.DuAE.Project.activeComp;
+DuAE.Project.getActiveComp = function () {
+    if ( DuAE.Project.progressMode ) return DuAE.Project.activeComp;
     //activate the viewer first to try to get the opened composition
     if( app.activeViewer != null)
     {
@@ -108,7 +108,7 @@ DuAEF.DuAE.Project.getActiveComp = function () {
  * Retrieves an item by its Item ID
  * @return {Item|null} The item
  */
-DuAEF.DuAE.Project.getItemById = function ( id ) {
+DuAE.Project.getItemById = function ( id ) {
 
     var it = new DuList( app.project.items );
     while ( item = it.next() ) {
@@ -121,7 +121,7 @@ DuAEF.DuAE.Project.getItemById = function ( id ) {
  * Retrieves the first item with the given name
  * @return {Item|null} The item
  */
-DuAEF.DuAE.Project.getItemByName = function ( name ) {
+DuAE.Project.getItemByName = function ( name ) {
     var it = new DuList( app.project.items );
     while ( item = it.next() ) {
         if ( item.name == name ) return item;
@@ -136,7 +136,7 @@ DuAEF.DuAE.Project.getItemByName = function ( name ) {
  * @param {boolean} [increment=true] - true to automatically increment the new name if it already ends with a digit
  * @return {string}	The unique name, with a new number at the end if needed.
  */
-DuAEF.DuAE.Project.newUniqueCompName = function ( newName, increment ) {
+DuAE.Project.newUniqueCompName = function ( newName, increment ) {
     if ( typeof increment == 'undefined' ) increment = true;
     var compNames = [];
     var it = new DuList( app.project.items );
@@ -150,14 +150,14 @@ DuAEF.DuAE.Project.newUniqueCompName = function ( newName, increment ) {
  * Checks if all comps have a different name.
  * @return {Object} The list of names used several times. Check the length attribute to know how many duplicates were found, loop through the keys to get the names. Eech key is an array containing the list of comps with that name.
  * @example
- * var dupes = DuAEF.DuAE.Project.checkCompNames();
+ * var dupes = DuAE.Project.checkCompNames();
  * if (dupes.length != 0) {
  * for (name in dupes)
  * {
  *     if (dupes.hasOwnProperty(name)) alert(dupes[name]); //dupes[name] is an array of Layer
  * }
  * } */
-DuAEF.DuAE.Project.checkCompNames = function () {
+DuAE.Project.checkCompNames = function () {
     var duplicatedNames = {};
     duplicatedNames.length  = 0;
     var compNames = {};
@@ -189,7 +189,7 @@ DuAEF.DuAE.Project.checkCompNames = function () {
  * Gets the size of the current project file
  * @return {int} the size in Bytes. -1 if it has not been saved yet.
  */
-DuAEF.DuAE.Project.getSize = function() {
+DuAE.Project.getSize = function() {
     var file = app.project.file;
     if (!(file instanceof File)) return -1;
     if (!file.exists) return -1;
@@ -200,7 +200,7 @@ DuAEF.DuAE.Project.getSize = function() {
  * The Expressions Engine setting in the Project Settings dialog box, as a string.
  * @return {string} One of: "extendscript", "javascript-1.0"
  */
-DuAEF.DuAE.Project.expressionEngine = function ()
+DuAE.Project.expressionEngine = function ()
 {
     var engine = app.project.expressionEngine;
     if (!engine) engine = "extendscript";
@@ -211,14 +211,14 @@ DuAEF.DuAE.Project.expressionEngine = function ()
  * Makes sure all compositions in the project have unique names, renaming them if needed.
  * @param {Array|ItemCollection} [comps] A list of comps, all of them by default
  */
-DuAEF.DuAE.Project.setUniqueCompNames = function ( comps ) {
-    comps = def( comps, DuAEF.DuAE.Project.getComps() );
+DuAE.Project.setUniqueCompNames = function ( comps ) {
+    comps = def( comps, DuAE.Project.getComps() );
     var it = new DuList( comps );
     it.do( function ( comp ) {
         //temporarily set another name to correctly generate a new unique name 
         var oldName = comp.name;
         comp.name = '***Duik-temp-name-xxx***';
-        comp.name = DuAEF.DuAE.Project.newUniqueCompName( oldName );
+        comp.name = DuAE.Project.newUniqueCompName( oldName );
         app.project.autoFixExpressions(oldName, comp.name);
     } );
 }
@@ -227,13 +227,13 @@ DuAEF.DuAE.Project.setUniqueCompNames = function ( comps ) {
  * Reduces the project using the selected compositions, the same way the native command does it, but being able to keep comps used only by expressions. If there's no comp selected, will use all comps at the root of the project.
  * @param {boolean} [keepExpressionOnly=true] Set to false to ignore comps used only by expressions (same as the native command)
  */
-DuAEF.DuAE.Project.reduceSelected = function ( keepExpressionOnly ) {
+DuAE.Project.reduceSelected = function ( keepExpressionOnly ) {
     var comps = [];
     for (var i = 0, num = app.project.selection.length; i < num; i++) {
         var item = app.project.selection[i];
         if (item instanceof CompItem) comps.push(item);
     }
-    DuAEF.DuAE.Project.reduce( comps, keepExpressionOnly );
+    DuAE.Project.reduce( comps, keepExpressionOnly );
 }
 
 /**
@@ -241,9 +241,9 @@ DuAEF.DuAE.Project.reduceSelected = function ( keepExpressionOnly ) {
  * @param {CompItem|CompItem[]} [comps] The name or the id of the comp(s) to keep. If omitted, it will use all comps at the root of the project (the ones not in a subfolder).
  * @param {boolean} [keepExpressionOnly=true] Set to false to ignore comps used only by expressions (same as the native command)
  */
-DuAEF.DuAE.Project.reduce = function ( comps, keepExpressionOnly ) {
+DuAE.Project.reduce = function ( comps, keepExpressionOnly ) {
     keepExpressionOnly = def( keepExpressionOnly, true );
-    comps = def( comps, DuAEF.DuAE.Project.getComps( true ) );
+    comps = def( comps, DuAE.Project.getComps( true ) );
     if ( comps instanceof CompItem ) comps = [ comps ];
     if ( comps.length == 0 ) return;
 
@@ -251,15 +251,15 @@ DuAEF.DuAE.Project.reduce = function ( comps, keepExpressionOnly ) {
     app.project.consolidateFootage();
 
     //update cache before running
-    DuAEF.DuAE.Project.updateExpressionCache();
+    DuAE.Project.updateExpressionCache();
 
     for ( i = app.project.numItems; i > 0; i-- ) {
         var item = app.project.item( i );
         //if it's one of the comp, ignore
-        if ( DuList.indexOf( comps, item, DuAEF.DuAE.Item.compareItems ) >= 0 ) continue;
+        if ( DuList.indexOf( comps, item, DuAE.Item.compareItems ) >= 0 ) continue;
         //if AVItem
         if ( item instanceof CompItem || item instanceof FootageItem ) {
-            var usedIn = DuAEF.DuAE.Item.usedIn( item, true, keepExpressionOnly );
+            var usedIn = DuAE.Item.usedIn( item, true, keepExpressionOnly );
 
             if ( usedIn.length == 0 ) {
                 item.remove();
@@ -270,7 +270,7 @@ DuAEF.DuAE.Project.reduce = function ( comps, keepExpressionOnly ) {
 
             for ( j = 0, num = usedIn.length; j < num; j++ ) {
                 //if there's one of the comp to keep, do not remove
-                if ( DuList.indexOf( comps, usedIn[ j ], DuAEF.DuAE.Item.compareItems ) >= 0 ) {
+                if ( DuList.indexOf( comps, usedIn[ j ], DuAE.Item.compareItems ) >= 0 ) {
                     remove = false;
                     break;
                 }
@@ -290,7 +290,7 @@ DuAEF.DuAE.Project.reduce = function ( comps, keepExpressionOnly ) {
  * @param {boolean} [zip=false] Set to true to automatically zip the archive.
  * @param {boolean} [createProjectFolder=true] Wether to create a folder for this project or use the destination as is.
  */
-DuAEF.DuAE.Project.collectFiles = function ( destination, overwrite, zip, createProjectFolder ) {
+DuAE.Project.collectFiles = function ( destination, overwrite, zip, createProjectFolder ) {
     var projectFile = app.project.file;
 
     var result = {};
@@ -353,7 +353,7 @@ DuAEF.DuAE.Project.collectFiles = function ( destination, overwrite, zip, create
         }
 
         //if this is not an image sequence
-        if (!DuAEF.DuAE.Item.isImageSequence(item)) {
+        if (!DuAE.Item.isImageSequence(item)) {
             var newPath = currentFootageFolder.absoluteURI + "/" + item.file.name;
             var newFile = new File( newPath );
             //copy
@@ -409,12 +409,12 @@ DuAEF.DuAE.Project.collectFiles = function ( destination, overwrite, zip, create
  * @param {string} newString - The new string
  * @param {boolean} [caseSensitive=true] - Wether the search has to be case sensitive
  */
-DuAEF.DuAE.Project.replaceInExpressions = function ( oldString, newString, caseSensitive ) {
+DuAE.Project.replaceInExpressions = function ( oldString, newString, caseSensitive ) {
     caseSensitive = def (caseSensitive, true);
 
     var re = new RegExp( DuRegExp.escape(oldString), caseSensitive ? 'g' : 'gi');
 
-    DuAEF.DuAE.Expression.doInExpresssions(function(e) {
+    DuAE.Expression.doInExpresssions(function(e) {
         e.changed = re.test( e.expression );
         if (e.changed) e.expression = e.expression.replace( re, newString );
         return e;
@@ -425,13 +425,13 @@ DuAEF.DuAE.Project.replaceInExpressions = function ( oldString, newString, caseS
  * Replace all <code>thisComp</code> occurences by <code>comp("name")</code>.
  * @param {bool} [selectedComps=false] true to replace only in selected compositions
  */
-DuAEF.DuAE.Project.removeThisCompInExpressions = function( selectedComps )
+DuAE.Project.removeThisCompInExpressions = function( selectedComps )
 {
     selectedComps = def(selectedComps, false);
     
     var re = new RegExp("(^|" + DuRegExp.javascriptSymbols + ")thisComp(?!" + DuRegExp.javascriptVarChars + ")",'gm')
 
-    DuAEF.DuAE.Expression.doInExpresssions(function(e) {
+    DuAE.Expression.doInExpresssions(function(e) {
         e.changed = re.test( e.expression );
         if (e.changed) e.expression = e.expression.replace( re, '$1comp("' + e.comp.name + '")' );
     }, false, selectedComps);
@@ -442,11 +442,11 @@ DuAEF.DuAE.Project.removeThisCompInExpressions = function( selectedComps )
  * Replace all <code>comp("name")</code> occurences by <code>thisComp</code>.
  * @param {bool} [selectedComps=false] true to replace only in selected compositions
  */
-DuAEF.DuAE.Project.removeCompInExpressions = function( selectedComps )
+DuAE.Project.removeCompInExpressions = function( selectedComps )
 {
     selectedComps = def(selectedComps, false);
     
-    DuAEF.DuAE.Expression.doInExpresssions(function(e) {
+    DuAE.Expression.doInExpresssions(function(e) {
         var name = e.comp.name;
         var re = new RegExp("(^|" + DuRegExp.javascriptSymbols + ")comp\\s*\\(\\s*[\"']" + DuRegExp.escape(name) + "[\"']\\s*\\)", 'gm');
         e.changed = re.test( e.expression );
@@ -458,7 +458,7 @@ DuAEF.DuAE.Project.removeCompInExpressions = function( selectedComps )
  * Gets the unused footages.
  * @return {FootageItem[]} The list of unused items.
  */
-DuAEF.DuAE.Project.getUnusedFootages = function ()
+DuAE.Project.getUnusedFootages = function ()
 {
     var unused = [];
     for (var i = 1, n = app.project.numItems; i <= n; i++)
@@ -477,7 +477,7 @@ DuAEF.DuAE.Project.getUnusedFootages = function ()
  * @param {string} folderName The name of the folder
  * @return {FolderItem|null} The folder or null if not found.
  */
-DuAEF.DuAE.Project.getFolderItem = function(folderName)
+DuAE.Project.getFolderItem = function(folderName)
 {
     folderName = def(folderName, "");
     if (folderName == "") return app.project.rootFolder;
@@ -502,7 +502,7 @@ DuAEF.DuAE.Project.getFolderItem = function(folderName)
  * @param {FolderItem} folder The folder
  * @return {boolean}
  */
-DuAEF.DuAE.Project.isInFolder = function (item, folder)
+DuAE.Project.isInFolder = function (item, folder)
 {
     var pFolder = item.parentFolder;
     if (pFolder.id == app.project.rootFolder.id && pFolder.id == folder.id) return true;
@@ -519,7 +519,7 @@ DuAEF.DuAE.Project.isInFolder = function (item, folder)
  * @param {FolderItem} [folder] The folder to exclude.
  * @return {CompItem[]} The unused compositions
  */
-DuAEF.DuAE.Project.getUnusedComps = function (folder)
+DuAE.Project.getUnusedComps = function (folder)
 {
     var comps = []
     folder = def(folder, null);
@@ -531,7 +531,7 @@ DuAEF.DuAE.Project.getUnusedComps = function (folder)
             if ( item.usedIn.length == 0 )
             {
                 if (folder && folder.id == app.project.rootFolder.id && item.parentFolder == folder.id) continue;
-                if (folder && DuAEF.DuAE.Project.isInFolder(item, folder)) continue;
+                if (folder && DuAE.Project.isInFolder(item, folder)) continue;
                 comps.push(item);
             }
         }
@@ -543,7 +543,7 @@ DuAEF.DuAE.Project.getUnusedComps = function (folder)
  * Gets all the precompositions located at the root of the project.
  * @return {CompItem[]}
  */
-DuAEF.DuAE.Project.getPrecompsAtRoot = function()
+DuAE.Project.getPrecompsAtRoot = function()
 {
     var precomps = [];
     for (var i = 1, n = app.project.numItems; i <= n; i++ )

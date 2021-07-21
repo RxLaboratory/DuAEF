@@ -3,14 +3,14 @@
  * @namespace
  * @memberof DuAEF.DuAE
  */
-DuAEF.DuAE.RQueue = {};
+DuAE.RQueue = {};
 
 /**
  * Checks if the given template is installed
  * @param {string} templateName The name of the template
  * @return {bool} true if the template is available
  */
-DuAEF.DuAE.RQueue.hasRenderSettingsTemplate = function (templateName)
+DuAE.RQueue.hasRenderSettingsTemplate = function (templateName)
 {
     // create fake comp to get templates
     var tempComp = app.project.items.addComp("DuAEF Temp", 4, 4, 1, 1, 24);
@@ -33,7 +33,7 @@ DuAEF.DuAE.RQueue.hasRenderSettingsTemplate = function (templateName)
  * @param {string} templateName The name of the template
  * @return {bool} true if the template is available
  */
-DuAEF.DuAE.RQueue.hasOutputModuleTemplate = function (templateName)
+DuAE.RQueue.hasOutputModuleTemplate = function (templateName)
 {
     // create fake comp to get templates
     var tempComp = app.project.items.addComp("DuAEF Temp", 4, 4, 1, 1, 24);

@@ -2,7 +2,7 @@
 // Add this to the tab buttons (with a callback in tabpanel to detect tab addition)
 button.onAltClick = function()
 {
-    DuAEF.DuAE.App.openScriptUIPanel(tab.scriptUIPanel);
+    DuAE.openScriptUIPanel(tab.scriptUIPanel);
 }
 
 
@@ -22,7 +22,7 @@ DuAEF.DuScriptUI.askFilesAndNetworkAccess = function( ui, callback, scriptName, 
     reInit = def( reInit, false, false);
 	scriptName = def(scriptName, DuESF.scriptName, false);
 
-    if ( !DuAEF.DuAE.App.hasFilesAndNetworkAccess )
+    if ( !DuAE.hasFileAndNetworkAccess() )
     {
         var ui_accessFileAndNetworkGroup = DuScriptUI.group( ui, 'column' );
 
@@ -52,7 +52,7 @@ DuAEF.DuScriptUI.askFilesAndNetworkAccess = function( ui, callback, scriptName, 
 
         ui_fileAndNetworkPrefButton.onClick = function()
         {
-            var ok = DuAEF.DuAE.App.askFilesAndNetworkAccess( false );
+            var ok = DuAE.askFilesAndNetworkAccess( false );
             if ( ok )
             {
                 ui_accessFileAndNetworkGroup.visible = false;
@@ -160,7 +160,7 @@ DuScriptUI.layerSelector = function( container )
     selector.selectedOnly = false;
     selector.pauseRefresh = false;
 
-    var cs6 = DuAEF.DuAE.App.version.version < 12;
+    var cs6 = DuAE.version.version < 12;
 
     //CS6
     if ( cs6 )
@@ -186,7 +186,7 @@ DuScriptUI.layerSelector = function( container )
         //the menu button
         selector.menuImage = DuBinary.toFile( w14_layers_m );
         selector.menuImageOver = DuBinary.toFile( w14_layers_l );
-        if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.menuButton = selector.mainGroup.add( 'image', undefined, selector.menuImage );
+        if ( DuAE.hasFileAndNetworkAccess() ) selector.menuButton = selector.mainGroup.add( 'image', undefined, selector.menuImage );
         else selector.menuButton = selector.mainGroup.add( 'statictext', undefined, 'L' );
         selector.menuButton.alignment = [ 'left', 'center' ];
 
@@ -237,7 +237,7 @@ DuScriptUI.layerSelector = function( container )
     //the pick button
     selector.pickImage = DuBinary.toFile( w14_eyedropper_m );
     selector.pickImageOver = DuBinary.toFile( w14_eyedropper_l );
-    if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.pickButton = selector.add( 'image', undefined, selector.pickImage );
+    if ( DuAE.hasFileAndNetworkAccess() ) selector.pickButton = selector.add( 'image', undefined, selector.pickImage );
     else selector.pickButton = selector.add( 'statictext', undefined, 'P' );
     selector.pickButton.alignment = [ 'right', 'center' ];
 
@@ -247,7 +247,7 @@ DuScriptUI.layerSelector = function( container )
     selector.refresh = function()
     {
         var comp = selector.comp;
-        if ( !comp ) comp = DuAEF.DuAE.Project.getActiveComp();
+        if ( !comp ) comp = DuAE.Project.getActiveComp();
         if ( !comp ) return;
 
         selector.pauseRefresh = true;
@@ -255,7 +255,7 @@ DuScriptUI.layerSelector = function( container )
         var layers;
         if ( selector.selectedOnly )
         {
-            layers = DuAEF.DuAE.Layer.sortByIndex ( comp.selectedLayers );
+            layers = DuAE.Layer.sortByIndex ( comp.selectedLayers );
         }
         else layers = comp.layers;
 
@@ -350,7 +350,7 @@ DuScriptUI.layerSelector = function( container )
 
     selector.pick = function()
     {
-        var layers = DuAEF.DuAE.Comp.getSelectedLayers();
+        var layers = DuAE.Comp.getSelectedLayers();
         if ( layers.length > 0 ) selector.setCurrentIndex( layers[ 0 ].index );
     }
 
@@ -358,7 +358,7 @@ DuScriptUI.layerSelector = function( container )
     {
         if ( selector.index < 1 ) return null;
         var comp = selector.comp;
-        if ( !comp ) comp = DuAEF.DuAE.Project.getActiveComp();
+        if ( !comp ) comp = DuAE.Project.getActiveComp();
         if ( !comp ) return null;
         try
         {
@@ -372,7 +372,7 @@ DuScriptUI.layerSelector = function( container )
     }
 
     // Hack - CS6 Bugs on mouseover with images
-    if ( DuAEF.DuAE.App.version.version >= 11 && DuAEF.DuAE.App.version.version < 12 )
+    if ( DuAE.version.version >= 11 && DuAE.version.version < 12 )
     {
         selector.refreshButton.addEventListener( "mousedown", selector.refresh, false );
     }
@@ -481,7 +481,7 @@ DuScriptUI.compSelector = function( container )
     selector.selectedOnly = false;
     selector.pauseRefresh = false;
 
-    var cs6 = DuAEF.DuAE.App.version.version >= 11 && DuAEF.DuAE.App.version.version < 12;
+    var cs6 = DuAE.version.version >= 11 && DuAE.version.version < 12;
 
     //CS6
     if ( cs6 )
@@ -499,7 +499,7 @@ DuScriptUI.compSelector = function( container )
     else
     {
         //the menu button
-        if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess )
+        if ( DuAE.hasFileAndNetworkAccess() )
         {
             selector.menuImage = DuBinary.toFile( w14_comp_m );
             selector.menuImageOver = DuBinary.toFile( w14_comp_l );
@@ -551,14 +551,14 @@ DuScriptUI.compSelector = function( container )
     //the pick & refresh buttons
     selector.pickImage = DuBinary.toFile( w14_eyedropper_m );
     selector.pickImageOver = DuBinary.toFile( w14_eyedropper_l );
-    if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.pickButton = selector.add( 'image', undefined, selector.pickImage );
+    if ( DuAE.hasFileAndNetworkAccess() ) selector.pickButton = selector.add( 'image', undefined, selector.pickImage );
     else selector.pickButton = selector.add( 'statictext', undefined, 'P' );
     selector.pickButton.alignment = [ 'right', 'center' ];
 
     //the refresh button
     selector.refreshImage = DuBinary.toFile( w14_update_m );
     selector.refreshImageOver = DuBinary.toFile( w14_update_l );
-    if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.refreshButton = selector.add( 'image', undefined, selector.refreshImage );
+    if ( DuAE.hasFileAndNetworkAccess() ) selector.refreshButton = selector.add( 'image', undefined, selector.refreshImage );
     else selector.refreshButton = selector.add( 'statictext', undefined, 'R' );
     selector.refreshButton.alignment = [ 'right', 'center' ];
 
@@ -589,7 +589,7 @@ DuScriptUI.compSelector = function( container )
     selector.getComp = function()
     {
         if ( selector.id == 0 ) return null;
-        return DuAEF.DuAE.Project.getItemById( selector.id );
+        return DuAE.Project.getItemById( selector.id );
     }
 
     selector.setCurrentId = function( id )
@@ -646,7 +646,7 @@ DuScriptUI.compSelector = function( container )
     {
         e.stopPropagation();
         DuScriptUI.dimControls();
-        if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.menuButton.image = selector.menuImageOver;
+        if ( DuAE.hasFileAndNetworkAccess() ) selector.menuButton.image = selector.menuImageOver;
         DuScriptUI.setTextColor( selector.label, DuColor.Color.VERY_LIGHT_GREY );
         DuScriptUI.setBackgroundColor( selector, DuColor.Color.DARK_GREY );
         DuScriptUI.highlightedControls.push( selector );
@@ -656,7 +656,7 @@ DuScriptUI.compSelector = function( container )
     {
         e.stopPropagation();
         DuScriptUI.dimControls();
-        if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.refreshButton.image = selector.refreshImageOver;
+        if ( DuAE.hasFileAndNetworkAccess() ) selector.refreshButton.image = selector.refreshImageOver;
         DuScriptUI.highlightedControls.push( selector );
     }
 
@@ -664,27 +664,27 @@ DuScriptUI.compSelector = function( container )
     {
         e.stopPropagation();
         DuScriptUI.dimControls();
-        if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.pickButton.image = selector.pickImageOver;
+        if ( DuAE.hasFileAndNetworkAccess() ) selector.pickButton.image = selector.pickImageOver;
         DuScriptUI.highlightedControls.push( selector );
     }
 
     selector.dim = function( e )
     {
-        if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.menuButton.image = selector.menuImage;
-        if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.refreshButton.image = selector.refreshImage;
-        if ( DuAEF.DuAE.App.hasFilesAndNetworkAccess ) selector.pickButton.image = selector.pickImage;
+        if ( DuAE.hasFileAndNetworkAccess() ) selector.menuButton.image = selector.menuImage;
+        if ( DuAE.hasFileAndNetworkAccess() ) selector.refreshButton.image = selector.refreshImage;
+        if ( DuAE.hasFileAndNetworkAccess() ) selector.pickButton.image = selector.pickImage;
         DuScriptUI.setTextColor( selector.label, DuColor.Color.LIGHT_GREY );
         DuScriptUI.setBackgroundColor( selector, DuColor.Color.ABYSS_GREY );
     }
 
     selector.pick = function()
     {
-        var comp = DuAEF.DuAE.Project.getActiveComp();
+        var comp = DuAE.Project.getActiveComp();
         if ( comp ) selector.setCurrentId( comp.id );
     }
 
     // Hack - CS6 Bugs on mouseover with images
-    if ( DuAEF.DuAE.App.version.version >= 11 && DuAEF.DuAE.App.version.version < 12 )
+    if ( DuAE.version.version >= 11 && DuAE.version.version < 12 )
     {
         //selector.label.addEventListener("mouseover",selector.highlight);
     }
@@ -702,7 +702,7 @@ DuScriptUI.compSelector = function( container )
     selector.onChange = function() {};
     selector.filterComps = function()
     {
-        var comps = DuAEF.DuAE.Project.getComps();
+        var comps = DuAE.Project.getComps();
         return comps;
     };
 

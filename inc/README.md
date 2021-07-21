@@ -1,18 +1,31 @@
+# DuAEF
+Duduf After Effects Framework
 
-# DuAEF Libraries
+► [The Framework reference is available here](http://duaef.rxlab.io).
 
-Documentation and examples for the libraries are available in the corresponding subfolder. The source code is fully documented too.  
-To use any library in your script:
+## Classes and namespaces
 
-    #include libraryLib.jsxinc
+These stables show where to find the implementation for each class & namespace of the framework.  
+[Read the reference](http://duaef.rxlab.io) for the description of all classes and namespaces.
 
-## Libraries
+### General
 
-- [DuAECore](https://github.com/Rainbox-dev/DuAEF/blob/master/libs/DuAECoreLib.jsxinc) contains After Effects related objects and methods.
-- [DuBinary](https://github.com/Rainbox-dev/DuAEF/blob/master/libs/DuBinaryLib.jsxinc) provides tools to include and extract binary files directly in your script files, allowing to deploy only one .jsx files containing any needed image, preset or executable.
-- [DuFFMpeg](https://github.com/Rainbox-dev/DuAEF/blob/master/libs/DuFFMpegLib.jsxinc) provides tools to transcode medias using ffmpeg, all in ExtendScript. It includes the FFmpeg binary executable file.
-- [DuJS](https://github.com/Rainbox-dev/DuAEF/blob/master/libs/DuJSLib.jsxinc) contains JavaScript/ExtendScript useful tools to manipulate strings, Arrays, Regular Expressions, Math, etc.
-- [DuProcess](https://github.com/Rainbox-dev/DuAEF/blob/master/libs/DuProcessLib.jsxinc) manages external processes. It provides easy-to-use, cross-platform tools to launch command line tools, and a process queue feature.
-- [DuQuant](https://github.com/Rainbox-dev/DuAEF/blob/master/libs/DuQuantLib.jsxinc) is an interface to pngquant, a powerful tool to add lossy compression to PNG files, very useful for web design, proxies, or any other case where lightweight PNG images are needed.
-- [DuRenderer](https://github.com/Rainbox-dev/DuAEF/blob/master/libs/DuRendererLib.jsxinc) is an interface to the After Effects renderer, both in the UI or as a background renderer. It also provides PNG lossy compression with pngquant and will provide FFmpeg support to add formats to the standard After Effects renderer.
-- [JSON](https://github.com/Rainbox-dev/DuAEF/blob/master/libs/JSON.jsxinc) is the standard JavaScript [json](http://json.org) implementation.
+| Name | Type | File | Description |
+| :---: | :---: | --- | --- |
+| `DuAE` | *namespace* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Application specific objects and methods. |
+| `DuAEF` | *namespace* | [inc/core.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/core.jsxinc) | Main objects and methods. |
+| `DuAEKeyFrame` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Properties of an After Effects Keyframe. |
+| `DuAEKeySpatialProperties` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Spatial properties of a DuAEKeyFrame. |
+| `DuAELayerAnimation` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Contains all DuAEPropertyGroupAnimation from an After Effects Layer. |
+| `DuAEPropertyAnimation` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Describes the animation of an After Effects property. |
+| `DuAEPropertyGroupAnimation` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Contains all DuAEPropertyAnimation from an After Effects PropertyGroup. |
+| `DuAEProperty` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) |  Get some handy informations about a property. |
+
+### DuESF Extension
+
+*DuAEF* also extends *DuESF* with *After Effects* specific objects. They're listed here.
+
+| Name | Type | File | Description |
+| :---: | :---: | --- | --- |
+| `DuList` | *Class* | [inc/dulist_extension.jsxinc](https://github.com/RxLaboratory/DuAEF/blob/main/inc/dulist_extension.jsxinc) | Adds methods specific to AE Collections. |
+| `DuScriptUI.String` | *enum* | [inc/duscriptui_extension.jsxinc](https://github.com/RxLaboratory/DuAEF/blob/main/inc/duscriptui_extension.jsxinc) | Adds new strings used by the UI. |

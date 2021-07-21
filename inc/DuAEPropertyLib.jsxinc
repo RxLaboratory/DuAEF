@@ -3,22 +3,22 @@
  * @namespace
  * @memberof DuAEF.DuAE
  */
-DuAEF.DuAE.Property = {};
+DuAE.Property = {};
 
 /**
  * Gets the After Effects properties in the property
- * @param {PropertyBase|PropertyInfo}	property	- The layer
+ * @param {PropertyBase|DuAEProperty}	property	- The layer
  * @param {PropertyType|PropertyValueType|string|function}	 [filter]	- A filter to get only a certain type, or value type, or property name or matchName.<br />
  * A function which take one PropertyBase as argument can be used to filter the properties: the Property will be returned if the function returns true.
  * @param {boolean}	[strict=false]	- If a string filter is provided, wether to search for the exact name/matchName or if it contains the filter.
  * @param {boolean}	[caseSensitive=true]	- If a string filter is provided, and not strict is false, does the search have to be case sensitive?
- * @return {PropertyInfo[]} The selected properties, an empty Array if nothing found
+ * @return {DuAEProperty[]} The selected properties, an empty Array if nothing found
  */
-DuAEF.DuAE.Property.getProps = function ( property, filter, strict, caseSensitive ) {
+DuAE.Property.getProps = function ( property, filter, strict, caseSensitive ) {
     if ( strict == undefined ) strict = false;
     if ( caseSensitive == undefined ) caseSensitive = true;
     var prop;
-    if ( property instanceof PropertyInfo ) prop = property.getProperty();
+    if ( property instanceof DuAEProperty ) prop = property.getProperty();
     else prop = property;
 
     var props = [];
@@ -51,21 +51,21 @@ DuAEF.DuAE.Property.getProps = function ( property, filter, strict, caseSensitiv
 
     if ( prop.numProperties > 0 ) {
         for ( var k = 1; k <= prop.numProperties; k++ ) {
-            props = props.concat( DuAEF.DuAE.Property.getProps( prop.property( k ), filter, strict, caseSensitive ) );
+            props = props.concat( DuAE.Property.getProps( prop.property( k ), filter, strict, caseSensitive ) );
         }
     }
 
-    return DuAEF.DuAE.getPropertyInfos( props );
+    return DuAE.getDuAEProperty( props );
 }
 
 /**
  * Gets the layer containing the property
- * @param {PropertyBase|PropertyInfo}	prop	- The After Effects Property
+ * @param {PropertyBase|DuAEProperty}	prop	- The After Effects Property
  * @return {Layer}	The layer
  */
-DuAEF.DuAE.Property.getLayer = function ( prop ) {
+DuAE.Property.getLayer = function ( prop ) {
     if ( typeof prop === 'undefined' ) throw "You must provide a property.";
-    if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+    if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
     var parentProp = prop;
     while ( parentProp.parentProperty ) {
         // Traverse up the property tree
@@ -76,11 +76,11 @@ DuAEF.DuAE.Property.getLayer = function ( prop ) {
 
 /**
  * Gets the composition containing the property
- * @param {PropertyBase|PropertyInfo}	prop	- The After Effects Property
+ * @param {PropertyBase|DuAEProperty}	prop	- The After Effects Property
  * @return {CompItem}	The composition
  */
-DuAEF.DuAE.Property.getComp = function ( prop ) {
-    var layer = DuAEF.DuAE.Property.getLayer( prop );
+DuAE.Property.getComp = function ( prop ) {
+    var layer = DuAE.Property.getLayer( prop );
     return layer.containingComp;
 }
 
@@ -91,7 +91,7 @@ DuAEF.DuAE.Property.getComp = function ( prop ) {
  * @param {boolean} [increment=true] - true to automatically increment the new name if it already ends with a digit
  * @return {string}	The unique name, with a new number at the end if needed.
  */
-DuAEF.DuAE.Property.newUniqueMarkerName = function ( newName, prop, increment ) {
+DuAE.Property.newUniqueMarkerName = function ( newName, prop, increment ) {
     if ( increment == undefined ) increment = true;
     var markerNames = [];
     for ( var i = 1, num = prop.numKeys; i <= num; i++ ) {
@@ -102,15 +102,15 @@ DuAEF.DuAE.Property.newUniqueMarkerName = function ( newName, prop, increment ) 
 
 /**
  * Gets the number of dimensions of a property
- * @param {Property|PropertyInfo}	prop	- The After Effects Property
+ * @param {Property|DuAEProperty}	prop	- The After Effects Property
  * @return {int}	The number of dimensions, 0 if this is not a dimensionnal value (ie color, text, shape...)
  */
-DuAEF.DuAE.Property.getDimensions = function ( prop ) {
-    if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+DuAE.Property.getDimensions = function ( prop ) {
+    if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
     var dimensions = 0;
     if ( prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL || prop.propertyValueType == PropertyValueType.ThreeD ) {
         //if this is a position or scale and the layer is not 3D, AFX uses a 3D value in the position (with 0 as Z position), but the expression must return a 2D value.......
-        if ( ( prop.matchName == "ADBE Scale" || prop.matchName == "ADBE Position" ) && !DuAEF.DuAE.Property.getLayer( prop ).threeDLayer ) {
+        if ( ( prop.matchName == "ADBE Scale" || prop.matchName == "ADBE Position" ) && !DuAE.Property.getLayer( prop ).threeDLayer ) {
             dimensions = 2;
         } else {
             dimensions = 3;
@@ -127,11 +127,11 @@ DuAEF.DuAE.Property.getDimensions = function ( prop ) {
 
 /**
  * Checks if this property value can be edited
- * @param {Property|PropertyInfo} prop - The After Effects Property
+ * @param {Property|DuAEProperty} prop - The After Effects Property
  * @return {bool} true if the value of the property can be edited, false otherwise
  */
-DuAEF.DuAE.Property.isEditable = function ( prop ) {
-    if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+DuAE.Property.isEditable = function ( prop ) {
+    if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
 
     if ( prop.propertyType != PropertyType.PROPERTY ) return false;
     if ( prop.elided ) return false;
@@ -145,7 +145,7 @@ DuAEF.DuAE.Property.isEditable = function ( prop ) {
     } catch ( e ) {
         return false;
     }
-    if (DuAEF.DuAE.Property.isMasterProperty( prop )) return true;
+    if (DuAE.Property.isMasterProperty( prop )) return true;
     
     //TODO find a way to detect if prop is hidden without using a try/catch and without setting a value
     //try to set a value if there's no keyframe
@@ -170,10 +170,10 @@ DuAEF.DuAE.Property.isEditable = function ( prop ) {
 
 /**
  * Checks if a property is part of the master properties of a precomp
- * @param {Property|PropertyInfo} prop - The After Effects Property
+ * @param {Property|DuAEProperty} prop - The After Effects Property
  * @return {bool} true if property is part of the master properties
  */
-DuAEF.DuAE.Property.isMasterProperty = function ( prop ) {
+DuAE.Property.isMasterProperty = function ( prop ) {
     while ( prop.parentProperty !== null ) {
         if (prop.matchName == 'ADBE Layer Overrides') return true;
         prop = prop.parentProperty;
@@ -183,11 +183,11 @@ DuAEF.DuAE.Property.isMasterProperty = function ( prop ) {
 
 /**
  * Checks if this property value can be rigged (with an expression)
- * @param {Property|PropertyInfo} prop - The After Effects Property
+ * @param {Property|DuAEProperty} prop - The After Effects Property
  * @return {bool} true if the value of the property can be rigged, false otherwise
  */
-DuAEF.DuAE.Property.isRiggable = function ( prop ) {
-    if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+DuAE.Property.isRiggable = function ( prop ) {
+    if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
 
     if ( prop.propertyType != PropertyType.PROPERTY ) return false;
     if ( !prop.canVaryOverTime ) return false;
@@ -207,12 +207,12 @@ DuAEF.DuAE.Property.isRiggable = function ( prop ) {
 
 /**
  * Gets the key at a given index on a property
- * @param {Property|PropertyInfo}	prop	- The property.
+ * @param {Property|DuAEProperty}	prop	- The property.
  * @param {int}	keyIndex	- The index of the key to retrieve. If the index is negative, it is counted from the end i.e. to retrieve the keyframe before the last one, use -2 (-1 is the last)
- * @return {KeyFrame}	The keyframe, or null if incorrect index
+ * @return {DuAEKeyFrame}	The keyframe, or null if incorrect index
  */
-DuAEF.DuAE.Property.getKeyFrameAtIndex = function ( prop, keyIndex ) {
-    if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+DuAE.Property.getDuAEKeyFrameAtIndex = function ( prop, keyIndex ) {
+    if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
     if ( Math.abs( keyIndex ) > prop.numKeys || keyIndex == 0 ) {
         return null;
     }
@@ -220,7 +220,7 @@ DuAEF.DuAE.Property.getKeyFrameAtIndex = function ( prop, keyIndex ) {
         keyIndex = prop.numKeys - keyIndex + 1;
     }
 
-    var key = new KeyFrame();
+    var key = new DuAEKeyFrame();
     key._time = prop.keyTime( keyIndex );
     key.value = prop.keyValue( keyIndex );
     key._inInterpolationType = prop.keyInInterpolationType( keyIndex );
@@ -244,26 +244,26 @@ DuAEF.DuAE.Property.getKeyFrameAtIndex = function ( prop, keyIndex ) {
 
 /**
  * Gets the nearest key at a given time on a property
- * @param {Property|PropertyInfo}	prop	- The property.
+ * @param {Property|DuAEProperty}	prop	- The property.
  * @param {float}	time	- The time of the key to retrieve.
- * @return {KeyFrame}	The keyframe, or null if incorrect time or not found
+ * @return {DuAEKeyFrame}	The keyframe, or null if incorrect time or not found
  */
-DuAEF.DuAE.Property.getNearestKeyFrameAtTime = function ( prop, time ) {
-    if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
-    return DuAEF.DuAE.Property.getKeyFrameAtIndex( prop.nearestKeyIndex( time ) );
+DuAE.Property.getNearestDuAEKeyFrameAtTime = function ( prop, time ) {
+    if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
+    return DuAE.Property.getDuAEKeyFrameAtIndex( prop.nearestKeyIndex( time ) );
 }
 
 /**
  * Gets the key at an exactly given time on a property
- * @param {Property|PropertyInfo}	prop	- The property.
+ * @param {Property|DuAEProperty}	prop	- The property.
  * @param {float}	time	- The time of the key to retrieve.
- * @return {KeyFrame}	The keyframe, or null if incorrect time
+ * @return {DuAEKeyFrame}	The keyframe, or null if incorrect time
  */
-DuAEF.DuAE.Property.getKeyFrameAtTime = function ( prop, time ) {
-    if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+DuAE.Property.getDuAEKeyFrameAtTime = function ( prop, time ) {
+    if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
     if ( !prop.canVaryOverTime ) return null;
     if ( prop.numKeys == 0 ) return null;
-    var key = DuAEF.DuAE.Property.getKeyFrameAtIndex( prop, prop.nearestKeyIndex( time ) );
+    var key = DuAE.Property.getDuAEKeyFrameAtIndex( prop, prop.nearestKeyIndex( time ) );
     if ( key === null ) return key;
     if ( key._time == time ) return key;
     else return null;
@@ -271,19 +271,19 @@ DuAEF.DuAE.Property.getKeyFrameAtTime = function ( prop, time ) {
 
 /**
  * Gets the property keyframes in the whole timeline or in the time range<br />
- * The KeyFrame._time will be adjusted relatively to the start of the time range instead of the startTime of the composition.
- * @param {Property|PropertyInfo}	prop	- The property.
+ * The DuAEKeyFrame._time will be adjusted relatively to the start of the time range instead of the startTime of the composition.
+ * @param {Property|DuAEProperty}	prop	- The property.
  * @param {boolean}	[selected=false]	- true to get only selected keyframes.
  * @param {float[]}	[timeRange]	- The time range, an array of two time values, in seconds. If not provided, will use the comp time range.<br />
  * Ignored if selected is true;
- * @return {KeyFrame[]}	The keyframes, or null of this property is of type PropertyValueType.NO_VALUE or PropertyValueType.CUSTOM_VALUE
+ * @return {DuAEKeyFrame[]}	The keyframes, or null of this property is of type PropertyValueType.NO_VALUE or PropertyValueType.CUSTOM_VALUE
  */
-DuAEF.DuAE.Property.getKeyFrames = function ( prop, selected, timeRange ) {
-    if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+DuAE.Property.getDuAEKeyFrames = function ( prop, selected, timeRange ) {
+    if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
     if ( prop.propertyValueType == PropertyValueType.NO_VALUE ) return [];
     if ( prop.propertyValueType == PropertyValueType.CUSTOM_VALUE ) return [];
 
-    var comp = DuAEF.DuAE.Property.getComp( prop );
+    var comp = DuAE.Property.getComp( prop );
     if ( timeRange == undefined ) timeRange = [ 0, comp.duration ];
     if ( selected == undefined ) selected = false;
 
@@ -294,7 +294,7 @@ DuAEF.DuAE.Property.getKeyFrames = function ( prop, selected, timeRange ) {
     if ( prop.isTimeVarying ) {
         if ( selected ) {
             for ( var keyIndex = 0; keyIndex < prop.selectedKeys.length; keyIndex++ ) {
-                var key = DuAEF.DuAE.Property.getKeyFrameAtIndex( prop, prop.selectedKeys[ keyIndex ] );
+                var key = DuAE.Property.getDuAEKeyFrameAtIndex( prop, prop.selectedKeys[ keyIndex ] );
                 if ( key._time >= timeRange[ 0 ] && key._time <= timeRange[ 1 ] ) {
                     key._time = key._time - timeRange[ 0 ];
                     keyFrames.push( key );
@@ -302,7 +302,7 @@ DuAEF.DuAE.Property.getKeyFrames = function ( prop, selected, timeRange ) {
             }
         } else if ( prop.numKeys > 0 ) {
             for ( var keyIndex = 1; keyIndex <= prop.numKeys; keyIndex++ ) {
-                var key = DuAEF.DuAE.Property.getKeyFrameAtIndex( prop, keyIndex );
+                var key = DuAE.Property.getDuAEKeyFrameAtIndex( prop, keyIndex );
                 if ( key._time >= timeRange[ 0 ] && key._time <= timeRange[ 1 ] ) {
                     key._time = key._time - timeRange[ 0 ];
                     keyFrames.push( key );
@@ -315,31 +315,31 @@ DuAEF.DuAE.Property.getKeyFrames = function ( prop, selected, timeRange ) {
 
 /**
  * Gets all animations in the group in the whole timeline or in the time range<br />
- * The first KeyFrame._time will be adjusted relatively to the start of the time range (if provided) instead of the startTime of the composition.
- * @param {PropertyGroup|PropertyInfo}	prop	- The property.
+ * The first DuAEKeyFrame._time will be adjusted relatively to the start of the time range (if provided) instead of the startTime of the composition.
+ * @param {PropertyGroup|DuAEProperty}	prop	- The property.
  * @param {boolean}	[selected=false]	- true to get only selected keyframes.
  * @param {float[]}	[timeRange]	- The time range, an array of two time values, in seconds. If not provided, will use the comp time range.
- * @return {PropertyGroupAnim|PropertyAnim}	The animations. A PropertyAnim if prop is a Property, a PopertyGroupAnim if it is a PropertyGroup
+ * @return {DuAEPropertyGroupAnimation|DuAEPropertyAnimation}	The animations. A DuAEPropertyAnimation if prop is a Property, a PopertyGroupAnim if it is a PropertyGroup
  */
-DuAEF.DuAE.Property.getAnim = function ( prop, selected, timeRange ) {
-    var comp = DuAEF.DuAE.Property.getComp( prop );
+DuAE.Property.getAnim = function ( prop, selected, timeRange ) {
+    var comp = DuAE.Property.getComp( prop );
     if ( typeof timeRange === 'undefined' ) timeRange = [ 0, comp.duration ];
     if ( typeof selected === 'undefined' ) selected = false;
 
-    if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+    if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
 
-    if ( selected && !DuAEF.DuAE.Property.hasSelectedKeys( prop ) ) return null;
+    if ( selected && !DuAE.Property.hasSelectedKeys( prop ) ) return null;
 
     if ( prop.propertyType === PropertyType.PROPERTY ) {
         if ( prop.propertyValueType == PropertyValueType.NO_VALUE ) return null;
         if ( prop.elided ) return null;
         if ( !prop.canVaryOverTime ) return null;
-        var anim = new PropertyAnim();
+        var anim = new DuAEPropertyAnimation();
         anim._name = prop.name;
         anim._matchName = prop.matchName;
         anim.startValue = prop.valueAtTime( timeRange[ 0 ], true );
         anim.endValue = prop.valueAtTime( timeRange[ 1 ], true );
-        anim.keys = DuAEF.DuAE.Property.getKeyFrames( prop, selected, timeRange );
+        anim.keys = DuAE.Property.getDuAEKeyFrames( prop, selected, timeRange );
         if ( anim.keys.length > 0 ) {
             anim.startTime = anim.keys[ 0 ]._time;
             anim.endTime = anim.keys[ anim.keys.length - 1 ]._time;
@@ -347,16 +347,16 @@ DuAEF.DuAE.Property.getAnim = function ( prop, selected, timeRange ) {
             anim.startTime = 0;
             anim.endTime = 0;
         }
-        anim.dimensions = DuAEF.DuAE.Property.getDimensions( prop );
+        anim.dimensions = DuAE.Property.getDimensions( prop );
         if ( prop.canSetExpression ) anim.expression = prop.expression;
         return anim;
     } else if ( prop.numProperties > 0 ) {
-        var groupAnim = new PropertyGroupAnim();
+        var groupAnim = new DuAEPropertyGroupAnimation();
         groupAnim._name = prop.name;
         groupAnim._matchName = prop.matchName;
 
         for ( var propIndex = 1; propIndex <= prop.numProperties; propIndex++ ) {
-            var anim = DuAEF.DuAE.Property.getAnim( prop.property( propIndex ), selected, timeRange );
+            var anim = DuAE.Property.getAnim( prop.property( propIndex ), selected, timeRange );
             if ( anim != null ) {
                 if ( groupAnim.startTime == null ) groupAnim.startTime = anim.startTime;
                 else if ( groupAnim.startTime > anim.startTime ) groupAnim.startTime = anim.startTime;
@@ -371,50 +371,50 @@ DuAEF.DuAE.Property.getAnim = function ( prop, selected, timeRange ) {
 }
 
 // low-level undocumented method to get all expressions and cache them
-DuAEF.DuAE.Property.addToExpressionCache = function ( prop ) {
+DuAE.Property.addToExpressionCache = function ( prop ) {
     //it it's a prop, add to cache
     if ( prop.propertyType === PropertyType.PROPERTY ) {
-        var exp = new PropertyExpression(prop);
-        if ( !exp.empty ) DuAEF.DuAE.Expression.cache.push(exp);
+        var exp = new DuAEPropertyExpression(prop);
+        if ( !exp.empty ) DuAE.Expression.cache.push(exp);
     }
     //if it's a group, get props inside
     else if ( prop.numProperties > 0 ) {
         for ( var p = 1; p <= prop.numProperties; p++ ) {
-            DuAEF.DuAE.Property.addToExpressionCache( prop.property(p) );
+            DuAE.Property.addToExpressionCache( prop.property(p) );
         }
     }
 }
 
 /**
  * Gets the time of the first keyFrame
- * @param {PropertyBase[]|PropertyInfo[]} props - The properties
+ * @param {PropertyBase[]|DuAEProperty[]} props - The properties
  * @param {boolean} selected - true to check selected keyframes only
  * @return {float|null} The keyframe time or null if there are no keyframe
  */
-DuAEF.DuAE.Property.firstKeyFrameTime = function ( prop, selected ) {
+DuAE.Property.firstDuAEKeyFrameTime = function ( prop, selected ) {
     var time = null;
 
-    if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+    if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
     if ( prop.propertyType == PropertyType.PROPERTY ) {
         if ( !prop.canVaryOverTime ) return null;
         if ( selected ) {
             if ( prop.selectedKeys.length == 0 ) return null;
             for ( var keyIndex = 0; keyIndex < prop.selectedKeys.length; keyIndex++ ) {
-                var key = DuAEF.DuAE.Property.getKeyFrameAtIndex( prop, prop.selectedKeys[ keyIndex ] );
+                var key = DuAE.Property.getDuAEKeyFrameAtIndex( prop, prop.selectedKeys[ keyIndex ] );
                 if ( time == null ) time = key._time;
                 else if ( time > key._time ) time = key._time;
             }
         } else {
             if ( prop.numKeys == 0 ) return null;
             for ( var keyIndex = 1; keyIndex <= prop.numKeys; keyIndex++ ) {
-                var key = DuAEF.DuAE.Property.getKeyFrameAtIndex( prop, keyIndex );
+                var key = DuAE.Property.getDuAEKeyFrameAtIndex( prop, keyIndex );
                 if ( time == null ) time = key._time;
                 else if ( time > key._time ) time = key._time;
             }
         }
     } else if ( prop.numProperties > 0 ) {
         for ( var propIndex = 1; propIndex <= prop.numProperties; propIndex++ ) {
-            var test = DuAEF.DuAE.Property.firstKeyFrameTime( prop.property( propIndex ), selected );
+            var test = DuAE.Property.firstDuAEKeyFrameTime( prop.property( propIndex ), selected );
             if ( time == null ) time = test;
             else if ( test != null ) {
                 if ( time > test ) time = test;
@@ -426,22 +426,22 @@ DuAEF.DuAE.Property.firstKeyFrameTime = function ( prop, selected ) {
 }
 
 /**
- * Sets a {@linkcode KeyFrame} on a property
- * @param {Property|PropertyInfo}	prop	- The property.
- * @param {KeyFrame}	key	- The KeyFrame.
- * @param {float}	[timeOffset=comp.time]	- The time offset (added to KeyFrame._time) where to add the key frame.
+ * Sets a {@linkcode DuAEKeyFrame} on a property
+ * @param {Property|DuAEProperty}	prop	- The property.
+ * @param {DuAEKeyFrame}	key	- The DuAEKeyFrame.
+ * @param {float}	[timeOffset=comp.time]	- The time offset (added to DuAEKeyFrame._time) where to add the key frame.
  */
-DuAEF.DuAE.Property.setKey = function ( prop, key, timeOffset ) {
-    if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+DuAE.Property.setKey = function ( prop, key, timeOffset ) {
+    if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
     if ( prop.elided ) return;
     if ( !prop.propertyType === PropertyType.PROPERTY ) throw "Can not set a key on a group property";
     if ( !prop.canVaryOverTime ) return;
     if ( prop.isSeparationLeader )
         if ( prop.dimensionsSeparated ) return;
 
-    if ( timeOffset == undefined ) timeOffset = DuAEF.DuAE.Property.getComp( prop ).time;
+    if ( timeOffset == undefined ) timeOffset = DuAE.Property.getComp( prop ).time;
     var time = key._time + timeOffset;
-    var propDimensions = DuAEF.DuAE.Property.getDimensions( prop );
+    var propDimensions = DuAE.Property.getDimensions( prop );
     var val = key.value;
 
     if ( propDimensions > 1 && !( val instanceof Array ) ) {
@@ -458,7 +458,7 @@ DuAEF.DuAE.Property.setKey = function ( prop, key, timeOffset ) {
         }
     }
 
-    DuAEF.DuAE.Property.setValueAtTime( prop, val, time );
+    DuAE.Property.setValueAtTime( prop, val, time );
     if ( prop.numKeys == 0 ) return;
 
     //get the index of the created key
@@ -490,18 +490,18 @@ DuAEF.DuAE.Property.setKey = function ( prop, key, timeOffset ) {
 /**
  * Sets the property animation on the property.<br />
  * Use this method only to force the animation onto the property without checks.<br />
- * Must be used on a Property (not a group) with a PropertyAnim (not a PropertyGroupAnim).<br />
+ * Must be used on a Property (not a group) with a DuAEPropertyAnimation (not a DuAEPropertyGroupAnimation).<br />
  * To easily set an animation on a property with automatic compatibility checks, you should use setGroupAnim().
- * @param {Property|PropertyInfo}	prop	- The property.
- * @param {PropertyAnim} anims	- The animation
+ * @param {Property|DuAEProperty}	prop	- The property.
+ * @param {DuAEPropertyAnimation} anims	- The animation
  * @param {float}	[time=comp.time]	- The time where to begin the animation
  * @param {boolean}	[setExpression=false]	- Sets the expression too
  * @param {boolean}	[replace=false]	- true to remove any existing keyframe on the properties before adding new keyframes
  * @param {boolean}	[offset=false]	- true to offset the current value, instead of replacing it
  * @return {boolean} true if the anim was actually set.
  */
-DuAEF.DuAE.Property.setAnim = function ( prop, anim, time, setExpression, replace, offset ) {
-    var propInfo = new PropertyInfo( prop );
+DuAE.Property.setAnim = function ( prop, anim, time, setExpression, replace, offset ) {
+    var propInfo = new DuAEProperty( prop );
     prop = propInfo.getProperty();
     var comp = propInfo.comp;
     time = def( time, comp.time );
@@ -527,7 +527,7 @@ DuAEF.DuAE.Property.setAnim = function ( prop, anim, time, setExpression, replac
             for ( var i = prop.numKeys; i > 0; i-- ) {
                 prop.removeKey( i );
             }
-            DuAEF.DuAE.Property.setValue( prop, val );
+            DuAE.Property.setValue( prop, val );
         }
 
         //if there are keys, set them
@@ -538,7 +538,7 @@ DuAEF.DuAE.Property.setAnim = function ( prop, anim, time, setExpression, replac
                     if ( iclef == 0 ) key.value = val;
                     else key.value = val + ( key.value - anim.startValue );
                 }
-                DuAEF.DuAE.Property.setKey( prop, key, time );
+                DuAE.Property.setKey( prop, key, time );
                 ok = true;
             }
         } else //set the start value
@@ -555,7 +555,7 @@ DuAEF.DuAE.Property.setAnim = function ( prop, anim, time, setExpression, replac
 
             if ( anim.startValue != null && !offset ) {
                 if ( prop.numKeys == 0 ) {
-                    DuAEF.DuAE.Property.setValue( prop, anim.startValue );
+                    DuAE.Property.setValue( prop, anim.startValue );
                 } else {
                     try {
                         prop.setValueAtTime( time, anim.startValue );
@@ -580,8 +580,8 @@ DuAEF.DuAE.Property.setAnim = function ( prop, anim, time, setExpression, replac
 
 /**
  * Sets all animations on a Property or a PropertyGroup.
- * @param {PropertyGroup|PropertyInfo}	prop	- The property group.
- * @param {PropertyAnim} anims	- The animation
+ * @param {PropertyGroup|DuAEProperty}	prop	- The property group.
+ * @param {DuAEPropertyAnimation} anims	- The animation
  * @param {float}	[time=comp.time]	- The time where to begin the animation
  * @param {boolean}	[ignoreName=false]	- true to set the anim even if name of the property do not match the animation.
  * @param {boolean}	[setExpression=false]	- Sets the expression too
@@ -593,9 +593,9 @@ DuAEF.DuAE.Property.setAnim = function ( prop, anim, time, setExpression, replac
  * @param {boolean}	[offset=false]	- true to offset the current value, instead of replacing it
  * @return {boolean} true if the anim was actually set.
  */
-DuAEF.DuAE.Property.setGroupAnim = function ( prop, anim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, set ) {
-    if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
-    if ( typeof time === 'undefined' ) time = DuAEF.DuAE.Property.getComp( prop ).time;
+DuAE.Property.setGroupAnim = function ( prop, anim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, set ) {
+    if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
+    if ( typeof time === 'undefined' ) time = DuAE.Property.getComp( prop ).time;
     if ( typeof ignoreName === 'undefined' ) ignoreName = false;
     if ( typeof setExpression === 'undefined' ) setExpression = false;
     if ( typeof onlyKeyframes === 'undefined' ) onlyKeyframes = false;
@@ -621,7 +621,7 @@ DuAEF.DuAE.Property.setGroupAnim = function ( prop, anim, time, ignoreName, setE
                 if ( onlyKeyframes && anim.keys.length == 0 ) okToSet = false;
             }
 
-            if ( okToSet ) return DuAEF.DuAE.Property.setAnim( prop, anim, time, setExpression, replace, offset );
+            if ( okToSet ) return DuAE.Property.setAnim( prop, anim, time, setExpression, replace, offset );
         }
     } else {
         for ( var i = 0; i < anim.anims.length; i++ ) {
@@ -635,7 +635,7 @@ DuAEF.DuAE.Property.setGroupAnim = function ( prop, anim, time, ignoreName, setE
                     if ( ignoreName ) okToSet = true;
                 }
                 if ( okToSet ) {
-                    ok = DuAEF.DuAE.Property.setGroupAnim( subProp, propAnim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, set );
+                    ok = DuAE.Property.setGroupAnim( subProp, propAnim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, set );
                     break;
                 }
             }
@@ -647,11 +647,11 @@ DuAEF.DuAE.Property.setGroupAnim = function ( prop, anim, time, ignoreName, setE
 
 /**
  * Removes the animation from the property
- * @param {Property|PropertyInfo} prop -The property
+ * @param {Property|DuAEProperty} prop -The property
  * @param {boolean} [removeExpression=false] - Set to true to remove the expression too
  */
-DuAEF.DuAE.Property.removeAnim = function ( prop, removeExpression ) {
-    if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+DuAE.Property.removeAnim = function ( prop, removeExpression ) {
+    if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
     while ( prop.numKeys > 0 ) {
         prop.removeKey( 1 );
     }
@@ -663,15 +663,15 @@ DuAEF.DuAE.Property.removeAnim = function ( prop, removeExpression ) {
 /**
  * Selects the keyframes in the propoerty.<br />
  * Selects all nested keyframes if the property is a group.
- * @param {PropertyBase|PropertyInfo} property - The property
+ * @param {PropertyBase|DuAEProperty} property - The property
  * @param {float} [inTime=0] - The time at which to select the keyframes
  * @param {float} [outTime=inTime] - The end time
  */
-DuAEF.DuAE.Property.selectKeyFrames = function ( property, inTime, outTime ) {
+DuAE.Property.selectDuAEKeyFrames = function ( property, inTime, outTime ) {
     if ( inTime == undefined ) inTime = 0;
     if ( outTime == undefined ) outTime = inTime;
     var prop;
-    if ( property instanceof PropertyInfo ) prop = property.getProperty();
+    if ( property instanceof DuAEProperty ) prop = property.getProperty();
     else prop = property;
 
     if ( prop.propertyType == PropertyType.PROPERTY ) {
@@ -680,11 +680,11 @@ DuAEF.DuAE.Property.selectKeyFrames = function ( property, inTime, outTime ) {
             if ( prop.dimensionsSeparated ) return;
         if ( inTime == outTime ) {
             //get key
-            var key = DuAEF.DuAE.Property.getKeyFrameAtTime( prop, inTime );
+            var key = DuAE.Property.getDuAEKeyFrameAtTime( prop, inTime );
             if ( key ) prop.setSelectedAtKey( key._index, true );
         } else {
             //get keys
-            var keys = DuAEF.DuAE.Property.getKeyFrames( prop, false, [ inTime, outTime ] );
+            var keys = DuAE.Property.getDuAEKeyFrames( prop, false, [ inTime, outTime ] );
             if ( !keys ) return;
             for ( var i = 0; i < keys.length; i++ ) {
                 prop.setSelectedAtKey( keys[ i ]._index, true );
@@ -692,27 +692,27 @@ DuAEF.DuAE.Property.selectKeyFrames = function ( property, inTime, outTime ) {
         }
     } else if ( prop.numProperties > 0 ) {
         for ( var i = 1; i <= prop.numProperties; i++ ) {
-            DuAEF.DuAE.Property.selectKeyFrames( prop.property( i ), inTime, outTime );
+            DuAE.Property.selectDuAEKeyFrames( prop.property( i ), inTime, outTime );
         }
     }
 }
 
 /**
  * Gets an expression link to the property
- * @memberof DuAEF.DuAE.Property
- * @param {Property|PropertyInfo}	prop			- The property
+ * @memberof DuAE.Property
+ * @param {Property|DuAEProperty}	prop			- The property
  * @param {bool}		[useThisComp=false]		- Wether to begin the expression by 'thisComp' or 'comp("name")'
  * @param {bool}		[fromLayer=true]		- Wether to begin the expression by comp.layer or directly from the first prop of the layer
  * @return {str}		The expression link to the property
  */
-DuAEF.DuAE.Property.getExpressionLink = function ( prop, useThisComp, fromLayer ) {
-    if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+DuAE.Property.getExpressionLink = function ( prop, useThisComp, fromLayer ) {
+    if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
     if ( useThisComp == undefined ) useThisComp = false;
     if ( fromLayer == undefined ) fromLayer = true;
 
     //get compact expression from matchName, if available
     function getCompactExpression( matchName, name ) {
-        var translatedName = DuAEF.DuAE.compactExpressions[ matchName ];
+        var translatedName = DuAE.CompactExpression[ matchName ];
 
         if ( translatedName !== undefined )
             return eval( translatedName );
@@ -761,19 +761,19 @@ DuAEF.DuAE.Property.getExpressionLink = function ( prop, useThisComp, fromLayer 
 
 /**
  * Sets a value on a property, adjusting the dimensions if needed
- * @param {Property|PropertyInfo} prop - The property
+ * @param {Property|DuAEProperty} prop - The property
  * @param {any} value - The value to set
  * @param {float} defaultTime - The time at which to set the value if the property has keyframes
  * @return {boolean} True if the value has correctly been set, false otherwise.
  */
-DuAEF.DuAE.Property.setValue = function ( prop, value, defaultTime ) {
+DuAE.Property.setValue = function ( prop, value, defaultTime ) {
     var dimensions = 0;
     var editable = false;
-    if ( prop instanceof PropertyInfo ) {
+    if ( prop instanceof DuAEProperty ) {
         propInfo = prop;
         prop = propInfo.getProperty();
     } else {
-        propInfo = new PropertyInfo( prop );
+        propInfo = new DuAEProperty( prop );
     }
     dimensions = propInfo.dimensions;
     editable = propInfo.editable;
@@ -783,7 +783,7 @@ DuAEF.DuAE.Property.setValue = function ( prop, value, defaultTime ) {
 
     if ( !editable ) return false;
 
-    if (prop.numKeys > 0 && typeof defaultTime !== 'undefined') return DuAEF.DuAE.Property.setValueAtTime(prop, value, defaultTime);
+    if (prop.numKeys > 0 && typeof defaultTime !== 'undefined') return DuAE.Property.setValueAtTime(prop, value, defaultTime);
     else if (prop.numKeys > 0) return false;
 
     //check dimensions of the property
@@ -816,19 +816,19 @@ DuAEF.DuAE.Property.setValue = function ( prop, value, defaultTime ) {
 
 /**
  * Sets a new keyframe on a property, adjusting the dimensions if needed, at desired time
- * @param {Property|PropertyInfo} prop - The property
+ * @param {Property|DuAEProperty} prop - The property
  * @param {any} value - The value to set
  * @param {float} [time] - The time of the new keyframe
  * @return {boolean} True if the value has correctly been set, false otherwise.
  */
-DuAEF.DuAE.Property.setValueAtTime = function ( prop, value, time ) {
+DuAE.Property.setValueAtTime = function ( prop, value, time ) {
     var dimensions = 0;
     var editable = false;
-    if ( prop instanceof PropertyInfo ) {
+    if ( prop instanceof DuAEProperty ) {
         propInfo = prop;
         prop = propInfo.getProperty();
     } else {
-        propInfo = new PropertyInfo( prop );
+        propInfo = new DuAEProperty( prop );
     }
     dimensions = propInfo.dimensions;
     editable = propInfo.editable;
@@ -872,13 +872,13 @@ DuAEF.DuAE.Property.setValueAtTime = function ( prop, value, time ) {
 /**
  * Changes the interpolation type on selected keyframes, or sets a new key at current time if there are no keyframes selected.
  * @param {Layer[]|LayerCollection} layers - The layers containing the properties
- * @param {PropertyBase[]|PropertyInfo[]} props - The properties
+ * @param {PropertyBase[]|DuAEProperty[]} props - The properties
  * @param {KeyframeInterpolationType|string} typeIn - The in interpolation type (see AE API) or the string "roving" or "continuous"
  * @param {KeyframeInterpolationType|string} [typeOut=typeIn] - The out interpolation type (see AE API)
  * @param {int[]|int} [easeInValue=33] - The in interpolation ease value (used if typeIn is KeyframeInterpolationType.BEZIER)
  * @param {int[]|int} [easeOutValue=easeInValue] - The out interpolation ease value (used if typeOut is KeyframeInterpolationType.BEZIER)
  */
-DuAEF.DuAE.Property.setInterpolationType = function ( layers, props, typeIn, typeOut, easeInValue, easeOutValue ) {
+DuAE.Property.setInterpolationType = function ( layers, props, typeIn, typeOut, easeInValue, easeOutValue ) {
     if ( typeOut == undefined ) typeOut = typeIn;
     if ( easeInValue == undefined ) easeInValue = 33;
     if ( isNaN( easeInValue ) ) easeInValue = 33;
@@ -887,19 +887,19 @@ DuAEF.DuAE.Property.setInterpolationType = function ( layers, props, typeIn, typ
 
     if ( layers.length == 0 ) return;
 
-    if ( !DuAEF.DuAE.Layer.haveSelectedKeys( layers ) ) {
-        DuAEF.DuAE.Property.addKey( props, typeIn, typeOut, easeInValue, easeOutValue );
+    if ( !DuAE.Layer.haveSelectedKeys( layers ) ) {
+        DuAE.Property.addKey( props, typeIn, typeOut, easeInValue, easeOutValue );
     } else {
         for ( var i = 0; i < props.length; i++ ) {
             var propInfo = props[ i ];
             var prop = props[ i ];
-            if ( !( propInfo instanceof PropertyInfo ) ) propInfo = new PropertyInfo( prop );
+            if ( !( propInfo instanceof DuAEProperty ) ) propInfo = new DuAEProperty( prop );
             prop = props[ i ].getProperty();
 
             if ( prop.canVaryOverTime ) {
                 //for keys
                 for ( var k = 0, num = prop.selectedKeys.length; k < num; k++ ) {
-                    DuAEF.DuAE.Property.setKeyInterpolation( prop, prop.selectedKeys[ k ], typeIn, typeOut, easeInValue, easeOutValue );
+                    DuAE.Property.setKeyInterpolation( prop, prop.selectedKeys[ k ], typeIn, typeOut, easeInValue, easeOutValue );
                 }
             }
         }
@@ -915,7 +915,7 @@ DuAEF.DuAE.Property.setInterpolationType = function ( layers, props, typeIn, typ
  * @param {int[]|int} [easeInValue=33] - The in interpolation ease value (used if typeIn is KeyframeInterpolationType.BEZIER)
  * @param {int[]|int} [easeOutValue=easeInValue] - The out interpolation ease value (used if typeOut is KeyframeInterpolationType.BEZIER)
  */
-DuAEF.DuAE.Property.setKeyInterpolation = function ( prop, key, typeIn, typeOut, easeInValue, easeOutValue ) {
+DuAE.Property.setKeyInterpolation = function ( prop, key, typeIn, typeOut, easeInValue, easeOutValue ) {
     if ( typeOut == undefined ) typeOut = typeIn;
     if ( easeInValue == undefined ) easeInValue = 33;
     if ( isNaN( easeInValue ) ) easeInValue = 33;
@@ -956,39 +956,39 @@ DuAEF.DuAE.Property.setKeyInterpolation = function ( prop, key, typeIn, typeOut,
 /**
  * Adds a new keyframe on the properties.<br />
  * To set a value of your choice on one property,<br />
- * you can create a new {@link KeyFrame}, then use {@link DuAEF.DuAE.Property.setKey}.
- * @param {PropertyBase[]|PropertyInfo[]} props - The properties
+ * you can create a new {@link DuAEKeyFrame}, then use {@link DuAE.Property.setKey}.
+ * @param {PropertyBase[]|DuAEProperty[]} props - The properties
  * @param {KeyframeInterpolationType|string} typeIn - The in interpolation type (see AE API) or the string "roving" or "continuous"
  * @param {KeyframeInterpolationType|string} [typeOut=typeIn] - The out interpolation type (see AE API)
  * @param {int[]|int} [easeInValue=33] - The in interpolation ease value (used if typeIn is KeyframeInterpolationType.BEZIER)
  * @param {int[]|int} [easeOutValue=easeInValue] - The out interpolation ease value (used if typeOut is KeyframeInterpolationType.BEZIER)
  * @param {float} [time=comp.time] - The time at which to add the key
  */
-DuAEF.DuAE.Property.addKey = function ( props, typeIn, typeOut, easeInValue, easeOutValue, time ) {
+DuAE.Property.addKey = function ( props, typeIn, typeOut, easeInValue, easeOutValue, time ) {
     for ( var i = 0; i < props.length; i++ ) {
         var propInfo = props[ i ];
         var prop = props[ i ];
-        if ( !( propInfo instanceof PropertyInfo ) ) propInfo = new PropertyInfo( prop );
+        if ( !( propInfo instanceof DuAEProperty ) ) propInfo = new DuAEProperty( prop );
         prop = props[ i ].getProperty();
-        var comp = DuAEF.DuAE.Property.getComp( prop );
+        var comp = DuAE.Property.getComp( prop );
         if ( prop.canVaryOverTime ) {
             var keyTime;
             if ( typeof time === 'undefined' ) keyTime = comp.time;
             else keyTime = time;
             var key = prop.addKey( keyTime );
-            DuAEF.DuAE.Property.setKeyInterpolation( prop, key, typeIn, typeOut, easeInValue, easeOutValue );
+            DuAE.Property.setKeyInterpolation( prop, key, typeIn, typeOut, easeInValue, easeOutValue );
         }
     }
 }
 
 /**
  * Computes a percentage from a velocity on a given keyframe. 
- * @param {Property|PropertyInfo} prop - The property
+ * @param {Property|DuAEProperty} prop - The property
  * @param {int} key - The index of the keyframe where to compute the velocity
  * @return {float[]} The velocities [in, out] as a percentage.
  */
-DuAEF.DuAE.Property.velocityToPercent = function ( prop, key ) {
-    var propInfo = new PropertyInfo( prop );
+DuAE.Property.velocityToPercent = function ( prop, key ) {
+    var propInfo = new DuAEProperty( prop );
     prop = propInfo.getProperty();
 
     var speedIn = prop.keyInTemporalEase( key )[ 0 ].speed;
@@ -1023,7 +1023,7 @@ DuAEF.DuAE.Property.velocityToPercent = function ( prop, key ) {
 
 /**
  * Changes the ease influences of the selected keys
- * @param {PropertyBase[]|PropertyInfo[]} props - The properties
+ * @param {PropertyBase[]|DuAEProperty[]} props - The properties
  * @param {int[]|int} [easeInValue] - The in interpolation ease value. Will be ignored if undefined.
  * @param {int[]|int} [easeOutValue] - The out interpolation ease value. Will be ignored if undefined.
  * @param {int[]|int} [velocityInValue] - The out interpolation ease value. Will be ignored if undefined.
@@ -1031,14 +1031,14 @@ DuAEF.DuAE.Property.velocityToPercent = function ( prop, key ) {
  * @param {boolean} [velocityAsPercent=false] - Use a percent instead of a value to set velocities.<br />
  * In this case, the proper velocity value will be deduced by multiplying the max speed of the property by the percent.
  */
-DuAEF.DuAE.Property.setEase = function ( props, easeInValue, easeOutValue, velocityInValue, velocityOutValue, velocityAsPercent ) {
+DuAE.Property.setEase = function ( props, easeInValue, easeOutValue, velocityInValue, velocityOutValue, velocityAsPercent ) {
     if ( isNaN( easeInValue ) && typeof easeInValue !== 'undefined' ) easeInValue = 33;
     if ( isNaN( easeOutValue ) && typeof easeOutValue !== 'undefined' ) easeOutValue = 33;
     if ( isNaN( velocityInValue ) && typeof velocityInValue !== 'undefined' ) velocityInValue = 0;
     if ( isNaN( velocityOutValue ) && typeof velocityOutValue !== 'undefined' ) velocityOutValue = 0;
 
     for ( var i = 0; i < props.length; i++ ) {
-        var propInfo = new PropertyInfo( props[ i ] );
+        var propInfo = new DuAEProperty( props[ i ] );
         var prop = propInfo.getProperty();
 
         var comp = propInfo.comp;
@@ -1164,7 +1164,7 @@ DuAEF.DuAE.Property.setEase = function ( props, easeInValue, easeOutValue, veloc
  * @param {PropertyBase} prop - The property
  * @return {boolean} true if the property have at least one selected keyframe
  */
-DuAEF.DuAE.Property.hasSelectedKeys = function ( prop ) {
+DuAE.Property.hasSelectedKeys = function ( prop ) {
     var yes = false;
 
     if ( prop.propertyType == PropertyType.PROPERTY ) {
@@ -1173,7 +1173,7 @@ DuAEF.DuAE.Property.hasSelectedKeys = function ( prop ) {
         }
     } else if ( prop.numProperties > 0 ) {
         for ( var propIndex = 1; propIndex <= prop.numProperties; propIndex++ ) {
-            yes = DuAEF.DuAE.Property.hasSelectedKeys( prop.property( propIndex ) );
+            yes = DuAE.Property.hasSelectedKeys( prop.property( propIndex ) );
             if ( yes ) break;
         }
     }
@@ -1182,12 +1182,12 @@ DuAEF.DuAE.Property.hasSelectedKeys = function ( prop ) {
 
 /**
  * Sets the spatial interpolation of the selected keyframes on the property
- * @param {Property|PropertyInfo} prop - The property
+ * @param {Property|DuAEProperty} prop - The property
  * @param {KeyframeInterpolationType} typeIn - The in interpolation type (see AE API)
  * @param {KeyframeInterpolationType} [typeOut=typeIn] - The in interpolation type (see AE API)
  */
-DuAEF.DuAE.Property.setSpatialInterpolation = function ( prop, typeIn, typeOut ) {
-    if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+DuAE.Property.setSpatialInterpolation = function ( prop, typeIn, typeOut ) {
+    if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
     if ( typeOut == undefined ) typeOut = typeIn;
     if ( !prop.isSpatial ) return;
     if ( prop.selectedKeys.length == 0 ) return;
@@ -1239,10 +1239,10 @@ DuAEF.DuAE.Property.setSpatialInterpolation = function ( prop, typeIn, typeOut )
 /**
  * Fixes the spatial interpolation of the selected keys.<br />
  * Sets the interpolation to linear when the property does not move between keyframes
- * @param {Property|PropertyInfo} prop - The property
+ * @param {Property|DuAEProperty} prop - The property
  */
-DuAEF.DuAE.Property.fixSpatialInterpolation = function ( prop ) {
-    if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+DuAE.Property.fixSpatialInterpolation = function ( prop ) {
+    if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
 
     if ( !prop.isSpatial ) return;
     if ( !prop.canVaryOverTime ) return;
@@ -1276,11 +1276,11 @@ DuAEF.DuAE.Property.fixSpatialInterpolation = function ( prop ) {
 /**
  * Removes all unneeded keyframes from the property.< br/>
  * Also checks the interpolation values to reset the correct display as linear/smooth.
- * @param {Property|PropertyInfo} property - The property
+ * @param {Property|DuAEProperty} property - The property
  */
-DuAEF.DuAE.Property.cleanKeyframes = function ( property ) {
+DuAE.Property.cleanKeyframes = function ( property ) {
     var prop = property;
-    if ( prop instanceof PropertyInfo ) prop = property.getProperty();
+    if ( prop instanceof DuAEProperty ) prop = property.getProperty();
 
     var numKeys = prop.numKeys;
     if ( numKeys == 0 ) return;
@@ -1290,10 +1290,10 @@ DuAEF.DuAE.Property.cleanKeyframes = function ( property ) {
     }
 
     for ( var i = numKeys; i > 0; i-- ) {
-        var currentKey = DuAEF.DuAE.Property.getKeyFrameAtIndex( prop, i );
+        var currentKey = DuAE.Property.getDuAEKeyFrameAtIndex( prop, i );
 
-        if ( i > 1 ) var prevKey = DuAEF.DuAE.Property.getKeyFrameAtIndex( prop, i - 1 );
-        if ( i < prop.numKeys ) var nextKey = DuAEF.DuAE.Property.getKeyFrameAtIndex( prop, i + 1 );
+        if ( i > 1 ) var prevKey = DuAE.Property.getDuAEKeyFrameAtIndex( prop, i - 1 );
+        if ( i < prop.numKeys ) var nextKey = DuAE.Property.getDuAEKeyFrameAtIndex( prop, i + 1 );
 
         //check values
         if ( i > 1 && !DuAEF.DuJS.Array.compare( currentKey.value, prevKey.value, 3 ) ) continue;
@@ -1315,15 +1315,15 @@ DuAEF.DuAE.Property.cleanKeyframes = function ( property ) {
 
 /**
  * Gets the maximum speed of the animated propreties
- * @param {Property[]|PropertyInfo[]} props - The Properties
+ * @param {Property[]|DuAEProperty[]} props - The Properties
  * @param {bool}	 [preExpression=true]	- True to get the velocity from keyframes instead of the result of the exression
  * @return {float} The average speed
  */
-DuAEF.DuAE.Property.getMaximumSpeed = function ( props ) {
+DuAE.Property.getMaximumSpeed = function ( props ) {
     var maxSpeed = 0;
 
     for ( var i = 0; i < props.length; i++ ) {
-        var speed = DuAEF.DuAE.Property.getMaxVelocity( props[ i ], false );
+        var speed = DuAE.Property.getMaxVelocity( props[ i ], false );
         if ( speed > maxSpeed ) maxSpeed = speed;
     }
 
@@ -1332,17 +1332,17 @@ DuAEF.DuAE.Property.getMaximumSpeed = function ( props ) {
 
 /**
  * Gets the speed of a property at a given time
- * @param {Property|PropertyInfo} prop - The property
+ * @param {Property|DuAEProperty} prop - The property
  * @param {float} [time=composition.time] - The time.
  * @param {boolean} [preExpression=true] - true to get the pre-expression speed.
  * @return {float} The speed
  */
-DuAEF.DuAE.Property.getSpeed = function ( prop, time, preExpression ) {
+DuAE.Property.getSpeed = function ( prop, time, preExpression ) {
     preExpression = def (preExpression, true);
-    if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+    if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
     if ( prop.propertyType != PropertyType.PROPERTY ) return 0;
     if ( prop.numKeys == 0 && preExpression ) return 0;
-    var comp = DuAEF.DuAE.Property.getComp( prop );
+    var comp = DuAE.Property.getComp( prop );
     if ( time == undefined ) time = comp.time;
 
     var speed = DuMath.getLength( prop.valueAtTime( time + comp.frameDuration / 2, preExpression ), prop.valueAtTime( time - comp.frameDuration / 2, preExpression ) );
@@ -1352,14 +1352,14 @@ DuAEF.DuAE.Property.getSpeed = function ( prop, time, preExpression ) {
 /**
  * Sets an expression to a property.<br />
  * With the ability to keep the initial value.
- * @param {Property|PropertyInfo} property - The property
+ * @param {Property|DuAEProperty} property - The property
  * @param {string} expr - The expression
  * @param {bool} [keepValue=true] - When true, the method will try to keep the same resulting value as before applying the expression.
  */
-DuAEF.DuAE.Property.setExpression = function ( property, expr, keepValue ) {
+DuAE.Property.setExpression = function ( property, expr, keepValue ) {
     keepValue = def( keepValue, true );
 
-    var propInfo = new PropertyInfo( property );
+    var propInfo = new DuAEProperty( property );
     if ( !propInfo.riggable ) return;
 
     property = propInfo.getProperty();
@@ -1367,7 +1367,7 @@ DuAEF.DuAE.Property.setExpression = function ( property, expr, keepValue ) {
     var originalValue = property.valueAtTime( propInfo.comp.time, false );
 
     //remove current expression
-    if ( keepValue ) DuAEF.DuAE.Property.removeExpression( property );
+    if ( keepValue ) DuAE.Property.removeExpression( property );
     else try {
         property.expression = ""
     } catch ( e ) {
@@ -1382,17 +1382,17 @@ DuAEF.DuAE.Property.setExpression = function ( property, expr, keepValue ) {
     }
 
     //restore value
-    if ( propInfo.editable && keepValue && propInfo.dimensions > 0 ) DuAEF.DuAE.Property.setValue( property, 2 * originalValue - property.valueAtTime( propInfo.comp.time, false ) );
+    if ( propInfo.editable && keepValue && propInfo.dimensions > 0 ) DuAE.Property.setValue( property, 2 * originalValue - property.valueAtTime( propInfo.comp.time, false ) );
 }
 
 /**
  * Replaces text in Expressions
- * @param {PropertyBase|PropertyInfo} prop - The property (can be a group)
+ * @param {PropertyBase|DuAEProperty} prop - The property (can be a group)
  * @param {string} oldString - The string to replace
  * @param {string} newString - The new string
  * @param {boolean} [caseSensitive=true] - Wether the search has to be case sensitive
  */
-DuAEF.DuAE.Property.replaceInExpressions = function ( prop, oldString, newString, caseSensitive ) {
+DuAE.Property.replaceInExpressions = function ( prop, oldString, newString, caseSensitive ) {
     caseSensitive = def (caseSensitive, true);
 
     if ( prop.propertyType == PropertyType.PROPERTY ) {
@@ -1405,65 +1405,65 @@ DuAEF.DuAE.Property.replaceInExpressions = function ( prop, oldString, newString
         }
     } else if ( prop.numProperties > 0 ) {
         for ( var propertyIndex = 1; propertyIndex <= prop.numProperties; propertyIndex++ ) {
-            DuAEF.DuAE.Property.replaceInExpressions( prop.property( propertyIndex ), oldString, newString, caseSensitive );
+            DuAE.Property.replaceInExpressions( prop.property( propertyIndex ), oldString, newString, caseSensitive );
         }
     }
 }
 
 /**
  * Adds an expression to the child property, linking it to the parent property
- * @memberof DuAEF.DuAE.Property
+ * @memberof DuAE.Property
  * @param {Property} childProp - The child property (the one which gets an expression).
  * @param {Property} parentProp - The parent property.
  * @param {bool} useThisComp - Wether to begin the expression by 'thisComp' or 'comp("name")', default: will detect if the properties are in the same comp
  */
-DuAEF.DuAE.Property.pickWhip = function ( childProp, parentProp, useThisComp ) {
-    if (childProp instanceof PropertyInfo) childProp = childProp.getProperty();
-    if (parentProp instanceof PropertyInfo) parentProp = parentProp.getProperty();
+DuAE.Property.pickWhip = function ( childProp, parentProp, useThisComp ) {
+    if (childProp instanceof DuAEProperty) childProp = childProp.getProperty();
+    if (parentProp instanceof DuAEProperty) parentProp = parentProp.getProperty();
     if ( !childProp.canSetExpression ) return;
     if ( typeof useThisComp === 'undefined' ) {
-        var parentComp = DuAEF.DuAE.Property.getComp( parentProp );
-        var childComp = DuAEF.DuAE.Property.getComp( childProp );
+        var parentComp = DuAE.Property.getComp( parentProp );
+        var childComp = DuAE.Property.getComp( childProp );
         if ( parentComp.id == childComp.id ) useThisComp = true;
         else useThisComp = false;
     }
-    var exp = DuAEF.DuAE.Property.getExpressionLink( parentProp, useThisComp );
-    DuAEF.DuAE.Property.setExpression( childProp, exp, false );
+    var exp = DuAE.Property.getExpressionLink( parentProp, useThisComp );
+    DuAE.Property.setExpression( childProp, exp, false );
 }
 
 /**
  * Link all the properties found in childProp to all the same properties of parentProp (this is a recursive method)<br />
  * Note: any Property or PropertyGroup (and its subproperties) named "Data" will be linked the opposite way (from parentProp to childProp).
- * @memberof DuAEF.DuAE.Property
+ * @memberof DuAE.Property
  * @param {PropertyBase} childProp - The child property
  * @param {PropertyBase} parentProp - The parent property
  * @param {bool} [useThisComp] - Wether to begin the expression by 'thisComp' or 'comp("name")', default: will detect if the properties are in the same comp
  * @param {LayerItem} [timeLayer=null] - A layer used to offset the time (typically, in case of link between precompositions, the precomposition layer).<br />
  * When not null, the start time of this layer will be taken into account to get the values and synchronize them.
  */
-DuAEF.DuAE.Property.linkProperties = function ( childProp, parentProp, useThisComp, timeLayer ) {
+DuAE.Property.linkProperties = function ( childProp, parentProp, useThisComp, timeLayer ) {
     if ( parentProp.name.toLowerCase() == 'data' ) return;
 
     if ( childProp.propertyType == PropertyType.PROPERTY && !childProp.elided && childProp.propertyValueType != PropertyValueType.NO_VALUE ) {
         if ( typeof timeLayer === 'undefined' ) timeLayer = null;
 
         if ( typeof useThisComp === 'undefined' ) {
-            var parentComp = DuAEF.DuAE.Property.getComp( parentProp );
-            var childComp = DuAEF.DuAE.Property.getComp( childProp );
+            var parentComp = DuAE.Property.getComp( parentProp );
+            var childComp = DuAE.Property.getComp( childProp );
 
             useThisComp = parentComp.id == childComp.id;
         }
 
         //copy paste the animation / value
-        var anim = DuAEF.DuAE.Property.getAnim( parentProp, false );
-        if ( anim != null ) DuAEF.DuAE.Property.setAnim( childProp, anim, 0, true, true, false );      
+        var anim = DuAE.Property.getAnim( parentProp, false );
+        if ( anim != null ) DuAE.Property.setAnim( childProp, anim, 0, true, true, false );      
         
         // Expression
         var exp = [DuAEF.Duik.expressionIds.LINK,
-            'var link = ' + DuAEF.DuAE.Property.getExpressionLink( parentProp, useThisComp ) + ';'
+            'var link = ' + DuAE.Property.getExpressionLink( parentProp, useThisComp ) + ';'
             ].join('\n');
         if ( timeLayer != null ) {
-            exp += [ '\nvar timeLayer = ' + DuAEF.DuAE.Property.getExpressionLink( timeLayer ) + ';',
+            exp += [ '\nvar timeLayer = ' + DuAE.Property.getExpressionLink( timeLayer ) + ';',
                 'var timeOffset = timeLayer.startTime;',
                 'link.valueAtTime(time + timeOffset);'
                 ].join('\n');
@@ -1473,7 +1473,7 @@ DuAEF.DuAE.Property.linkProperties = function ( childProp, parentProp, useThisCo
         }
 
         //set the link
-        DuAEF.DuAE.Property.setExpression( childProp, exp, false );
+        DuAE.Property.setExpression( childProp, exp, false );
 
     } else {
         if ( parentProp.isEffect ) {
@@ -1494,13 +1494,13 @@ DuAEF.DuAE.Property.linkProperties = function ( childProp, parentProp, useThisCo
                     }
                 }
                 
-                if ( insideData == 0 ) DuAEF.DuAE.Property.linkProperties( childProp( p ), subProp, useThisComp, timeLayer );
-                else DuAEF.DuAE.Property.linkProperties( subProp, childProp( p ), useThisComp, timeLayer );
+                if ( insideData == 0 ) DuAE.Property.linkProperties( childProp( p ), subProp, useThisComp, timeLayer );
+                else DuAE.Property.linkProperties( subProp, childProp( p ), useThisComp, timeLayer );
             }
         } else {
             for ( var p = 1, num = childProp.numProperties; p <= num; p++ ) {
 
-                try { DuAEF.DuAE.Property.linkProperties( childProp( p ), parentProp( p ), useThisComp, timeLayer ); }
+                try { DuAE.Property.linkProperties( childProp( p ), parentProp( p ), useThisComp, timeLayer ); }
                 catch(e) { if (DuESF.debug) alert (childProp.name + ' could not be linked.\nError at line: ' + e.line + " in " + e.fileName + "\n" + e.description)};
             }
         }
@@ -1509,12 +1509,12 @@ DuAEF.DuAE.Property.linkProperties = function ( childProp, parentProp, useThisCo
 
 /**
  * Removes all expressions found in groups or sections named "Data" in the property.
- * @memberof DuAEF.DuAE.Property
+ * @memberof DuAE.Property
  * @param {PropertyBase} prop - The property
  */
-DuAEF.DuAE.Property.removeDataExpressions = function ( prop ) {
+DuAE.Property.removeDataExpressions = function ( prop ) {
     if ( prop.propertyType == PropertyType.PROPERTY && prop.name.toLowerCase() == 'data' ) {
-        DuAEF.DuAE.Property.removeExpression( prop );
+        DuAE.Property.removeExpression( prop );
     } else if ( prop.isEffect ) {
         var insideData = 0;
         for ( var p = 1, num = prop.numProperties; p <= num; p++ ) {
@@ -1531,29 +1531,29 @@ DuAEF.DuAE.Property.removeDataExpressions = function ( prop ) {
                     continue;
                 }
             }
-            if ( insideData > 0 ) DuAEF.DuAE.Property.removeExpression( subProp );
+            if ( insideData > 0 ) DuAE.Property.removeExpression( subProp );
         }
     } else {
-        if ( prop.name.toLowerCase() == 'data' ) DuAEF.DuAE.Property.removeExpressions( prop );
+        if ( prop.name.toLowerCase() == 'data' ) DuAE.Property.removeExpressions( prop );
         for ( var p = 1, num = prop.numProperties; p <= num; p++ ) {
-            DuAEF.DuAE.Property.removeDataExpressions( prop( p ) );
+            DuAE.Property.removeDataExpressions( prop( p ) );
         }
     }
 }
 
 /**
  * Removes all expressions found in the property.
- * @memberof DuAEF.DuAE.Property
+ * @memberof DuAE.Property
  * @param {PropertyBase} prop - The property
  * @param {function} filter - A function which takes a string as a parameter (the expression). Returns true if the expression has to be removed.
  * @param {bool} [keepPostExpressionValue=true] Set to false to just remove the expressions and get back the pre expression value
  */
-DuAEF.DuAE.Property.removeExpressions = function ( prop, filter, keepPostExpressionValue ) {
+DuAE.Property.removeExpressions = function ( prop, filter, keepPostExpressionValue ) {
     if ( prop.propertyType == PropertyType.PROPERTY ) {
-        DuAEF.DuAE.Property.removeExpression( prop, filter, keepPostExpressionValue );
+        DuAE.Property.removeExpression( prop, filter, keepPostExpressionValue );
     } else {
         for ( var p = 1, num = prop.numProperties; p <= num; p++ ) {
-            DuAEF.DuAE.Property.removeExpressions( prop( p ), filter, keepPostExpressionValue );
+            DuAE.Property.removeExpressions( prop( p ), filter, keepPostExpressionValue );
         }
     }
 }
@@ -1561,22 +1561,22 @@ DuAEF.DuAE.Property.removeExpressions = function ( prop, filter, keepPostExpress
 /**
  * Adds all the (supported) properties found in a property to the essential graphics panel<br />
  * Note: any Property or PropertyGroup (and its subproperties) named "data" will be ignored.
- * @memberof DuAEF.DuAE.Property
+ * @memberof DuAE.Property
  * @param {PropertyBase} prop - The property
  * @return {int} The number of properties added
  */
-DuAEF.DuAE.Property.addToEGP = function ( prop ) {
+DuAE.Property.addToEGP = function ( prop ) {
     var numProps = 0;
     if ( prop.name.toLowerCase() == 'data' ) return numProps;
     if ( prop.propertyType == PropertyType.PROPERTY && prop.propertyValueType != PropertyValueType.NO_VALUE ) {
-        var comp = DuAEF.DuAE.Property.getComp( prop );
-        var layer = DuAEF.DuAE.Property.getLayer( prop );
+        var comp = DuAE.Property.getComp( prop );
+        var layer = DuAE.Property.getLayer( prop );
         //set the link
         if ( prop.canAddToMotionGraphicsTemplate( comp ) && !prop.elided && prop.canSetExpression ) {
             //get the name 
-            var mPropName = layer.name + ' / ' + DuAEF.DuAE.Property.getExpressionLink( prop, true, false );
+            var mPropName = layer.name + ' / ' + DuAE.Property.getExpressionLink( prop, true, false );
             //add with name
-            if ( DuAEF.DuAE.App.version.version >= 16.1 ) {
+            if ( DuAE.version.version >= 16.1 ) {
                 prop.addToMotionGraphicsTemplateAs( comp, mPropName);
             }
             else {
@@ -1584,7 +1584,7 @@ DuAEF.DuAE.Property.addToEGP = function ( prop ) {
             }
 
             //rename the master property if >=15.1 and < 16.1
-            if ( DuAEF.DuAE.App.version.version >= 15.1 && DuAEF.DuAE.App.version.version < 16.1 ) {
+            if ( DuAE.version.version >= 15.1 && DuAE.version.version < 16.1 ) {
                 var it = new DuList( comp.usedIn );
                 it.do( function ( mainComp ) {
                     //search the layer of the precomp
@@ -1616,11 +1616,11 @@ DuAEF.DuAE.Property.addToEGP = function ( prop ) {
                         continue;
                     }
                 }
-                if ( insideData == 0 ) numProps += DuAEF.DuAE.Property.addToEGP( subProp );
+                if ( insideData == 0 ) numProps += DuAE.Property.addToEGP( subProp );
             }
         } else {
             for ( var p = 1; p <= prop.numProperties; p++ ) {
-                numProps += DuAEF.DuAE.Property.addToEGP( prop( p ) );
+                numProps += DuAE.Property.addToEGP( prop( p ) );
             }
         }
     }
@@ -1629,22 +1629,22 @@ DuAEF.DuAE.Property.addToEGP = function ( prop ) {
 
 /**
  * Locks the property with an expression so its value cannot be changed
- * @memberof DuAEF.DuAE.Property
- * @param {PropertyBase|PropertyInfo|PropertyBase[]|PropertyInfo[]} properties - The property or properties
+ * @memberof DuAE.Property
+ * @param {PropertyBase|DuAEProperty|PropertyBase[]|DuAEProperty[]} properties - The property or properties
  */
-DuAEF.DuAE.Property.lock = function ( properties ) {
+DuAE.Property.lock = function ( properties ) {
     var it = new DuList( properties );
     it.do( function ( property ) {
         var p = property;
         var riggable = false;
         var dimensions = 0;
-        if ( property instanceof PropertyInfo ) {
+        if ( property instanceof DuAEProperty ) {
             p = property.getProperty();
             riggable = property.riggable;
             dimensions = property.dimensions;
         } else {
-            riggable = DuAEF.DuAE.Property.isRiggable( p );
-            dimensions = DuAEF.DuAE.Property.getDimensions( p );
+            riggable = DuAE.Property.isRiggable( p );
+            dimensions = DuAE.Property.getDimensions( p );
         }
 
         if ( riggable ) {
@@ -1652,23 +1652,23 @@ DuAEF.DuAE.Property.lock = function ( properties ) {
             if ( dimensions == 0 ) exp = "value";
             else if ( dimensions == 1 ) exp = p.value.toString();
             else exp = p.value.toSource();
-            DuAEF.DuAE.Property.setExpression( property, exp );
+            DuAE.Property.setExpression( property, exp );
         }
     } );
 }
 
 /**
  * Removes the expression from the property, keeping the post-expression value.
- * @memberof DuAEF.DuAE.Property
- * @param {Property|PropertyInfo} prop - The property
+ * @memberof DuAE.Property
+ * @param {Property|DuAEProperty} prop - The property
  * @param {function} filter - A function which takes a string as a parameter (the expression). Returns true if the expression has to be removed.
  * @param {bool} [keepPostExpressionValue=true] Set to false to just remove the expressions and get back the pre expression value
  */
-DuAEF.DuAE.Property.removeExpression = function ( prop, filter, keepPostExpressionValue ) {
+DuAE.Property.removeExpression = function ( prop, filter, keepPostExpressionValue ) {
     if ( typeof ( prop ) === 'undefined' ) return;
     keepPostExpressionValue = def (keepPostExpressionValue, true);
 
-    var propInfo = new PropertyInfo( prop );
+    var propInfo = new DuAEProperty( prop );
     prop = propInfo.getProperty();
 
     var expression = prop.expression;
@@ -1678,7 +1678,7 @@ DuAEF.DuAE.Property.removeExpression = function ( prop, filter, keepPostExpressi
         if (!filter(expression )) return;
     }
     if ( propInfo.riggable ) {
-        if (keepPostExpressionValue) DuAEF.DuAE.Property.setValue( prop, prop.value );
+        if (keepPostExpressionValue) DuAE.Property.setValue( prop, prop.value );
         prop.expression = '';
     }
 }
@@ -1688,7 +1688,7 @@ DuAEF.DuAE.Property.removeExpression = function ( prop, filter, keepPostExpressi
  * @param {Property} prop - The property
  * @return {boolean} True if the property is animated
  */
-DuAEF.DuAE.Property.isAnimated = function ( prop ) {
+DuAE.Property.isAnimated = function ( prop ) {
     if ( prop.canVaryOverTime ) {
         if ( prop.numKeys > 0 ) return true;
     }
@@ -1702,9 +1702,9 @@ DuAEF.DuAE.Property.isAnimated = function ( prop ) {
  * A function which take one PropertyBase as argument can be used to filter the properties: the Property will be returned if the function returns true.
  * @param {boolean}	[strict=false]	- If a string filter is provided, wether to search for the exact name/matchName or if it contains the filter.
  * @param {boolean}	[caseSensitive=true]	- If a string filter is provided, and not strict is false, does the search have to be case sensitive?
- * @return {PropertyInfo[]} The selected properties, an empty Array if nothing active or selected
+ * @return {DuAEProperty[]} The selected properties, an empty Array if nothing active or selected
  */
-DuAEF.DuAE.Property.getAnimatedProps = function ( prop, filter, strict, caseSensitive ) {
+DuAE.Property.getAnimatedProps = function ( prop, filter, strict, caseSensitive ) {
     if ( strict == undefined ) strict = false;
     if ( caseSensitive == undefined ) caseSensitive = true;
 
@@ -1713,7 +1713,7 @@ DuAEF.DuAE.Property.getAnimatedProps = function ( prop, filter, strict, caseSens
     if ( !caseSensitive && typeof filter === "string" ) filter = filter.toLowerCase();
 
     if ( prop.propertyType == PropertyType.PROPERTY && prop.matchName != 'ADBE Marker') {
-        if ( DuAEF.DuAE.Property.isAnimated( prop ) ) {
+        if ( DuAE.Property.isAnimated( prop ) ) {
             if ( typeof filter === 'undefined' ) {
                 props.push( prop );
             } else {
@@ -1737,12 +1737,12 @@ DuAEF.DuAE.Property.getAnimatedProps = function ( prop, filter, strict, caseSens
         }
     } else {
         for ( var i = 0, num = prop.numProperties; i < num; i++ ) {
-            props = props.concat( DuAEF.DuAE.Property.getAnimatedProps( prop.property( i + 1 ), filter, strict, caseSensitive ) );
+            props = props.concat( DuAE.Property.getAnimatedProps( prop.property( i + 1 ), filter, strict, caseSensitive ) );
         }
     }
 
 
-    return DuAEF.DuAE.getPropertyInfos( props );
+    return DuAE.getDuAEProperty( props );
 }
 
 /**
@@ -1751,7 +1751,7 @@ DuAEF.DuAE.Property.getAnimatedProps = function ( prop, filter, strict, caseSens
  * @param {Property}	 prop	- The property
  * @return {bool}
  */
-DuAEF.DuAE.Property.isNumerical = function ( prop ) {
+DuAE.Property.isNumerical = function ( prop ) {
     if ( prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL ) return true;
     if ( prop.propertyValueType == PropertyValueType.ThreeD ) return true;
     if ( prop.propertyValueType == PropertyValueType.TwoD_SPATIAL ) return true;
@@ -1765,19 +1765,19 @@ DuAEF.DuAE.Property.isNumerical = function ( prop ) {
  * Gets the value range of the animated property.<br >
  * The property type must be one of: one D, two D, three D (spatial or not), Color.
  * If the property is not one of these types, returns an empty Array.
- * @param {Property|PropertyInfo}	 prop	- The property
+ * @param {Property|DuAEProperty}	 prop	- The property
  * @param {int}	 [axis=0]	- The axis (or the color channel) to get the range
  * @param {bool}	 [preExpression=true]	- True to get the range from keyframes instead of the result of the exression
  * @param {bool}	 [fastMode=true]	- True to check the range with values only at keyframe times. False to check the range with all values, at each frame of the comp.
  * @return {float[]} The minimum and maximum value.<br />
  * The first item in the Array is not necesarily the lowest value, it is the first in time.
  */
-DuAEF.DuAE.Property.getRange = function ( prop, axis, preExpression, fastMode ) {
+DuAE.Property.getRange = function ( prop, axis, preExpression, fastMode ) {
     axis = def(axis, 0);
     preExpression = def(preExpression, true);
     fastMode = def(fastMode, true);
 
-    var propInfo = new PropertyInfo( prop );
+    var propInfo = new DuAEProperty( prop );
     prop = propInfo.getProperty();
 
     if ( !propInfo.numerical ) return [];
@@ -1826,20 +1826,20 @@ DuAEF.DuAE.Property.getRange = function ( prop, axis, preExpression, fastMode ) 
  * Gets the maximum velocity of the animated property.<br >
  * The property type must be one of: one D, two D, three D (spatial or not), Color.
  * If the property is not one of these types, returns 0.
- * @param {Property|PropertyInfo}	 prop	- The property
+ * @param {Property|DuAEProperty}	 prop	- The property
  * @param {bool}	 [preExpression=true]	- True to get the velocity from keyframes instead of the result of the exression
  * @param {bool}	 [fastMode=true]	- True to limit the number of samples used to compute the velocity and make the process faster.<br />
  * The number of samples is automatically adapted from the duration of the composition.<br />
  * When true and if there are more than one keyframe, the velocity is sampled only between keyframes.
  * @return {float} The velocity.
  */
-DuAEF.DuAE.Property.getMaxVelocity = function ( prop, preExpression, fastMode ) {
+DuAE.Property.getMaxVelocity = function ( prop, preExpression, fastMode ) {
     preExpression = def(preExpression, true);
     fastMode = def(fastMode, true);
 
     var propInfo = prop;
-    if ( !( prop instanceof PropertyInfo ) ) {
-        propInfo = new PropertyInfo( prop );
+    if ( !( prop instanceof DuAEProperty ) ) {
+        propInfo = new DuAEProperty( prop );
     } else {
         prop = propInfo.getProperty();
     }
@@ -1870,7 +1870,7 @@ DuAEF.DuAE.Property.getMaxVelocity = function ( prop, preExpression, fastMode ) 
     }
 
     for ( var i = startFrame; i < endFrame; i = i+step ) {
-        var vel = DuAEF.DuAE.Property.getSpeed( prop, i * comp.frameDuration, preExpression );
+        var vel = DuAE.Property.getSpeed( prop, i * comp.frameDuration, preExpression );
         if ( vel > velocity ) velocity = vel;
     }
 
@@ -1880,12 +1880,12 @@ DuAEF.DuAE.Property.getMaxVelocity = function ( prop, preExpression, fastMode ) 
 
 /**
  * Gets the average speed of the animated propreties
- * @param {Property[]|PropertyInfo[]} props - The Properties
+ * @param {Property[]|DuAEProperty[]} props - The Properties
  * @param {bool}	 [preExpression=true]	- True to get the velocity from keyframes instead of the result of the exression
  * @param {bool}	 [fastMode=true]	- True to limit the number of samples used to compute the velocity and make the process faster.
  * @return {float} The average speed in unit per second
  */
-DuAEF.DuAE.Property.getAverageSpeed = function ( props, preExpression, fastMode ) {
+DuAE.Property.getAverageSpeed = function ( props, preExpression, fastMode ) {
     preExpression = def(preExpression, true);
     fastMode = def(fastMode, true);
 
@@ -1894,12 +1894,12 @@ DuAEF.DuAE.Property.getAverageSpeed = function ( props, preExpression, fastMode 
 
     for ( var i = 0; i < props.length; i++ ) {
         var prop = props[ i ];
-        if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+        if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
         if ( prop.propertyType != PropertyType.PROPERTY ) continue;
         if ( !prop.canVaryOverTime ) continue;
         if ( prop.numKeys < 1 && !preExpression ) continue;
 
-        var comp = DuAEF.DuAE.Property.getComp( prop );
+        var comp = DuAE.Property.getComp( prop );
         var frames = comp.duration / comp.frameDuration;
         var lastTime = comp.duration;
         var firstTime = 0;
@@ -1923,7 +1923,7 @@ DuAEF.DuAE.Property.getAverageSpeed = function ( props, preExpression, fastMode 
         var sum = 0;
         for ( var frame = firstFrame; frame < lastFrame; frame = frame + step ) {
             var time = frame * comp.frameDuration;
-            sum += DuAEF.DuAE.Property.getSpeed( prop, time, preExpression );
+            sum += DuAE.Property.getSpeed( prop, time, preExpression );
         }
         var speed = sum / ( lastFrame - firstFrame );
 
@@ -1940,11 +1940,11 @@ DuAEF.DuAE.Property.getAverageSpeed = function ( props, preExpression, fastMode 
 
 /**
  * Converts the expression as a string which can be copy/pasted and included in a script.
- * @param {Property|PropertyInfo|string} prop - The property containing the expression or the expression itself.
+ * @param {Property|DuAEProperty|string} prop - The property containing the expression or the expression itself.
  * @param {string} [varName] - A name for the variable
  * @return {string} The stringified expression.
  */
-DuAEF.DuAE.Property.scriptifyExpression = function ( prop, varName ) {
+DuAE.Property.scriptifyExpression = function ( prop, varName ) {
     varName = def( varName, '' );
 
     function line(str)
@@ -1956,7 +1956,7 @@ DuAEF.DuAE.Property.scriptifyExpression = function ( prop, varName ) {
     var exp = '';
     if ( propType.toLowerCase() === 'string' ) exp = prop;
     else {
-        if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+        if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
         var exp = prop.expression;
     }
 
@@ -1977,16 +1977,16 @@ DuAEF.DuAE.Property.scriptifyExpression = function ( prop, varName ) {
 /**
  * Puppet tool methods
  * @namespace
- * @memberof DuAEF.DuAE.Property
+ * @memberof DuAE.Property
  */
-DuAEF.DuAE.Property.PuppetTool = {};
+DuAE.Property.PuppetTool = {};
 
 /**
  * Checks if a pin can be rigged or not.\nFor now, the only pins which can not be rigged are starch pins.
  * @param {PropertyGroup} pin - The pin to test
  * @return {boolean} True if this pin has either a position, rotation or scale property
  */
-DuAEF.DuAE.Property.PuppetTool.isRiggable = function ( pin ) {
+DuAE.Property.PuppetTool.isRiggable = function ( pin ) {
     if ( pin.position.canSetExpression ) return true;
     if ( pin.rotation.canSetExpression ) return true;
     if ( pin.scale.canSetExpression ) return true;
@@ -1996,9 +1996,9 @@ DuAEF.DuAE.Property.PuppetTool.isRiggable = function ( pin ) {
 /**
  * Bezier Path methods
  * @namespace
- * @memberof DuAEF.DuAE.Property
+ * @memberof DuAE.Property
  */
-DuAEF.DuAE.Property.Bezier = {};
+DuAE.Property.Bezier = {};
 
 /**
  * Scriptifies the given shape property.<br/>
@@ -2007,8 +2007,8 @@ DuAEF.DuAE.Property.Bezier = {};
  * @param {string}	[varName=shape]	- A name for the variable storing the shape
  * @return {string} The scriptified shape
  */
-DuAEF.DuAE.Property.Bezier.scriptify = function ( pathProperty, offsetToCenter, varName ) {
-    if ( pathProperty instanceof PropertyInfo ) pathProperty = pathProperty.getProperty();
+DuAE.Property.Bezier.scriptify = function ( pathProperty, offsetToCenter, varName ) {
+    if ( pathProperty instanceof DuAEProperty ) pathProperty = pathProperty.getProperty();
     offsetToCenter = def( offsetToCenter, false );
     varName = def( varName, 'shape' );
 
@@ -2054,9 +2054,9 @@ DuAEF.DuAE.Property.Bezier.scriptify = function ( pathProperty, offsetToCenter, 
  * Export the given shape property to the given file <br/>
  * The file name in the given path will be used to name the shape in the jsx code
  * @example
- * var props = DuAEF.DuAE.Comp.getSelectedProps(PropertyValueType.SHAPE);
+ * var props = DuAE.Comp.getSelectedProps(PropertyValueType.SHAPE);
  * var prop = props[0].getProperty();
- * var out = DuAEF.DuAE.Property.Shape.exportToJsxinc(prop, "D:/shape.test");
+ * var out = DuAE.Property.Shape.exportToJsxinc(prop, "D:/shape.test");
  * @param {Property}	 [shapeProp]	- The path property to export
  * @param {String}	[file]	- The path or File where the jsxinc shape will be written
  * @param {boolean}	[offsetToCenter=false]	- If true, offset the path to the center
@@ -2064,7 +2064,7 @@ DuAEF.DuAE.Property.Bezier.scriptify = function ( pathProperty, offsetToCenter, 
  * @param {string}	[varName=shape]	- A name for the variable storing the shape
  * @return {int} A status code. [0: success, ...]
  */
-DuAEF.DuAE.Property.Bezier.exportToJsxinc = function ( pathProperty, file, offsetToCenter, append, varName ) {
+DuAE.Property.Bezier.exportToJsxinc = function ( pathProperty, file, offsetToCenter, append, varName ) {
     append = def( append, false );
 
     if ( !( file instanceof File ) ) file = new File( file );
@@ -2075,7 +2075,7 @@ DuAEF.DuAE.Property.Bezier.exportToJsxinc = function ( pathProperty, file, offse
     if ( !file.open( mode ) ) return 3;
 
     if ( append ) file.write( '\n' );
-    file.write( DuAEF.DuAE.Property.Bezier.scriptify( pathProperty, offsetToCenter, varName ) );
+    file.write( DuAE.Property.Bezier.scriptify( pathProperty, offsetToCenter, varName ) );
 
     file.close();
     return 0;
@@ -2085,7 +2085,7 @@ DuAEF.DuAE.Property.Bezier.exportToJsxinc = function ( pathProperty, file, offse
  * Makes a horizontal symetry transformation on the paths, using the same axis of symetry for all shapes (shapes must be on the same layer).
  * @param {Property[]}	pathProperties	- The After Effects Properties containing the paths to symetrize
  */
-DuAEF.DuAE.Property.Bezier.horizontalSymetry = function ( pathProperties ) {
+DuAE.Property.Bezier.horizontalSymetry = function ( pathProperties ) {
     if ( !( pathProperties instanceof Array ) ) pathProperties = [ pathProperties ];
 
     var shapes = [];
@@ -2094,7 +2094,7 @@ DuAEF.DuAE.Property.Bezier.horizontalSymetry = function ( pathProperties ) {
     var verticesCount = 0;
     for ( var i = 0; i < pathProperties.length; i++ ) {
         var prop = pathProperties[ i ];
-        if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+        if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
         var shape = prop.value;
         shapes.push( shape );
         for ( var j = 0; j < shape.vertices.length; j++ ) {
@@ -2108,7 +2108,7 @@ DuAEF.DuAE.Property.Bezier.horizontalSymetry = function ( pathProperties ) {
     //compute
     for ( var i = 0; i < shapes.length; i++ ) {
         var prop = pathProperties[ i ];
-        if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+        if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
         var shape = shapes[ i ];
         var vertices = shape.vertices;
         var inTangents = shape.inTangents;
@@ -2122,7 +2122,7 @@ DuAEF.DuAE.Property.Bezier.horizontalSymetry = function ( pathProperties ) {
         shape.inTangents = inTangents;
         shape.outTangents = outTangents;
         if ( prop.numKeys > 0 ) {
-            prop.setValueAtTime( DuAEF.DuAE.Property.getComp( prop ).time, shape );
+            prop.setValueAtTime( DuAE.Property.getComp( prop ).time, shape );
         } else {
             prop.setValue( shape );
         }
@@ -2133,7 +2133,7 @@ DuAEF.DuAE.Property.Bezier.horizontalSymetry = function ( pathProperties ) {
  * Makes a vertical symetry transformation on the paths, using the same axis of symetry for all shapes (shapes must be on the same layer).
  * @param {Property[]}	pathProperties	- The After Effects Properties containing the paths to symetrize
  */
-DuAEF.DuAE.Property.Bezier.verticalSymetry = function ( pathProperties ) {
+DuAE.Property.Bezier.verticalSymetry = function ( pathProperties ) {
     if ( !( pathProperties instanceof Array ) ) pathProperties = [ pathProperties ];
 
     var shapes = [];
@@ -2142,7 +2142,7 @@ DuAEF.DuAE.Property.Bezier.verticalSymetry = function ( pathProperties ) {
     var verticesCount = 0;
     for ( var i = 0; i < pathProperties.length; i++ ) {
         var prop = pathProperties[ i ];
-        if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+        if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
         var shape = prop.value;
         shapes.push( shape );
         for ( var j = 0; j < shape.vertices.length; j++ ) {
@@ -2156,7 +2156,7 @@ DuAEF.DuAE.Property.Bezier.verticalSymetry = function ( pathProperties ) {
     //compute
     for ( var i = 0; i < shapes.length; i++ ) {
         var prop = pathProperties[ i ];
-        if ( prop instanceof PropertyInfo ) prop = prop.getProperty();
+        if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
         var shape = shapes[ i ];
         var vertices = shape.vertices;
         var inTangents = shape.inTangents;
@@ -2170,7 +2170,7 @@ DuAEF.DuAE.Property.Bezier.verticalSymetry = function ( pathProperties ) {
         shape.inTangents = inTangents;
         shape.outTangents = outTangents;
         if ( prop.numKeys > 0 ) {
-            prop.setValueAtTime( DuAEF.DuAE.Property.getComp( prop ).time, shape );
+            prop.setValueAtTime( DuAE.Property.getComp( prop ).time, shape );
         } else {
             prop.setValue( shape );
         }
@@ -2179,16 +2179,16 @@ DuAEF.DuAE.Property.Bezier.verticalSymetry = function ( pathProperties ) {
 
 /**
  * Gets the vertices array in comp coordinates.
- * @param {Property|PropertyInfo} prop - The property, a bezier path.
+ * @param {Property|DuAEProperty} prop - The property, a bezier path.
  * @return {float[][]} The vertices in comp coordinates.
  */
-DuAEF.DuAE.Property.Bezier.verticesToComp = function ( pathProperty ) {
-    var propInfo = DuAEF.DuAE.Property.Bezier.checkProperty( pathProperty );
+DuAE.Property.Bezier.verticesToComp = function ( pathProperty ) {
+    var propInfo = DuAE.Property.Bezier.checkProperty( pathProperty );
     if ( !propInfo ) throw "Expected a shape property, got another type of value.";
     var pathProperty = propInfo.getProperty();
 
     //get the layer matrix
-    var matrix = DuAEF.DuAE.Shape.getTransformMatrix( propInfo );
+    var matrix = DuAE.Shape.getTransformMatrix( propInfo );
 
     //apply transform
     var vertices = [];
@@ -2202,20 +2202,20 @@ DuAEF.DuAE.Property.Bezier.verticesToComp = function ( pathProperty ) {
 
 /**
  * Checks if the property is a bezier property, or return the child bezier property if this is a shape or a mask
- * @param {Property|PropertyInfo} prop - The property
- * @return {PropertyInfo|null} the bezier property or null if it is not.
+ * @param {Property|DuAEProperty} prop - The property
+ * @return {DuAEProperty|null} the bezier property or null if it is not.
  */
-DuAEF.DuAE.Property.Bezier.checkProperty = function ( prop ) {
-    propInfo = new PropertyInfo( prop );
+DuAE.Property.Bezier.checkProperty = function ( prop ) {
+    propInfo = new DuAEProperty( prop );
     prop = propInfo.getProperty();
 
     //get the path property in case it was a mask or a shape path selected
     if ( prop.matchName == "ADBE Vector Shape - Group" ) {
         prop = prop.property( "ADBE Vector Shape" );
-        return new PropertyInfo( prop );
+        return new DuAEProperty( prop );
     } else if ( prop.matchName == "ADBE Mask Atom" ) {
         prop = prop.property( "ADBE Mask Shape" );
-        return new PropertyInfo( prop );
+        return new DuAEProperty( prop );
     } else if ( prop.propertyType !== PropertyType.PROPERTY ) return null;
     if ( prop.propertyValueType !== PropertyValueType.SHAPE ) return null;
 

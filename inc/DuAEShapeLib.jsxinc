@@ -3,17 +3,17 @@
  * @namespace
  * @memberof DuAEF.DuAE
  */
-DuAEF.DuAE.Shape = {};
+DuAE.Shape = {};
 
 /**
  * Gets the transformation matrix for all the parent groups of a given property
- * @param {Property|PropertyInfo} prop - The property
+ * @param {Property|DuAEProperty} prop - The property
  * @return {Matrix} The transformation matrix.
  */
-DuAEF.DuAE.Shape.getTransformMatrix = function ( prop ) {
-    var propInfo = new PropertyInfo( prop );
+DuAE.Shape.getTransformMatrix = function ( prop ) {
+    var propInfo = new DuAEProperty( prop );
     prop = propInfo.getProperty();
-    var matrix = DuAEF.DuAE.Layer.getTransformMatrix( propInfo.layer );
+    var matrix = DuAE.Layer.getTransformMatrix( propInfo.layer );
 
     var props = [];
 
@@ -45,7 +45,7 @@ DuAEF.DuAE.Shape.getTransformMatrix = function ( prop ) {
  * @param {Layer} layer - The layer to test
  * @return {bool} True if the layer is a shape layer containing only one shape, one fill, and one stroke in a group. False otherwise.
  */
-DuAEF.DuAE.Shape.isSingleShape = function ( layer ) {
+DuAE.Shape.isSingleShape = function ( layer ) {
     if ( !( layer instanceof ShapeLayer ) ) return false;
 
     var content = layer.property( "ADBE Root Vectors Group" );

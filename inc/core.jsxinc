@@ -86,7 +86,7 @@ DuAEF.enterRunTime = function()
 {
     DuESF.enterRunTime();
 
-    //do post init methods if modules are included
-    if (DuAEF.DuAE) DuAEF.DuAE.postInit();
+    //do init methods
+    DuAE.init();
     if (DuAEF.Duik) DuAEF.Duik.postInit();
 }

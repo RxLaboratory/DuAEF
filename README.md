@@ -1,6 +1,10 @@
 # DuAEF
 Duduf After Effects ExtendScript Framework
 
+## TODO
+
+- [ ] Check if magic preset is still needed (in DuAE.init() )
+
 ## What's this?
 
 ***DuAEF*** is a set of **classes**, **methods** and **tools** to ease the scripting process in **After Effects**, as long as adding features (like [pngquant](https://pngquant.org/), [ffmpeg](https://ffmpeg.org/), or [json](http://json.org/)) not available in After Effects/ExtendScript.

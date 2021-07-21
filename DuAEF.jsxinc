@@ -1,4 +1,4 @@
-// DuESF
 #include "DuESF/DuESF.jsxinc"
-// DuAEF includes
+
 #include "inc/core.jsxinc"
+#include "inc/dulist_extension.jsxinc"

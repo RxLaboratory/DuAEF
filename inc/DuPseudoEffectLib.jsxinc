@@ -117,13 +117,13 @@ PseudoEffect.prototype.apply = function(layer,name)
 {
 	if (this.matchName == '')
 	{
-		DuAEF.DuAE.Layer.applyPreset(layer,this.file);
+		DuAE.Layer.applyPreset(layer,this.file);
 		return null;
 	}
 
 	if (typeof name === 'undefined') name = this.name;
 
-	return DuAEF.DuAE.Layer.addPseudoEffect(layer,this.file,this.matchName,name);
+	return DuAE.Layer.addPseudoEffect(layer,this.file,this.matchName,name);
 }
 
 /**
