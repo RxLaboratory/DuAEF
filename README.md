@@ -8,14 +8,14 @@ Duduf After Effects ExtendScript Framework
 each module must have a init file which includes DuAEF, and a submodule which includes everything else
 
 - [ ] DugrLib -> Dugr
-- [ ] DuikLib -> Duik
-- [ ] DuAuditionLib -> DuIO
-- [ ] DuInterchangeLib -> DuIO
-- [ ] DuKritaLib -> DuIO
+- [x] DuikLib -> Duik
+- [x] DuAuditionLib -> DuIO
+- [x] DuInterchangeLib -> DuIO
+- [x] DuKritaLib -> DuIO
 - [ ] DuSanityLib -> DuSan
-- [ ] DuTVPaintLib -> DuIO
-- [ ] DuWUStoryboarderLib -> DuIO
-- [ ] OCALib -> DuIO
+- [x] DuTVPaintLib -> DuIO
+- [x] DuWUStoryboarderLib -> DuIO
+- [x] OCALib -> DuIO
 - [ ] RamsesLib -> Ramses
 
 ## What's this?
