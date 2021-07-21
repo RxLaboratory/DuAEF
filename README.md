@@ -3,10 +3,20 @@ Duduf After Effects ExtendScript Framework
 
 ## Current refactor: split and move ES functions to DuESF
 
-### Move to their own repo / Check what to do
+### Move to their own repo
 
-- [ ] Dugr
-- [ ] Duik
+each module must have a init file which includes DuAEF, and a submodule which includes everything else
+
+- [ ] DugrLib -> Dugr
+- [ ] DuikLib -> Duik
+- [ ] DuAuditionLib -> DuIO
+- [ ] DuInterchangeLib -> DuIO
+- [ ] DuKritaLib -> DuIO
+- [ ] DuSanityLib -> DuSan
+- [ ] DuTVPaintLib -> DuIO
+- [ ] DuWUStoryboarderLib -> DuIO
+- [ ] OCALib -> DuIO
+- [ ] RamsesLib -> Ramses
 
 ## What's this?
 
