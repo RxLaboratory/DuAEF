@@ -2,12 +2,17 @@
 
 #include "inc/dulist_extension.jsxinc"
 #include "inc/core.jsxinc"
+#include "inc/ae.jsxinc"
 #include "inc/tag.jsxinc"
 #include "inc/expression.jsxinc"
+#include "inc/expression_library.jsxinc"
 #include "inc/project.jsxinc"
 #include "inc/item.jsxinc"
 #include "inc/comp.jsxinc"
 #include "inc/layer.jsxinc"
+#include "inc/property.jsxinc"
 #include "inc/puppet.jsxinc"
+#include "inc/renderqueue.jsxinc"
+#include "inc/shapelayer.jsxinc"
 
-#include "inc/property_deprecated.jsxinc"
+//#include "inc/property_deprecated.jsxinc"

@@ -1833,7 +1833,7 @@ DuAEBezier.verticesToComp = function ( pathProperty ) {
     var pathProperty = propInfo.getProperty();
 
     //get the layer matrix
-    var matrix = DuAE.Shape.getTransformMatrix( propInfo );
+    var matrix = DuAEShapeLayer.getTransformMatrix( propInfo );
 
     //apply transform
     var vertices = [];

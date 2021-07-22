@@ -679,7 +679,7 @@ DuAELayer.toggleEditMode = function ( layer ) {
         // Get children
         childLayers = DuAETag.getValue( layer, DuAETag.Key.CHILD_LAYERS);
         childLayers = childLayers.split(',');
-        for (int i = 0, n = childLayers.length; i < n; i ++)
+        for (var i = 0, n = childLayers.length; i < n; i ++)
         {
             var index = parseInt( childLayers[i] );
             comp.layer(index).parent = layer;

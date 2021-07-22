@@ -81,13 +81,13 @@ DuAEExpression.doInExpresssions = function ( func, currentComp, selectedComps, s
         func( DuAEExpression.cache[i] );
     }
 
-    if (apply) DuAEExpression.apply( );
+    if (apply) DuAEExpression.applyCache( );
 }
 
 /**
  * Applies all the expressions stored in the cache to the actual properties in After Effects, if and only if they've been modified.
  */
-DuAEExpression.apply = function ( ) {
+DuAEExpression.applyCache = function ( ) {
     for (var i = 0, num = DuAEExpression.cache.length; i < num; i++)
     {
         DuAEExpression.cache[i].apply();
@@ -128,4 +128,59 @@ DuAEExpression.scriptifyExpression = function ( prop, varName ) {
     expString += "\n\t].join('\\n');";
 
     return expString;
+}
+
+/**
+ * The expression library<br />
+ * Use {@link DuAEExpression.Library.get} and {@link DuAEExpression.Library.getRequirements}<br />
+ * to easily include the methods and classes listed here to your expressions.<br />
+ * These methods take the name (listed here) of the function/class as arguments.
+ * @namespace
+ * @memberof DuAEExpression
+ */
+DuAEExpression.Library = {};
+
+/**
+ * Gets functions and their dependencies from the library.
+ * @param {string[]} functions The name of the functions to get
+ * @return {string} The expression
+ */
+DuAEExpression.Library.get = function( functions )
+{
+	var exp = functions;
+	new DuList(functions).do(function(functionName)
+	{
+		var r = DuAEExpression.Library.getRequirements( functionName );
+		exp = exp.concat(r);
+	});
+
+	DuList.removeDuplicates(exp);
+
+	var expString = '';
+
+	new DuList(exp).do(function(expName)
+	{
+		expString += DuAEExpression.Library[ expName ].expression + '\n';
+	});
+
+	return expString;
+}
+
+/**
+ * A recursive method to get all the requirements (dependencies) of a function from a library
+ * @param {string} functionName The name of the function
+ * @return {string[]} The names of the required functions, including the querried one
+ */
+DuAEExpression.Library.getRequirements = function ( functionName )
+{
+	var r = DuAEExpression.Library[ functionName ].requirements;
+	if (r.length > 0)
+	{
+		for (var i = 0, iN = r.length; i < iN; i++)
+		{
+			r = r.concat(DuAEExpression.Library.getRequirements( r[i]) );
+		}
+	}
+
+	return r;
 }

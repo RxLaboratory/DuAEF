@@ -28,6 +28,8 @@ These stables show where to find the implementation for each class & namespace o
 | `DuAEPropertyExpression` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Describes an expression and the property containing it. |
 | `DuAEPropertyGroupAnimation` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Contains all DuAEPropertyAnimation from an After Effects PropertyGroup. |
 | `DuAEPuppet` | *namespace* | [inc/puppet.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/puppet.jsxinc) | Puppet tool specific objects and methods. |
+| `DuAERenderQueue` | *namespace* | [inc/renderqueue.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/renderqueue.jsxinc) | Render queue specific objects and methods. |
+| `DuAEShapeLayer` | *namespace* | [inc/shapelayer.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/shapelayer.jsxinc) | Shape layer specific objects and methods. |
 | `DuAETag` | *namespace* | [inc/tag.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/tag.jsxinc) |  Tag methods. Tags are layer markers used by DuAEF to store data. |
 
 ### DuESF Extension

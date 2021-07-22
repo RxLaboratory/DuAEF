@@ -15,27 +15,9 @@
 	* @example
 	* myFunction (prop) //This function can be passed either a property or a DuAEProperty
 	* {
-	* propInfo = new DuAEProperty(prop);
-	* prop = propInfo.getProperty();
+	*   propInfo = new DuAEProperty(prop);
+	*   prop = propInfo.getProperty();
 	* }
-	* @property {int} index - The propertyIndex
-	* @property {boolean} isEffect - true if this is an effect (sub)property
-	* @property {boolean} riggable  - true if this prop can be rigged (it's a value which can set expressions)
-	* @property {Layer} layer - The layer containing the property
-	* @property {int} dimensions - The number of dimensions, 0 if this is not a dimensionnal value (text, shape...)
-	* @property {string} name - The name of the property
-	* @property {string} matchName - The matchName of the property
-	* @property {PropertyGroup|null} effect - The effect containing the property
-	* @property {boolean} editable - true if the value of the property can be changed
-	* @property {boolean} numerical - true if the value is a number or an array of numbers
-	* @property {boolean} isPercent - true if the unit is a percentage
-	* @property {boolean} isAngle - true if the unit is a degree
-	* @property {boolean} isPixels - true if the unit is a pixel
-	* @property {int} numKeys - the number of keyframes on the property
-	* @property {bool} group - true if the property is a PropertyGroup
-	* @property {string} unitsText - the name of the unit (localized)
-	* @property {string} unit - the abbreviated unit, as displayed in the UI (localized)
-	* @property {string} expression - the expression in the property
 */
 function DuAEProperty(property)
 {
@@ -49,20 +31,60 @@ function DuAEProperty(property)
 	var expressionEnabled = property.expressionEnabled;
 	if (property.propertyType == PropertyType.PROPERTY)
 	{
-		this.numKeys = property.numKeys;
-		this.group = false;
+        /**
+         * Wether this is built from a PropertyGroup and contains sub-properties, or a just a single Property
+         * @memberof DuAEProperty.prototype
+         * @name isGroup
+         * @type {Boolean}
+         */
+		this.isGroup = false;
 	}
 	else
 	{
-		this.group = true;
-		this.numKeys = 0;
+		this.isGroup = true;
 	}
+
 	this.property = property;
+    /**
+         * The original name of the property, same as DuAEProperty.getProperty().name
+         * @memberof DuAEProperty.prototype
+         * @name name
+         * @readonly
+         * @type {string}
+         */
 	this.name = property.name;
+    /**
+         * The original matchName of the property, same as DuAEProperty.getProperty().matchName
+         * @memberof DuAEProperty.prototype
+         * @name matchName
+         * @readonly
+         * @type {string}
+         */
 	this.matchName = property.matchName;
+    /**
+         * The original property index of the property, same as DuAEProperty.getProperty().propertyIndex
+         * @memberof DuAEProperty.prototype
+         * @name name
+         * @readonly
+         * @type {int}
+         */
 	this.index = property.propertyIndex;
 	this.parentIndices  = [this.index];
+    /**
+         * Is this an effect? same as DuAEProperty.getProperty().isEffect
+         * @memberof DuAEProperty.prototype
+         * @name isEffect
+         * @readonly
+         * @type {Boolean}
+         */
 	this.isEffect = property.isEffect;
+    /**
+         * The containing effect, if any.
+         * @memberof DuAEProperty.prototype
+         * @name effect
+         * @readonly
+         * @type {PropertyGroup|null}
+         */
 	this.effect = null;
 	if (!this.isEffect)
 	{
@@ -79,10 +101,45 @@ function DuAEProperty(property)
 	}
 	else this.effect = property;
 
+    /**
+         * The units text of the property, same as DuAEProperty.getProperty().unitsText
+         * @memberof DuAEProperty.prototype
+         * @name unitsText
+         * @readonly
+         * @type {string}
+         */
 	this.unitsText = property.unitsText;
+    /**
+         * Wether the value is a percent
+         * @memberof DuAEProperty.prototype
+         * @name isPercent
+         * @readonly
+         * @type {Boolean}
+         */
 	this.isPercent = this.unitsText == localize("$$$/AE/TLW/GraphEditor/PercentSource=percent");
+    /**
+         * Wether the value is an angle
+         * @memberof DuAEProperty.prototype
+         * @name isAngle
+         * @readonly
+         * @type {Boolean}
+         */
 	this.isAngle = this.unitsText == localize("$$$/AE/TLW/GraphEditor/DegreesSource=degrees");
+    /**
+         * Wether the value is a pixel value
+         * @memberof DuAEProperty.prototype
+         * @name isPixels
+         * @readonly
+         * @type {Boolean}
+         */
 	this.isPixels = this.unitsText == localize("$$$/AE/TLW/GraphEditor/PixelsSource=pixels");
+    /**
+         * The (localized) unit.
+         * @memberof DuAEProperty.prototype
+         * @name isPercent
+         * @readonly
+         * @type {string}
+         */
 	this.unit = "";
 	if (this.isPercent) this.unit = "%";
 	if (this.isAngle) this.unit = "°";
@@ -803,7 +860,7 @@ DuAEProperty.prototype.setAnimation = function ( anim, time, ignoreName, setExpr
 DuAEProperty.prototype.removeAnimation = function ( prop, removeExpression ) {
     var prop = this.getProperty();
     removeExpression = def(removeExpression, false);
-    *
+
     while ( prop.numKeys > 0 ) {
         prop.removeKey( 1 );
     }
@@ -1740,7 +1797,7 @@ DuAEProperty.prototype.verticesToComp = function ( pathProperty ) {
     var pathProperty = pathProp.getProperty();
 
     //get the layer matrix
-    var matrix = DuAE.Shape.getTransformMatrix( pathProp );
+    var matrix = DuAEShapeLayer.getTransformMatrix( pathProp );
 
     //apply transform
     var vertices = [];

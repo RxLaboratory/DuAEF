@@ -238,8 +238,8 @@ DuAEPropertyExpression.prototype.getProperty = function()
  */
 DuAEPropertyExpression.prototype.apply = function()
 {
-	if (this.layer.locked) continue;
-	if (!this.changed) continue;
+	if (this.layer.locked) return;
+	if (!this.changed) return;
 
 	var prop = this.getProperty();
 	prop.expression = this.expression;
@@ -250,23 +250,6 @@ DuAEPropertyExpression.prototype.apply = function()
  * @namespace
 */
 var DuAE = {};
-
-
-// low-level undocumented method
-// Loads pseudo effects and presets
-// just before entering runtime
-DuAE.init = function()
-{
-	//PRESETS
-
-	#include "../pseudoEffects/duaef_magic.ffx.jsxinc"
-	duaef_magic = DuBinary.toFile(duaef_magic);
-
-	DuAE.Presets =
-	{
-		MAGIC: duaef_magic
-	};
-}
 
 /**
  * The axis or channels
@@ -768,7 +751,7 @@ DuAE.version = new DuVersion( app.version );
  * Has scripting file and network authorization
  * @return {Boolean} true if the preference for file and network access is enabled.
  */
-DuAE.hasFileAndNetworkAccess() = function()
+DuAE.hasFileAndNetworkAccess = function()
 {
 	return app.preferences.getPrefAsLong( "Main Pref Section", "Pref_SCRIPTING_FILE_NETWORK_SECURITY" ) == 1;
 }

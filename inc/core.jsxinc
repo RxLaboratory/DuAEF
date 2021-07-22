@@ -87,6 +87,5 @@ DuAEF.enterRunTime = function()
     DuESF.enterRunTime();
 
     //do init methods
-    DuAE.init();
     if (DuAEF.Duik) DuAEF.Duik.postInit();
 }

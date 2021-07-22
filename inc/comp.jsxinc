@@ -13,7 +13,7 @@ var DuAEComp = {};
  * @param {CompItem} [comp=DuAEProject.getActiveComp()] The comp with expressions to cache.
  */
 DuAEComp.replaceInExpressions = function ( oldString, newString, caseSensitive, selectedLayers ) {
-    var comp = DuAEProject.getActiveComp() );
+    var comp = DuAEProject.getActiveComp();
     if (!comp) return;
     caseSensitive = def (caseSensitive, true);
     selectedLayers = def (selectedLayers, false);
