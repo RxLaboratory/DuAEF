@@ -375,7 +375,7 @@ DuAELayer.getRelation = function ( layer1, layer2 ) {
 DuAELayer.getDistance = function ( layer1, layer2 ) {
     var O = DuAELayer.getWorldPos( layer1 );
     var A = DuAELayer.getWorldPos( layer2 );
-    var OA = DuMath.getLength( O, A );
+    var OA = DuMath.length( O, A );
 
     return Math.round( OA );
 }
@@ -1114,4 +1114,25 @@ DuAELayer.isThreeD = function ( layer ) {
     if (layer instanceof CameraLayer) return true;
     if (layer instanceof LightLayer) return true;
     return false;
+}
+
+/**
+ * Gets an expression linking to the layer
+ * @param {Layer} layer The layer
+ * @param {Boolean} [useThisComp=false] Wether to begin the expression by 'thisComp' or 'comp("name")'
+ * @return {str} The expression link to the layer
+ */
+DuAELayer.expressionLink = function( layer, useThisComp ) {
+    useThisComp = def(useThisComp, false);
+
+    var comp = layer.containingComp;
+    var exprCode;
+    // Prefix the layer reference
+    name = "\"" + layer.name + "\"";
+    exprCode = "layer(" + name + ")" + exprCode;
+    // Prefix the comp reference
+    if ( useThisComp ) exprCode = "thisComp." + exprCode;
+    else exprCode = "comp(\"" + comp.name + "\")." + exprCode;
+
+     return exprCode;
 }

@@ -13,6 +13,14 @@ DuAEExpression.cache = [];
 DuAEExpression.lastCacheUpdateTime = 0;
 
 /**
+ * The list of expression IDs, added at the beginning of generated expressions.
+ * @enum {string}
+ */
+DuAEExpression.Id = {
+    LINK: "/*== DuAEF: property link ==*/"
+}
+
+/**
  * Updates the cache of the expressions used by Duik to speed up batch process of expressions in the whole project.<br />
  * It's automatically run when needed if it's not been updated in a long time (1 mn) or if it's empty
  * @param {bool} [currentComp=false] true: in current compositions, false: in all compositions of the project
@@ -84,4 +92,40 @@ DuAEExpression.apply = function ( ) {
     {
         DuAEExpression.cache[i].apply();
     } 
+}
+
+/**
+ * Converts the expression as a string which can be copy/pasted and included in a script.
+ * @param {Property|DuAEProperty|string} prop - The property containing the expression or the expression itself.
+ * @param {string} [varName] - A name for the variable
+ * @return {string} The stringified expression.
+ */
+DuAEExpression.scriptifyExpression = function ( prop, varName ) {
+    varName = def( varName, '' );
+
+    function line(str)
+    {
+        return "'" + str.replace( "\r", "" ).replace(/'/g , "\\'") + "'";
+    }
+
+    var propType = jstype( prop );
+    var exp = '';
+    if ( propType.toLowerCase() === 'string' ) exp = prop;
+    else {
+        if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
+        exp = prop.expression;
+    }
+
+    var expArray = exp.split( '\n' );
+    var expString = "";
+    if ( varName != '' ) expString += "var " + varName + " = ";
+
+    expString += "[" + line( expArray[0] );
+
+    for ( var i = 1; i < expArray.length; i++ ) {
+        expString += ",\n\t" + line( expArray[i] );
+    }
+    expString += "\n\t].join('\\n');";
+
+    return expString;
 }

@@ -8,5 +8,6 @@
 #include "inc/item.jsxinc"
 #include "inc/comp.jsxinc"
 #include "inc/layer.jsxinc"
+#include "inc/puppet.jsxinc"
 
 #include "inc/property_deprecated.jsxinc"
