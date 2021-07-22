@@ -1,11 +1,10 @@
 /**
  * After Effects item methods
  * @namespace
- * @memberof DuAEF.DuAE
  */
-DuAE.Item = {};
+DuAEItem = {};
 
-DuAE.Item.stillFormats = [
+DuAEItem.stillFormats = [
     "bmp",
     "rle",
     "dib",
@@ -85,7 +84,7 @@ DuAE.Item.stillFormats = [
 
 //low-level undocumented method
 //a function to compare items
-DuAE.Item.compareItems = function (itemA, itemB) { return itemA.id == itemB.id; }
+DuAEItem.compareItems = function (itemA, itemB) { return itemA.id == itemB.id; }
 
 /**
  * Gets the compositions this item is used in.
@@ -94,7 +93,7 @@ DuAE.Item.compareItems = function (itemA, itemB) { return itemA.id == itemB.id; 
  * @param {boolean} [recursive=false] Check recursively in parent comps too.
  * @return {CompItem[]} The compositions.
  */
-DuAE.Item.usedIn = function (item, recursive, keepExpressionOnly ) {
+DuAEItem.usedIn = function (item, recursive, keepExpressionOnly ) {
     keepExpressionOnly = def (keepExpressionOnly, false);
     recursive = def (recursive, false);
     var cacheSuspended = false;
@@ -128,11 +127,11 @@ DuAE.Item.usedIn = function (item, recursive, keepExpressionOnly ) {
 
     if ( recursive ) {
         for ( var i = 0, num = usedIn.length; i < num; i++) {
-            usedIn = usedIn.concat( DuAE.Item.usedIn( usedIn[i] , true, keepExpressionOnly ) );
+            usedIn = usedIn.concat( DuAEItem.usedIn( usedIn[i] , true, keepExpressionOnly ) );
         }
     }
 
-    DuList.removeDuplicates(usedIn, DuAE.Item.compareItems);
+    DuList.removeDuplicates(usedIn, DuAEItem.compareItems);
 
     if (cacheSuspended) DuAEProject.suspendCacheUpdates = false;
 
@@ -144,7 +143,7 @@ DuAE.Item.usedIn = function (item, recursive, keepExpressionOnly ) {
  * @param {FootageItem} item The item
  * @return {boolean} true if the source is an image sequence
  */
-DuAE.Item.isImageSequence = function (item) {
+DuAEItem.isImageSequence = function (item) {
     if (!(item instanceof FootageItem)) return false;
 
     //check if it's still
@@ -154,6 +153,26 @@ DuAE.Item.isImageSequence = function (item) {
     var extension = DuPath.getExtension(item.file);
     extension = extension.toLowerCase();
 
-    return DuList.indexOf( DuAE.Item.stillFormats, extension ) >= 0;
+    stillfmts = new DuList( DuAEItem.stillFormats )
 
+    return stillfmts.indexOf( extension ) >= 0;
+
+}
+
+/**
+ * Checks recursively (except for root folder) if an item is in a specific folder
+ * @param {Item} item The item to check
+ * @param {FolderItem} folder The folder
+ * @return {boolean}
+ */
+DuAEItem.isInFolder = function (item, folder)
+{
+    var pFolder = item.parentFolder;
+    if (pFolder.id == app.project.rootFolder.id && pFolder.id == folder.id) return true;
+    while (pFolder && pFolder.id != app.project.rootFolder.id)
+    {
+        if (pFolder.id == folder.id) return true;
+        pFolder = pFolder.parentFolder;
+    }
+    return false;
 }

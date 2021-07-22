@@ -244,10 +244,10 @@ DuAEProject.reduce = function ( comps, keepExpressionOnly ) {
     for ( i = app.project.numItems; i > 0; i-- ) {
         var item = app.project.item( i );
         //if it's one of the comp, ignore
-        if ( DuList.indexOf( comps, item, DuAE.Item.compareItems ) >= 0 ) continue;
+        if ( DuList.indexOf( comps, item, DuAEItem.compareItems ) >= 0 ) continue;
         //if AVItem
         if ( item instanceof CompItem || item instanceof FootageItem ) {
-            var usedIn = DuAE.Item.usedIn( item, true, keepExpressionOnly );
+            var usedIn = DuAEItem.usedIn( item, true, keepExpressionOnly );
 
             if ( usedIn.length == 0 ) {
                 item.remove();
@@ -258,7 +258,7 @@ DuAEProject.reduce = function ( comps, keepExpressionOnly ) {
 
             for ( j = 0, num = usedIn.length; j < num; j++ ) {
                 //if there's one of the comp to keep, do not remove
-                if ( DuList.indexOf( comps, usedIn[ j ], DuAE.Item.compareItems ) >= 0 ) {
+                if ( DuList.indexOf( comps, usedIn[ j ], DuAEItem.compareItems ) >= 0 ) {
                     remove = false;
                     break;
                 }
@@ -341,7 +341,7 @@ DuAEProject.collectFiles = function ( destination, overwrite, zip, createProject
         }
 
         //if this is not an image sequence
-        if (!DuAE.Item.isImageSequence(item)) {
+        if (!DuAEItem.isImageSequence(item)) {
             var newPath = currentFootageFolder.absoluteURI + "/" + item.file.name;
             var newFile = new File( newPath );
             //copy
@@ -425,7 +425,6 @@ DuAEProject.removeThisCompInExpressions = function( selectedComps )
     }, false, selectedComps);
 }
 
-
 /**
  * Replace all <code>comp("name")</code> occurences by <code>thisComp</code>.
  * @param {bool} [selectedComps=false] true to replace only in selected compositions
@@ -485,24 +484,6 @@ DuAEProject.getFolderItem = function(folderName)
 }
 
 /**
- * Checks recursively (except for root folder) if an item is in a specific folder
- * @param {Item} item The item to check
- * @param {FolderItem} folder The folder
- * @return {boolean}
- */
-DuAEProject.isInFolder = function (item, folder)
-{
-    var pFolder = item.parentFolder;
-    if (pFolder.id == app.project.rootFolder.id && pFolder.id == folder.id) return true;
-    while (pFolder && pFolder.id != app.project.rootFolder.id)
-    {
-        if (pFolder.id == folder.id) return true;
-        pFolder = pFolder.parentFolder;
-    }
-    return false;
-}
-
-/**
  * Gets the unused compositions, except the ones in the given folder.
  * @param {FolderItem} [folder] The folder to exclude.
  * @return {CompItem[]} The unused compositions
@@ -519,7 +500,7 @@ DuAEProject.getUnusedComps = function (folder)
             if ( item.usedIn.length == 0 )
             {
                 if (folder && folder.id == app.project.rootFolder.id && item.parentFolder == folder.id) continue;
-                if (folder && DuAEProject.isInFolder(item, folder)) continue;
+                if (folder && DuAEItem.isInFolder(item, folder)) continue;
                 comps.push(item);
             }
         }

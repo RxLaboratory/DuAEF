@@ -16,6 +16,7 @@ These stables show where to find the implementation for each class & namespace o
 | `DuAEComp` | *namespace* | [inc/comp.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/comp.jsxinc) | Composition specific objects and methods. |
 | `DuAEExpression` | *namespace* | [inc/expression.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/expression.jsxinc) | Expression specific objects and methods and cache system. |
 | `DuAEF` | *namespace* | [inc/core.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/core.jsxinc) | Main objects and methods. |
+| `DuAEItem` | *namespace* | [inc/item.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/item.jsxinc) | Projecct items specific objects and methods. |
 | `DuAEKeyFrame` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Properties of an After Effects Keyframe. |
 | `DuAEKeySpatialProperties` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Spatial properties of a DuAEKeyFrame. |
 | `DuAELayer` | *namespace* | [inc/layer.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/layer.jsxinc) | Layer specific objects and methods. |

@@ -4,5 +4,7 @@
 #include "inc/core.jsxinc"
 #include "inc/tag.jsxinc"
 #include "inc/expression.jsxinc"
+#include "inc/project.jsxinc"
+#include "inc/item.jsxinc"
 #include "inc/comp.jsxinc"
 #include "inc/layer.jsxinc"
