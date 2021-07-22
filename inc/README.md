@@ -21,7 +21,8 @@ These stables show where to find the implementation for each class & namespace o
 | `DuAEKeySpatialProperties` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Spatial properties of a DuAEKeyFrame. |
 | `DuAELayer` | *namespace* | [inc/layer.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/layer.jsxinc) | Layer specific objects and methods. |
 | `DuAELayerAnimation` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Contains all DuAEPropertyGroupAnimation from an After Effects Layer. |
-| `DuAEProject` | *Class* | [inc/project.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/project.jsxinc) | Project specific objects and methods. |
+| `DuAEProject` | *namespace* | [inc/project.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/project.jsxinc) | Project specific objects and methods. |
+| `DuAEProjectXMP` | *namespace* | [inc/projectXMP.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/projectXMP.jsxinc) | Manages XMP Metadata of the project. |
 | `DuAEPropertyAnimation` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Describes the animation of an After Effects property. |
 | `DuAEPropertyExpression` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Describes an expression and the property containing it. |
 | `DuAEPropertyGroupAnimation` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Contains all DuAEPropertyAnimation from an After Effects PropertyGroup. |
