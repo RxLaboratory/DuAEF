@@ -43,7 +43,7 @@ DuAEExpression.updateCache = function (currentComp, selectedComps, selectedLayer
         if (selectedLayers) layers = comp.selectedLayers;
 
         new DuList(layers).do(function (layer) {
-            DuAE.Property.addToExpressionCache( layer );
+            DuAEProperty.addToExpressionCache( layer );
         });
     }
 

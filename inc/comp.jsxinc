@@ -196,7 +196,7 @@ DuAEComp.getAnimatedProps = function ( filter, strict, caseSensitive, selectedLa
 
     var it = new DuList( layers );
     it.do( function ( layer ) {
-        props = props.concat( DuAE.Property.getAnimatedProps( layer, filter, strict, caseSensitive ) );
+        props = props.concat( DuAEProperty.getAnimatedProps( layer, filter, strict, caseSensitive ) );
     } );
 
     return props;

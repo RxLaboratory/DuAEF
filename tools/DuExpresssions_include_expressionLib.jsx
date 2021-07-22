@@ -39,7 +39,7 @@
     {
         var exp = expressions[i];
         content += exp.doc + '\n';
-        content += 'DuAEF.DuExpression.Library.' + exp.name + " = " + DuAE.Property.scriptifyExpression(exp.expression) + '\n\n';
+        content += 'DuAEF.DuExpression.Library.' + exp.name + " = " + DuAEProperty.scriptifyExpression(exp.expression) + '\n\n';
     }
 
     //write jsxinc

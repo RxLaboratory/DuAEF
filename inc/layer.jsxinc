@@ -130,7 +130,7 @@ DuAELayer.getAnim = function ( layer, selected, timeRange ) {
         var prop = layer.property( propIndex );
         if ( prop.matchName == 'ADBE Marker' ) continue;
 
-        var subAnim = DuAE.Property.getAnim( prop, selected, timeRange );
+        var subAnim = DuAEProperty.getAnim( prop, selected, timeRange );
         if ( subAnim != null ) {
             if ( anim.startTime == null ) anim.startTime = subAnim.startTime;
             else if ( anim.startTime > subAnim.startTime ) anim.startTime = subAnim.startTime;
@@ -191,7 +191,7 @@ DuAELayer.setAnim = function ( layer, anim, time, ignoreName, setExpression, onl
             var subProp = layer.property( propIndex );
             if ( subProp == null ) continue;
             if ( subProp.matchName == subAnim._matchName && subProp.matchName != 'ADBE Marker' ) {
-                var ok = DuAE.Property.setGroupAnim( subProp, subAnim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse );
+                var ok = DuAEProperty.setGroupAnim( subProp, subAnim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse );
                 if ( ok ) break;
             }
         }
@@ -499,7 +499,7 @@ DuAELayer.haveSelectedKeys = function ( layers ) {
     var it = new DuList( layers );
     if ( it.length() == 0 ) return;
     while ( layer = it.next() ) {
-        if ( DuAE.Property.hasSelectedKeys( layer ) ) return true;
+        if ( DuAEProperty.hasSelectedKeys( layer ) ) return true;
     }
     return false;
 }
@@ -510,12 +510,12 @@ DuAELayer.haveSelectedKeys = function ( layers ) {
  * @param {boolean} selected - true to check selected keyframes only
  * @return {float|null} The keyframe time or null if there are no keyframe
  */
-DuAELayer.firstDuAEKeyFrameTime = function ( layers, selected ) {
+DuAELayer.firstKeyFrameTime = function ( layers, selected ) {
     var it = new DuList( layers );
     var time = null;
 
     it.do( function(layer) {
-        var test = DuAE.Property.firstDuAEKeyFrameTime( layers[ i ], selected );
+        var test = DuAEProperty.firstKeyFrameTime( layers[ i ], selected );
         if ( time == null ) time = test;
         else if ( test != null ) {
             if ( time > test ) time = test;
@@ -749,7 +749,7 @@ DuAELayer.addNull = function ( layer ) {
  * @param {Layer} layer - The layer
  */
 DuAELayer.lockScale = function ( layer ) {
-    DuAE.Property.lock( layer.transform.scale );
+    DuAEProperty.lock( layer.transform.scale );
 }
 
 /**

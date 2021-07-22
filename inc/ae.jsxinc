@@ -19,7 +19,7 @@ function DuAEKeySpatialProperties (){
 /**
 	 Constructs a new DuAEKeyFrame
 	* @class DuAEKeyFrame
-	* @classdesc Properties of an After Effects Keyframe, as returned by {@linkcode DuAE.Property.getDuAEKeyFrames} or {@linkcode DuAE.Property.getDuAEKeyFrameAtIndex} or {@linkcode DuAE.Property.getDuAEKeyFrameAtTime}.
+	* @classdesc Properties of an After Effects Keyframe, as returned by {@linkcode DuAEProperty.getKeyFrames} or {@linkcode DuAEProperty.getKeyFrameAtIndex} or {@linkcode DuAEProperty.getKeyFrameAtTime}.
 	* @property {float}	  _time     - The keyframe time
 	* @property {null|folat[]|float|MarkerValue|int|Shape|TextDocument}    value  -  The keyframe value
 	* @property {KeyframeInterpolationType}   _inInterpolationType  - The incoming temporal interpolation type
@@ -100,7 +100,7 @@ function DuAEPropertyGroupAnimation()
 	* @property {string}	  [_name=""]     - The property name
 	* @property {int}    [_index=""]  - The index of the layer
 	* @property {DuAEPropertyGroupAnimation[]} [anims=[]] - All the animations of the layer
-	* @property {float} [firstDuAEKeyFrameTime=0] - The time of the first keyframe
+	* @property {float} [firstKeyFrameTime=0] - The time of the first keyframe
 	* @property {string}   [type="layer"]  - Read Only.
 	* @property {float}   startTime  - Read Only. The starting time of the animation.
 	* @property {float}   endTime  - Read Only. The ending time of the animation.
@@ -113,128 +113,6 @@ function DuAELayerAnimation()
 	this.type = 'layer';
 	this.startTime = null;
 	this.endTile = null;
-}
-
-/**
-	* Constructs a new DuAEProperty
-	* @example
-	* var propInfo = new DuAEProperty(property);
-	* layer("ADBE effect parade").addProperty("ADBE layer control"); //now the property object is broken
-	* property = propInfo.getProperty(); // You can retrieve the property like this, fixed if it's an effect
-	* @class DuAEProperty
-	* @classdesc Get some handy informations about a property<br />
-	* This class is able to "fix" effects properties which have been broken by
-	* the addition of another effect on the same layer, as long as the class has been
-	* instanciated before the effect has been broken.
-	* @param {PropertyBase|DuAEProperty} property - The property. If a DuAEProperty is provided, the constructor returns it (it does not make a copy).<br />
-	* This makes it easy to avoid type checking, as you can always pass any property or DuAEProperty to the constructor to be sure to handle a DuAEProperty, without any impact on performance.<br />
-	* @example
-	* myFunction (prop) //This function can be passed either a property or a DuAEProperty
-	* {
-	* propInfo = new DuAEProperty(prop);
-	* prop = propInfo.getProperty();
-	* }
-	* @property {int} index - The propertyIndex
-	* @property {boolean} isEffect - true if this is an effect (sub)property
-	* @property {boolean} riggable  - true if this prop can be rigged (it's a value which can set expressions)
-	* @property {Layer} layer - The layer containing the property
-	* @property {int} dimensions - The number of dimensions, 0 if this is not a dimensionnal value (text, shape...)
-	* @property {string} name - The name of the property
-	* @property {string} matchName - The matchName of the property
-	* @property {PropertyGroup|null} effect - The effect containing the property
-	* @property {boolean} editable - true if the value of the property can be changed
-	* @property {boolean} numerical - true if the value is a number or an array of numbers
-	* @property {boolean} isPercent - true if the unit is a percentage
-	* @property {boolean} isAngle - true if the unit is a degree
-	* @property {boolean} isPixels - true if the unit is a pixel
-	* @property {int} numKeys - the number of keyframes on the property
-	* @property {bool} group - true if the property is a PropertyGroup
-	* @property {string} unitsText - the name of the unit (localized)
-	* @property {string} unit - the abbreviated unit, as displayed in the UI (localized)
-	* @property {string} expression - the expression in the property
-*/
-function DuAEProperty(property)
-{
-	if (property instanceof DuAEProperty) return property;
-	if (typeof property === 'undefined') 
-	{
-		DuDebug.throwTypeError(property, "property", "Property", "DuAEProperty(property)");
-		return;
-	}
-	
-	var expressionEnabled = property.expressionEnabled;
-	if (property.propertyType == PropertyType.PROPERTY)
-	{
-		this.numKeys = property.numKeys;
-		this.group = false;
-	}
-	else
-	{
-		this.group = true;
-		this.numKeys = 0;
-	}
-	this.property = property;
-	this.name = property.name;
-	this.matchName = property.matchName;
-	this.index = property.propertyIndex;
-	this.parentIndices  = [this.index];
-	this.isEffect = property.isEffect;
-	this.effect = null;
-	if (!this.isEffect)
-	{
-		var parentProp = property;
-		while (parentProp.parentProperty)
-		{
-			// Traverse up the property tree
-			parentProp = parentProp.parentProperty;
-			this.isEffect = parentProp.isEffect;
-			this.parentIndices.unshift(parentProp.propertyIndex);
-			if (this.isEffect) this.effect = parentProp;
-			if (this.isEffect) break;
-		}
-	}
-	else this.effect = property;
-
-	this.riggable = DuAE.Property.isRiggable(property);
-	this.numerical = DuAE.Property.isNumerical(property);
-	this.editable = DuAE.Property.isEditable(property);
-	this.layer = DuAE.Property.getLayer(property);
-	this.comp = this.layer.containingComp;
-	this.dimensions = DuAE.Property.getDimensions(property);
-	this.unitsText = property.unitsText;
-	this.isPercent = this.unitsText == localize("$$$/AE/TLW/GraphEditor/PercentSource=percent");
-	this.isAngle = this.unitsText == localize("$$$/AE/TLW/GraphEditor/DegreesSource=degrees");
-	this.isPixels = this.unitsText == localize("$$$/AE/TLW/GraphEditor/PixelsSource=pixels");
-	this.unit = "";
-	if (this.isPercent) this.unit = "%";
-	if (this.isAngle) this.unit = "°";
-	if (this.isPixels) this.unit = localize("$$$/AE/TLW/GraphEditor/PixelsDest=px");
-
-	if (this.riggable) {
-		this.expression = property.expression;
-	}
-}
-
-/**
-	* Gets the original Property<br />
-	* Always works even if this DuAEProperty represents an effect which has been broken<br />
-	* ---AE Hack---
-	* @memberof DuAEProperty
-	* @return {PropertyBase} The property
-	* @todo When returning an effect, check if the matchName corresponds too.
-*/
-DuAEProperty.prototype.getProperty = function()
-{
-	if (this.isEffect)
-	{
-		var parentProp = this.layer("ADBE Effect Parade");
-		for (var i = 0 ; i < this.parentIndices.length ; i++)
-		{
-			parentProp = parentProp(this.parentIndices[i]);
-		}
-		this.property = parentProp;
-	}
-	return this.property;
 }
 
 /**
@@ -267,7 +145,7 @@ function DuAEPropertyExpression(property)
 		* @name layer
 		* @type {LayerItem}
 		*/
-	this.layer = DuAE.Property.getLayer(property);
+	this.layer = DuAEProperty.getLayer(property);
 	/**
 		* The original composition containing the expression
 		* @memberof DuAEPropertyExpression.prototype
@@ -283,7 +161,7 @@ function DuAEPropertyExpression(property)
 		*/
 	this.empty = false;
 
-	if ( !DuAE.Property.isRiggable(property) ) {
+	if ( !DuAEProperty.isRiggable(property) ) {
 		this.empty = true;
 		return;
 	} 
