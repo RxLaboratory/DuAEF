@@ -237,7 +237,15 @@ DuAEProperty.prototype.getProperty = function()
 	return this.property;
 }
 
-//undocumented object used for quick access to expressions in the cache
+/**
+	* Constructs a new DuAEPropertyExpression
+	* @class DuAEPropertyExpression
+	* @classdesc This class describes an expression and the property containing it.<br />
+	* It is used by the cache engine of DuAEF to work on expressions without applying them and improve performance.<br />
+	* This class is very similar to {@link DuAEProperty} except it is lighter and faster, to improve the performance of the expression cache.
+	* @param {PropertyBase|DuAEPropertyExpression} property - The property. If a DuAEPropertyExpression is provided, the constructor returns it (it does not make a copy).<br />
+	* This makes it easy to avoid type checking, as you can always pass any property or DuAEPropertyExpression to the constructor to be sure to handle a DuAEPropertyExpression, without any impact on performance.
+*/
 function DuAEPropertyExpression(property)
 {
 	if (property instanceof DuAEPropertyExpression)
@@ -246,9 +254,33 @@ function DuAEPropertyExpression(property)
 		return property;
 	}
 
+	/**
+		* The original property containing the expression
+		* @memberof DuAEPropertyExpression.prototype
+		* @name property
+		* @type {PropertyBase}
+		*/
 	this.property = property;
+	/**
+		* The original layer containing the expression
+		* @memberof DuAEPropertyExpression.prototype
+		* @name layer
+		* @type {LayerItem}
+		*/
 	this.layer = DuAE.Property.getLayer(property);
+	/**
+		* The original composition containing the expression
+		* @memberof DuAEPropertyExpression.prototype
+		* @name comp
+		* @type {CompItem}
+		*/
 	this.comp = this.layer.containingComp;
+	/**
+		* true if there's no expression in this property
+		* @memberof DuAEPropertyExpression.prototype
+		* @name empty
+		* @type {Boolean}
+		*/
 	this.empty = false;
 
 	if ( !DuAE.Property.isRiggable(property) ) {
@@ -260,7 +292,20 @@ function DuAEPropertyExpression(property)
 		return;
 	}
 	
+	/**
+		* The Array containing the indices in all parent property groups containing this property.<br />
+		* This is used to retrieve the property in case the object becomes invalid.
+		* @memberof DuAEPropertyExpression.prototype
+		* @name parentIndices
+		* @type {int[]}
+		*/
 	this.parentIndices  = [property.propertyIndex];
+	/**
+		* true if the property belongs to an effect.
+		* @memberof DuAEPropertyExpression.prototype
+		* @name isEffect
+		* @type {Boolean}
+		*/
 	this.isEffect = property.isEffect;
 	if (!this.isEffect)
 	{
@@ -274,12 +319,28 @@ function DuAEPropertyExpression(property)
 			if (this.isEffect) break;
 		}
 	}
-	this.layer = DuAE.Property.getLayer(property);
+
+	/**
+		* The expression in the property
+		* @memberof DuAEPropertyExpression.prototype
+		* @name expression
+		* @type {string}
+		*/
 	this.expression = property.expression;
 
+	/**
+		* true if the expression has been changed in the cache and needs to be re-applied to the property.
+		* @memberof DuAEPropertyExpression.prototype
+		* @name changed
+		* @type {Boolean}
+		*/
 	this.changed = false;
 }
 
+/**
+ * Returns the original property, fixing it if the object has become invalid.
+ * @return {PropertyBase} The property.
+ */
 DuAEPropertyExpression.prototype.getProperty = function()
 {
 	if (this.isEffect)
@@ -292,6 +353,18 @@ DuAEPropertyExpression.prototype.getProperty = function()
 		this.property = parentProp;
 	}
 	return this.property;
+}
+
+/**
+ * Applies the expression back to the actual properties in After Effects, if and only if it's been modified.
+ */
+DuAEPropertyExpression.prototype.apply = function()
+{
+	if (this.layer.locked) continue;
+	if (!this.changed) continue;
+
+	var prop = this.getProperty();
+	prop.expression = this.expression;
 }
 
 /**
@@ -376,11 +449,11 @@ DuAE.UnitText =
 /**
 	* Associative array that converts property match names to their compact English expression statements.
 	* @example
-	* DuAE.CompactExpression["ADBE Transform Group"]
+	* DuAECompactExpression["ADBE Transform Group"]
 	* //returns "'transform'"
 	* @type {Object}
 */
-DuAE.CompactExpression =
+DuAECompactExpression =
 {
 	"ADBE Transform Group":"'transform'",
 	// Handle camera/light vs. AV layers
@@ -669,7 +742,7 @@ DuAE.MenuCommandID =
 	* @enum {int}
 	* @readonly
 */
-DuAE.LayerPlacement =
+DuAELayerPlacement =
 {
 	BOTTOM: 0,
 	UNDER_LAYER: 1,
@@ -682,7 +755,7 @@ DuAE.LayerPlacement =
  * @enum {string}
  * @readonly
 */
-DuAE.LayerType =
+DuAELayerType =
 {
 	NULL: 'null',
 	SOLID: 'solid',
@@ -698,7 +771,7 @@ DuAE.LayerType =
  * @enum {string}
  * @readonly
 */
-DuAE.LayerAttribute =
+DuAELayerAttribute =
 {
 	SELECTED: 'selected',
 	VISIBLE: 'visible',
@@ -730,7 +803,7 @@ DuAE.LoopType =
 /**
  * List of file extensions whih may be imported as several items with the same source
  */
-DuAE.LayeredFileType = ["psd","psb","ai","fla"];
+DuAELayeredFileType = ["psd","psb","ai","fla"];
 
 /**
  * Default color labels
@@ -776,30 +849,6 @@ DuAE.getDuAEProperty = function (props)
 }
 
 /**
-	* Converts an AE Collection to an Array<br />
-	* Should only be used in case you need an copy of the collection as an Array,<br />
-	* you should use an {@link DuList} otherwise
-	* @param {Array|Collection} collection - The collection to convert
-	* @return {Array} The array
-*/
-DuAE.convertCollectionToArray = function (collection)
-{
-	var arr = [];
-	if (DuList.isAECollection(collection))
-	{
-		for (var i = 1;i<=collection.length;i++)
-		{
-			arr.push(collection[i]);
-		}
-	}
-	else
-	{
-		arr = collection;
-	}
-	return arr;
-}
-
-/**
 	* Checks if the file is a layered type (psd, ai, psb, fla...)
 	* @memberof DuAEF.DuAE
 	* @param {String|File}	 [file]	- The file or the path
@@ -808,7 +857,7 @@ DuAE.convertCollectionToArray = function (collection)
 DuAE.isLayeredFile = function(file)
 {
 	var ext = DuPath.getExtension(file);
-	var yes = DuList.indexOf( DuAE.LayeredFileType , ext.toLowerCase() ) >= 0;
+	var yes = DuList.indexOf( DuAELayeredFileType , ext.toLowerCase() ) >= 0;
 	return yes;
 }
 
@@ -913,7 +962,17 @@ DuAE.getAEVersion = function ( versionName ) {
  */
 DuAE.isVersionHigherThan = function (versionName)
 {
-    return DuAE.version.isHigherThan( DuAE.getAEVersion( versionName ) );
+    return DuAE.version.higherThan( DuAE.getAEVersion( versionName ) );
+}
+
+/**
+ * Checks if the current version is at least a given one
+ * @param {string} versionName The minimum version
+ * @return {boolean} True if the current version is higher or the same
+ */
+DuAE.isVersionAtLeast = function (versionName)
+{
+    return DuAE.version.atLeast( DuAE.getAEVersion( versionName ) );
 }
 
 /**
@@ -1073,4 +1132,30 @@ DuAE.isAutoSaveFolder = function ( folder ) {
     var autosaveString = localize("$$$/AE/MenuID/0307/AutoSave=Auto-Save").toLowerCase();
 
     return folderName.indexOf( aaeString ) >= 0 && folderName.indexOf( autosaveString ) >= 0;
+}
+
+// ========== DEPRECATED ==========
+
+/**
+	* Converts an AE Collection to an Array<br />
+	* This method is deprecated, you should use a {@link DuList} otherwise
+	* @deprecated
+	* @param {Array|Collection} collection - The collection to convert
+	* @return {Array} The array
+*/
+DuAE.convertCollectionToArray = function (collection)
+{
+	var arr = [];
+	if (DuList.isAECollection(collection))
+	{
+		for (var i = 1;i<=collection.length;i++)
+		{
+			arr.push(collection[i]);
+		}
+	}
+	else
+	{
+		arr = collection;
+	}
+	return arr;
 }

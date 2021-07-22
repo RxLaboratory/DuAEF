@@ -1,1 +1,4 @@
-DuScriptUI.String.ASK_FILES_NETWORK_ACCESS = "The Duduf After Effects framework needs to be allowed to write files.\nPlease, check the box called 'Allow Scripts to write files...' in the scripting preferences of After Effects."
+DuScriptUI.String.ASK_FILES_NETWORK_ACCESS = "The Duduf After Effects framework needs to be allowed to write files.\nPlease, check the box called 'Allow Scripts to write files...' in the scripting preferences of After Effects.";
+DuScriptUI.String.MISSING_PSEUDO_EFFECT = "The pseudo effect file does not exist.";
+DuScriptUI.String.INVALID_PSEUDO_EFFECT = "Invalid pseudo effect file or match name.";
+DuScriptUI.String.EDIT_MODE = "Edit mode";

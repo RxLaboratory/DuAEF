@@ -375,7 +375,7 @@ DuAE.Property.addToExpressionCache = function ( prop ) {
     //it it's a prop, add to cache
     if ( prop.propertyType === PropertyType.PROPERTY ) {
         var exp = new DuAEPropertyExpression(prop);
-        if ( !exp.empty ) DuAE.Expression.cache.push(exp);
+        if ( !exp.empty ) DuAEExpression.cache.push(exp);
     }
     //if it's a group, get props inside
     else if ( prop.numProperties > 0 ) {
@@ -712,7 +712,7 @@ DuAE.Property.getExpressionLink = function ( prop, useThisComp, fromLayer ) {
 
     //get compact expression from matchName, if available
     function getCompactExpression( matchName, name ) {
-        var translatedName = DuAE.CompactExpression[ matchName ];
+        var translatedName = DuAECompactExpression[ matchName ];
 
         if ( translatedName !== undefined )
             return eval( translatedName );
@@ -887,7 +887,7 @@ DuAE.Property.setInterpolationType = function ( layers, props, typeIn, typeOut, 
 
     if ( layers.length == 0 ) return;
 
-    if ( !DuAE.Layer.haveSelectedKeys( layers ) ) {
+    if ( !DuAELayer.haveSelectedKeys( layers ) ) {
         DuAE.Property.addKey( props, typeIn, typeOut, easeInValue, easeOutValue );
     } else {
         for ( var i = 0; i < props.length; i++ ) {
@@ -2054,7 +2054,7 @@ DuAE.Property.Bezier.scriptify = function ( pathProperty, offsetToCenter, varNam
  * Export the given shape property to the given file <br/>
  * The file name in the given path will be used to name the shape in the jsx code
  * @example
- * var props = DuAE.Comp.getSelectedProps(PropertyValueType.SHAPE);
+ * var props = DuAEComp.getSelectedProps(PropertyValueType.SHAPE);
  * var prop = props[0].getProperty();
  * var out = DuAE.Property.Shape.exportToJsxinc(prop, "D:/shape.test");
  * @param {Property}	 [shapeProp]	- The path property to export

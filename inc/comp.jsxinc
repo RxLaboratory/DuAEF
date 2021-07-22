@@ -1,41 +1,26 @@
 /**
  * After Effects composition methods
  * @namespace
- * @memberof DuAEF.DuAE
  */
-DuAE.Comp = {};
-
-// ========== DEPRECATED =============
-
-
-/**
- * Updates the cache of the expressions used by Duik to speed up batch process of expressions in the whole project.<br />
- * It's automatically run when needed if it's not been updated in a long time (1 mn) or if it's empty
- * @param {CompItem} [comp=DuAE.Project.getActiveComp()] The comp with expressions to cache
- * @param {boolean} [selectedLayers=false] Set to true to cache only selected layers.
- * @deprecated since v0.7.0; Use {@link DuAE.Expression.updateCache DuAE.Expression.updateCache(true, false, selectedLayers)}.
- */
-DuAE.Comp.updateExpressionCache = function (comp, selectedLayers) { DuAE.Expression.updateCache(true, false, selectedLayers) };
-
-// ========== ========== =============
+var DuAEComp = {};
 
 /**
  * Replaces text in Expressions
  * @param {string} oldString - The string to replace
  * @param {string} newString - The new string
- * @param {CompItem} [comp=DuAE.Project.getActiveComp()] The comp with expressions to cache. WARNING: Since v0.7.0 this param is ignored.
  * @param {boolean} [caseSensitive=true] - Wether the search has to be case sensitive
  * @param {boolean} [selectedLayers=false] Set to true to cache only selected layers.
+ * @param {CompItem} [comp=DuAEProject.getActiveComp()] The comp with expressions to cache.
  */
-DuAE.Comp.replaceInExpressions = function ( oldString, newString, comp, caseSensitive, selectedLayers ) {
-    comp = DuAE.Project.getActiveComp();
+DuAEComp.replaceInExpressions = function ( oldString, newString, caseSensitive, selectedLayers ) {
+    var comp = DuAEProject.getActiveComp() );
     if (!comp) return;
     caseSensitive = def (caseSensitive, true);
     selectedLayers = def (selectedLayers, false);
 
     var re = new RegExp( DuRegExp.escape(oldString), caseSensitive ? 'g' : 'gi');
 
-    DuAE.Expression.doInExpresssions(function(e) {
+    DuAEExpression.doInExpresssions(function(e) {
         e.changed = re.test( e.expression );
         if (e.changed) e.expression = e.expression.replace( re, newString );
         return e;
@@ -46,13 +31,13 @@ DuAE.Comp.replaceInExpressions = function ( oldString, newString, comp, caseSens
  * Replace all <code>thisComp</code> occurences by <code>comp("name")</code>.
  * @param {bool} [selectedLayers=false] true to replace only in selected layers
  */
-DuAE.Comp.removeThisCompInExpressions = function( selectedLayers )
+DuAEComp.removeThisCompInExpressions = function( selectedLayers )
 {
     selectedLayers = def(selectedLayers, false);
     
     var re = new RegExp("(^|" + DuRegExp.javascriptSymbols + ")thisComp(?!" + DuRegExp.javascriptVarChars + ")",'gm')
 
-    DuAE.Expression.doInExpresssions(function(e) {
+    DuAEExpression.doInExpresssions(function(e) {
         e.changed = re.test( e.expression );
         if (e.changed) e.expression = e.expression.replace( re, '$1comp("' + e.comp.name + '")' );
     }, true, false, selectedLayers);
@@ -62,11 +47,11 @@ DuAE.Comp.removeThisCompInExpressions = function( selectedLayers )
  * Replace all <code>comp("name")</code> occurences by <code>thisComp</code>.
  * @param {bool} [selectedComps=false] true to replace only in selected compositions
  */
-DuAE.Comp.removeCompInExpressions = function( selectedLayers )
+DuAEComp.removeCompInExpressions = function( selectedLayers )
 {
     selectedLayers = def(selectedLayers, false);
     
-    DuAE.Expression.doInExpresssions(function(e) {
+    DuAEExpression.doInExpresssions(function(e) {
         var name = e.comp.name;
         var re = new RegExp("(^|" + DuRegExp.javascriptSymbols + ")comp\\s*\\(\\s*[\"']" + DuRegExp.escape(name) + "[\"']\\s*\\)", 'gm');
         e.changed = re.test( e.expression );
@@ -79,12 +64,12 @@ DuAE.Comp.removeCompInExpressions = function( selectedLayers )
  * @param {CompItem} comp - The composition
  * @return {string} The new name.
  */
-DuAE.Comp.setUniqueCompName = function ( comp ) {
+DuAEComp.setUniqueCompName = function ( comp ) {
     if ( !( comp instanceof CompItem ) ) throw "Cannot set a unique composition name, this is not a composition.";
     //temporarily rename the comp to check for its name
     var newName = comp.name;
-    comp.name = '***Duik-temp-name-xxx***';
-    comp.name = DuAE.Project.newUniqueCompName( newName, false );
+    comp.name = '***DuAEF-temp-name-xxx***';
+    comp.name = DuAEProject.newUniqueCompName( newName, false );
     app.project.autoFixExpressions( newName, comp.name );
     return comp.name;
 }
@@ -92,10 +77,10 @@ DuAE.Comp.setUniqueCompName = function ( comp ) {
 /**
  * Makes sure all layers in the comp have unique names, renaming them if needed.
  * @param {Array|LayerCollection} [layers=comp.layers] - The layers
- * @param {CompItem} [comp=DuAE.Project.getActiveComp] - The composition
+ * @param {CompItem} [comp=DuAEProject.getActiveComp] - The composition
  */
-DuAE.Comp.setUniqueLayerNames = function ( layers, comp ) {
-    comp = def( comp, DuAE.Project.getActiveComp() );
+DuAEComp.setUniqueLayerNames = function ( layers, comp ) {
+    comp = def( comp, DuAEProject.getActiveComp() );
     if (!comp) return;
     layers = def(layers, comp.layers);
     var it = new DuList( layers );
@@ -105,7 +90,7 @@ DuAE.Comp.setUniqueLayerNames = function ( layers, comp ) {
         //temporarily set another name to correctly generate a new unique name 
         var oldName = layer.name;
         layer.name = '***Duik-temp-name-xxx***';
-        layer.name = DuAE.Comp.newUniqueLayerName( oldName, comp );
+        layer.name = DuAEComp.newUniqueLayerName( oldName, comp );
         app.project.autoFixExpressions(oldName, layer.name);
         layer.locked = locked;
     } );
@@ -119,9 +104,9 @@ DuAE.Comp.setUniqueLayerNames = function ( layers, comp ) {
  * @param {boolean}	[caseSensitive=true]	- If a string filter is provided, and not strict is false, does the search have to be case sensitive?
  * @return {DuAEProperty[]} The selected properties, an empty Array if nothing active or selected
  */
-DuAE.Comp.getSelectedProps = function ( filter, strict, caseSensitive ) {
+DuAEComp.getSelectedProps = function ( filter, strict, caseSensitive ) {
     var props = [];
-    var comp = DuAE.Project.getActiveComp();
+    var comp = DuAEProject.getActiveComp();
     if ( !comp ) return props;
 
     //if no filter, get all using AE native API
@@ -135,8 +120,8 @@ DuAE.Comp.getSelectedProps = function ( filter, strict, caseSensitive ) {
         var layers = comp.selectedLayers;
         if ( layers.length === 0 ) return props;
 
-        for ( var i = 0; i < layers.length; i++ ) {
-            props = props.concat( DuAE.Layer.getSelectedProps( layers[ i ], filter, strict, caseSensitive ) );
+        for ( var i = 0, numL = layers.length; i < numL; i++ ) {
+            props = props.concat( DuAELayer.getSelectedProps( layers[ i ], filter, strict, caseSensitive ) );
         }
     }
 
@@ -147,8 +132,8 @@ DuAE.Comp.getSelectedProps = function ( filter, strict, caseSensitive ) {
  * Gets the selected layers in the current comp
  * @return {Layer[]} The selected layers
  */
-DuAE.Comp.getSelectedLayers = function () {
-    var comp = DuAE.Project.getActiveComp();
+DuAEComp.getSelectedLayers = function () {
+    var comp = DuAEProject.getActiveComp();
     if ( !comp ) return [];
     return comp.selectedLayers;
 }
@@ -158,15 +143,15 @@ DuAE.Comp.getSelectedLayers = function () {
  * @param {function} method - The function to run on the layers, which takes a layer as its only argument.
  * @param {string} [undoGroupName] - The name of the undoGroup created before the execution. If not provided, there will not be any undoGroup created.
  */
-DuAE.Comp.doSelectedLayers = function ( method, undoGroupName ) {
+DuAEComp.doSelectedLayers = function ( method, undoGroupName ) {
     //get layers
-    var layers = DuAE.Comp.unselectLayers();
+    var layers = DuAEComp.unselectLayers();
 
     // run
-    DuAE.Layer.doLayers( layers, method, undoGroupName );
+    DuAELayer.doLayers( layers, method, undoGroupName );
 
     //reselect
-    DuAE.Comp.selectLayers( layers );
+    DuAEComp.selectLayers( layers );
 }
 
 /**
@@ -175,10 +160,8 @@ DuAE.Comp.doSelectedLayers = function ( method, undoGroupName ) {
  * @param {string} [undoGroupName] - The name of the undoGroup created before the execution. If not provided, there will not be any undoGroup created.
  * @param {CompItem} [comp] - The comp containing the layers. Will use the current comp if not provided.
  */
-DuAE.Comp.doLayers = function ( method, undoGroupName, comp ) {
-    if ( typeof comp === 'undefined' ) {
-        comp = DuAE.Project.getActiveComp();
-    }
+DuAEComp.doLayers = function ( method, undoGroupName, comp ) {
+    comp = def( comp, DuAEProject.getActiveComp() );
     if ( !( comp instanceof CompItem ) ) return;
 
     //get layers
@@ -186,7 +169,7 @@ DuAE.Comp.doLayers = function ( method, undoGroupName, comp ) {
     if ( layers.length == 0 ) return;
 
     // run
-    DuAE.Layer.doLayers( layers, method, undoGroupName );
+    DuAELayer.doLayers( layers, method, undoGroupName );
 }
 
 /**
@@ -196,12 +179,12 @@ DuAE.Comp.doLayers = function ( method, undoGroupName, comp ) {
  * @param {boolean}	[strict=false]	- If a string filter is provided, wether to search for the exact name/matchName or if it contains the filter.
  * @param {boolean}	[caseSensitive=true]	- If a string filter is provided, and not strict is false, does the search have to be case sensitive?
  * @param {boolean}	[selectedLayersOnly=false]	- True to get the properties on the selected layers only
- * @param {CompItem}	[comp=DuAE.Project.getActiveComp]	- The composition
+ * @param {CompItem}	[comp=DuAEProject.getActiveComp]	- The composition
  * @return {DuAEProperty[]} The selected properties, an empty Array if nothing active or selected
  */
-DuAE.Comp.getAnimatedProps = function ( filter, strict, caseSensitive, selectedLayersOnly, comp ) {
+DuAEComp.getAnimatedProps = function ( filter, strict, caseSensitive, selectedLayersOnly, comp ) {
     var props = [];
-    if ( typeof comp === 'undefined' ) comp = DuAE.Project.getActiveComp();
+    if ( typeof comp === 'undefined' ) comp = DuAEProject.getActiveComp();
     if ( !comp ) return props;
 
     selectedLayersOnly = def( selectedLayersOnly, false);
@@ -222,8 +205,8 @@ DuAE.Comp.getAnimatedProps = function ( filter, strict, caseSensitive, selectedL
 /**
  * Deselects all properties in the current composition
  */
-DuAE.Comp.unselectProperties = function () {
-    var comp = DuAE.Project.getActiveComp();
+DuAEComp.unselectProperties = function () {
+    var comp = DuAEProject.getActiveComp();
     if ( !comp ) return props;
     var props = comp.selectedProperties;
     for ( var i = 0; i < props.length; i++ ) {
@@ -237,8 +220,8 @@ DuAE.Comp.unselectProperties = function () {
  * @return {Layer[]} The previously selected layers.<br />
  * A custom attribute, Layer.props is added on each layer object which is an array of all previously selected properties as DuAEProperty objects
  */
-DuAE.Comp.unselectLayers = function ( comp ) {
-    if ( typeof comp === 'undefined' ) comp = DuAE.Project.getActiveComp();
+DuAEComp.unselectLayers = function ( comp ) {
+    if ( typeof comp === 'undefined' ) comp = DuAEProject.getActiveComp();
     if ( !comp ) return [];
 
     var layers = [];
@@ -262,7 +245,7 @@ DuAE.Comp.unselectLayers = function ( comp ) {
  * Selects the layers
  * @param {Layer[]} layers - The layers
  */
-DuAE.Comp.selectLayers = function ( layers ) {
+DuAEComp.selectLayers = function ( layers ) {
     new DuList( layers ).do( function ( layer ) {
         if ( layer == undefined ) return;
         if ( layer == null ) return;
@@ -277,9 +260,9 @@ DuAE.Comp.selectLayers = function ( layers ) {
  * @param {boolean} [increment=true] - true to automatically increment the new name if it already ends with a digit
  * @return {string}	The unique name, with a new number at the end if needed.
  */
-DuAE.Comp.newUniqueLayerName = function ( newName, comp, increment ) {
+DuAEComp.newUniqueLayerName = function ( newName, comp, increment ) {
     increment = def(increment, true);
-    comp = def(comp, DuAE.Project.getActiveComp() );
+    comp = def(comp, DuAEProject.getActiveComp() );
     var layerNames = [];
     for ( var i = 1; i <= comp.layers.length; i++ ) {
         layerNames.push( comp.layer( i ).name );
@@ -294,7 +277,7 @@ DuAE.Comp.newUniqueLayerName = function ( newName, comp, increment ) {
  * @param {boolean} [increment=true] - true to automatically increment the new name if it already ends with a digit
  * @return {string}	The unique name, with a new number at the end if needed.
  */
-DuAE.Comp.newUniqueMarkerName = function ( newName, comp, increment ) {
+DuAEComp.newUniqueMarkerName = function ( newName, comp, increment ) {
     if ( increment == undefined ) increment = true;
     var markerNames = [];
     for ( var i = 1, num = comp.markerProperty.numKeys; i <= num; i++ ) {
@@ -308,9 +291,9 @@ DuAE.Comp.newUniqueMarkerName = function ( newName, comp, increment ) {
  * @param {CompItem} comp 	- The comp
  * @return {AVLayer}	The layer.
  */
-DuAE.Comp.addAdjustmentLayer = function ( comp ) {
+DuAEComp.addAdjustmentLayer = function ( comp ) {
     if ( comp == undefined ) return null;
-    var layer = comp.layers.addSolid( [ 1, 1, 1 ], DuAE.Comp.newUniqueLayerName( "Adjustment Layer", comp ), comp.width, comp.height, comp.pixelAspect, comp.duration );
+    var layer = comp.layers.addSolid( [ 1, 1, 1 ], DuAEComp.newUniqueLayerName( "Adjustment Layer", comp ), comp.width, comp.height, comp.pixelAspect, comp.duration );
     layer.adjustmentLayer = true;
     return layer;
 }
@@ -320,13 +303,13 @@ DuAE.Comp.addAdjustmentLayer = function ( comp ) {
  * @param {Layer} layer - The parent layer
  * @param {bool} [includeLockedLayers=false] - True to parent layers even if they are locked
  */
-DuAE.Comp.parentAllOrphans = function ( layer, includeLockedLayers ) {
-    if ( typeof includeLockedLayers === "undefined" ) includeLockedLayers = false;
+DuAEComp.parentAllOrphans = function ( layer, includeLockedLayers ) {
+    includeLockedLayers = def( includeLockedLayers, false );
     var comp = layer.containingComp;
     for ( var i = 1, num = comp.numLayers; i <= num; i++ ) {
         if ( i == layer.index ) continue;
         var l = comp.layer( i );
-        if ( DuAE.Layer.getRelation( l, layer ) < 0 ) continue;
+        if ( DuAELayer.getRelation( l, layer ) < 0 ) continue;
         var locked = l.locked;
         if ( locked && includeLockedLayers ) l.locked = false;
         if ( !locked && l.parent == null ) l.parent = layer;
@@ -336,20 +319,20 @@ DuAE.Comp.parentAllOrphans = function ( layer, includeLockedLayers ) {
 
 /**
  * Gets all precomps and parent comps of the composition
- * @param {CompItem} [comp=DuAE.Project.getActiveComp()] - The composition
+ * @param {CompItem} [comp=DuAEProject.getActiveComp()] - The composition
  * @param {bool} [recursive=false] - True to search to more than one level of precomposition
  * @return {CompItem[]} The related compositons
  */
-DuAE.Comp.getRelatives = function ( comp, recursive ) {
-    if ( typeof recursive === 'undefined' ) recursive = false;
-    if ( typeof comp === 'undefined' ) comp = DuAE.Project.getActiveComp();
+DuAEComp.getRelatives = function ( comp, recursive ) {
+    recursive = def( recursive, false );
+    comp = def( comp, DuAEProject.getActiveComp() );
     if ( !comp ) return [];
     //get precomps
-    var precomps = DuAE.Comp.getPrecomps( comp, recursive );
+    var precomps = DuAEComp.getPrecomps( comp, recursive );
     //get parent
     var parentComps = [];
     if ( recursive ) {
-        parentComps = DuAE.Comp.getParentComps( comp );
+        parentComps = DuAEComp.getParentComps( comp );
     } else {
         parentComps = comp.usedIn;
     }
@@ -363,15 +346,15 @@ DuAE.Comp.getRelatives = function ( comp, recursive ) {
  * @param {bool} [recursive=false] - True to get nested compositions
  * @return {CompItem[]} The precompositions
  */
-DuAE.Comp.getPrecomps = function ( comp, recursive ) {
-    if ( typeof recursive === 'undefined' ) recursive = true;
+DuAEComp.getPrecomps = function ( comp, recursive ) {
+    recursive = def( recursive, true );
     var precomps = [];
     var it = new DuList( comp.layers );
     it.do( function ( layer ) {
         var precomp = layer.source;
         if ( precomp instanceof CompItem ) {
             precomps.push( precomp );
-            if ( recursive ) precomps = precomps.concat( DuAE.Comp.getPrecomps( precomp ) );
+            if ( recursive ) precomps = precomps.concat( DuAEComp.getPrecomps( precomp ) );
         }
     } );
     //remove duplicates
@@ -384,10 +367,10 @@ DuAE.Comp.getPrecomps = function ( comp, recursive ) {
  * @param {AVItem} item - The item
  * @return {CompItem[]} The compositions
  */
-DuAE.Comp.getParentComps = function ( item ) {
+DuAEComp.getParentComps = function ( item ) {
     var parentComps = item.usedIn;
     new DuList( parentComps ).do( function ( parentComp ) {
-        parentComps = parentComps.concat( DuAE.Comp.getParentComps( parentComp ) );
+        parentComps = parentComps.concat( DuAEComp.getParentComps( parentComp ) );
     } );
     DuList.removeDuplicates( parentComps );
     return parentComps;
@@ -399,8 +382,8 @@ DuAE.Comp.getParentComps = function ( item ) {
  * @param {bool}	[audioActiveOnly=false]	 If true, does not get muted layers.
  * @return {AVLayer[]} An array of AVLayer containing the audio layers
  */
-DuAE.Comp.getAudioLayers = function ( comp, audioActiveOnly ) {
-    if ( typeof audioActiveOnly === 'undefined' ) audioActiveOnly = false;
+DuAEComp.getAudioLayers = function ( comp, audioActiveOnly ) {
+    audioActiveOnly = def(audioActiveOnly, false);
     var layers = comp.layers;
     var audioLayers = [];
     var it = new DuList( layers );
@@ -417,12 +400,12 @@ DuAE.Comp.getAudioLayers = function ( comp, audioActiveOnly ) {
 
 /**
  * Gets the total number of master properties used on precompositions in the comp.
- * @param {CompItem} [comp=DuAE.Project.getActiveComp] The composition to check
+ * @param {CompItem} [comp=DuAEProject.getActiveComp] The composition to check
  * @return {int} The number of master properties
  */
-DuAE.Comp.numMasterProperties = function(comp) {
+DuAEComp.numMasterProperties = function(comp) {
     if (DuAE.version.version < 15.1) return 0;
-    comp = def(comp, DuAE.Project.getActiveComp());
+    comp = def(comp, DuAEProject.getActiveComp());
     if (!comp) return 0;
     var numMP = 0;
     for (var i = 1, n = comp.numLayers; i <= n; i++)
@@ -439,10 +422,10 @@ DuAE.Comp.numMasterProperties = function(comp) {
 
 /**
  * Checks if all layers have a different name.
- * @param {CompItem} [comp=DuAE.Project.getActiveComp] The comp to check
+ * @param {CompItem} [comp=DuAEProject.getActiveComp] The comp to check
  * @return {Object} The list of names used several times. Check the length attribute to know how many duplicates were found, loop through the keys to get the names. Eech key is an array containing the list of layers with that name.
  * @example
- * var dupes = DuAE.Comp.checkLayerNames();
+ * var dupes = DuAEComp.checkLayerNames();
  * if (dupes.length != 0) {
  * for (name in dupes)
  * {
@@ -450,8 +433,8 @@ DuAE.Comp.numMasterProperties = function(comp) {
  * }
  * }
  */
-DuAE.Comp.checkLayerNames = function (comp) {
-    comp = def(comp, DuAE.Project.getActiveComp());
+DuAEComp.checkLayerNames = function (comp) {
+    comp = def(comp, DuAEProject.getActiveComp());
     var duplicatedNames = {};
     duplicatedNames.length  = 0;
     if (!comp) return duplicatedNames;

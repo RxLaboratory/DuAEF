@@ -1,0 +1,179 @@
+/**
+ * After Effects tag methods<br />
+ * Tags are markers set on the first frame of layers, displaying an info about the layer (usually, a "type" or tag).<br />
+ * These markers are used by DuAEF (and Duik, DuGR, ...) to recognise and manipulate the layers, and to store hidden data.<br />
+ * They're also used assign the layer to groups, which can be used by other scripts, especially DuGR.
+ * @namespace
+ */
+var DuAETag = {};
+
+/**
+ * The list of paramaters which can be set by DuAEF in tags.
+ * @enum {string}
+ * @readonly
+ */
+DuAETag.Key = {
+    /**
+     * Used to temporarily store the list of children of the layers.
+     */
+    CHILD_LAYERS: "childrenLayers",
+    /**
+     * A list of groups this layer belongs to.
+     */
+    GROUPS: "groups"
+}
+
+/**
+ * The list of names used for the markers.<br />
+ * Names are the string shown to the user on the marker, the comment.<br />
+ * Note that these names may change as they may be localized and should not be used to manipulate layers, but only shown to the user.
+ * @enum {string}
+ * @readonly
+ */
+DuAETag.Name = {
+    /**
+     * A layer toggled to edit mode. 
+     * @default "Edit mode"
+     */
+    EDIT_MODE: DuScriptUI.String.EDIT_MODE
+}
+
+/**
+ * Sets a new marker on the first frame of the layer.
+ * @param {Layer} layer - The layer to set the tag on.
+ * @param {string} displayName - The name to display on the marker (the comment of the marker)
+ * @return {MarkerValue} The marker (tag)
+ */
+DuAETag.set = function( layer, displayName )
+{
+    var marker = layer.property( 'ADBE Marker' ).valueAtTime( 0, true );
+    marker.comment = displayName;
+    var params = marker.getParameters();
+    params.duaef = displayName;
+    marker.setParameters( params );
+    layer.property( 'ADBE Marker' ).setValueAtTime( 0, marker );
+    return marker;
+}
+
+/**
+ * Gets the tag.
+ * @param {Layer} layer - The layer to get the tag from.
+ * @return {MarkerValue|null} The marker (tag) or <code>null</code> if not found.
+ */
+DuAETag.get = function( layer )
+{
+    if ( !layer ) return null;
+    var markerProp = layer.property( 'ADBE Marker' );
+    for ( var i = 1, num = markerProp.numKeys; i <= num; i++ )
+    {
+        var marker = markerProp.keyValue( i );
+        var params = marker.getParameters();
+        if ( params.duaef ) return marker;
+    }
+    return null;
+}
+
+/**
+ * Removes the tag from the layer
+ */
+DuAETag.remove = function( layer )
+{
+
+}
+
+/**
+ * Gets the name (comment of the marker) of the tag.
+ * @param {Layer} layer The layer to get the tag from
+ * @return {string} The name.
+ */
+DuAETag.getName = function ( layer )
+{
+    var marker = DuAETag.get( layer );
+    if (!marker) return "";
+    return marker.comment;
+}
+
+/**
+ * Gets the hidden parameters stored in the tag.
+ * @param {Layer} layer - The layer to get the tag from.
+ * @return {Object} The marker (tag) parameters or <code>null</code> if not found.
+ */
+DuAETag.getParameters = function( layer )
+{
+    var marker = DuAETag.get( layer );
+    if ( !marker ) return null;
+    return marker.getParameters();
+}
+
+/**
+ * Sets a new parameter (a key/value pair) to the hidden parameters stored in the tag.
+ * @param {Layer} layer - The layer to get the tag from.
+ * @param {string} key - The key. May be one of {@link DuAETag.Key}.
+ * @param {string} value - The value, which needs to be a string.
+ * @return {Boolean} Success, may be false if there's no tag on this layer yer.
+ */
+DuAETag.setValue = function( layer, key, value )
+{
+    var markerProp = layer.property( 'ADBE Marker' );
+    for ( var i = 1, num = markerProp.numKeys; i <= num; i++ )
+    {
+        var marker = markerProp.keyValue( i );
+        var params = marker.getParameters();
+        if ( params.duaef )
+        {
+            params[ key ] = value;
+            marker.setParameters( params );
+            layer.property( 'ADBE Marker' ).setValueAtTime( markerProp.keyTime( i ), marker );
+        }
+    }
+}
+
+/**
+ * Gets the value of a specific key in the tag parameters.
+ * @param {Layer} layer - The layer to get the tag from.
+ * @param {string} key - The key. May be one of {@link DuAETag.Key}.
+ */
+DuAETag.getValue = function( layer, key )
+{
+    var markerProp = layer.property( 'ADBE Marker' );
+    for ( var i = 1, num = markerProp.numKeys; i <= num; i++ )
+    {
+        var marker = markerProp.keyValue( i );
+        var params = marker.getParameters();
+        if ( params.duaef )
+        {
+            return params[ key ];
+        }
+    }
+}
+
+/**
+ * Assigns the layer to a group.<br >
+ * If the layer does not have a tag yet, a new one will be created with the group name.
+ * @param {Layer} layer The layer.
+ * @param {string} groupName The group.
+ */
+DuAETag.addGroup = function (layer, groupName )
+{
+    var tag = DuAETag.get( layer );
+    if (tag == null) DuAETag.set( layer, groupName );
+
+    groups = new DuList( groups.split(',') );
+    if (groups.indexOf(groupName) >= 0) return;
+    groups.push( groupName );
+    DuAETag.setValue( layer, DuAETag.Key.Groups, groups );
+}
+
+/**
+ * Unassigns the layer from a group.
+ * @param {Layer} layer The layer.
+ * @param {string} groupName The group.
+ */
+DuAETag.removeGroup = function (layer, groupName )
+{
+    var groups = DuAETag.getValue( layer, DuAETag.Key.Groups );
+    groups = new DuList( groups.split(',') );
+    if (groups.indexOf(groupName) < 0) return;
+    groups.removeAll( groupName );
+    DuAETag.setValue( layer, DuAETag.Key.Groups, groups );
+}

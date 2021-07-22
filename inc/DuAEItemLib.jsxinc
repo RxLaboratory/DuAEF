@@ -90,7 +90,7 @@ DuAE.Item.compareItems = function (itemA, itemB) { return itemA.id == itemB.id; 
 /**
  * Gets the compositions this item is used in.
  * @param {AVItem} item The item
- * @param {boolean} [includeExpressionOnly=false] Check for comps using this item only through expressions. The cache has to be updated with {@link DuAE.Project.updateExpressionCache} before using this method with this argument set to true.
+ * @param {boolean} [includeExpressionOnly=false] Check for comps using this item only through expressions. The cache has to be updated with {@link DuAEProject.updateExpressionCache} before using this method with this argument set to true.
  * @param {boolean} [recursive=false] Check recursively in parent comps too.
  * @return {CompItem[]} The compositions.
  */
@@ -107,9 +107,9 @@ DuAE.Item.usedIn = function (item, recursive, keepExpressionOnly ) {
 
     //update cache if needed
     var currentTime = new Date().getTime();
-    if ( ( currentTime - DuAE.Project.lastExpressionCacheUpdateTime > 60000 ) || DuAE.Project.expressionCache.length == 0) {
-        DuAE.Project.updateExpressionCache();
-        DuAE.Project.suspendCacheUpdates = true;
+    if ( ( currentTime - DuAEProject.lastExpressionCacheUpdateTime > 60000 ) || DuAEProject.expressionCache.length == 0) {
+        DuAEProject.updateExpressionCache();
+        DuAEProject.suspendCacheUpdates = true;
         cacheSuspended = true;
     }
 
@@ -120,9 +120,9 @@ DuAE.Item.usedIn = function (item, recursive, keepExpressionOnly ) {
     else regExp = new RegExp("footage\\s*\\(\\s*(\"|')" + itemNameRegEx + "\\1\\s*\\)");
 
     //check for expressions using this item
-    for (var i = 0, num = DuAE.Project.expressionCache.length; i < num; i++)
+    for (var i = 0, num = DuAEProject.expressionCache.length; i < num; i++)
     {
-        var exp = DuAE.Project.expressionCache[i];
+        var exp = DuAEProject.expressionCache[i];
         if ( regExp.test(exp.expression) ) usedIn.push( exp.layer.containingComp );
     }
 
@@ -134,7 +134,7 @@ DuAE.Item.usedIn = function (item, recursive, keepExpressionOnly ) {
 
     DuList.removeDuplicates(usedIn, DuAE.Item.compareItems);
 
-    if (cacheSuspended) DuAE.Project.suspendCacheUpdates = false;
+    if (cacheSuspended) DuAEProject.suspendCacheUpdates = false;
 
     return usedIn;
 }

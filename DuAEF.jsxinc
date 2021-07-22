@@ -1,4 +1,8 @@
 #include "DuESF/DuESF.jsxinc"
 
-#include "inc/core.jsxinc"
 #include "inc/dulist_extension.jsxinc"
+#include "inc/core.jsxinc"
+#include "inc/tag.jsxinc"
+#include "inc/expression.jsxinc"
+#include "inc/comp.jsxinc"
+#include "inc/layer.jsxinc"

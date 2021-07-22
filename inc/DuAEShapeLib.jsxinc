@@ -13,7 +13,7 @@ DuAE.Shape = {};
 DuAE.Shape.getTransformMatrix = function ( prop ) {
     var propInfo = new DuAEProperty( prop );
     prop = propInfo.getProperty();
-    var matrix = DuAE.Layer.getTransformMatrix( propInfo.layer );
+    var matrix = DuAELayer.getTransformMatrix( propInfo.layer );
 
     var props = [];
 

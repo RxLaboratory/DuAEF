@@ -247,7 +247,7 @@ DuScriptUI.layerSelector = function( container )
     selector.refresh = function()
     {
         var comp = selector.comp;
-        if ( !comp ) comp = DuAE.Project.getActiveComp();
+        if ( !comp ) comp = DuAEProject.getActiveComp();
         if ( !comp ) return;
 
         selector.pauseRefresh = true;
@@ -255,7 +255,7 @@ DuScriptUI.layerSelector = function( container )
         var layers;
         if ( selector.selectedOnly )
         {
-            layers = DuAE.Layer.sortByIndex ( comp.selectedLayers );
+            layers = DuAELayer.sortByIndex ( comp.selectedLayers );
         }
         else layers = comp.layers;
 
@@ -350,7 +350,7 @@ DuScriptUI.layerSelector = function( container )
 
     selector.pick = function()
     {
-        var layers = DuAE.Comp.getSelectedLayers();
+        var layers = DuAEComp.getSelectedLayers();
         if ( layers.length > 0 ) selector.setCurrentIndex( layers[ 0 ].index );
     }
 
@@ -358,7 +358,7 @@ DuScriptUI.layerSelector = function( container )
     {
         if ( selector.index < 1 ) return null;
         var comp = selector.comp;
-        if ( !comp ) comp = DuAE.Project.getActiveComp();
+        if ( !comp ) comp = DuAEProject.getActiveComp();
         if ( !comp ) return null;
         try
         {
@@ -589,7 +589,7 @@ DuScriptUI.compSelector = function( container )
     selector.getComp = function()
     {
         if ( selector.id == 0 ) return null;
-        return DuAE.Project.getItemById( selector.id );
+        return DuAEProject.getItemById( selector.id );
     }
 
     selector.setCurrentId = function( id )
@@ -679,7 +679,7 @@ DuScriptUI.compSelector = function( container )
 
     selector.pick = function()
     {
-        var comp = DuAE.Project.getActiveComp();
+        var comp = DuAEProject.getActiveComp();
         if ( comp ) selector.setCurrentId( comp.id );
     }
 
@@ -702,7 +702,7 @@ DuScriptUI.compSelector = function( container )
     selector.onChange = function() {};
     selector.filterComps = function()
     {
-        var comps = DuAE.Project.getComps();
+        var comps = DuAEProject.getComps();
         return comps;
     };
 
