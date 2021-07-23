@@ -1,6 +1,7 @@
 #include "DuESF/DuESF.jsxinc"
 
 #include "inc/dulist_extension.jsxinc"
+#include "inc/duscriptui_extension.jsxinc"
 #include "inc/core.jsxinc"
 #include "inc/ae.jsxinc"
 #include "inc/tag.jsxinc"
@@ -14,5 +15,6 @@
 #include "inc/puppet.jsxinc"
 #include "inc/renderqueue.jsxinc"
 #include "inc/shapelayer.jsxinc"
+#include "inc/pseudoEffect.jsxinc"
 
 //#include "inc/property_deprecated.jsxinc"

@@ -27,6 +27,23 @@
     var secondTab = tabPanel.addTab( "Second", DuScriptUI.Icon.STANDARD, "A tab with an icon and a text" )
     var thirdTab = tabPanel.addTab( "Third", DuScriptUI.Icon.EXPERT, "A tab with an icon and a text" )
 
+    firstTab.build = function( )
+    {
+        #include "inc/tests/testPseudoEffect.jsxinc";
+
+        var pseudoButton = DuScriptUI.button( this, 'Apply test pseudo effect' );
+        pseudoButton.onClick = function() { 
+            var pseudoEffect = new DuAEPseudoEffect( testPseudoEffect );
+            var comp = DuAEProject.getActiveComp();
+            if (!comp) return;
+            if (comp.layers.length == 0) return;
+            alert(pseudoEffect.matchName);
+            var effect = pseudoEffect.apply( comp.layer(1) );
+            alert(pseudoEffect.props);
+            alert(effect);
+        };
+    }
+
     secondTab.build = function( )
     {
         var testButton = DuScriptUI.button( this, 'Button with options', undefined, undefined, true );
@@ -53,7 +70,6 @@
         
         var slider = DuScriptUI.slider( this, 17, 0, 100, 'column', false, "A slider: ", "%");
     }
-
     
 
     // One of these is required at the end of init (building ui, etc) and before runtime.
