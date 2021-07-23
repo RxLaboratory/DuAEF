@@ -7,7 +7,7 @@
  * This is not a real class, and cannot be instanciated.<br />
  * Use {@link DuAEF.DuScriptUI.createLayerPicker} to create a picker.<br />
  * The picker inherits the Group object from ScriptUI and has all of its properties and methods.
- * @property {LayerSelector[]} selectors  - The layer selectors
+ * @property {DuAELayerSelector[]} selectors  - The layer selectors
  * @property {string[]} inputs - The labels texts
  */
 
@@ -23,7 +23,7 @@
  * @method
  * @memberof LayerPicker
  * @name addSelector
- * @return {LayerSelector} The added LayerSelector
+ * @return {DuAELayerSelector} The added DuAELayerSelector
  */
 
 /**
@@ -114,7 +114,7 @@ DuAEF.DuScriptUI.addLayerPicker = function( container )
  * @method
  * @memberof LayerPickerDialog
  * @name addSelector
- * @return {LayerSelector} The added LayerSelector
+ * @return {DuAELayerSelector} The added DuAELayerSelector
  */
 
 /**

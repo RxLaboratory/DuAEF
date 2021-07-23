@@ -42,6 +42,12 @@
             alert(pseudoEffect.props);
             alert(effect);
         };
+
+        var layerSelector = DuScriptUI.layerSelector( this, "A layer selector");
+
+        layerSelector.onChange = function() {
+            alert(layerSelector.getLayer());
+        }
     }
 
     secondTab.build = function( )

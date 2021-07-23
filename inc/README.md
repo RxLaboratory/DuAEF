@@ -41,5 +41,7 @@ These stables show where to find the implementation for each class & namespace o
 
 | Name | Type | File | Description |
 | :---: | :---: | --- | --- |
+| `DuAELayerSelector` | *Class* | [inc/duscriptui_extension.jsxinc](https://github.com/RxLaboratory/DuAEF/blob/main/inc/duscriptui_extension.jsxinc) | A custom dropdown selector to select layers. |
 | `DuList` | *Class* | [inc/dulist_extension.jsxinc](https://github.com/RxLaboratory/DuAEF/blob/main/inc/dulist_extension.jsxinc) | Adds methods specific to AE Collections. |
+| `DuScriptUI` | *namespace* | [inc/duscriptui_extension.jsxinc](https://github.com/RxLaboratory/DuAEF/blob/main/inc/duscriptui_extension.jsxinc) | Adds new methods. |
 | `DuScriptUI.String` | *enum* | [inc/duscriptui_extension.jsxinc](https://github.com/RxLaboratory/DuAEF/blob/main/inc/duscriptui_extension.jsxinc) | Adds new strings used by the UI. |
