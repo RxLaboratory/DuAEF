@@ -85,7 +85,4 @@ DuAEF.init = function( scriptName, scriptVersion, companyName )
 DuAEF.enterRunTime = function()
 {
     DuESF.enterRunTime();
-
-    //do init methods
-    if (DuAEF.Duik) DuAEF.Duik.postInit();
 }

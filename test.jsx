@@ -52,7 +52,6 @@
         var compSelector = DuScriptUI.compSelector( this, "A comp selector");
 
         compSelector.onChange = function() {
-            alert("test");
             alert( compSelector.getComp() );
         }
     }

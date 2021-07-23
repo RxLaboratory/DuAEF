@@ -729,7 +729,6 @@ DuAE.getDuAEProperty = function (props)
 
 /**
 	* Checks if the file is a layered type (psd, ai, psb, fla...)
-	* @memberof DuAEF.DuAE
 	* @param {String|File}	 [file]	- The file or the path
 	* @return {boolean} true if it's a layered file
 */

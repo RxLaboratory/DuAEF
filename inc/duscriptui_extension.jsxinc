@@ -116,7 +116,6 @@ DuScriptUI.askFilesAndNetworkAccess = function( callback, ui, scriptName, reInit
 
 /**
  * Creates a drop down selector for layers
- * @memberof DuAEF.DuScriptUI
  * @param {Window|Panel|Group} container - The ScriptUI Object which will contain and display the selector.
  * @param {string} [helpTip=""] - The help tip.
  * @return {DuAELayerSelector} - The selector
@@ -410,7 +409,6 @@ DuScriptUI.layerSelector = function( container, helpTip )
 
 /**
  * Creates a drop down selector for compositions
- * @memberof DuAEF.DuScriptUI
  * @param {Window|Panel|Group} container - The ScriptUI Object which will contain and display the selector.
  * @param {string} [helpTip=""] - The help tip.
  * @return {DuAECompSelector} - The selector
@@ -656,7 +654,6 @@ DuScriptUI.compSelector = function( container, helpTip )
 
 /**
  * Creates a two-column group to allow the user to pick layers
- * @memberof DuAEF.DuScriptUI
  * @param {Window|Panel|Group} container - The ScriptUI Object which will contain and display the selector.
  * @return {DuAELayerPicker} The picker.
  */

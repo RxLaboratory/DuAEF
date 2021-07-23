@@ -1,7 +1,7 @@
 /* License
-	DuAEF_DuExpressionLib
+	DuExpression Library
 
-	Copyright (c) 2020 Nicolas Dufresne, Rainbox Laboratory
+	Copyright (c) 2020-2021 Nicolas Dufresne and contributors
 
 	This file is part of DuExpression - The Duduf Expression Library.
 
@@ -31,7 +31,8 @@ if (typeof DuAEExpression === "undefined") DuAEExpression = {};
 * Using DuAEF, you can easily include the methods and classes listed here to your expressions,<br />
 * using {@link DuAEExpression.Library.get} and {@link DuAEExpression.Library.getRequirements}. These methods take the name of the function/class as arguments.
 * @namespace
-* @memberof DuAEF.DuExpression
+* @name Library
+* @memberof DuAEExpression
 */
 if (typeof DuAEExpression.Library === "undefined") DuAEExpression.Library = [];
 /**
@@ -469,14 +470,14 @@ DuAEExpression.Library["FuzzyLogic"].requirements = ["logistic","inverseLogistic
 
 /**
  * Interpolates a value with a bezier curve.<br />
- * This method can replace <code>linear()</code> and <code>ease()</code> with a custom bézier interpolation.
+ * This method can replace <code>linear()</code> and <code>ease()</code> with a custom bÃ©zier interpolation.
  * @function
  * @param {number} t The value to interpolate
  * @param {number} [tMin=0] The minimum value of the initial range
  * @param {number} [tMax=1] The maximum value of the initial range
  * @param {number} [value1=0] The minimum value of the interpolated result
  * @param {number} [value2=1] The maximum value of the interpolated result
- * @param {number[]} [bezierPoints=[0.33,0.0,0.66,1.0]] an Array of 4 coordinates wihtin the [0.0, 1.0] range which describes the Bézier interpolation. The default mimics the native ease() function<br />
+ * @param {number[]} [bezierPoints=[0.33,0.0,0.66,1.0]] an Array of 4 coordinates wihtin the [0.0, 1.0] range which describes the BÃ©zier interpolation. The default mimics the native ease() function<br />
  * [ outTangentX, outTangentY, inTangentX, inTangentY ]
  * @return {number} the value.
  */
