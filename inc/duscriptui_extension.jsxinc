@@ -10,6 +10,23 @@ DuScriptUI.String.NONE = "None";
 DuScriptUI.String.SELECT_LAYERS = "Select layers";
 
 /**
+ * Runs the installation wizard for the script (asks for files and network access, asks the language...).
+ * @param {function} callback - The function to execute when ready.<br />
+ * This function should be the one which loads the script.
+ * @param {Panel|Window} [ui]	- A container to display the UI. A modal Dialog is created if omitted
+ * @param {string} [scriptName=DuESF.scriptName] - The name of the script, used in the UI.
+ * @param {boolean} [reInit=false] - Set to true to display to prompt to reinit/reinstall the script below the button to ask for file access.
+ * @param {function} [reInitMethod] - A function to run in order to reinit/reinstall the script as soon as we get file access, before running the callback
+ */
+DuScriptUI.setupScript = function( callback, ui, scriptName, reInit, reInitMethod )
+{
+    function language( ) { DuScriptUI.askLanguage( callback, ui ); }
+
+    DuScriptUI.askFilesAndNetworkAccess( language, ui, scriptName, reInit, reInitMethod );
+    
+}
+
+/**
  * Displays an invitation to enable file and network access.<br />
  * Won't do nothing if the script already has file and network access, just run the callback.<br />
  * Use this method before loading any script which needs this authorization. 
@@ -22,60 +39,139 @@ DuScriptUI.String.SELECT_LAYERS = "Select layers";
  */
 DuScriptUI.askFilesAndNetworkAccess = function( callback, ui, scriptName, reInit, reInitMethod )
 {
-    ui = def( ui, new Window('dialog', DuScriptUI.String.ASK_FILES_NETWORK_ACCESS_TITLE) );
+    if (! (ui instanceof Panel || ui instanceof Window) )
+    {
+        ui = new Window('dialog', DuScriptUI.String.ASK_FILES_NETWORK_ACCESS_TITLE)
+    }
 
     reInit = def( reInit, false);
 	scriptName = def(scriptName, DuESF.scriptName);
 
-    if ( !DuAE.hasFileAndNetworkAccess() )
+    if ( DuAE.hasFileAndNetworkAccess() )
     {
-        var ui_accessFileAndNetworkGroup = DuScriptUI.group( ui, 'column' );
-
-        var accessExplanation = tr( DuScriptUI.String.ASK_FILES_NETWORK_ACCESS, undefined, scriptName);
-        var reInitPrompt = tr( DuScriptUI.String.REINIT_PROMPT, undefined, [scriptName, scriptName]);
-
-        var ui_reinitCheckbox;
-        
-        ui_accessFileAndNetworkGroup.add( 'statictext', undefined, accessExplanation,
-        {
-            multiline: true
-        } );
-
-        //if reinit add prompt
-        if (reInit)
-        {
-            ui_accessFileAndNetworkGroup.add( 'statictext', undefined, reInitPrompt,
-            {
-                multiline: true
-            } );
-            ui_reinitCheckbox = ui_accessFileAndNetworkGroup.add( 'checkbox', undefined, tr( DuScriptUI.String.REINIT_SCRIPT, undefined, scriptName) );
-        }
-
-        var ui_fileAndNetworkPrefButton = ui_accessFileAndNetworkGroup.add( 'button', undefined, tr( DuScriptUI.String.OPEN_PREFS ) );
-
-        ui_fileAndNetworkPrefButton.onClick = function()
-        {
-            var ok = DuAE.askFilesAndNetworkAccess( false );
-            if ( ok )
-            {
-                //if reinit and box checked, reinitmethod before callback
-                if (reInit)
-                {
-                    if (ui_reinitCheckbox.value) reInitMethod();
-                }
-
-                // Delete
-                ui.remove( ui_accessFileAndNetworkGroup );
-
-                callback();
-            }
-        }
-
-        DuScriptUI.showUI( ui, false );
+        callback();
         return;
     }
 
-    callback( );
+    var ui_accessFileAndNetworkGroup = DuScriptUI.group( ui, 'column' );
+
+    var accessExplanation = tr( DuScriptUI.String.ASK_FILES_NETWORK_ACCESS, undefined, scriptName);
+    var reInitPrompt = tr( DuScriptUI.String.REINIT_PROMPT, undefined, [scriptName, scriptName]);
+
+    var ui_reinitCheckbox;
+    
+    ui_accessFileAndNetworkGroup.add( 'statictext', undefined, accessExplanation,
+    {
+        multiline: true
+    } );
+
+    //if reinit add prompt
+    if (reInit)
+    {
+        ui_accessFileAndNetworkGroup.add( 'statictext', undefined, reInitPrompt,
+        {
+            multiline: true
+        } );
+        ui_reinitCheckbox = ui_accessFileAndNetworkGroup.add( 'checkbox', undefined, tr( DuScriptUI.String.REINIT_SCRIPT, undefined, scriptName) );
+    }
+
+    var ui_fileAndNetworkPrefButton = ui_accessFileAndNetworkGroup.add( 'button', undefined, tr( DuScriptUI.String.OPEN_PREFS ) );
+
+    ui_fileAndNetworkPrefButton.onClick = function()
+    {
+        var ok = DuAE.askFilesAndNetworkAccess( false );
+        if ( ok )
+        {
+            //if reinit and box checked, reinitmethod before callback
+            if (reInit)
+            {
+                if (ui_reinitCheckbox.value) reInitMethod();
+            }
+
+            // Delete
+            ui.remove( ui_accessFileAndNetworkGroup );
+
+            callback();
+        }
+    }
+
+    DuScriptUI.showUI( ui, false );
+
+
+}
+
+/**
+ * Displays a prompt to select the language of the script.<br />
+ * Won't do nothing if the script already has a language set in the settings.<br />
+ * Use this method before launching the script. 
+ * @param {function} callback - The function to execute when the user has chosen the language.<br />
+ * This function should be the one which loads the script.
+ * @param {Panel|Window} [ui]	- A container to display the UI. A modal Dialog is created if omitted
+ */
+DuScriptUI.askLanguage = function ( callback, ui )
+{
+    if (! (ui instanceof Panel || ui instanceof Window) )
+    {
+        ui = new Window('dialog', DuScriptUI.String.ASK_FILES_NETWORK_ACCESS_TITLE)
+    }
+
+    var commonSettings = def( DuESF.scriptSettings.data.common, {} );
+    var currentLanguageName = def (commonSettings.currentLanguageName, '');
+
+    DuTranslator.getAvailable();
+    var languages = DuTranslator.getPrettyNames();
+    var languageCount = languages.length;
+
+    if (currentLanguageName != '' || languageCount == 0)
+    {
+        callback()
+        return;
+    }
+
+    var ui_languageGroup = DuScriptUI.group( ui, 'column' );
+
+    ui_languageGroup.add('statictext', undefined, "Select the language you wish to use\nwith this script.", { multiline: true } );
+
+    var currentIndex = 0;
+    var languageSelector = DuScriptUI.selector( ui_languageGroup, DuScriptUI.String.LANGUAGE_TIP );
+    for (var i = 0; i < languageCount; i++ )
+    {
+        languageSelector.addButton(
+            languages[i],
+            w16_language
+        );
+        if (languages[i] == 'Esperanto') currentIndex = i;
+    }
+
+    languageSelector.setCurrentIndex( currentIndex );
+
+    var okButton = DuScriptUI.button(
+        ui_languageGroup,
+        DuScriptUI.String.APPLY,
+        w12_check,
+        DuScriptUI.String.APPLY_SETTINGS,
+        false,
+        'row',
+        'center'
+    )
+
+    okButton.onClick = function()
+    {
+        // Save settings
+        DuESF.scriptSettings.data.common = def( DuESF.scriptSettings.data.common, {} );
+        DuESF.scriptSettings.data.common.language = DuTranslator.getLanguageId(languageSelector.label.text);
+        DuESF.scriptSettings.data.common.currentLanguageName = languageSelector.label.text;
+        DuTranslator.setPrettyLanguage( languageSelector.label.text );
+
+        DuESF.scriptSettings.save();
+
+        // Delete
+        ui.remove( ui_languageGroup );
+
+        callback();
+    }
+
+    DuScriptUI.showUI( ui, false );
 }
 
 /**
