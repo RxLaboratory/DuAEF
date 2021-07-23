@@ -1,4 +1,4 @@
-DuScriptUI.String.ASK_FILES_NETWORK_ACCESS = "The {#} needs to be allowed to write files.\nPlease, check the box called 'Allow Scripts to write files...' in the scripting preferences of After Effects.";
+DuScriptUI.String.ASK_FILES_NETWORK_ACCESS = "{#} needs to be allowed to write files.\nPlease, check the box called 'Allow Scripts to write files...' in the scripting preferences of After Effects.";
 DuScriptUI.String.ASK_FILES_NETWORK_ACCESS_TITLE = "File and network access";
 DuScriptUI.String.REINIT_PROMPT = "/!\\ ======\n/!\\ It seems something went wrong with {#} the last time you used it.\n/!\\ Check the box below to re-initialize {#} and try to make it work again.\n/!\\ ======";
 DuScriptUI.String.REINIT_SCRIPT = "Re-initialize {#} before launch.";
