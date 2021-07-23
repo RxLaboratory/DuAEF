@@ -48,6 +48,13 @@
         layerSelector.onChange = function() {
             alert(layerSelector.getLayer());
         }
+
+        var compSelector = DuScriptUI.compSelector( this, "A comp selector");
+
+        compSelector.onChange = function() {
+            alert("test");
+            alert( compSelector.getComp() );
+        }
     }
 
     secondTab.build = function( )

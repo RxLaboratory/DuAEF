@@ -1,2 +1,5 @@
 #include "icons/w12_layers.png.jsxinc"
-#include "icons/w12_eye_dropper.png.jsxinc"
+#include "icons/w12_comp.png.jsxinc"
+
+DuScriptUI.Icon.AE_LAYERS = w12_layers;
+DuScriptUI.Icon.AE_COMP = w12_comp;

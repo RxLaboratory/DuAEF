@@ -7,6 +7,7 @@ DuScriptUI.String.INVALID_PSEUDO_EFFECT = "Invalid pseudo effect file or match n
 DuScriptUI.String.EDIT_MODE = "Edit mode";
 DuScriptUI.String.OPEN_PREFS = "Open preferences";
 DuScriptUI.String.NONE = "None";
+DuScriptUI.String.SELECT_LAYERS = "Select layers";
 
 /**
  * Displays an invitation to enable file and network access.<br />
@@ -138,7 +139,7 @@ DuScriptUI.layerSelector = function( container, helpTip )
     selector.mainGroup.alignment = [ 'fill', 'fill' ];
     selector.mainGroup.alignChildren = [ 'center', 'center' ];
     selector.helpTip = helpTip;
-    DuScriptUI.setBackgroundColor( selector.mainGroup, DuColor.Color.OBSIDIAN );
+    DuScriptUI.setBackgroundColor( selector.mainGroup, DuColor.Color.TRANSPARENT );
 
     //init
     selector.index = 0;
@@ -160,10 +161,7 @@ DuScriptUI.layerSelector = function( container, helpTip )
     selector.label.helpTip = '';
     selector.label.alignment = [ 'fill', 'center' ];
     selector.label.helpTip = helpTip;
-
-    //add fillers to be able to click anywhere on the button
-    selector.fillerR = selector.mainGroup.add( 'statictext', undefined, " " );
-    selector.fillerR.alignment = [ 'fill', 'fill' ];
+    DuScriptUI.setTextColor( selector.label, DuColor.Color.APP_TEXT_COLOR );
 
     //create popup
     selector.popup = new Window( 'palette', '', undefined,
@@ -202,16 +200,14 @@ DuScriptUI.layerSelector = function( container, helpTip )
         selector.popup.show();
     }
 
-    selector.mainGroup.addEventListener( "click", selector.clicked, true );
-
     //the pick button
-    selector.pickGroup = selector.mainGroup.add('group');
+    selector.pickGroup = selector.add('group');
     selector.pickGroup.margins = 0;
     selector.pickGroup.alignment = ['right', 'fill'];
-    selector.pickButton = selector.mainGroup.add( 'image', undefined, w12_eye_dropper.binAsString );
+    selector.pickButton = selector.pickGroup.add( 'image', undefined, w12_eye_dropper.binAsString );
     selector.pickButton.alignment = [ 'center', 'center' ];
 
-    selector.popup.list.add( 'item', DuScriptUI.String.NONE );
+    selector.popup.list.add( 'item', tr( DuScriptUI.String.NONE ) );
     selector.popup.list.selection = 0;
 
     selector.refresh = function()
@@ -228,8 +224,6 @@ DuScriptUI.layerSelector = function( container, helpTip )
             layers = DuAELayer.sortByIndex ( comp.selectedLayers );
         }
         else layers = comp.layers;
-
-        alert(layers);
 
         var prevIndex = selector.index;
         selector.popup.list.removeAll();
@@ -252,32 +246,32 @@ DuScriptUI.layerSelector = function( container, helpTip )
 
         selector.pauseRefresh = true;
 
-        if ( index == 0 )
-        {
-            selector.popup.list.selection = 0;
-        }
-        else
+        var found = false;
+
+        if ( index > 0 )
         {
             for ( var i = 0, num = selector.popup.list.items.length; i < num; i++ )
             {
                 var t = selector.popup.list.items[ i ].text;
-                if ( index == parseInt( t.split( ' | ' )[ 0 ] ) )
+                var info = t.split( ' | ' );
+                var idx = parseInt( info[ 0 ] );
+                if ( index == idx )
                 {
+                    selector.label.text = t;
                     selector.popup.list.selection = i;
+                    found = true;
                     break;
                 }
             }
         }
 
-        if ( selector.popup.list.selection ) selector.label.text = selector.popup.list.selection.text;
-        else
+        if (!found)
         {
             selector.popup.list.selection = 0;
-            selector.label.text = tr(DuScriptUI.String.NONE);
+            selector.label.text = tr( DuScriptUI.String.NONE );
         }
 
         selector.index = index;
-
         selector.pauseRefresh = false;
 
         if (!quiet) selector.onChange();
@@ -297,7 +291,7 @@ DuScriptUI.layerSelector = function( container, helpTip )
     {
         e.stopPropagation();
         DuScriptUI.dimControls();
-        DuScriptUI.setBackgroundColor( selector, DuColor.Color.APP_HIGHLIGHT_COLOR.darker() );
+        DuScriptUI.setBackgroundColor( selector.mainGroup, DuColor.Color.APP_HIGHLIGHT_COLOR.darker() );
         DuScriptUI.highlightedControls.push( selector );
     }
 
@@ -305,14 +299,14 @@ DuScriptUI.layerSelector = function( container, helpTip )
     {
         e.stopPropagation();
         DuScriptUI.dimControls();
-        DuScriptUI.setBackgroundColor( selector.pickgroup, DuColor.Color.APP_HIGHLIGHT_COLOR.darker() );
+        DuScriptUI.setBackgroundColor( selector.pickGroup, DuColor.Color.APP_HIGHLIGHT_COLOR.darker() );
         DuScriptUI.highlightedControls.push( selector );
     }
 
     selector.dim = function( e )
     {
-        DuScriptUI.setBackgroundColor( selector, DuColor.Color.TRANSPARENT );
-        DuScriptUI.setBackgroundColor( selector.pickgroup, DuColor.Color.TRANSPARENT );
+        DuScriptUI.setBackgroundColor( selector.mainGroup, DuColor.Color.TRANSPARENT );
+        DuScriptUI.setBackgroundColor( selector.pickGroup, DuColor.Color.TRANSPARENT );
     }
 
     selector.pick = function()
@@ -339,20 +333,24 @@ DuScriptUI.layerSelector = function( container, helpTip )
 
     selector.mainGroup.addEventListener( "mouseover", selector.highlight );
     selector.pickButton.addEventListener( "mouseover", selector.pickHighlight );
+    selector.pickGroup.addEventListener( "mouseover", selector.pickHighlight );
 
     selector.pickButton.addEventListener( "click", selector.pick );
-
+    selector.mainGroup.addEventListener( "click", selector.clicked, true );
+    
     selector.onChange = function() {};
 
     selector.refresh();
+
+    selector.setCurrentIndex(0);
 
     return selector;
 }
 
 /**
  * @class
- * @name CompSelector
- * @classdesc For use with {@link DuAEF.DuScriptUI}.<br />
+ * @name DuAECompSelector
+ * @classdesc For use with {@link DuScriptUI}.<br />
  * A drop down selector.<br />
  * This is not a real class, and cannot be instanciated.<br />
  * Use {@link DuScriptUI.compSelector} to create a Selector.<br />
@@ -371,8 +369,8 @@ DuScriptUI.layerSelector = function( container, helpTip )
 /**
  * The function to execute when the index changes.<br />
  * The method is called after the index has changed.
- * @callback CompSelector~onChange
- * @memberof CompSelector
+ * @callback DuAECompSelector~onChange
+ * @memberof DuAECompSelector
  */
 
 
@@ -381,31 +379,31 @@ DuScriptUI.layerSelector = function( container, helpTip )
  * The default function will get all the comps in the project,<br />
  * assign another function to this callback if you need to filter these comps.<br />
  * The function must return an array of CompItem.
- * @callback CompSelector~filterComps
- * @memberof CompSelector
+ * @callback DuAECompSelector~filterComps
+ * @memberof DuAECompSelector
  * @return {CompItem[]} The compositions to set in the selector.
  */
 
 /**
  * Changes the selection and the current comp id of the selector
  * @method
- * @memberof CompSelector
+ * @memberof DuAECompSelector
  * @name setCurrentId
  * @param {int} index - The new comp id
  */
 
 /**
- * Sets the comp list
+ * Refreshes the comp list
  * @method
- * @memberof CompSelector
- * @name setComps
- * @param {CompItem[]} [comps] - The list of compositions. By default, will use {@link CompSelector.filterComps()} to get the comps.
+ * @memberof DuAECompSelector
+ * @name refresh
+ * @param {CompItem[]} [comps] - The list of compositions. By default, will use {@link DuAECompSelector.filterComps()} to get the comps.
  */
 
 /**
  * Gets the selected comp
  * @method
- * @memberof CompSelector
+ * @memberof DuAECompSelector
  * @name getComp
  * @return {CompItem|null} the selected comp
  */
@@ -414,23 +412,28 @@ DuScriptUI.layerSelector = function( container, helpTip )
  * Creates a drop down selector for compositions
  * @memberof DuAEF.DuScriptUI
  * @param {Window|Panel|Group} container - The ScriptUI Object which will contain and display the selector.
- * @return {CompSelector} - The selector
+ * @param {string} [helpTip=""] - The help tip.
+ * @return {DuAECompSelector} - The selector
  */
-DuScriptUI.compSelector = function( container )
+DuScriptUI.compSelector = function( container, helpTip )
 {
+    helpTip = def(helpTip, '');
+    helpTip = tr(helpTip);
+
     //create main group
     var selector = container.add( 'group' );
     selector.orientation = 'row';
-    selector.margins = 2;
-    selector.spacing = 5;
+    selector.spacing = 0;
     selector.alignment = [ 'fill', 'top' ];
+    selector.alignChildren = [ 'center', 'center' ];
+
     selector.mainGroup = selector.add( 'group' );
     selector.mainGroup.orientation = 'row';
-    selector.mainGroup.margins = 0;
-    selector.mainGroup.spacing = 5;
+    selector.mainGroup.margins = 1;
     selector.mainGroup.alignment = [ 'fill', 'fill' ];
     selector.mainGroup.alignChildren = [ 'center', 'center' ];
-    DuScriptUI.setBackgroundColor( selector, DuColor.Color.ABYSS_GREY );
+    selector.helpTip = helpTip;
+    DuScriptUI.setBackgroundColor( selector.mainGroup, DuColor.Color.TRANSPARENT );
 
     //init
     selector.id = 0;
@@ -438,99 +441,78 @@ DuScriptUI.compSelector = function( container )
     selector.selectedOnly = false;
     selector.pauseRefresh = false;
 
-    var cs6 = DuAE.version.version >= 11 && DuAE.version.version < 12;
+    selector.fillerL = selector.mainGroup.add( 'statictext', undefined, " " );
+    selector.fillerL.alignment = [ 'left', 'fill' ];
+    selector.fillerL.size = [5, -1];
 
-    //CS6
-    if ( cs6 )
+    //the menu button
+    selector.menuButton = selector.mainGroup.add( 'image', undefined, w12_comp.binAsString );
+    selector.menuButton.alignment = [ 'left', 'center' ];
+    selector.menuButton.helpTip = helpTip;
+
+    //the text
+    selector.label = selector.mainGroup.add( 'statictext', undefined, '' );
+    selector.label.helpTip = '';
+    selector.label.alignment = [ 'fill', 'center' ];
+    selector.label.helpTip = helpTip;
+    DuScriptUI.setTextColor( selector.label, DuColor.Color.APP_TEXT_COLOR );
+
+    //create popup
+    selector.popup = new Window( 'palette', '', undefined,
     {
-        //the menu button
-        selector.menuImage = DuBinary.toFile( w14_comp_m );
-        selector.menuButton = selector.mainGroup.add( 'image', undefined, selector.menuImage );
-        selector.menuButton.alignment = [ 'left', 'center' ];
-
-        //the dropdownlist
-        selector.popup = {};
-        selector.popup.list = selector.mainGroup.add( 'dropdownlist' );
-        selector.popup.list.alignment = [ 'fill', 'center' ];
-    }
-    else
+        borderless: true
+    } );
+    selector.popup.margins = 2;
+    selector.popup.spacing = 0;
+    selector.popup.closeButton = DuScriptUI.button( selector.popup, tr(DuScriptUI.String.CANCEL) );
+    selector.popup.closeButton.onClick = selector.popup.onDeactivate = function()
     {
-        //the menu button
-        if ( DuAE.hasFileAndNetworkAccess() )
-        {
-            selector.menuImage = DuBinary.toFile( w14_comp_m );
-            selector.menuImageOver = DuBinary.toFile( w14_comp_l );
-            selector.menuButton = selector.mainGroup.add( 'image', undefined, selector.menuImage );
-            selector.menuButton.alignment = [ 'left', 'center' ];
-        }
+        selector.popup.hide();
+    };
+    selector.popup.buttons = selector.popup.add( 'group' );
+    selector.popup.buttons.orientation = 'column';
+    selector.popup.buttons.margins = 0;
+    selector.popup.buttons.spacing = 0;
+    selector.popup.hide();
 
+    selector.popup.list = selector.popup.add( 'listbox', undefined );
 
-        //the text
-        selector.label = selector.mainGroup.add( 'statictext', undefined, 'None' );
-        selector.label.helpTip = '';
-        selector.label.alignment = [ 'fill', 'center' ];
+    selector.clicked = function( e )
+    {
+        selector.refresh();
 
-        //create popup
-        selector.popup = new Window( 'palette', '', undefined,
-        {
-            borderless: true
-        } );
-        selector.popup.margins = 2;
-        selector.popup.spacing = 0;
-        DuScriptUI.setBackgroundColor( selector.popup, DuColor.Color.DARK_GREY );
-        selector.popup.closeButton = DuScriptUI.button( selector.popup, "Cancel" );
-        selector.popup.closeButton.onClick = function()
-        {
-            selector.popup.hide();
-        };
-        selector.popup.onDeactivate = function()
-        {
-            selector.popup.hide();
-        };
-        selector.popup.list = selector.popup.add( 'listbox', undefined );
+        selector.popup.list.minimumSize.width = selector.popup.list.maximumSize.width = selector.size.width;
+        selector.popup.list.minimumSize.height = selector.popup.list.maximumSize.height = selector.size.height * 10;
 
-        selector.clicked = function( e )
-        {
-            selector.popup.list.minimumSize.width = selector.popup.list.maximumSize.width = selector.size.width;
-            selector.popup.list.minimumSize.height = selector.popup.list.maximumSize.height = selector.size.height * 10;
+        selector.popup.layout.layout();
+        selector.popup.layout.resize();
 
-            selector.popup.layout.layout();
-            selector.popup.layout.resize();
+        var x = e.screenX - e.clientX;
+        var y = e.screenY - e.clientY;
+        selector.popup.location = [ x, y ];
 
-            var x = e.screenX - e.clientX;
-            var y = e.screenY - e.clientY;
-            selector.popup.location = [ x, y ];
-
-            selector.popup.show();
-        }
+        selector.popup.show();
     }
 
-    //the pick & refresh buttons
-    selector.pickImage = DuBinary.toFile( w14_eyedropper_m );
-    selector.pickImageOver = DuBinary.toFile( w14_eyedropper_l );
-    if ( DuAE.hasFileAndNetworkAccess() ) selector.pickButton = selector.add( 'image', undefined, selector.pickImage );
-    else selector.pickButton = selector.add( 'statictext', undefined, 'P' );
-    selector.pickButton.alignment = [ 'right', 'center' ];
+    //the pick button
+    selector.pickGroup = selector.add('group');
+    selector.pickGroup.margins = 0;
+    selector.pickGroup.alignment = ['right', 'fill'];
+    selector.pickButton = selector.pickGroup.add( 'image', undefined, w12_eye_dropper.binAsString );
+    selector.pickButton.alignment = [ 'center', 'center' ];
 
-    //the refresh button
-    selector.refreshImage = DuBinary.toFile( w14_update_m );
-    selector.refreshImageOver = DuBinary.toFile( w14_update_l );
-    if ( DuAE.hasFileAndNetworkAccess() ) selector.refreshButton = selector.add( 'image', undefined, selector.refreshImage );
-    else selector.refreshButton = selector.add( 'statictext', undefined, 'R' );
-    selector.refreshButton.alignment = [ 'right', 'center' ];
-
-    var itemNone = selector.popup.list.add( 'item', "None" );
+    var itemNone = selector.popup.list.add( 'item', tr( DuScriptUI.String.NONE ) );
     itemNone.id = 0;
     selector.popup.list.selection = 0;
 
-    selector.setComps = function()
+    selector.refresh = function()
     {
         var comps = selector.filterComps();
         selector.pauseRefresh = true;
 
         var prevId = selector.id;
         selector.popup.list.removeAll();
-        var itemNone = selector.popup.list.add( 'item', "None" );
+        var itemNone = selector.popup.list.add( 'item', tr( DuScriptUI.String.NONE ) );
         itemNone.id = 0;
         var it = new DuList( comps );
         it.do( function( comp )
@@ -538,7 +520,7 @@ DuScriptUI.compSelector = function( container )
             var item = selector.popup.list.add( 'item', comp.name );
             item.id = comp.id;
         } );
-        selector.setCurrentId( prevId );
+        selector.setCurrentId( prevId, true );
 
         selector.pauseRefresh = false;
     };
@@ -549,17 +531,17 @@ DuScriptUI.compSelector = function( container )
         return DuAEProject.getItemById( selector.id );
     }
 
-    selector.setCurrentId = function( id )
+    selector.setCurrentId = function( id, quiet )
     {
+        quiet = def(quiet, false);
+
         if ( id < 0 ) id = 0;
 
         selector.pauseRefresh = true;
 
-        if ( id == 0 )
-        {
-            selector.popup.list.selection = 0;
-        }
-        else
+        var found = false;
+
+        if (id > 0)
         {
             for ( var i = 0, num = selector.popup.list.items.length; i < num; i++ )
             {
@@ -567,53 +549,39 @@ DuScriptUI.compSelector = function( container )
                 if ( id == item.id )
                 {
                     selector.popup.list.selection = i;
+                    selector.label.text = selector.popup.list.selection.text;
+                    found = true;
                     break;
                 }
             }
         }
 
-        if ( !cs6 )
+        if (!found)
         {
-            if ( selector.popup.list.selection ) selector.label.text = selector.popup.list.selection.text;
-            else
-            {
-                selector.popup.list.selection = 0;
-                selector.label.text = "None";
-            }
+            selector.popup.list.selection = 0;
+            selector.label.text = tr( DuScriptUI.String.NONE );
         }
 
         selector.id = id;
 
         selector.pauseRefresh = false;
 
-        selector.onChange();
+        if (!quiet) selector.onChange();
     };
 
     selector.popup.list.onChange = function()
     {
         if ( selector.pauseRefresh ) return;
         selector.setCurrentId( selector.popup.list.selection.id );
-        if ( !cs6 ) selector.popup.hide();
+        selector.popup.hide();
     };
-
-    selector.onChange = function() {};
 
     //mouse over
     selector.highlight = function( e )
     {
         e.stopPropagation();
         DuScriptUI.dimControls();
-        if ( DuAE.hasFileAndNetworkAccess() ) selector.menuButton.image = selector.menuImageOver;
-        DuScriptUI.setTextColor( selector.label, DuColor.Color.VERY_LIGHT_GREY );
-        DuScriptUI.setBackgroundColor( selector, DuColor.Color.DARK_GREY );
-        DuScriptUI.highlightedControls.push( selector );
-    }
-
-    selector.refreshHighlight = function( e )
-    {
-        e.stopPropagation();
-        DuScriptUI.dimControls();
-        if ( DuAE.hasFileAndNetworkAccess() ) selector.refreshButton.image = selector.refreshImageOver;
+        DuScriptUI.setBackgroundColor( selector.mainGroup, DuColor.Color.APP_HIGHLIGHT_COLOR.darker() );
         DuScriptUI.highlightedControls.push( selector );
     }
 
@@ -621,17 +589,14 @@ DuScriptUI.compSelector = function( container )
     {
         e.stopPropagation();
         DuScriptUI.dimControls();
-        if ( DuAE.hasFileAndNetworkAccess() ) selector.pickButton.image = selector.pickImageOver;
+        DuScriptUI.setBackgroundColor( selector.pickGroup, DuColor.Color.APP_HIGHLIGHT_COLOR.darker() );
         DuScriptUI.highlightedControls.push( selector );
     }
 
     selector.dim = function( e )
     {
-        if ( DuAE.hasFileAndNetworkAccess() ) selector.menuButton.image = selector.menuImage;
-        if ( DuAE.hasFileAndNetworkAccess() ) selector.refreshButton.image = selector.refreshImage;
-        if ( DuAE.hasFileAndNetworkAccess() ) selector.pickButton.image = selector.pickImage;
-        DuScriptUI.setTextColor( selector.label, DuColor.Color.LIGHT_GREY );
-        DuScriptUI.setBackgroundColor( selector, DuColor.Color.ABYSS_GREY );
+        DuScriptUI.setBackgroundColor( selector.mainGroup, DuColor.Color.TRANSPARENT );
+        DuScriptUI.setBackgroundColor( selector.pickGroup, DuColor.Color.TRANSPARENT );
     }
 
     selector.pick = function()
@@ -640,28 +605,210 @@ DuScriptUI.compSelector = function( container )
         if ( comp ) selector.setCurrentId( comp.id );
     }
 
-    // Hack - CS6 Bugs on mouseover with images
-    if ( DuAE.version.version >= 11 && DuAE.version.version < 12 )
-    {
-        //selector.label.addEventListener("mouseover",selector.highlight);
-    }
-    else
-    {
-        selector.mainGroup.addEventListener( "mouseover", selector.highlight );
-        selector.refreshButton.addEventListener( "mouseover", selector.refreshHighlight );
-        selector.pickButton.addEventListener( "mouseover", selector.pickHighlight );
-    }
+    selector.mainGroup.addEventListener( "mouseover", selector.highlight );
+    selector.pickButton.addEventListener( "mouseover", selector.pickHighlight );
+    selector.pickGroup.addEventListener( "mouseover", selector.pickHighlight );
 
     selector.mainGroup.addEventListener( "click", selector.clicked, true );
-    selector.refreshButton.addEventListener( "click", selector.setComps );
     selector.pickButton.addEventListener( "click", selector.pick );
 
     selector.onChange = function() {};
+
     selector.filterComps = function()
     {
         var comps = DuAEProject.getComps();
         return comps;
     };
 
+    selector.refresh();
+
+    selector.setCurrentId(0);
+
     return selector;
+}
+
+/**
+ * @class
+ * @name DuAELayerPicker
+ * @classdesc For use with {@link DuScriptUI}.<br />
+ * A picker for layers with labels.<br />
+ * This is not a real class, and cannot be instanciated.<br />
+ * Use {@link DuScriptUI.layerPicker} to create a picker.<br />
+ * The picker inherits the Group object from ScriptUI and has all of its properties and methods.
+ * @property {DuAELayerSelector[]} selectors  - The layer selectors
+ * @property {string[]} inputs - The labels texts
+ */
+
+/**
+ * Empties the DuAELayerPicker
+ * @method
+ * @memberof DuAELayerPicker
+ * @name removeAll
+ */
+
+/**
+ * Adds a new line on the DuAELayerPicker
+ * @method
+ * @memberof DuAELayerPicker
+ * @name addSelector
+ * @return {DuAELayerSelector} The added DuAELayerSelector
+ */
+
+/**
+ * Creates a two-column group to allow the user to pick layers
+ * @memberof DuAEF.DuScriptUI
+ * @param {Window|Panel|Group} container - The ScriptUI Object which will contain and display the selector.
+ * @return {DuAELayerPicker} The picker.
+ */
+DuScriptUI.layerPicker = function( container )
+{
+    var name = tr(DuScriptUI.String.SELECT_LAYERS);
+
+    var layerPicker = container.add( 'group' );
+    layerPicker.orientation = 'row';
+    layerPicker.margins = 0;
+    layerPicker.spacing = 2;
+    layerPicker.alignment = [ 'fill', 'top' ];
+
+    layerPicker.labelsGroup = layerPicker.add( 'group' );
+    layerPicker.labelsGroup.orientation = 'column';
+    layerPicker.labelsGroup.margins = 0;
+    layerPicker.labelsGroup.spacing = 2;
+    layerPicker.labelsGroup.alignment = [ 'left', 'fill' ];
+    layerPicker.labelsGroup.alignChildren = [ 'left', 'fill' ];
+
+    layerPicker.selectorsGroup = layerPicker.add( 'group' );
+    layerPicker.selectorsGroup.orientation = 'column';
+    layerPicker.selectorsGroup.margins = 0;
+    layerPicker.selectorsGroup.spacing = 2;
+    layerPicker.selectorsGroup.alignment = [ 'fill', 'fill' ];
+
+    layerPicker.selectors = [];
+    layerPicker.inputs = [];
+
+    layerPicker.removeAll = function()
+    {
+        layerPicker.selectors = [];
+        layerPicker.inputs = [];
+        for ( var i = layerPicker.labelsGroup.children.length - 1; i >= 0; i-- )
+        {
+            layerPicker.labelsGroup.remove( layerPicker.labelsGroup.children[ i ] );
+            layerPicker.selectorsGroup.remove( layerPicker.selectorsGroup.children[ i ] );
+        }
+    }
+
+    layerPicker.addSelector = function( inputLabel )
+    {
+        inputLabel = tr( inputLabel );
+
+        var l = layerPicker.labelsGroup.add( 'statictext', undefined, inputLabel );
+
+        var sel = DuScriptUI.layerSelector( layerPicker.selectorsGroup );
+        layerPicker.selectors.push( sel );
+        sel.alignment = [ 'fill', 'fill' ];
+
+        //l.minimumSize.height = l.maximumSize.height = 18;
+
+        return sel;
+    }
+
+    return layerPicker;
+}
+
+/**
+ * @class
+ * @name DuAELayerPickerDialog
+ * @classdesc For use with {@link DuScriptUI}.<br />
+ * A picker for layers with labels.<br />
+ * This is not a real class, and cannot be instanciated.<br />
+ * Use {@link DuScriptUI.layerPickerDialog} to create a picker.<br />
+ * The picker inherits the Group object from ScriptUI and has all of its properties and methods.
+ * @property {DuAELayerPicker} layerPicker The layer picker inside the dialog.
+ * @property {bool} accepted This property is true if the user has clicked the OK button, false otherwise.
+ */
+
+/**
+ * Empties the DuAELayerPicker<br />
+ * This is a convenience function equivalent to {@link DuAELayerPickerDialog.layerPicker.removeAll}.
+ * @method
+ * @memberof DuAELayerPickerDialog
+ * @name removeAll
+ */
+
+/**
+ * Adds a new line on the DuAELayerPicker
+ * This is a convenience function equivalent to {@link DuAELayerPickerDialog.layerPicker.addSelector}.
+ * @method
+ * @memberof DuAELayerPickerDialog
+ * @name addSelector
+ * @return {DuAELayerSelector} The added DuAELayerSelector
+ */
+
+/**
+ * Gets the layers picked by the user.
+ * @method
+ * @memberof DuAELayerPickerDialog
+ * @name getLayers
+ * @return {Layer[]} The layers picked (null if the user has set none in the selector), in the display order.
+ */
+
+/**
+ * The function called when the dialog is accepted.
+ * @callback DuAELayerPickerDialog~onAccept
+ * @memberof DuAELayerPickerDialog
+ */
+
+/**
+ * Creates a dialog with a DuAELayerPicker<br />
+ * Use {@link DuScriptUI.showUI} to show it after creation.
+ * @param {string} title - The title of the dialog.
+ * @return {DuAELayerPickerDialog} The dialog window.
+ */
+DuScriptUI.layerPickerDialog = function( title )
+{
+    var dialog = new Window( 'palette', title, undefined,
+    {
+        resizeable: true
+    } );
+    dialog.minimumSize.width = 300;
+
+    dialog.margins = 0;
+    dialog.orientation = 'column';
+
+    dialog.layerPicker = DuScriptUI.layerPicker( dialog );
+
+    dialog.onAccept = function() {};
+    dialog.removeAll = dialog.layerPicker.removeAll;
+    dialog.addSelector = dialog.layerPicker.addSelector;
+    dialog.getLayers = function()
+    {
+        var layers = [];
+        for ( var i = 0, num = dialog.layerPicker.selectors.length; i < num; i++ )
+        {
+            var sel = dialog.layerPicker.selectors[ i ];
+            layers.push( sel.getLayer() );
+        }
+        return layers;
+    }
+
+    dialog.accepted = false;
+
+    //add buttons
+    var validGroup = dialog.add( 'group' );
+    validGroup.alignment = [ 'fill', 'bottom' ];
+    var validGroupCancelButton = DuScriptUI.button( validGroup, "Cancel", DuScriptUI.Icon.BACK, "Cancel" );
+    var validGroupValidButton = DuScriptUI.button( validGroup, "OK", DuScriptUI.Icon.CHECK, "OK" );
+
+    validGroupValidButton.onClick = function()
+    {
+        dialog.accepted = true;
+        dialog.hide();
+        dialog.onAccept();
+    };
+    validGroupCancelButton.onClick = function()
+    {
+        dialog.hide();
+    };
+
+    return dialog;
 }
