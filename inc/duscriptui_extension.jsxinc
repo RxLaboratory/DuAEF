@@ -130,7 +130,8 @@ DuScriptUI.askLanguage = function ( callback, ui )
 
     var ui_languageGroup = DuScriptUI.group( ui, 'column' );
 
-    ui_languageGroup.add('statictext', undefined, "Select the language you wish to use with this software.", { multiline: true } );
+    ui_languageGroup.add('statictext', undefined, "EO: Selektu la lingvo kiu vi volas uzi per tio softvaro.", { multiline: true } );
+    ui_languageGroup.add('statictext', undefined, "EN: Select the language you wish to use with this software.", { multiline: true } );
 
     var currentIndex = 0;
     var languageSelector = DuScriptUI.selector( ui_languageGroup, DuScriptUI.String.LANGUAGE_TIP );
