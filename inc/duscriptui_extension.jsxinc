@@ -58,12 +58,15 @@ DuScriptUI.askFilesAndNetworkAccess = function( callback, ui, scriptName, reInit
             var ok = DuAE.askFilesAndNetworkAccess( false );
             if ( ok )
             {
-                ui_accessFileAndNetworkGroup.visible = false;
                 //if reinit and box checked, reinitmethod before callback
                 if (reInit)
                 {
                     if (ui_reinitCheckbox.value) reInitMethod();
                 }
+
+                // Delete
+                ui.remove( ui_accessFileAndNetworkGroup );
+
                 callback();
             }
         }
