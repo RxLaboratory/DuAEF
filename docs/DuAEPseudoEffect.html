@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Namespace: DuAEExpression</title>
+    <title>Class: DuAEPseudoEffect</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -2903,7 +2903,7 @@
     </ul>
 </div>
     <div class="main">
-        <h1 class="page-title" data-filename="DuAEExpression.html">Namespace: DuAEExpression</h1>
+        <h1 class="page-title" data-filename="DuAEPseudoEffect.html">Class: DuAEPseudoEffect</h1>
         
 
 
@@ -2912,8 +2912,10 @@
     
 <header>
     <h2>
-    DuAEExpression
+    DuAEPseudoEffect
     </h2>
+    
+        <div class="class-description">Describes a pseudo effect</div>
     
 </header>  
 
@@ -2923,181 +2925,16 @@
     
     
         
-            <div class="description">After Effects expression tools</div>
-        
-        
-        
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-        
-        
-    
-    </div>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        <h3 class="subsection-title">Namespaces</h3>
-        
-        <dl>
-            <dt><a href="namespaces.html#DuAEExpression.Library"><a href="DuAEExpression.Library.html">Library</a></a></dt>
-            <dd></dd>
-        </dl>
-    
-    
-    
-        <h3 class="subsection-title">Members</h3>
-        
-        <dl>
-            
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id=".Id"><span class="type-signature static">static</span>DuAEExpression.Id<span class="type-signature type string">string</span> </h4>
-    </div>
-    
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        The list of expression IDs, added at the beginning of generated expressions.
-    </div>
-    
-    
-    
-<dl class="details">
-    
-        
-        <h5 class="subsection-title">Properties:</h5>
-        
-        <dl>
-
-<table class="props">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		<th>Default</th>
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
+        <h4 class="name" id="DuAEPseudoEffect">
             
-                <td class="name"><code>LINK</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-                <td class="default">
-                
-                    /*== DuAEF: property link ==*/
-                
-                </td>
-            
-            
-            <td class="description last"></td>
-        </tr>
-	
-	
-	</tbody>
-</table></dl>
-        
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-</dd>
-
-        </dl>
-    
-    
-    
-        <h3 class="subsection-title">Methods</h3>
-        
-        <dl>
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id=".applyCache">
-            
-            <span class="type-signature static">static</span>DuAEExpression.applyCache<span class="signature">()</span>
+            new DuAEPseudoEffect<span class="signature">(binaryFile)</span>
         </h4>
     
         
         <div class="tag-source">
-            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 12472
+            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 18805
         </div>
         
     </div>
@@ -3108,78 +2945,7 @@
     
     
     <div class="description">
-        Applies all the expressions stored in the cache to the actual properties in After Effects, if and only if they've been modified.
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id=".doInExpresssions">
-            
-            <span class="type-signature static">static</span>DuAEExpression.doInExpresssions<span class="signature">(func, <span class="optional">currentComp</span>, <span class="optional">selectedComps</span>, <span class="optional">selectedLayers</span>, <span class="optional">updateCache</span>, <span class="optional">apply</span>)</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 12452
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Runs a function on all expressions
+        Constructs a Pseudo Effect.
     </div>
     
 
@@ -3200,8 +2966,6 @@
 		<th>Type</th>
 		
 		
-		<th>Default</th>
-		
 		
 		<th class="last">Description</th>
 	</tr>
@@ -3212,212 +2976,23 @@
 	
         <tr>
             
-                <td class="name"><code>func</code></td>
+                <td class="name"><code>binaryFile</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">function</span>
+<span class="param-type"><a href="DuBinary.html">DuBinary</a></span>
 
 
             
             </td>
             
             
-                <td class="default">
-                
-                </td>
-            
             
             <td class="description last">
                 
-                    
-                    
-                        
-                    
-                
-                The function to run, which takes one param, a <a href="DuAEPropertyExpression.html"><code>DuAEPropertyExpression</code></a> object.</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>currentComp</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">bool</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                true: in current compositions, false: in all compositions of the project</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>selectedComps</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">bool</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                When currentComp is false, true to replace only in selected compositions</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>selectedLayers</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">bool</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                When currentComp is true, wether to replace only on selected layers</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>updateCache</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                    true
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                When false, the cache won't be updated before running the function. Set this to false if you already have updated the cache to improve performance.</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>apply</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                    true
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                When false, the cache won't be applied back to Ae. Set this to false if you need to run other methods on expressions before applying the result to improve performance.</td>
+                The ffx file encoded as a <a href="DuBinary.html"><code>DuBinary</code></a>.<br />Note that the pseudo effect's matchName <strong>must start with <code>"Pseudo/"</code></strong>.</td>
         </tr>
 	
 	
@@ -3464,18 +3039,273 @@
     
 </dd>
 
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Members</h3>
+        
+        <dl>
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id=".file"><span class="type-signature static">static,readonly</span>DuAEPseudoEffect.file<span class="type-signature type file">File</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        The ffx file
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
         
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id=".scriptifyExpression">
+        <h4 class="name" id=".matchName"><span class="type-signature static">static,readonly</span>DuAEPseudoEffect.matchName<span class="type-signature type string">string</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        The matchName
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
             
-            <span class="type-signature static">static</span>DuAEExpression.scriptifyExpression<span class="signature">(prop, <span class="optional">varName</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{string}</span>
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id=".name"><span class="type-signature static">static,readonly</span>DuAEPseudoEffect.name<span class="type-signature type string">string</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        The default (localized) name
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id=".props"><span class="type-signature static">static,readonly</span>DuAEPseudoEffect.props<span class="type-signature type object">Object</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        An object containing information about the properties of the effect, which can be used to generate expressions.<br />Access properties with their names, using the group hierarchy.<br />The info available for each property depends on the original pseudo effect, but there's at least the type and the index of the property.
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+        <h5>Example</h5>
+        
+
+    
+    <pre class="prettyprint"><code>var pseudoEffect = new DuAEPseudoEffect( pseudoEffectBin );var propIndex = pseudoEffect.props["groupName"]["PropertyName"].index;var effect = pseudoEffect.apply( aLayer );var expression = 'thisLayer.effect("' + pseudoEffect.name + '")(' + propIndex + ');';</code></pre>
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id=".valid"><span class="type-signature static">static,readonly</span>DuAEPseudoEffect.valid<span class="type-signature type boolean">Boolean</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Will be false if the ffx can't be correctly parsed.<br />Note that an invalid pseudo effect can still be applied (if the file exists), but the new effect may not be returned,<br />or the <code>DuAEPseudoEffect.index</code> Object may be empty.
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        </dl>
+    
+    
+    
+        <h3 class="subsection-title">Methods</h3>
+        
+        <dl>
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="apply">
+            
+            apply<span class="signature">(layer, <span class="optional">name</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{PropertyGroup|null}</span>
         </h4>
     
         
         <div class="tag-source">
-            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 12485
+            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 18963
         </div>
         
     </div>
@@ -3486,7 +3316,7 @@
     
     
     <div class="description">
-        Converts the expression as a string which can be copy/pasted and included in a script.
+        This method adds the pseudo effect to a layer
     </div>
     
 
@@ -3507,6 +3337,8 @@
 		<th>Type</th>
 		
 		
+		<th>Default</th>
+		
 		
 		<th class="last">Description</th>
 	</tr>
@@ -3517,24 +3349,22 @@
 	
         <tr>
             
-                <td class="name"><code>prop</code></td>
+                <td class="name"><code>layer</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">Property</span>
-|
-
-<span class="param-type"><a href="DuAEProperty.html">DuAEProperty</a></span>
-|
-
-<span class="param-type">string</span>
+<span class="param-type">Layer</span>
 
 
             
             </td>
             
+            
+                <td class="default">
+                
+                </td>
             
             
             <td class="description last">
@@ -3544,14 +3374,14 @@
                         
                     
                 
-                The property containing the expression or the expression itself.</td>
+                The layer</td>
         </tr>
 	
 	
 	
         <tr>
             
-                <td class="name"><code>varName</code></td>
+                <td class="name"><code>name</code></td>
             
             
             <td class="type">
@@ -3563,6 +3393,12 @@
             
             </td>
             
+            
+                <td class="default">
+                
+                    this.name
+                
+                </td>
             
             
             <td class="description last">
@@ -3574,7 +3410,7 @@
                         
                     
                 
-                A name for the variable</td>
+                A name for the effect</td>
         </tr>
 	
 	
@@ -3635,219 +3471,19 @@
             
             <td class="type">
             
-                        string
+                        PropertyGroup
+                         | 
+                    
+                        null
                         
                     
             </td>
-            <td class="description last">The stringified expression.</td>
+            <td class="description last">The effect. May be null if the pseudo effect was not parsed correctly</td>
         </tr>
     
     </tbody>
 </table>
 
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id=".updateCache">
-            
-            <span class="type-signature static">static</span>DuAEExpression.updateCache<span class="signature">(<span class="optional">currentComp</span>, <span class="optional">selectedComps</span>, <span class="optional">selectedLayers</span>)</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 12412
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Updates the cache of the expressions used by Duik to speed up batch process of expressions in the whole project.<br />It's automatically run when needed if it's not been updated in a long time (1 mn) or if it's empty
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		<th>Default</th>
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>currentComp</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">bool</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                true: in current compositions, false: in all compositions of the project</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>selectedComps</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">bool</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                When currentComp is false, true to replace only in selected compositions</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>selectedLayers</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">bool</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                When currentComp is true, wether to replace only on selected layers</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
     
     
     

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Namespace: DuAEExpression</title>
+    <title>Class: DuAELayerSelector</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -2903,7 +2903,7 @@
     </ul>
 </div>
     <div class="main">
-        <h1 class="page-title" data-filename="DuAEExpression.html">Namespace: DuAEExpression</h1>
+        <h1 class="page-title" data-filename="DuAELayerSelector.html">Class: DuAELayerSelector</h1>
         
 
 
@@ -2912,8 +2912,10 @@
     
 <header>
     <h2>
-    DuAEExpression
+    DuAELayerSelector
     </h2>
+    
+        <div class="class-description">For use with <a href="DuScriptUI.html"><code>DuScriptUI</code></a>.<br />A drop down selector.<br />This is not a real class, and cannot be instanciated.<br />Use <code>DuScriptUI.layerSelector</code> to create a Selector.<br />The Selector inherits the Group object from ScriptUI and has all of its properties and methods.</div>
     
 </header>  
 
@@ -2923,73 +2925,30 @@
     
     
         
-            <div class="description">After Effects expression tools</div>
-        
-        
-        
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-        
-        
-    
-    </div>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        <h3 class="subsection-title">Namespaces</h3>
-        
-        <dl>
-            <dt><a href="namespaces.html#DuAEExpression.Library"><a href="DuAEExpression.Library.html">Library</a></a></dt>
-            <dd></dd>
-        </dl>
-    
-    
-    
-        <h3 class="subsection-title">Members</h3>
-        
-        <dl>
-            
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id=".Id"><span class="type-signature static">static</span>DuAEExpression.Id<span class="type-signature type string">string</span> </h4>
-    </div>
+        <h4 class="name" id="DuAELayerSelector">
+            
+            new DuAELayerSelector<span class="signature">()</span>
+        </h4>
     
+        
+        <div class="tag-source">
+            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 10322
+        </div>
+        
+    </div>
+
     
 </dt>
 <dd>
     
-    <div class="description">
-        The list of expression IDs, added at the beginning of generated expressions.
-    </div>
+    
+
+    
+    
+    
+    
     
     
     
@@ -3010,6 +2969,8 @@
 		<th>Type</th>
 		
 		
+		<th>Argument</th>
+		
 		
 		
 		<th>Default</th>
@@ -3024,29 +2985,147 @@
 	
         <tr>
             
-                <td class="name"><code>LINK</code></td>
+                <td class="name"><code>index</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">int</span>
 
 
             
             </td>
             
             
-            
-            
-                <td class="default">
+                <td class="attributes">
                 
-                    /*== DuAEF: property link ==*/
+                    &lt;optional><br>
+                
+                    
                 
                 </td>
             
             
-            <td class="description last"></td>
+            
+                <td class="default">
+                
+                    0
+                
+                </td>
+            
+            
+            <td class="description last">The current layer index, 0 if None</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>comp</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">CompItem</span>
+|
+
+<span class="param-type">null</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                </td>
+            
+            
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+            
+            <td class="description last">The composition linked to the selector.<br />If set to null, the seletor will use the current active composition.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>selectedOnly</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                </td>
+            
+            
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+            
+            <td class="description last">True to list only selected layers in the composition</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>onChange</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Selector~onChange</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                </td>
+            
+            
+            
+                <td class="default">
+                
+                </td>
+            
+            
+            <td class="description last">The function to execute when the index changes.<br />You can set your own function here, which must take no argument.<br />The method is called after the index has changed.</td>
         </tr>
 	
 	
@@ -3078,9 +3157,31 @@
 
     
     
+
+    
+
+    
+    
+    
+    
+    
+    
+    
 </dd>
 
-        </dl>
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -3090,14 +3191,14 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id=".applyCache">
+        <h4 class="name" id=".refresh">
             
-            <span class="type-signature static">static</span>DuAEExpression.applyCache<span class="signature">()</span>
+            <span class="type-signature static">static</span>DuAELayerSelector.refresh<span class="signature">()</span>
         </h4>
     
         
         <div class="tag-source">
-            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 12472
+            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 10354
         </div>
         
     </div>
@@ -3108,7 +3209,7 @@
     
     
     <div class="description">
-        Applies all the expressions stored in the cache to the actual properties in After Effects, if and only if they've been modified.
+        Force the refresh of the layer list
     </div>
     
 
@@ -3161,14 +3262,14 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id=".doInExpresssions">
+        <h4 class="name" id=".setCurrentIndex">
             
-            <span class="type-signature static">static</span>DuAEExpression.doInExpresssions<span class="signature">(func, <span class="optional">currentComp</span>, <span class="optional">selectedComps</span>, <span class="optional">selectedLayers</span>, <span class="optional">updateCache</span>, <span class="optional">apply</span>)</span>
+            <span class="type-signature static">static</span>DuAELayerSelector.setCurrentIndex<span class="signature">(index)</span>
         </h4>
     
         
         <div class="tag-source">
-            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 12452
+            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 10346
         </div>
         
     </div>
@@ -3179,314 +3280,7 @@
     
     
     <div class="description">
-        Runs a function on all expressions
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		<th>Default</th>
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>func</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                    
-                    
-                        
-                    
-                
-                The function to run, which takes one param, a <a href="DuAEPropertyExpression.html"><code>DuAEPropertyExpression</code></a> object.</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>currentComp</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">bool</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                true: in current compositions, false: in all compositions of the project</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>selectedComps</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">bool</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                When currentComp is false, true to replace only in selected compositions</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>selectedLayers</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">bool</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                When currentComp is true, wether to replace only on selected layers</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>updateCache</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                    true
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                When false, the cache won't be updated before running the function. Set this to false if you already have updated the cache to improve performance.</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>apply</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                    true
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                When false, the cache won't be applied back to Ae. Set this to false if you need to run other methods on expressions before applying the result to improve performance.</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id=".scriptifyExpression">
-            
-            <span class="type-signature static">static</span>DuAEExpression.scriptifyExpression<span class="signature">(prop, <span class="optional">varName</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{string}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 12485
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Converts the expression as a string which can be copy/pasted and included in a script.
+        Changes the selection and the current layer index of the selector
     </div>
     
 
@@ -3517,19 +3311,13 @@
 	
         <tr>
             
-                <td class="name"><code>prop</code></td>
+                <td class="name"><code>index</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">Property</span>
-|
-
-<span class="param-type"><a href="DuAEProperty.html">DuAEProperty</a></span>
-|
-
-<span class="param-type">string</span>
+<span class="param-type">int</span>
 
 
             
@@ -3539,274 +3327,7 @@
             
             <td class="description last">
                 
-                    
-                    
-                        
-                    
-                
-                The property containing the expression or the expression itself.</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>varName</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                A name for the variable</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
-            
-            <td class="type">
-            
-                        string
-                        
-                    
-            </td>
-            <td class="description last">The stringified expression.</td>
-        </tr>
-    
-    </tbody>
-</table>
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id=".updateCache">
-            
-            <span class="type-signature static">static</span>DuAEExpression.updateCache<span class="signature">(<span class="optional">currentComp</span>, <span class="optional">selectedComps</span>, <span class="optional">selectedLayers</span>)</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 12412
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Updates the cache of the expressions used by Duik to speed up batch process of expressions in the whole project.<br />It's automatically run when needed if it's not been updated in a long time (1 mn) or if it's empty
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		<th>Default</th>
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>currentComp</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">bool</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                true: in current compositions, false: in all compositions of the project</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>selectedComps</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">bool</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                When currentComp is false, true to replace only in selected compositions</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>selectedLayers</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">bool</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                When currentComp is true, wether to replace only on selected layers</td>
+                The new layer index</td>
         </tr>
 	
 	
@@ -3856,6 +3377,81 @@
         </dl>
     
     
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+        
+        <dl>
+                
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="~onChange">
+            
+            onChange<span class="signature">()</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 10339
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        The function to execute when the index changes.<br />The method is called after the index has changed.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+            </dl>
     
     
     
