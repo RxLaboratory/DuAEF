@@ -29,6 +29,8 @@ These stables show where to find the implementation for each class & namespace o
 | `DuAEPropertyGroupAnimation` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Contains all DuAEPropertyAnimation from an After Effects PropertyGroup. |
 | `DuAEPseudoEffect` | *Class* | [inc/pseudoEffect.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/pseudoEffect.jsxinc) | Describes a pseudo effect. |
 | `DuAEPuppet` | *namespace* | [inc/puppet.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/puppet.jsxinc) | Puppet tool specific objects and methods. |
+| `DuAERenderer` | *Class* | [inc/renderer.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/renderer.jsxinc) | Tools to manipulate the render queue and the command line renderer and render compositions in the background or in Ae. |
+| `DuAERendererItem` | *Class* | [inc/renderer.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/renderer.jsxinc) | An item in the DuAERenderer queue. |
 | `DuAERenderQueue` | *namespace* | [inc/renderqueue.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/renderqueue.jsxinc) | Render queue specific objects and methods. |
 | `DuAEShapeLayer` | *namespace* | [inc/shapelayer.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/shapelayer.jsxinc) | Shape layer specific objects and methods. |
 | `DuAETag` | *namespace* | [inc/tag.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/tag.jsxinc) |  Tag methods. Tags are layer markers used by DuAEF to store data. |
