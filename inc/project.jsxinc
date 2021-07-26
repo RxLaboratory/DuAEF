@@ -23,6 +23,9 @@ DuAEProject.setProgressMode = function ( inProgress ) {
         //if not already in progress, create temp comp etc
         if (!DuAEProject.progressMode || !Object.isValid(DuAEProject.progressComp))
         {
+            // Hide layer controls
+            DuAE.toggleLayerControls();
+
             //store the current comp
             DuAEProject.activeComp = DuAEProject.getActiveComp();
 
@@ -49,6 +52,9 @@ DuAEProject.setProgressMode = function ( inProgress ) {
         //re-activate previous comp
         if ( DuAEProject.activeComp != null ) DuAEProject.activeComp.openInViewer();
         if ( app.activeViewer != null ) app.activeViewer.maximized = DuAEProject.viewerMaximized;
+
+        // Show layer controls
+        DuAE.toggleLayerControls();
 
         DuAEProject.progressMode = false;
     }

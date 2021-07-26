@@ -595,7 +595,8 @@ DuAE.MenuCommandID =
 	DUPLICATE: 2080,
 	UNDO: 16,
 	GENERAL_PREFERENCES: 2359,
-	SCRIPTING_PREFERENCES: 3131
+	SCRIPTING_PREFERENCES: 3131,
+	LAYER_CONTROLS: 2435
 }
 
 /**
@@ -1010,6 +1011,10 @@ DuAE.isAutoSaveFolder = function ( folder ) {
     var autosaveString = localize("$$$/AE/MenuID/0307/AutoSave=Auto-Save").toLowerCase();
 
     return folderName.indexOf( aaeString ) >= 0 && folderName.indexOf( autosaveString ) >= 0;
+}
+
+DuAE.toggleLayerControls = function ( ) {
+	app.executeCommand( DuAE.MenuCommandID.LAYER_CONTROLS );
 }
 
 // ========== DEPRECATED ==========
