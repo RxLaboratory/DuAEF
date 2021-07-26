@@ -2,7 +2,7 @@
  * Manages XMP Metadata of the project.
  * @namespace
  */
-DuAEProjectXMP = {};
+var DuAEProjectXMP = {};
 
 /**
  * Gets the XMP of the current project
