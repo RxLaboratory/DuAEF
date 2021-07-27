@@ -1136,3 +1136,18 @@ DuAELayer.expressionLink = function( layer, useThisComp ) {
 
      return exprCode;
 }
+
+/**
+ * Checks if the given layer is a solid.
+ * @param {Layer} layer The layer to test
+ * @returns {Boolean} true if it is a solid
+ */
+DuAELayer.isSolid = function( layer ) {
+    if ( layer.nullLayer ) return false;
+
+    if (!(layer instanceof AVLayer)) return false;
+
+    if (!(layer.source instanceof FootageItem)) return false;
+    
+    if (layer.source.mainSource instanceof SolidSource) return true;
+}
