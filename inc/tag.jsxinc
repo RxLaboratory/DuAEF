@@ -132,6 +132,7 @@ DuAETag.setValue = function( layer, key, value )
  * Gets the value of a specific key in the tag parameters.
  * @param {Layer} layer - The layer to get the tag from.
  * @param {string} key - The key. May be one of {@link DuAETag.Key}.
+ * @return {any} The value, null if the key was not found.
  */
 DuAETag.getValue = function( layer, key )
 {
@@ -142,9 +143,23 @@ DuAETag.getValue = function( layer, key )
         var params = marker.getParameters();
         if ( params.duaef )
         {
-            return params[ key ];
+            return def( params[ key ], null );
         }
     }
+    return null;
+}
+
+/**
+ * Gest the list of the groups this layer belongs to.
+ * @param {Layer} layer
+ * @returns {string[]} The list of groups. May be an empty list.
+ */
+DuAETag.getGroups = function( layer )
+{
+    var groups = DuAETag.getValue( layer, DuAETag.Key.Groups );
+    if (!groups) return [];
+    if (groups == '') return [];
+    return groups.split(',');
 }
 
 /**
@@ -158,7 +173,8 @@ DuAETag.addGroup = function (layer, groupName )
     var tag = DuAETag.get( layer );
     if (tag == null) DuAETag.set( layer, groupName );
 
-    groups = new DuList( groups.split(',') );
+    groups = new DuList( DuAETag.getGroups( layer) );
+
     if (groups.indexOf(groupName) >= 0) return;
     groups.push( groupName );
     DuAETag.setValue( layer, DuAETag.Key.Groups, groups );
@@ -171,8 +187,8 @@ DuAETag.addGroup = function (layer, groupName )
  */
 DuAETag.removeGroup = function (layer, groupName )
 {
-    var groups = DuAETag.getValue( layer, DuAETag.Key.Groups );
-    groups = new DuList( groups.split(',') );
+    groups = new DuList( DuAETag.getGroups( layer) );
+    
     if (groups.indexOf(groupName) < 0) return;
     groups.removeAll( groupName );
     DuAETag.setValue( layer, DuAETag.Key.Groups, groups );
