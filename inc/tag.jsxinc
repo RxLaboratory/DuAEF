@@ -39,20 +39,49 @@ DuAETag.Name = {
 }
 
 /**
- * Sets a new marker on the first frame of the layer.
- * @param {Layer} layer - The layer to set the tag on.
- * @param {string} displayName - The name to display on the marker (the comment of the marker)
- * @return {MarkerValue} The marker (tag)
+ * The list of types to parse values.
+ * @enum {int}
+ * @readonly
  */
-DuAETag.set = function( layer, displayName )
+DuAETag.Type = {
+    STRING: 0,
+    BOOL: 1,
+    INT: 2,
+    ARRAY: 3,
+    FLOAT: 4
+}
+
+/**
+ * Sets a new marker/tag (or gets the existing one) on the first frame of the layer.
+ * @param {Layer} layer - The layer to set the tag on.
+ * @param {string} [tagName] - The name to display on the marker (the comment of the marker)
+ * @param {MarkerValue} [tag] - An existing tag.
+ * @return {MarkerValue} The marker (tag), with an extra property <code>keyIndex</code> which is the index of the corresponding keyframe.
+ */
+DuAETag.set = function( layer, tagName, tag )
 {
-    var marker = layer.property( 'ADBE Marker' ).valueAtTime( 0, true );
-    marker.comment = displayName;
-    var params = marker.getParameters();
-    params.duaef = displayName;
-    marker.setParameters( params );
-    layer.property( 'ADBE Marker' ).setValueAtTime( 0, marker );
-    return marker;
+    var markerProp = layer.property( 'ADBE Marker' );
+
+    tag = def( tag, DuAETag.get( layer ) );
+    if (!tag) tag = markerProp.valueAtTime( 0, true );
+    
+    if (typeof tagName !== 'undefined') tag.comment = tagName;
+
+    var tagParams = tag.getParameters();
+    tagParams.duaef = def( tagParams.duaef, true);
+    tag.setParameters( tagParams );
+
+    if (!tag.keyIndex)
+    {
+        markerProp.setValueAtTime( 0, tag );
+        tag.keyIndex = markerProp.nearestKeyIndex( 0 );
+    }
+    else 
+    {
+        markerProp.setValueAtKey( tag.keyIndex, tag );
+    }
+    
+    return tag;
 }
 
 /**
@@ -63,22 +92,31 @@ DuAETag.set = function( layer, displayName )
 DuAETag.get = function( layer )
 {
     if ( !layer ) return null;
+
     var markerProp = layer.property( 'ADBE Marker' );
+
     for ( var i = 1, num = markerProp.numKeys; i <= num; i++ )
     {
-        var marker = markerProp.keyValue( i );
-        var params = marker.getParameters();
-        if ( params.duaef ) return marker;
+        var tag = markerProp.keyValue( i );
+        tag.keyIndex = i;
+        var params = tag.getParameters();
+        if ( params.duaef ) return tag;
     }
     return null;
 }
 
 /**
  * Removes the tag from the layer
+ * @param {Layer} layer - The layer containing the tag.
+ * @param {MarkerValue} [tag] If you have the tag as returned by {@link DuAETag.get} or {@link DuAETag.set}, providing it here improves performance.
  */
-DuAETag.remove = function( layer )
+DuAETag.remove = function( layer, tag )
 {
+    tag = def(tag, DuAETag.get( layer ));
+    if ( !tag ) return;
 
+    var markerProp = layer.property( 'ADBE Marker' );
+    markerProp.removeKey( tag.keyIndex );
 }
 
 /**
@@ -88,21 +126,9 @@ DuAETag.remove = function( layer )
  */
 DuAETag.getName = function ( layer )
 {
-    var marker = DuAETag.get( layer );
-    if (!marker) return "";
-    return marker.comment;
-}
-
-/**
- * Gets the hidden parameters stored in the tag.
- * @param {Layer} layer - The layer to get the tag from.
- * @return {Object} The marker (tag) parameters or <code>null</code> if not found.
- */
-DuAETag.getParameters = function( layer )
-{
-    var marker = DuAETag.get( layer );
-    if ( !marker ) return null;
-    return marker.getParameters();
+    var tag = DuAETag.get( layer );
+    if (!tag) return "";
+    return tag.comment;
 }
 
 /**
@@ -110,42 +136,56 @@ DuAETag.getParameters = function( layer )
  * @param {Layer} layer - The layer to get the tag from.
  * @param {string} key - The key. May be one of {@link DuAETag.Key}.
  * @param {string} value - The value, which needs to be a string.
- * @return {Boolean} Success, may be false if there's no tag on this layer yer.
+ * @param {MarkerValue} [tag] If you have the tag as returned by {@link DuAETag.get} or {@link DuAETag.set}, providing it here improves performance.
+ * @return {Boolean} Success, may be false if there's no tag on this layer yet.
  */
-DuAETag.setValue = function( layer, key, value )
+DuAETag.setValue = function( layer, key, value, tag )
 {
-    var markerProp = layer.property( 'ADBE Marker' );
-    for ( var i = 1, num = markerProp.numKeys; i <= num; i++ )
-    {
-        var marker = markerProp.keyValue( i );
-        var params = marker.getParameters();
-        if ( params.duaef )
-        {
-            params[ key ] = value;
-            marker.setParameters( params );
-            layer.property( 'ADBE Marker' ).setValueAtTime( markerProp.keyTime( i ), marker );
-        }
-    }
+    tag = def(tag, DuAETag.get( layer ));
+    if (!tag) return;
+
+    var tagParams = tag.getParameters();
+    tagParams.duaef = def( tagParams.duaef, true);
+
+    tagParams[ key ] = value;
+    tag.setParameters( tagParams );
+
+    layer.property( 'ADBE Marker' ).setValueAtKey( tag.keyIndex, tag );
 }
 
 /**
  * Gets the value of a specific key in the tag parameters.
  * @param {Layer} layer - The layer to get the tag from.
  * @param {string} key - The key. May be one of {@link DuAETag.Key}.
+ * @param {DuAETag.Type} [type=DuAETag.Type.STRING] - The expected type for the value.
+ * @param {MarkerValue} [tag] If you have the tag as returned by {@link DuAETag.get} or {@link DuAETag.set}, providing it here improves performance.
  * @return {any} The value, null if the key was not found.
  */
-DuAETag.getValue = function( layer, key )
+DuAETag.getValue = function( layer, key, type, tag )
 {
-    var markerProp = layer.property( 'ADBE Marker' );
-    for ( var i = 1, num = markerProp.numKeys; i <= num; i++ )
+    tag = def(tag, DuAETag.get( layer ));
+    if (!tag) return null;
+
+    type = def( type, DuAETag.Type.STRING);
+
+    params = tag.getParameters();
+    if (!params) return null;
+
+    var val = params[ key ];
+    if (typeof val === 'undefined') return null;
+    if (type == DuAETag.Type.STRING) return val;
+    if (type == DuAETag.Type.BOOL)
     {
-        var marker = markerProp.keyValue( i );
-        var params = marker.getParameters();
-        if ( params.duaef )
-        {
-            return def( params[ key ], null );
-        }
+        if (val === 'false') return false;
+        else if (val === 'true') return true;
+        else if (val === '') return false;
+        else if (parseInt(val) == 0) return false;
+        else return true;
     }
+    if (type == DuAETag.Type.INT) return parseInt(val);
+    if (type == DuAETag.Type.FLOAT) return parseFloat(val);
+    if (type == DuAETag.Type.ARRAY) return val.split(',');
+
     return null;
 }
 
