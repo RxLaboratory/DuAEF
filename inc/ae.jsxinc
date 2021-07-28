@@ -604,7 +604,7 @@ DuAE.MenuCommandID =
 	* @enum {int}
 	* @readonly
 */
-DuAELayerPlacement =
+DuAE.LayerPlacement =
 {
 	BOTTOM: 0,
 	UNDER_LAYER: 1,
@@ -617,7 +617,7 @@ DuAELayerPlacement =
  * @enum {string}
  * @readonly
 */
-DuAELayerType =
+DuAE.LayerType =
 {
 	NULL: 'null',
 	SOLID: 'solid',
@@ -633,7 +633,7 @@ DuAELayerType =
  * @enum {string}
  * @readonly
 */
-DuAELayerAttribute =
+DuAE.LayerAttribute =
 {
 	SELECTED: 'selected',
 	VISIBLE: 'visible',
@@ -665,7 +665,7 @@ DuAE.LoopType =
 /**
  * List of file extensions whih may be imported as several items with the same source
  */
-DuAELayeredFileType = ["psd","psb","ai","fla"];
+DuAE.DuAELayeredFileType = ["psd","psb","ai","fla"];
 
 /**
  * Default color labels
@@ -736,7 +736,7 @@ DuAE.getDuAEProperty = function (props)
 DuAE.isLayeredFile = function(file)
 {
 	var ext = DuPath.getExtension(file);
-	var yes = DuList.indexOf( DuAELayeredFileType , ext.toLowerCase() ) >= 0;
+	var yes = DuList.indexOf( DuAE.DuAELayeredFileType , ext.toLowerCase() ) >= 0;
 	return yes;
 }
 

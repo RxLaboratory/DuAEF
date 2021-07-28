@@ -2,7 +2,7 @@
  * After Effects item methods
  * @namespace
  */
-DuAEItem = {};
+var DuAEItem = {};
 
 DuAEItem.stillFormats = [
     "bmp",
