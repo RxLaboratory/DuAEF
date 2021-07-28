@@ -335,6 +335,22 @@ DuAELayer.getChildren = function ( layer ) {
 }
 
 /**
+ * Checks if a layer has at least one child.
+ * @param {Layer} layer The layer to test
+ * @returns {Boolean} true if the layer has at least one child.
+ */
+DuAELayer.hasChild = function( layer ) {
+    var comp = layer.containingComp;
+    for ( var i = 1, numL = comp.layers.length; i <= numL; i++ ) {
+        var l = comp.layer( i );
+        if ( l.index == layer.index ) continue;
+        if ( l.parent == null ) continue;
+        if ( l.parent.index == layer.index ) return true;
+    }
+    return false;
+}
+
+/**
  * Checks if a layer is a descendant of another layer
  * @param {Layer} layer1 - The first layer
  * @param {Layer} layer2 - The second layer
