@@ -296,6 +296,7 @@ DuAETag.removeGroup = function (layer, groupName, tag )
     if (groups.indexOf(groupName) < 0) return;
     groups.removeAll( groupName );
     DuAETag.setValue( layer, DuAETag.Key.GROUPS, groups.join(','), tag );
+    DuAETag.setName( layer, groups.join(' | '), tag );
 }
 
 /**
