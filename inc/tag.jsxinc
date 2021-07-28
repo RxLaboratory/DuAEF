@@ -260,6 +260,7 @@ DuAETag.getGroups = function( layer, tag )
  * If the layer does not have a tag yet, a new one will be created with the group name.
  * @param {Layer} layer The layer.
  * @param {string} groupName The group.
+ * @param {MarkerValue} [tag] If you have the tag as returned by {@link DuAETag.get} or {@link DuAETag.set}, providing it here improves performance.
  */
 DuAETag.addGroup = function (layer, groupName, tag )
 {
@@ -282,6 +283,7 @@ DuAETag.addGroup = function (layer, groupName, tag )
  * Unassigns the layer from a group.
  * @param {Layer} layer The layer.
  * @param {string} groupName The group.
+ * @param {MarkerValue} [tag] If you have the tag as returned by {@link DuAETag.get} or {@link DuAETag.set}, providing it here improves performance.
  */
 DuAETag.removeGroup = function (layer, groupName, tag )
 {
@@ -293,5 +295,25 @@ DuAETag.removeGroup = function (layer, groupName, tag )
     groups = new DuList( groups );
     if (groups.indexOf(groupName) < 0) return;
     groups.removeAll( groupName );
-    DuAETag.setValue( layer, DuAETag.Key.Groups, groups );
+    DuAETag.setValue( layer, DuAETag.Key.GROUPS, groups.join(','), tag );
+}
+
+/**
+ * Renames a group
+ * @param {Layer} layer The layer.
+ * @param {string} previousName The current name
+ * @param {string} newName The new name
+ * @param {MarkerValue} [tag] If you have the tag as returned by {@link DuAETag.get} or {@link DuAETag.set}, providing it here improves performance.
+ */
+DuAETag.renameGroup = function( layer, previousName, newName, tag )
+{
+    tag = def(tag, DuAETag.get( layer ));
+
+    var groups = DuAETag.getGroups( layer, tag);
+    if(!groups) return;
+
+    groups = new DuList( groups );
+    groups.replace( previousName, newName );
+    DuAETag.setValue( layer, DuAETag.Key.GROUPS, groups.join(','), tag );
+    DuAETag.setName( layer, groups.join(' | '), tag );
 }
