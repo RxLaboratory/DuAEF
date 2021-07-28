@@ -63,7 +63,35 @@ DuAETag.set = function( layer, tagName, tag )
     var markerProp = layer.property( 'ADBE Marker' );
 
     tag = def( tag, DuAETag.get( layer ) );
-    if (!tag) tag = markerProp.valueAtTime( 0, true );
+
+    if (!tag)
+    {
+        var time = 0;
+        if (markerProp.numKeys > 0)
+        {
+            // Get an empty frame to set the tag
+            var frame = 0;
+            for( var i = 1, n = markerProp.numKeys; i <= n; i++)
+            {
+                var kT = markerProp.keyTime(i);
+                var kF = DuAEComp.timeToFrames( kT );
+                // Frame 0 is available
+                if (kF > frame) break;
+                if (kF > frame + 10)
+                {
+                    frame = frame + 10;
+                    break;
+                }
+                if (kF < frame) continue;
+                frame = frame + 10;
+            }
+            time = DuAEComp.framesToTime( frame );
+        }
+        var comment = def(tagName, '');
+        tag = new MarkerValue( comment );
+        markerProp.setValueAtTime( time, tag );
+        tag.keyIndex = markerProp.nearestKeyIndex( time );
+    }
     
     if (typeof tagName !== 'undefined') tag.comment = tagName;
 
@@ -71,15 +99,7 @@ DuAETag.set = function( layer, tagName, tag )
     tagParams.duaef = def( tagParams.duaef, true);
     tag.setParameters( tagParams );
 
-    if (!tag.keyIndex)
-    {
-        markerProp.setValueAtTime( 0, tag );
-        tag.keyIndex = markerProp.nearestKeyIndex( 0 );
-    }
-    else 
-    {
-        markerProp.setValueAtKey( tag.keyIndex, tag );
-    }
+    markerProp.setValueAtKey( tag.keyIndex, tag );
     
     return tag;
 }
@@ -120,6 +140,25 @@ DuAETag.remove = function( layer, tag )
 }
 
 /**
+ * Sets the name (comment of the marker) of the tag.
+ * @param {Layer} layer The layer to get the tag from
+ * @param {string} [tagName] - The name to display on the marker (the comment of the marker)
+ * @param {MarkerValue} [tag] If you have the tag as returned by {@link DuAETag.get} or {@link DuAETag.set}, providing it here improves performance.
+ * @return {string} The name.
+ */
+DuAETag.setName = function ( layer, tagName, tag )
+{
+    tag = def(tag, DuAETag.get( layer ));
+    if (!tag) DuAETag.set( layer, tagName )
+    else 
+    {
+        tag.comment = tagName;
+        var markerProp = layer.property( 'ADBE Marker' );
+        markerProp.setValueAtKey( tag.keyIndex, tag );
+    }
+}
+
+/**
  * Gets the name (comment of the marker) of the tag.
  * @param {Layer} layer The layer to get the tag from
  * @return {string} The name.
@@ -141,7 +180,7 @@ DuAETag.getName = function ( layer )
  */
 DuAETag.setValue = function( layer, key, value, tag )
 {
-    tag = def(tag, DuAETag.get( layer ));
+    tag = def(tag, DuAETag.set( layer ));
     if (!tag) return;
 
     var tagParams = tag.getParameters();
@@ -168,7 +207,7 @@ DuAETag.getValue = function( layer, key, type, tag )
 
     type = def( type, DuAETag.Type.STRING);
 
-    params = tag.getParameters();
+    var params = tag.getParameters();
     if (!params) return null;
 
     var val = params[ key ];
@@ -182,9 +221,21 @@ DuAETag.getValue = function( layer, key, type, tag )
         else if (parseInt(val) == 0) return false;
         else return true;
     }
-    if (type == DuAETag.Type.INT) return parseInt(val);
-    if (type == DuAETag.Type.FLOAT) return parseFloat(val);
-    if (type == DuAETag.Type.ARRAY) return val.split(',');
+    if (type == DuAETag.Type.INT)
+    {
+        if (val == '') return 0;
+        return parseInt(val);
+    }
+    if (type == DuAETag.Type.FLOAT)
+    {
+        if (val == '') return 0;
+        return parseFloat(val);
+    }
+    if (type == DuAETag.Type.ARRAY)
+    {
+        if (val == '') return [];
+        return val.split(',');
+    }
 
     return null;
 }
@@ -192,14 +243,16 @@ DuAETag.getValue = function( layer, key, type, tag )
 /**
  * Gest the list of the groups this layer belongs to.
  * @param {Layer} layer
+ * @param {MarkerValue} [tag] If you have the tag as returned by {@link DuAETag.get} or {@link DuAETag.set}, providing it here improves performance.
  * @returns {string[]} The list of groups. May be an empty list.
  */
-DuAETag.getGroups = function( layer )
+DuAETag.getGroups = function( layer, tag )
 {
-    var groups = DuAETag.getValue( layer, DuAETag.Key.Groups );
+    tag = def(tag, DuAETag.get( layer ));
+
+    var groups = DuAETag.getValue( layer, DuAETag.Key.GROUPS, DuAETag.Type.ARRAY, tag );
     if (!groups) return [];
-    if (groups == '') return [];
-    return groups.split(',');
+    return groups;
 }
 
 /**
@@ -208,16 +261,21 @@ DuAETag.getGroups = function( layer )
  * @param {Layer} layer The layer.
  * @param {string} groupName The group.
  */
-DuAETag.addGroup = function (layer, groupName )
+DuAETag.addGroup = function (layer, groupName, tag )
 {
-    var tag = DuAETag.get( layer );
-    if (tag == null) DuAETag.set( layer, groupName );
+    tag = def(tag, DuAETag.set( layer ));
 
-    groups = new DuList( DuAETag.getGroups( layer) );
+    var groups = DuAETag.getGroups( layer, tag )
+    if (!groups) groups = [];
+
+    groups = new DuList(groups);
 
     if (groups.indexOf(groupName) >= 0) return;
+
     groups.push( groupName );
-    DuAETag.setValue( layer, DuAETag.Key.Groups, groups );
+
+    DuAETag.setValue( layer, DuAETag.Key.GROUPS, groups.join(','), tag );
+    DuAETag.setName( layer, groups.join(' | '), tag );
 }
 
 /**
@@ -225,10 +283,14 @@ DuAETag.addGroup = function (layer, groupName )
  * @param {Layer} layer The layer.
  * @param {string} groupName The group.
  */
-DuAETag.removeGroup = function (layer, groupName )
+DuAETag.removeGroup = function (layer, groupName, tag )
 {
-    groups = new DuList( DuAETag.getGroups( layer) );
-    
+    tag = def(tag, DuAETag.get( layer ));
+
+    var groups = DuAETag.getGroups( layer, tag);
+    if(!groups) return;
+
+    groups = new DuList( groups );
     if (groups.indexOf(groupName) < 0) return;
     groups.removeAll( groupName );
     DuAETag.setValue( layer, DuAETag.Key.Groups, groups );
