@@ -5,6 +5,35 @@
 var DuAEComp = {};
 
 /**
+ * Converts the number of frames to the time in seconds
+ * @param {int} frames The frames
+ * @param {CompItem} [comp=DuAEProject.getActiveComp] The comp
+ * @returns {float} The time, in seconds
+ */
+DuAEComp.framesToTime = function( frames, comp )
+{
+    comp = def(comp, DuAEProject.getActiveComp());
+    if (!comp) return 0;
+
+    return frames * comp.frameDuration;
+}
+
+/**
+ * Converts the time in seconds to the number of frames
+ * @param {float} [time=comp.time] The time in seconds
+ * @param {CompItem} [comp=DuAEProject.getActiveComp] The comp
+ * @returns {int} The number of frames, rounded
+ */
+DuAEComp.timeToFrames = function( time, comp )
+{
+    comp = def(comp, DuAEProject.getActiveComp());
+    if (!comp) return 0;
+    time = def(time, comp.time);
+
+    return Math.round( time / comp.frameDuration );
+}
+
+/**
  * Replaces text in Expressions
  * @param {string} oldString - The string to replace
  * @param {string} newString - The new string
