@@ -24,6 +24,44 @@
 /**
  * The Duduf After Effects ExtendScript Framework.<br />
  * by {@link https://RxLaboratory.org RxLaboratory} and {@link http://duduf.com Duduf}.
+ * @example
+ * // Encapsulate everything to avoid global variables!
+ * // The parameter is either undefined (stand alone script) or the panel containing the ui (ScriptUI)
+ * (function(thisObj)
+ * {
+ *      // Include the framework
+ *      #include "DuAEF.jsxinc";
+ *      
+ *      // Running the init() method of DuAEF is required to setup everything properly.
+ *      DuAEF.init( "YourScriptName", "1.0.0", "YourCompanyName" );
+ *      
+ *      // These info can be used by the framework to improve UX, but they're optional
+ *      DuESF.chatURL = 'http://chat.rxlab.info'; // A link to a live-chat server like Discord or Slack...
+ *      DuESF.bugReportURL = 'https://github.com/RxLaboratory/DuAEF_Dugr/issues/new/choose'; // A link to a bug report form
+ *      DuESF.featureRequestURL = 'https://github.com/RxLaboratory/DuAEF_Dugr/issues/new/choose'; // A link to a feature request form
+ *      DuESF.aboutURL = 'http://rxlaboratory.org/tools/dugr'; // A link to the webpage about your script
+ *      DuESF.docURL = 'http://dugr.rxlab.guide'; // A link to the documentation of the script
+ *      DuESF.scriptAbout = 'Duduf Groups: group After Effects layers!'; // A short string describing your script
+ *      DuESF.companyURL = 'https://rxlaboratory.org'; // A link to your company's website
+ *      DuESF.rxVersionURL = 'http://version.rxlab.io' // A link to an RxVersion server to check for updates
+ *      
+ *      // Build your UI here, declare your methods, etc.
+ * 
+ *      // This will be our main panel
+ *      var ui = DuScriptUI.scriptPanel( thisObj, true, true, new File($.fileName) );
+ *      ui.addCommonSettings(); // Automatically adds the language settings, location of the settings file, etc
+ *
+ *      DuScriptUI.staticText( ui.settingsGroup, "Hello world of settings!" ); // Adds a static text to the settings panel
+ *      DuScriptUI.staticText( ui.mainGroup, "Hello worlds!" ); // Adds a static text to the main panel
+ *      
+ *      // When you're ready to display everything
+ *      DuScriptUI.showUI(ui);
+ *
+ *      // Note that if you don't have a UI or if you don't use DuScriptUI to show it,
+ *      // you HAVE TO run this method before running any other function:
+ *      // DuAEF.enterRunTime();
+ *  
+ * })(this);
  * @namespace
  * @author Nicolas Dufresne and contributors
  * @copyright 2017 - 2021 Nicolas Dufresne, RxLaboratory
