@@ -39,7 +39,6 @@ function DuAEPseudoEffect( binaryFile )
 
 	if (this.matchName == '') this.valid = false;
 
-
 	// Get other infos
 
 	/**
@@ -56,10 +55,13 @@ function DuAEPseudoEffect( binaryFile )
 	var reJSON = /{.*\"controlName\"\s*:\s*\"([^\n\r\"]+)\".*/gi;
 	var reXML = /<\s*control name\s*=\s*\"([^\n\r\"]+)\"\s*>(.*)<\s*\/\s*control\s*>/gi
 
+
 	var matchArray = reJSON.exec( binaryFile.binAsString );
 	var indexArray = [];
 	if (matchArray)
 	{
+		// For some reason, the leading { may not be captured...
+		if (!matchArray[0].indexOf("{") == 0) matchArray[0] = "{" + matchArray[0];
 		// Parse JSON and get the prop array
 		var jsonObj = JSON.parse( matchArray[0] );
 		this.name = matchArray[1];
@@ -75,6 +77,7 @@ function DuAEPseudoEffect( binaryFile )
 		}
 		
 	}
+
 
 	if (!indexArray) this.valid = false;
 
@@ -110,7 +113,7 @@ function DuAEPseudoEffect( binaryFile )
 			{
 				var newGroup = getProps( i+1 );
 				// update properties for the group
-				newGroup.index = i;
+				newGroup.index = i+1;
 				newGroup.name = prop.name;
 				newGroup.invisible = prop.invisible;
 				// Jump to the end
@@ -127,7 +130,7 @@ function DuAEPseudoEffect( binaryFile )
 			else
 			{
 				// We just need to set the index
-				prop.index = i;
+				prop.index = i+1;
 				groupProps[prop.name] = prop;
 			}
 		}
