@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Namespace: DuRegExp</title>
+    <title>Namespace: DuURL</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -3300,7 +3300,7 @@
     </ul>
 </div>
     <div class="main">
-        <h1 class="page-title" data-filename="DuRegExp.html">Namespace: DuRegExp</h1>
+        <h1 class="page-title" data-filename="DuURL.html">Namespace: DuURL</h1>
         
 
 
@@ -3309,7 +3309,7 @@
     
 <header>
     <h2>
-    DuRegExp
+    DuURL
     </h2>
     
 </header>  
@@ -3320,7 +3320,7 @@
     
     
         
-            <div class="description">JavaScript Regular Expression related methods</div>
+            <div class="description">Methods to manage URLS</div>
         
         
         
@@ -3370,7 +3370,7 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id=".javascriptSymbols"><span class="type-signature static">static,readonly</span>DuRegExp.javascriptSymbols</h4>
+        <h4 class="name" id=".EscapedChars"><span class="type-signature static">static</span>DuURL.EscapedChars</h4>
     </div>
     
     
@@ -3378,52 +3378,7 @@
 <dd>
     
     <div class="description">
-        The set containing javascript symbols ( +, -, [, etc.). Useful when parsing javascript code.
-    </div>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id=".javascriptVarChars"><span class="type-signature static">static,readonly</span>DuRegExp.javascriptVarChars</h4>
-    </div>
-    
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        The set containing authorized characters for javascript variable. Useful when parsing javascript code.
+        The list of escaped characters in URLs
     </div>
     
     
@@ -3466,14 +3421,14 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id=".escape">
+        <h4 class="name" id=".buildGET">
             
-            <span class="type-signature static">static</span>DuRegExp.escape<span class="signature">(string)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{string}</span>
+            <span class="type-signature static">static</span>DuURL.buildGET<span class="signature">(host, <span class="optional">subfolders</span>, <span class="optional">argsArray</span>, <span class="optional">httpVersion</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{string}</span>
         </h4>
     
         
         <div class="tag-source">
-            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 4996
+            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 6947
         </div>
         
     </div>
@@ -3484,7 +3439,7 @@
     
     
     <div class="description">
-        Escape reg exp reserved characters from a string to build a regular expression compatible string
+        Builds a HTTP GET request. The user-agent is named after DuESF.scriptName.
     </div>
     
 
@@ -3505,6 +3460,8 @@
 		<th>Type</th>
 		
 		
+		<th>Default</th>
+		
 		
 		<th class="last">Description</th>
 	</tr>
@@ -3515,7 +3472,7 @@
 	
         <tr>
             
-                <td class="name"><code>string</code></td>
+                <td class="name"><code>host</code></td>
             
             
             <td class="type">
@@ -3528,10 +3485,123 @@
             </td>
             
             
+                <td class="default">
+                
+                </td>
+            
             
             <td class="description last">
                 
-                The string to escape</td>
+                    
+                    
+                        
+                    
+                
+                The host, without port, without http part; for example: "duduf.com" or "version.rxlab.io"</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>subfolders</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;string></span>
+
+
+            
+            </td>
+            
+            
+                <td class="default">
+                
+                </td>
+            
+            
+            <td class="description last">
+                
+                    
+                        <span class="optional">optional</span>
+                    
+                    
+                        
+                    
+                
+                The subfolders.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>argsArray</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="default">
+                
+                </td>
+            
+            
+            <td class="description last">
+                
+                    
+                        <span class="optional">optional</span>
+                    
+                    
+                        
+                    
+                
+                An associative array with key/value pairs. Values will be escaped.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>httpVersion</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+                <td class="default">
+                
+                    "1.1"
+                
+                </td>
+            
+            
+            <td class="description last">
+                
+                    
+                        <span class="optional">optional</span>
+                    
+                    
+                        
+                    
+                
+                An associative array with key/value pairs. Values will be escaped.</td>
         </tr>
 	
 	
@@ -3596,7 +3666,297 @@
                         
                     
             </td>
-            <td class="description last">The escaped string</td>
+            <td class="description last">The query ready to be posted with a socket</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id=".buildRequest">
+            
+            <span class="type-signature static">static</span>DuURL.buildRequest<span class="signature">(arr)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{string}</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 6924
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Builds a query, made of "key=value" pairs.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                An associative array with key/value pairs. Values will be escaped.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        string
+                        
+                    
+            </td>
+            <td class="description last">The query, with the leading ?.</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id=".escape">
+            
+            <span class="type-signature static">static</span>DuURL.escape<span class="signature">(str)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{string}</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 6910
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Escapes common characters from a string to be included in a GET request URL.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>str</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                The string to escape.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        string
+                        
+                    
+            </td>
+            <td class="description last">The escaped string.</td>
         </tr>
     
     </tbody>

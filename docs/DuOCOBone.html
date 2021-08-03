@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Namespace: DuRegExp</title>
+    <title>Class: DuOCOBone</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -3300,7 +3300,7 @@
     </ul>
 </div>
     <div class="main">
-        <h1 class="page-title" data-filename="DuRegExp.html">Namespace: DuRegExp</h1>
+        <h1 class="page-title" data-filename="DuOCOBone.html">Class: DuOCOBone</h1>
         
 
 
@@ -3309,8 +3309,10 @@
     
 <header>
     <h2>
-    DuRegExp
+    DuOCOBone
     </h2>
+    
+        <div class="class-description">A bone contained in an OCO Limb.</div>
     
 </header>  
 
@@ -3320,160 +3322,16 @@
     
     
         
-            <div class="description">JavaScript Regular Expression related methods</div>
-        
-        
-        
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-        
-        
-    
-    </div>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        <h3 class="subsection-title">Members</h3>
-        
-        <dl>
-            
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id=".javascriptSymbols"><span class="type-signature static">static,readonly</span>DuRegExp.javascriptSymbols</h4>
-    </div>
-    
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        The set containing javascript symbols ( +, -, [, etc.). Useful when parsing javascript code.
-    </div>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-</dd>
-
-        
+        <h4 class="name" id="DuOCOBone">
             
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id=".javascriptVarChars"><span class="type-signature static">static,readonly</span>DuRegExp.javascriptVarChars</h4>
-    </div>
-    
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        The set containing authorized characters for javascript variable. Useful when parsing javascript code.
-    </div>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-</dd>
-
-        </dl>
-    
-    
-    
-        <h3 class="subsection-title">Methods</h3>
-        
-        <dl>
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id=".escape">
-            
-            <span class="type-signature static">static</span>DuRegExp.escape<span class="signature">(string)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{string}</span>
+            new DuOCOBone<span class="signature">(name)</span>
         </h4>
     
         
         <div class="tag-source">
-            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 4996
+            D:/DEV_SRC/RxOT/DuAEF/tools/build tools/output/DuAEF.jsxinc, line 7304
         </div>
         
     </div>
@@ -3484,7 +3342,7 @@
     
     
     <div class="description">
-        Escape reg exp reserved characters from a string to build a regular expression compatible string
+        Creates a new OCO Bone.
     </div>
     
 
@@ -3515,7 +3373,7 @@
 	
         <tr>
             
-                <td class="name"><code>string</code></td>
+                <td class="name"><code>name</code></td>
             
             
             <td class="type">
@@ -3531,7 +3389,7 @@
             
             <td class="description last">
                 
-                The string to escape</td>
+                The name</td>
         </tr>
 	
 	
@@ -3574,40 +3432,299 @@
     
     
     
-    <h5>Returns:</h5>
     
+    
+</dd>
 
-
-<table class="params">
-    <thead>
-    <tr>
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Members</h3>
         
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
+        <dl>
             
-            <td class="type">
-            
-                        string
-                        
-                    
-            </td>
-            <td class="description last">The escaped string</td>
-        </tr>
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id=".attached"><span class="type-signature static">static</span>DuOCOBone.attached<span class="type-signature type boolean">Boolean</span> </h4>
+    </div>
     
-    </tbody>
-</table>
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        true if this bone is attached to its parent.
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
 
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id=".children"><span class="type-signature static">static</span>DuOCOBone.children<span class="type-signature type array.<duocobone>">Array.&lt;<a href="DuOCOBone.html">DuOCOBone</a>></span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        The child bones.
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id=".limbs"><span class="type-signature static">static</span>DuOCOBone.limbs<span class="type-signature type array.<duocolimb>">Array.&lt;<a href="DuOCOLimb.html">DuOCOLimb</a>></span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        The child limbs.
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id=".name"><span class="type-signature static">static</span>DuOCOBone.name<span class="type-signature type string">string</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        The name of the bone
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id=".x"><span class="type-signature static">static</span>DuOCOBone.x<span class="type-signature type float">float</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        The x coordinate of the bone
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id=".y"><span class="type-signature static">static</span>DuOCOBone.y<span class="type-signature type float">float</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        The y coordinate of the bone
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
     
     
 </dd>
 
         </dl>
+    
+    
     
     
     
