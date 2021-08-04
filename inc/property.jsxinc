@@ -69,7 +69,6 @@ function DuAEProperty(property)
          * @type {int}
          */
 	this.index = property.propertyIndex;
-	this.parentIndices  = [this.index];
     /**
          * Is this an effect? same as DuAEProperty.getProperty().isEffect
          * @memberof DuAEProperty.prototype
@@ -86,20 +85,44 @@ function DuAEProperty(property)
          * @type {PropertyGroup|null}
          */
 	this.effect = null;
-	if (!this.isEffect)
-	{
-		var parentProp = property;
-		while (parentProp.parentProperty)
-		{
-			// Traverse up the property tree
-			parentProp = parentProp.parentProperty;
-			this.isEffect = parentProp.isEffect;
-			this.parentIndices.unshift(parentProp.propertyIndex);
-			if (this.isEffect) this.effect = parentProp;
-			if (this.isEffect) break;
-		}
-	}
-	else this.effect = property;
+    if (this.isEffect) this.effect = property;
+    /**
+         * The containing layer
+         * @memberof DuAEProperty.prototype
+         * @name layer
+         * @readonly
+         * @type {Layer}
+         */
+    this.layer = null;
+
+    // Get layer and effect
+	var parentProp = property;
+    this.parentIndices  = [];
+    while (parentProp.parentProperty)
+    {
+        var isEffect = parentProp.isEffect;
+        if (isEffect)
+        {
+            this.isEffect = true;
+            this.effect = parentProp;
+        }
+        
+        // If not the layer, keep index
+        this.parentIndices.unshift(parentProp.propertyIndex);
+
+        // Traverse up the property tree
+        parentProp = parentProp.parentProperty;
+    }
+    this.layer = parentProp;
+
+    /**
+         * The containing comp
+         * @memberof DuAEProperty.prototype
+         * @name comp
+         * @readonly
+         * @type {CompItem}
+         */
+    this.comp = this.layer.containingComp;
 
     /**
          * The units text of the property, same as DuAEProperty.getProperty().unitsText
@@ -179,34 +202,16 @@ DuAEProperty.prototype.property = function ( index )
 	* @todo When returning an effect, check if the matchName corresponds too.
 */
 DuAEProperty.prototype.getProperty = function() {
-	if (this.isEffect)
-	{
-		var parentProp = this.layer("ADBE Effect Parade");
-		for (var i = 0 ; i < this.parentIndices.length ; i++)
-		{
-			parentProp = parentProp(this.parentIndices[i]);
-		}
-		this.property = parentProp;
-	}
-	return this.property;
-}
-
-/**
- * Gets the layer containing the property
- * @return {Layer}	The layer
- */
-DuAEProperty.prototype.layer = function ( ) {
-    var prop = this.getProperty();
-    var parentProp = prop;
-    while ( parentProp.parentProperty ) {
-        // Traverse up the property tree
-        parentProp = parentProp.parentProperty;
+	// If the property is still valid, just return it
+    if (Object.isValid(this.property)) return this.property;
+    
+    var parentProp = this.layer;
+    for (var i = 0, n = this.parentIndices.length; i < n ; i++)
+    {
+        parentProp = parentProp.property( this.parentIndices[i] );
     }
-    return parentProp;
-}
-
-DuAEProperty.prototype.comp = function() {
-    return this.layer().containingComp;
+    this.property = parentProp;
+    return this.property;
 }
 
 /**
