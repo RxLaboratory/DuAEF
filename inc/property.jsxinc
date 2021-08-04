@@ -1768,7 +1768,7 @@ DuAEProperty.prototype.scriptifyPath = function ( offsetToCenter, varName ) {
  * var props = DuAEComp.getSelectedProps(PropertyValueType.SHAPE);
  * var prop = props[0].getProperty();
  * var out = prop.exportPathToJsxinc("D:/shape.test");
- * @param {String}	[file]	- The path or File where the jsxinc shape will be written
+ * @param {String}	file	- The path or File where the jsxinc shape will be written
  * @param {Boolean}	[offsetToCenter=false]	- If true, offset the path to the center
  * @param {Boolean}	[append=false]	- If true, appends the shape at the end of the file instead of overwriting it.
  * @param {string}	[varName="shape"]	- A name for the variable storing the shape
@@ -1779,9 +1779,13 @@ DuAEProperty.prototype.exportPathToJsxinc = function ( file, offsetToCenter, app
 
     if ( !( file instanceof File ) ) file = new File( file );
 
+    var scriptPath = '';
+    if (append) scriptPath += '\n';
+    scriptPath += this.scriptifyPath(offsetToCenter, varName);
+
     return DuFile.write(
         file,
-        this.scriptifyPath(offsetToCenter, varName),
+        scriptPath,
         append
         )
 }
@@ -1828,7 +1832,6 @@ DuAEProperty.prototype.pathProperty = function ( ) {
 
     return this;
 }
-
 
 // =========== STATIC ====================
 
@@ -2310,8 +2313,8 @@ DuAEProperty.pathVerticalSymetry = function ( pathProperties ) {
  * @returns {Boolean} true if it's a path property.
  */
 DuAEProperty.isPathProperty = function( prop )
-    {
-        if ( prop.matchName == "ADBE Vector Shape - Group" ) return true;
-        if ( prop.matchName == "ADBE Mask Atom" ) return true;
-        return false;
-    }
+{
+    if ( prop.matchName == "ADBE Vector Shape - Group" ) return true;
+    if ( prop.matchName == "ADBE Mask Atom" ) return true;
+    return false;
+}
