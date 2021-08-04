@@ -1795,7 +1795,7 @@ DuAEProperty.prototype.exportPathToJsxinc = function ( file, offsetToCenter, app
  * Works only with path (bezier) properties.
  * @return {float[][]} The vertices in comp coordinates.
  */
-DuAEProperty.prototype.verticesToComp = function ( pathProperty ) {
+DuAEProperty.prototype.verticesToComp = function ( ) {
     var pathProp = this.pathProperty( );
     if ( !pathProp ) DuDebug.throwError( "Expected a shape property, got another type of value.", 'DuAEProperty.prototype.verticesToComp' );
     var pathProperty = pathProp.getProperty();
