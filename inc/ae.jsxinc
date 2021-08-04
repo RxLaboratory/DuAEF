@@ -803,7 +803,8 @@ DuAE.getAEVersionName = function ( versionAsFloat ) {
     if ( versionAsFloat >= 15 && versionAsFloat < 16 ) return "CC2018";
     if ( versionAsFloat >= 16 && versionAsFloat < 17 ) return "CC2019";
     if ( versionAsFloat >= 17 && versionAsFloat < 18 ) return "2020";
-    if ( versionAsFloat >= 18 ) return "2021";
+    if ( versionAsFloat >= 18 && versionAsFloat < 22) return "2021";
+    if ( versionAsFloat >= 22 ) return "2022";
     return "Unknown";
 }
 
@@ -829,8 +830,9 @@ DuAE.getAEVersion = function ( versionName ) {
     if (versionName == "CC2017") return new DuVersion( "14.0" );
     if (versionName == "CC2018") return new DuVersion( "15.0" );
     if (versionName == "CC2019") return new DuVersion( "16.0" );
-    if (versionName == "CC2020") return new DuVersion( "17.0" );
-    if (versionName == "CC2021") return new DuVersion( "18.0" );
+    if (versionName == "2020") return new DuVersion( "17.0" );
+    if (versionName == "2021") return new DuVersion( "18.0" );
+    if (versionName == "2022") return new DuVersion( "22.0" );
     return new DuVersion(versionName);
 }
 
