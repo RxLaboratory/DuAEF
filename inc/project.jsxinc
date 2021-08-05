@@ -267,9 +267,9 @@ DuAEProject.reduce = function ( comps, keepExpressionOnly ) {
 /**
  * Collects all dependencies in a folder
  * @param {Folder} [destination] The folder where to save the files. The project files will be collected in a subfolder called "project name.aep.archive" or "project name.aep.zip". If not provided, will use the current folder.
- * @param {boolean} [overwrite=false] Wether to overwrite existing footage in the destination.
+ * @param {boolean} [overwrite=false] Whether to overwrite existing footage in the destination.
  * @param {boolean} [zip=false] Set to true to automatically zip the archive.
- * @param {boolean} [createProjectFolder=true] Wether to create a folder for this project or use the destination as is.
+ * @param {boolean} [createProjectFolder=true] Whether to create a folder for this project or use the destination as is.
  */
 DuAEProject.collectFiles = function ( destination, overwrite, zip, createProjectFolder ) {
     var projectFile = app.project.file;
@@ -388,7 +388,7 @@ DuAEProject.collectFiles = function ( destination, overwrite, zip, createProject
  * Replaces text in Expressions
  * @param {string} oldString - The string to replace
  * @param {string} newString - The new string
- * @param {boolean} [caseSensitive=true] - Wether the search has to be case sensitive
+ * @param {boolean} [caseSensitive=true] - Whether the search has to be case sensitive
  */
 DuAEProject.replaceInExpressions = function ( oldString, newString, caseSensitive ) {
     caseSensitive = def (caseSensitive, true);

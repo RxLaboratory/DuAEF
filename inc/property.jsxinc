@@ -32,7 +32,7 @@ function DuAEProperty(property)
 	if (property.propertyType == PropertyType.PROPERTY)
 	{
         /**
-         * Wether this is built from a PropertyGroup and contains sub-properties, or a just a single Property
+         * Whether this is built from a PropertyGroup and contains sub-properties, or a just a single Property
          * @memberof DuAEProperty.prototype
          * @name isGroup
          * @type {Boolean}
@@ -133,7 +133,7 @@ function DuAEProperty(property)
          */
 	this.unitsText = property.unitsText;
     /**
-         * Wether the value is a percent
+         * Whether the value is a percent
          * @memberof DuAEProperty.prototype
          * @name isPercent
          * @readonly
@@ -141,7 +141,7 @@ function DuAEProperty(property)
          */
 	this.isPercent = this.unitsText == localize("$$$/AE/TLW/GraphEditor/PercentSource=percent");
     /**
-         * Wether the value is an angle
+         * Whether the value is an angle
          * @memberof DuAEProperty.prototype
          * @name isAngle
          * @readonly
@@ -149,7 +149,7 @@ function DuAEProperty(property)
          */
 	this.isAngle = this.unitsText == localize("$$$/AE/TLW/GraphEditor/DegreesSource=degrees");
     /**
-         * Wether the value is a pixel value
+         * Whether the value is a pixel value
          * @memberof DuAEProperty.prototype
          * @name isPixels
          * @readonly
@@ -912,8 +912,8 @@ DuAEProperty.prototype.selectKeys = function ( inTime, outTime ) {
 /**
  * Gets an expression link to the property
  * @memberof DuAEProperty
- * @param {bool} [useThisComp=false] Wether to begin the expression by 'thisComp' or 'comp("name")'
- * @param {bool} [fromLayer=true] Wether to begin the expression by comp.layer or directly from the first prop of the layer
+ * @param {bool} [useThisComp=false] Whether to begin the expression by 'thisComp' or 'comp("name")'
+ * @param {bool} [fromLayer=true] Whether to begin the expression by comp.layer or directly from the first prop of the layer
  * @return {str} The expression link to the property
  */
 DuAEProperty.prototype.expressionLink = function ( useThisComp, fromLayer ) {
@@ -1260,7 +1260,7 @@ DuAEProperty.prototype.setExpression = function ( expr, keepValue ) {
  * Recursively (if it's a group) replaces text in Expressions
  * @param {string} oldString - The string to replace
  * @param {string} newString - The new string
- * @param {boolean} [caseSensitive=true] - Wether the search has to be case sensitive
+ * @param {boolean} [caseSensitive=true] - Whether the search has to be case sensitive
  */
 DuAEProperty.prototype.replaceInExpressions = function ( prop, oldString, newString, caseSensitive ) {
     caseSensitive = def (caseSensitive, true);
@@ -1285,7 +1285,7 @@ DuAEProperty.prototype.replaceInExpressions = function ( prop, oldString, newStr
 /**
  * Adds an expression to the property, linking it to the parent property
  * @param {DuAEProperty|Property} parentProp - The parent property.
- * @param {bool} [useThisComp] - Wether to begin the expression by 'thisComp' or 'comp("name")', default: will detect if the properties are in the same comp
+ * @param {bool} [useThisComp] - Whether to begin the expression by 'thisComp' or 'comp("name")', default: will detect if the properties are in the same comp
  */
 DuAEProperty.prototype.pickWhip = function ( parentProp, useThisComp ) {
     var childProp = this.getProperty();
@@ -1309,7 +1309,7 @@ DuAEProperty.prototype.pickWhip = function ( parentProp, useThisComp ) {
  * Note: any Property or PropertyGroup (and its subproperties) named "Data" will be linked the opposite way (from parentProp to childProp).
  * @memberof DuAEProperty
  * @param {PropertyBase|DuAEProperty} parentProp - The parent property
- * @param {bool} [useThisComp] - Wether to begin the expression by 'thisComp' or 'comp("name")', default: will detect if the properties are in the same comp
+ * @param {bool} [useThisComp] - Whether to begin the expression by 'thisComp' or 'comp("name")', default: will detect if the properties are in the same comp
  * @param {LayerItem} [timeLayer=null] - A layer used to offset the time (typically, in case of link between precompositions, the precomposition layer).<br />
  * When not null, the start time of this layer will be taken into account to get the values and synchronize them.
  */

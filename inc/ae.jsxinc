@@ -760,9 +760,9 @@ DuAE.hasFileAndNetworkAccess = function()
  * Asks the user to check the file and network security pref if not already set.
  * Opens the general prefrences of After Effects.
  * @memberof DuAE
- * @param {boolean}	[showAlert=true]	- Wether to display an alert before opening the preferences
+ * @param {boolean}	[showAlert=true]	- Whether to display an alert before opening the preferences
  * @param {string}	[message=The Duduf After Effects scripting framework needs to be allowed to write files\nPlease, check the box called 'Allow Scripts to write files...' in the general preferences of After Effects.]	- The message to display in the alert.
- * @return {boolean}	Wether the preference has been set
+ * @return {boolean}	Whether the preference has been set
  */
 DuAE.askFilesAndNetworkAccess = function ( showAlert, message ) {
 	if ( DuAE.hasFileAndNetworkAccess() ) return true;
