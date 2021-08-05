@@ -37,7 +37,7 @@ DuAEComp.timeToFrames = function( time, comp )
  * Replaces text in Expressions
  * @param {string} oldString - The string to replace
  * @param {string} newString - The new string
- * @param {boolean} [caseSensitive=true] - Wether the search has to be case sensitive
+ * @param {boolean} [caseSensitive=true] - Whether the search has to be case sensitive
  * @param {boolean} [selectedLayers=false] Set to true to cache only selected layers.
  * @param {CompItem} [comp=DuAEProject.getActiveComp()] The comp with expressions to cache.
  */

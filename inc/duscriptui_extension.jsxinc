@@ -1,14 +1,26 @@
 DuScriptUI.String.ASK_FILES_NETWORK_ACCESS = "{#} needs to be allowed to write files.\nPlease, check the box called 'Allow Scripts to write files...' in the scripting preferences of After Effects.";
 DuScriptUI.String.ASK_FILES_NETWORK_ACCESS_TITLE = "File and network access";
+DuScriptUI.String.COMPOSITION_SHORT = "Comp";
+DuScriptUI.String.COMPOSITION = "Composition";
+DuScriptUI.String.CONTINUOUS_RASTERIZATION = "Collapse transformation / Continuous rasterization";
+DuScriptUI.String.EDIT_MODE = "Edit mode";
+DuScriptUI.String.GUIDE_LAYERS = "Guide layers";
+DuScriptUI.String.INVALID_PSEUDO_EFFECT = "Invalid pseudo effect file or match name.";
+DuScriptUI.String.LOCK_LAYERS = "Lock layers";
+DuScriptUI.String.MISSING_PSEUDO_EFFECT = "The pseudo effect file does not exist.";
+DuScriptUI.String.NEW_VERSION_TITLE = "New version available";
+DuScriptUI.String.OPEN_PREFS = "Open preferences";
 DuScriptUI.String.REINIT_PROMPT = "/!\\ ======\n/!\\ It seems something went wrong with {#} the last time you used it.\n/!\\ Check the box below to re-initialize {#} and try to make it work again.\n/!\\ ======";
 DuScriptUI.String.REINIT_SCRIPT = "Re-initialize {#} before launch.";
-DuScriptUI.String.MISSING_PSEUDO_EFFECT = "The pseudo effect file does not exist.";
-DuScriptUI.String.INVALID_PSEUDO_EFFECT = "Invalid pseudo effect file or match name.";
-DuScriptUI.String.EDIT_MODE = "Edit mode";
-DuScriptUI.String.OPEN_PREFS = "Open preferences";
-DuScriptUI.String.NONE = "None";
-DuScriptUI.String.SELECT_LAYERS = "Select layers";
-DuScriptUI.String.NEW_VERSION_TITLE = "New version available";
+DuScriptUI.String.SET_FRAME_BLENDING = "Set frame blending mode";
+DuScriptUI.String.SHOW_HIDE_LAYERS_TIP = "Show/Hide layers";
+DuScriptUI.String.SHY_LAYERS = "Shy layers";
+DuScriptUI.String.SOLO_LAYERS = "Toggle solo mode";
+DuScriptUI.String.TOGGLE_3D_LAYER = "Toggle 3D layer mode";
+DuScriptUI.String.TOGGLE_ADJUSTMENT_LAYER = "Toggle adjustment layer mode";
+DuScriptUI.String.TOGGLE_AUDIO = "Toggle audio";
+DuScriptUI.String.TOGGLE_EFFECTS = "Toggle effects";
+DuScriptUI.String.TOGGLE_MOTION_BLUR = "Toggle motion blur";
 
 /**
  * Runs the installation wizard for the script (asks for files and network access, asks the language...).

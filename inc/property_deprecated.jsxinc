@@ -792,8 +792,8 @@ DuAEProperty.selectKeyFrames = function ( property, inTime, outTime ) {
  * @deprecated
  * @memberof DuAEProperty
  * @param {Property|DuAEProperty}	prop			- The property
- * @param {bool}		[useThisComp=false]		- Wether to begin the expression by 'thisComp' or 'comp("name")'
- * @param {bool}		[fromLayer=true]		- Wether to begin the expression by comp.layer or directly from the first prop of the layer
+ * @param {bool}		[useThisComp=false]		- Whether to begin the expression by 'thisComp' or 'comp("name")'
+ * @param {bool}		[fromLayer=true]		- Whether to begin the expression by comp.layer or directly from the first prop of the layer
  * @return {str}		The expression link to the property
  */
 DuAEProperty.getExpressionLink = function ( prop, useThisComp, fromLayer ) {
@@ -1171,7 +1171,7 @@ DuAEProperty.setExpression = function ( property, expr, keepValue ) {
  * @deprecated
  * @param {string} oldString - The string to replace
  * @param {string} newString - The new string
- * @param {boolean} [caseSensitive=true] - Wether the search has to be case sensitive
+ * @param {boolean} [caseSensitive=true] - Whether the search has to be case sensitive
  */
 DuAEProperty.replaceInExpressions = function ( prop, oldString, newString, caseSensitive ) {
     caseSensitive = def (caseSensitive, true);
@@ -1198,7 +1198,7 @@ DuAEProperty.replaceInExpressions = function ( prop, oldString, newString, caseS
  * @deprecated
  * @param {Property} childProp - The child property (the one which gets an expression).
  * @param {Property} parentProp - The parent property.
- * @param {bool} useThisComp - Wether to begin the expression by 'thisComp' or 'comp("name")', default: will detect if the properties are in the same comp
+ * @param {bool} useThisComp - Whether to begin the expression by 'thisComp' or 'comp("name")', default: will detect if the properties are in the same comp
  */
 DuAEProperty.pickWhip = function ( childProp, parentProp, useThisComp ) {
     if (childProp instanceof DuAEProperty) childProp = childProp.getProperty();
@@ -1222,7 +1222,7 @@ DuAEProperty.pickWhip = function ( childProp, parentProp, useThisComp ) {
  * @memberof DuAEProperty
  * @param {PropertyBase} childProp - The child property
  * @param {PropertyBase} parentProp - The parent property
- * @param {bool} [useThisComp] - Wether to begin the expression by 'thisComp' or 'comp("name")', default: will detect if the properties are in the same comp
+ * @param {bool} [useThisComp] - Whether to begin the expression by 'thisComp' or 'comp("name")', default: will detect if the properties are in the same comp
  * @param {LayerItem} [timeLayer=null] - A layer used to offset the time (typically, in case of link between precompositions, the precomposition layer).<br />
  * When not null, the start time of this layer will be taken into account to get the values and synchronize them.
  */

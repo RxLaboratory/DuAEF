@@ -52,55 +52,92 @@ DuAETag.Type = {
 }
 
 /**
+ * Set to true so the markers are created before the composition start time and hidden
+ */
+DuAETag.hideTags = false;
+
+/**
  * Sets a new marker/tag (or gets the existing one) on the first frame of the layer.
  * @param {Layer} layer - The layer to set the tag on.
  * @param {string} [tagName] - The name to display on the marker (the comment of the marker)
  * @param {MarkerValue} [tag] - An existing tag.
+ * @param {Boolean} [hidden=DuAETag.hideTags] - When true, the marker will be created before the layer and comp start time, so it's hidden.
  * @return {MarkerValue} The marker (tag), with an extra property <code>keyIndex</code> which is the index of the corresponding keyframe.
  */
-DuAETag.set = function( layer, tagName, tag )
+DuAETag.set = function( layer, tagName, tag, hidden )
 {
+    hidden = def(hidden, DuAETag.hideTags);
+    
     var markerProp = layer.property( 'ADBE Marker' );
 
     tag = def( tag, DuAETag.get( layer ) );
 
+    // Get tag time
+    var time = 0;
+    if (hidden) time = -60; // Starting 60 s before start time should be enough!
+    if (markerProp.numKeys > 0)
+    {
+        // Get an empty frame to set the tag
+        var frame = 0;
+        if (hidden) frame = -1000; // Starting 1000 frames before start time should be enough!
+        for( var i = 1, n = markerProp.numKeys; i <= n; i++)
+        {
+            var kT = markerProp.keyTime(i);
+            var kF = DuAEComp.timeToFrames( kT );
+            // Frame 0 is available
+            if (kF > frame) break;
+            if (kF > frame + 10)
+            {
+                frame = frame + 10;
+                break;
+            }
+            if (kF < frame) continue;
+            frame = frame + 10;
+        }
+        time = DuAEComp.framesToTime( frame );
+    }
+
+    // Create tag if needed
     if (!tag)
     {
-        var time = 0;
-        if (markerProp.numKeys > 0)
-        {
-            // Get an empty frame to set the tag
-            var frame = 0;
-            for( var i = 1, n = markerProp.numKeys; i <= n; i++)
-            {
-                var kT = markerProp.keyTime(i);
-                var kF = DuAEComp.timeToFrames( kT );
-                // Frame 0 is available
-                if (kF > frame) break;
-                if (kF > frame + 10)
-                {
-                    frame = frame + 10;
-                    break;
-                }
-                if (kF < frame) continue;
-                frame = frame + 10;
-            }
-            time = DuAEComp.framesToTime( frame );
-        }
         var comment = def(tagName, '');
         tag = new MarkerValue( comment );
-        markerProp.setValueAtTime( time, tag );
-        tag.keyIndex = markerProp.nearestKeyIndex( time );
+        tag.keyTime = time;
+        tag.keyIndex = -1;
+    }
+    // Otherwise just set comment
+    else 
+    {
+        if (typeof tagName !== 'undefined') tag.comment = tagName;
     }
     
-    if (typeof tagName !== 'undefined') tag.comment = tagName;
-
     var tagParams = tag.getParameters();
     tagParams.duaef = def( tagParams.duaef, true);
     tag.setParameters( tagParams );
 
-    markerProp.setValueAtKey( tag.keyIndex, tag );
-    
+    // Set tag
+
+    // Show or hide markers
+    if ( hidden && tag.keyTime >= 0 && tag.keyIndex > 0)
+    {
+        markerProp.removeKey( tag.keyIndex );
+        markerProp.setValueAtTime( time, tag );
+    }
+    else if ( !hidden && tag.keyTime < 0  && tag.keyIndex > 0)
+    {
+        markerProp.removeKey( tag.keyIndex );
+        markerProp.setValueAtTime( time, tag );
+    }
+    else if (tag.keyIndex > 0)
+    {
+        markerProp.setValueAtKey( tag.keyIndex, tag );
+    }
+    else 
+    {
+        markerProp.setValueAtTime( time, tag );
+        tag.keyIndex = markerProp.nearestKeyIndex( time );
+    }
+ 
     return tag;
 }
 
@@ -119,6 +156,7 @@ DuAETag.get = function( layer )
     {
         var tag = markerProp.keyValue( i );
         tag.keyIndex = i;
+        tag.keyTime = markerProp.keyTime( i );
         var params = tag.getParameters();
         if ( params.duaef ) return tag;
     }

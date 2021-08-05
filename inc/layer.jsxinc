@@ -1135,7 +1135,7 @@ DuAELayer.isThreeD = function ( layer ) {
 /**
  * Gets an expression linking to the layer
  * @param {Layer} layer The layer
- * @param {Boolean} [useThisComp=false] Wether to begin the expression by 'thisComp' or 'comp("name")'
+ * @param {Boolean} [useThisComp=false] Whether to begin the expression by 'thisComp' or 'comp("name")'
  * @return {str} The expression link to the layer
  */
 DuAELayer.expressionLink = function( layer, useThisComp ) {
