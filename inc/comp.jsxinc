@@ -168,6 +168,16 @@ DuAEComp.getSelectedLayers = function () {
 }
 
 /**
+ * Gets the first selected layer in the After Effects current composition
+ * @return {Layer|null} The layer or null if there's no current comp / no selected layer
+ */
+DuAEComp.getActiveLayer = function() {
+    var layers = DuAEComp.getSelectedLayers();
+    return layers[0];
+}
+
+
+/**
  * Runs a function on all the selected layers
  * @param {function} method - The function to run on the layers, which takes a layer as its only argument.
  * @param {string} [undoGroupName] - The name of the undoGroup created before the execution. If not provided, there will not be any undoGroup created.
