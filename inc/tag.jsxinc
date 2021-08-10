@@ -56,30 +56,17 @@ DuAETag.Type = {
  */
 DuAETag.hideTags = false;
 
-/**
- * Sets a new marker/tag (or gets the existing one) on the first frame of the layer.
- * @param {Layer} layer - The layer to set the tag on.
- * @param {string} [tagName] - The name to display on the marker (the comment of the marker)
- * @param {MarkerValue} [tag] - An existing tag.
- * @param {Boolean} [hidden=DuAETag.hideTags] - When true, the marker will be created before the layer and comp start time, so it's hidden.
- * @return {MarkerValue} The marker (tag), with an extra property <code>keyIndex</code> which is the index of the corresponding keyframe.
- */
-DuAETag.set = function( layer, tagName, tag, hidden )
+// low-level undocumented function to get the time the marker should be set on
+DuAETag.getTagTime = function( layer )
 {
-    hidden = def(hidden, DuAETag.hideTags);
-    
     var markerProp = layer.property( 'ADBE Marker' );
-
-    tag = def( tag, DuAETag.get( layer ) );
-
-    // Get tag time
     var time = 0;
-    if (hidden) time = -60; // Starting 60 s before start time should be enough!
+    if ( DuAETag.hideTags ) time = -60; // Starting 60 s before start time should be enough!
     if (markerProp.numKeys > 0)
     {
         // Get an empty frame to set the tag
         var frame = 0;
-        if (hidden) frame = -1000; // Starting 1000 frames before start time should be enough!
+        if ( DuAETag.hideTags ) frame = -1000; // Starting 1000 frames before start time should be enough!
         for( var i = 1, n = markerProp.numKeys; i <= n; i++)
         {
             var kT = markerProp.keyTime(i);
@@ -96,10 +83,27 @@ DuAETag.set = function( layer, tagName, tag, hidden )
         }
         time = DuAEComp.framesToTime( frame );
     }
+    return time;
+}
+
+/**
+ * Sets a new marker/tag (or gets the existing one) on the first frame of the layer.
+ * @param {Layer} layer - The layer to set the tag on.
+ * @param {string} [tagName] - The name to display on the marker (the comment of the marker)
+ * @param {MarkerValue} [tag] - An existing tag.
+ * @param {Boolean} [hidden=DuAETag.hideTags] - When true, the marker will be created before the layer and comp start time, so it's hidden.
+ * @return {MarkerValue} The marker (tag), with an extra property <code>keyIndex</code> which is the index of the corresponding keyframe.
+ */
+DuAETag.set = function( layer, tagName, tag )
+{   
+    var markerProp = layer.property( 'ADBE Marker' );
+
+    tag = def( tag, DuAETag.get( layer ) );
 
     // Create tag if needed
     if (!tag)
     {
+        var time = DuAETag.getTagTime(layer);
         var comment = def(tagName, '');
         tag = new MarkerValue( comment );
         tag.keyTime = time;
@@ -115,28 +119,16 @@ DuAETag.set = function( layer, tagName, tag, hidden )
     tagParams.duaef = def( tagParams.duaef, true);
     tag.setParameters( tagParams );
 
-    // Set tag
-
-    // Show or hide markers
-    if ( hidden && tag.keyTime >= 0 && tag.keyIndex > 0)
-    {
-        markerProp.removeKey( tag.keyIndex );
-        markerProp.setValueAtTime( time, tag );
-    }
-    else if ( !hidden && tag.keyTime < 0  && tag.keyIndex > 0)
-    {
-        markerProp.removeKey( tag.keyIndex );
-        markerProp.setValueAtTime( time, tag );
-    }
-    else if (tag.keyIndex > 0)
+    if ( tag.keyIndex > 0 )
     {
         markerProp.setValueAtKey( tag.keyIndex, tag );
     }
     else 
     {
-        markerProp.setValueAtTime( time, tag );
+        markerProp.setValueAtTime( tag.keyTime, tag );
         tag.keyIndex = markerProp.nearestKeyIndex( time );
     }
+    
  
     return tag;
 }
@@ -158,7 +150,17 @@ DuAETag.get = function( layer )
         tag.keyIndex = i;
         tag.keyTime = markerProp.keyTime( i );
         var params = tag.getParameters();
-        if ( params.duaef ) return tag;
+        if ( !params.duaef ) continue;
+        // check time to shoz / hide
+        if ( ( DuAETag.hideTags && tag.keyTime >= 0 ) || ( !DuAETag.hideTags && tag.keyTime < 0))
+        {
+            var time = DuAETag.getTagTime(layer);
+            markerProp.removeKey( tag.keyIndex );
+            markerProp.setValueAtTime( time, tag );
+            tag.keyTime = time;
+            tag.keyIndex = markerProp.nearestKeyIndex( time );
+        }
+        return tag;
     }
     return null;
 }
