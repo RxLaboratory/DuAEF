@@ -848,3 +848,19 @@ DuScriptUI.layerPickerDialog = function( title )
 
     return dialog;
 }
+
+DuScriptUI.refreshPanel = function( panel, scriptFile )
+{
+    var ok = DuScriptUI.refreshWindow( panel, scriptFile );
+    if (ok) return true;
+    if (panel instanceof Panel && scriptFile.exists )
+    {
+        var scriptName = DuPath.getName(scriptFile);
+        // Close
+        DuAE.openScriptUIPanel( scriptName );
+        // Open
+        DuAE.openScriptUIPanel( scriptName );
+        return true;
+    }
+    return false;
+}
