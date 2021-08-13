@@ -1,6 +1,3 @@
-[submodule "DuESF"]
-	path = DuESF
-	url = https://github.com/RxLaboratory/DuESF.git
 [submodule ".\\tools\\build tools\\node_modules\\jaguarjs-jsdoc"]
 	path = .\\tools\\build tools\\node_modules\\jaguarjs-jsdoc
 	url = https://github.com/RxLaboratory/jaguarjs-jsdoc.git
