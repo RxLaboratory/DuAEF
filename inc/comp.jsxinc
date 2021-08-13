@@ -176,7 +176,6 @@ DuAEComp.getActiveLayer = function() {
     return layers[0];
 }
 
-
 /**
  * Runs a function on all the selected layers
  * @param {function} method - The function to run on the layers, which takes a layer as its only argument.
@@ -300,13 +299,33 @@ DuAEComp.selectLayers = function ( layers ) {
  * @return {string}	The unique name, with a new number at the end if needed.
  */
 DuAEComp.newUniqueLayerName = function ( newName, comp, increment ) {
+    // Ignore the last block
+    var nName = newName.split(' | ');
+    var lastBlock = '';
+    if (nName.length == 4)
+    {
+        lastBlock = nName.pop();
+        newName = nName.join(' | ');
+    }
+
     increment = def(increment, true);
     comp = def(comp, DuAEProject.getActiveComp() );
     var layerNames = [];
-    for ( var i = 1; i <= comp.layers.length; i++ ) {
-        layerNames.push( comp.layer( i ).name );
+    for ( var i = 1; i <= comp.layers.length; i++ )
+    {
+        // Ignore the last block
+        var n = comp.layer( i ).name;
+        var tName = n.split(' | ');
+        if (tName.length == 4)
+        {
+            tName.pop();
+            n = tName.join(' | ');
+        }
+        layerNames.push( n );
     }
-    return DuString.generateUnique( newName, layerNames, increment );
+    newName = DuString.generateUnique( newName, layerNames, increment );
+    if (lastBlock != '') newName += ' | ' + lastBlock;
+    return newName;
 }
 
 /**
