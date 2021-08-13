@@ -649,12 +649,11 @@ DuAELayer.unparent = function ( layers ) {
 DuAELayer.toggleEditMode = function ( layer ) {
 
     // Check if it's already in edit mode
-    var setEditMode = false;
-    var childLayers = DuAETag.getValue( layer, DuAETag.Key.CHILD_LAYERS );
-    if ( childLayers )
+    var setEditMode = true;
+    var editMode = DuAETag.getValue( layer, DuAETag.Key.EDIT_MODE, DuAETag.Type.BOOL );
+    if ( editMode )
     {
         setEditMode = false;
-        childLayers = childLayers.split(',');
     }
 
     var comp = layer.containingComp;
@@ -668,7 +667,7 @@ DuAELayer.toggleEditMode = function ( layer ) {
         var childLayers = [];
         for ( var j = 0, num = children.length; j < num; j++ ) {
             var child = children[ j ];
-            childLayers.push(index);
+            childLayers.push(child.index);
             child.parent = null;
         }
 
@@ -683,6 +682,7 @@ DuAELayer.toggleEditMode = function ( layer ) {
         // Store the list of children
         childLayers = childLayers.join(',');
         DuAETag.setValue( layer, DuAETag.Key.CHILD_LAYERS, childLayers );
+        DuAETag.setValue( layer, DuAETag.Key.EDIT_MODE, true );
 
         // Tint the layer
         var tint = layer.property( 'ADBE Effect Parade' ).addProperty( 'ADBE Tint' );
@@ -691,10 +691,8 @@ DuAELayer.toggleEditMode = function ( layer ) {
         tint( 2 ).setValue( [ 1, 0, 0, 1 ] );
 
     } else {
-
-        // Get children
-        childLayers = DuAETag.getValue( layer, DuAETag.Key.CHILD_LAYERS);
-        childLayers = childLayers.split(',');
+        var childLayers = DuAETag.getValue( layer, DuAETag.Key.CHILD_LAYERS, DuAETag.Type.ARRAY );
+        if ( childLayers == null ) return;
         for (var i = 0, n = childLayers.length; i < n; i ++)
         {
             var index = parseInt( childLayers[i] );
@@ -702,6 +700,7 @@ DuAELayer.toggleEditMode = function ( layer ) {
         }
 
         DuAETag.setValue( layer, DuAETag.Key.CHILD_LAYERS, '' );
+        DuAETag.setValue( layer, DuAETag.Key.EDIT_MODE, false );
         // Remove from edit group
         DuAETag.removeGroup( layer, editName );
         // Reset original tag
@@ -711,6 +710,9 @@ DuAELayer.toggleEditMode = function ( layer ) {
         else DuAETag.set( layer, tagName )
         // Reset the layer name
         layer.name = layer.name.replace('=EDIT= ', '');
+
+        //Remove tint
+        layer.property( 'ADBE Effect Parade' ).property( editName ).remove();
     }
 }
 
