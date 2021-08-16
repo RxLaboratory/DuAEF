@@ -224,7 +224,7 @@ DuAEProperty.prototype.dimensions = function ( ) {
     var dimensions = 0;
     if ( prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL || prop.propertyValueType == PropertyValueType.ThreeD ) {
         //if this is a position or scale and the layer is not 3D, AFX uses a 3D value in the position (with 0 as Z position), but the expression must return a 2D value.......
-        if ( ( prop.matchName == "ADBE Scale" || prop.matchName == "ADBE Position" ) && !DuAEProperty.getLayer( prop ).threeDLayer ) {
+        if ( ( prop.matchName == "ADBE Scale" || prop.matchName == "ADBE Position" ) && !this.layer.threeDLayer ) {
             dimensions = 2;
         } else {
             dimensions = 3;
@@ -1234,7 +1234,7 @@ DuAEProperty.prototype.setExpression = function ( expr, keepValue ) {
 
     if ( !this.riggable() ) return;
     var prop = this.getProperty();
-    var comp = this.comp();
+    var comp = this.comp;
     var originalValue = prop.valueAtTime( comp.time, false );
 
     //remove current expression
