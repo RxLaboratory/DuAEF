@@ -5,6 +5,19 @@
 var DuAEShapeLayer = {};
 
 /**
+ * A List of primitive shapes
+ * @enum {int}
+ */
+DuAEShapeLayer.Primitive = {
+    NONE: 0,
+    CIRCLE: 1,
+    SQUARE: 2,
+    ROUNDED_SQUARE: 3,
+    POLYGON: 4,
+    STAR: 5
+}
+
+/**
  * Gets the transformation matrix for all the parent groups of a given property
  * @param {Property|DuAEProperty} prop - The property
  * @return {Matrix} The transformation matrix.

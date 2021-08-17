@@ -532,7 +532,8 @@ DuAEComp.addNull = function (comp)
 
     var nullLayer = comp.layers.addShape();
     nullLayer.guideLayer = true;
-    nullLayer.name = "Null";
+    nullLayer.name = DuScriptUI.String.NULL_LAYER;
+    nullLayer.label = 1;
 
     var anchorGroup = nullLayer("ADBE Root Vectors Group").addProperty("ADBE Vector Group");
     anchorGroup.name = 'Anchor';
@@ -554,4 +555,128 @@ DuAEComp.addNull = function (comp)
     stroke("ADBE Vector Stroke Dashes")("ADBE Vector Stroke Dash 1").setValue(2);
 
     return nullLayer;
+}
+
+/**
+ * Creates a new "Shape Adjustment Layer" in the comp.
+ * @param {CompItem} [comp=DuAEProject.getActiveComp] The comp where to create the layer
+ * @returns {ShapeLayer} The adjustment layer
+ */
+DuAEComp.addAdjustmentLayer = function (comp)
+{
+    comp = def(comp, DuAEProject.getActiveComp());
+    if (!comp) return;
+
+    var layer = comp.layers.addShape();
+    layer.name = DuScriptUI.String.ADJUSTMENT_LAYER;
+    layer.adjustmentLayer = true;
+    layer.label = 5;
+
+    var solidGroup = layer("ADBE Root Vectors Group").addProperty("ADBE Vector Group");
+    solidGroup.name = 'Solid';
+    var solidContent = solidGroup.property("ADBE Vectors Group");
+    var solid = solidContent.addProperty("ADBE Vector Shape - Rect");
+    solid('ADBE Vector Rect Size').setValue([comp.width, comp.height]);
+    var fill = solidContent.addProperty("ADBE Vector Graphic - Fill");
+    fill("ADBE Vector Fill Color").setValue([1,1,1,1]);
+
+    return layer;
+}
+
+/**
+ * Creates a new "Solid Adjustment Layer" in the comp.
+ * @param {DuColor} [color=DuColor.Color.RAINBOX_RED] The color of the solid
+ * @param {CompItem} [comp=DuAEProject.getActiveComp] The comp where to create the layer
+ * @returns {ShapeLayer} The adjustment layer
+ */
+DuAEComp.addSolid = function (color, comp)
+{
+    comp = def(comp, DuAEProject.getActiveComp());
+    if (!comp) return;
+
+    color = def(color, DuColor.Color.RAINBOX_RED);
+
+    var layer = comp.layers.addShape();
+    layer.name = DuScriptUI.String.SOLID_LAYER;
+    layer.label = 1;
+
+    var solidGroup = layer("ADBE Root Vectors Group").addProperty("ADBE Vector Group");
+    solidGroup.name = 'Solid';
+    var solidContent = solidGroup.property("ADBE Vectors Group");
+    var solid = solidContent.addProperty("ADBE Vector Shape - Rect");
+    solid('ADBE Vector Rect Size').setValue([comp.width, comp.height]);
+    var fill = solidContent.addProperty("ADBE Vector Graphic - Fill");
+    fill("ADBE Vector Fill Color").setValue(color.floatRGBA());
+
+    return layer;
+}
+
+/**
+ * Creates a new Shape Layer in the comp.
+ * @param {DuAEShapeLayer.Primitive} [shape=DuAEShapeLayer.Primitive.NONE] The shape
+ * @param {DuColor} [color=DuColor.Color.RAINBOX_RED] The color of the shape
+ * @param {CompItem} [comp=DuAEProject.getActiveComp] The comp where to create the layer
+ * @returns {ShapeLayer} The adjustment layer
+ */
+DuAEComp.addShape = function (shape, color, comp)
+{
+    comp = def(comp, DuAEProject.getActiveComp());
+    if (!comp) return;
+
+    shape = def(shape, DuAEShapeLayer.Primitive.NONE);
+    color = def(color, DuColor.Color.RAINBOX_RED);
+
+    var layer = comp.layers.addShape();
+    layer.name = DuScriptUI.String.SHAPE_LAYER;
+
+    if (shape == DuAEShapeLayer.Primitive.NONE) return layer;
+
+    var solidGroup = layer("ADBE Root Vectors Group").addProperty("ADBE Vector Group");
+    var solidContent = solidGroup.property("ADBE Vectors Group");
+
+    var size = comp.height/3;
+
+    if (shape == DuAEShapeLayer.Primitive.SQUARE)
+    {
+        solidGroup.name = DuScriptUI.String.RECTANGLE;
+        layer.name = DuScriptUI.String.RECTANGLE;
+        var solid = solidContent.addProperty("ADBE Vector Shape - Rect");
+        solid('ADBE Vector Rect Size').setValue([size, size]);
+    }
+    else if (shape == DuAEShapeLayer.Primitive.ROUNDED_SQUARE)
+    {
+        solidGroup.name =  DuScriptUI.String.ROUNDED_RECTANGLE;
+        layer.name =  DuScriptUI.String.ROUNDED_RECTANGLE;
+        var solid = solidContent.addProperty("ADBE Vector Shape - Rect");
+        solid('ADBE Vector Rect Size').setValue([size, size]);
+        solid('ADBE Vector Rect Roundness').setValue(size/10);
+    }
+    else if (shape == DuAEShapeLayer.Primitive.CIRCLE)
+    {
+        solidGroup.name =  DuScriptUI.String.CIRCLE;
+        layer.name =  DuScriptUI.String.CIRCLE;
+        var solid = solidContent.addProperty("ADBE Vector Shape - Ellipse");
+        solid('ADBE Vector Ellipse Size').setValue([size, size]);
+    }
+    else if (shape == DuAEShapeLayer.Primitive.POLYGON)
+    {
+        solidGroup.name =  DuScriptUI.String.POLYGON;
+        layer.name =  DuScriptUI.String.POLYGON;
+        var solid = solidContent.addProperty("ADBE Vector Shape - Star");
+        solid('ADBE Vector Star Type').setValue(2);
+        solid('ADBE Vector Star Outer Radius').setValue(size);
+    }
+    else if (shape == DuAEShapeLayer.Primitive.STAR)
+    {
+        solidGroup.name =  DuScriptUI.String.STAR;
+        layer.name =  DuScriptUI.String.STAR;
+        var solid = solidContent.addProperty("ADBE Vector Shape - Star");
+        solid('ADBE Vector Star Inner Radius').setValue(size*.385);
+        solid('ADBE Vector Star Outer Radius').setValue(size);
+    }
+
+    var fill = solidContent.addProperty("ADBE Vector Graphic - Fill");
+    fill("ADBE Vector Fill Color").setValue(DuColor.Color.RAINBOX_RED.floatRGBA());
+
+    return layer;
 }
