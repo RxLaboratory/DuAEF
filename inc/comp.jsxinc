@@ -519,3 +519,39 @@ DuAEComp.checkLayerNames = function (comp) {
     }
     return duplicatedNames;
 }
+
+/**
+ * Creates a new "Shape Null" in the comp.
+ * @param {CompItem} [comp=DuAEProject.getActiveComp] The comp where to create the layer
+ * @returns {ShapeLayer} The null layer
+ */
+DuAEComp.addNull = function (comp)
+{
+    comp = def(comp, DuAEProject.getActiveComp());
+    if (!comp) return;
+
+    var nullLayer = comp.layers.addShape();
+    nullLayer.guideLayer = true;
+    nullLayer.name = "Null";
+
+    var anchorGroup = nullLayer("ADBE Root Vectors Group").addProperty("ADBE Vector Group");
+    anchorGroup.name = 'Anchor';
+    var anchorContent = anchorGroup.property("ADBE Vectors Group");
+    var centerCircle = anchorContent.addProperty("ADBE Vector Shape - Ellipse");
+    centerCircle("ADBE Vector Ellipse Size").setValue([4,4]);
+    var fill = anchorContent.addProperty("ADBE Vector Graphic - Fill");
+    fill("ADBE Vector Fill Color").setValue([0,0,0,1]);
+
+    var squareGroup = nullLayer("ADBE Root Vectors Group").addProperty("ADBE Vector Group");
+    squareGroup.name = 'Icon';
+    var squareContent = squareGroup.property("ADBE Vectors Group");
+    var square = squareContent.addProperty("ADBE Vector Shape - Rect");
+    var stroke = squareContent.addProperty("ADBE Vector Graphic - Stroke");
+    stroke("ADBE Vector Stroke Color").setValue(DuColor.Color.APP_HIGHLIGHT_COLOR.floatRGBA());
+    stroke("ADBE Vector Stroke Width").setValue(1);
+    stroke("ADBE Vector Stroke Line Cap").setValue(2);
+    stroke("ADBE Vector Stroke Dashes").addProperty( "ADBE Vector Stroke Dash 1" );
+    stroke("ADBE Vector Stroke Dashes")("ADBE Vector Stroke Dash 1").setValue(2);
+
+    return nullLayer;
+}
