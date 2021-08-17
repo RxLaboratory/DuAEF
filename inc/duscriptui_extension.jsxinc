@@ -10,6 +10,7 @@ DuScriptUI.String.CREATE_NULL_TIP = "Create a null object.";
 DuScriptUI.String.CREATE_SHAPE_TIP = "Create a shape layer."
 DuScriptUI.String.CREATE_SOLID = "Create a solid layer."
 DuScriptUI.String.EDIT_MODE = "Edit mode";
+DuScriptUI.String.GROUP_NAME = "Group name";
 DuScriptUI.String.GUIDE_LAYERS = "Guide layers";
 DuScriptUI.String.INVALID_PSEUDO_EFFECT = "Invalid pseudo effect file or match name.";
 DuScriptUI.String.LOCK_LAYERS = "Lock layers";
