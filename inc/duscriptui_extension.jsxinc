@@ -1,6 +1,7 @@
 DuScriptUI.String.ADJUSTMENT_LAYER = "Adjustment Layer";
 DuScriptUI.String.ASK_FILES_NETWORK_ACCESS = "{#} needs to be allowed to write files.\nPlease, check the box called 'Allow Scripts to write files...' in the scripting preferences of After Effects.";
 DuScriptUI.String.ASK_FILES_NETWORK_ACCESS_TITLE = "File and network access";
+DuScriptUI.String.BEST_QUALITY = "Use best quality";
 DuScriptUI.String.COMPOSITION_SHORT = "Comp";
 DuScriptUI.String.COMPOSITION = "Composition";
 DuScriptUI.String.CONTINUOUS_RASTERIZATION = "Collapse transformation / Continuous rasterization";
@@ -9,6 +10,7 @@ DuScriptUI.String.CREATE_ADJUSTMENT_TIP = "Create an adjustment layer."
 DuScriptUI.String.CREATE_NULL_TIP = "Create a null object.";
 DuScriptUI.String.CREATE_SHAPE_TIP = "Create a shape layer."
 DuScriptUI.String.CREATE_SOLID = "Create a solid layer."
+DuScriptUI.String.DRAFT_MODE = "Use draft mode"
 DuScriptUI.String.EDIT_MODE = "Edit mode";
 DuScriptUI.String.GROUP_NAME = "Group name";
 DuScriptUI.String.GUIDE_LAYERS = "Guide layers";
