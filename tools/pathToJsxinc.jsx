@@ -1,5 +1,6 @@
-#include "../DuAEF.jsxinc"
-(function(){
+(function()
+{
+    #include "../DuAEF.jsxinc"
 
     // Ask var name
     var folder = Folder.selectDialog( "Select export location" );
@@ -18,7 +19,7 @@
         alert("Nothing found, please select the path to export.");
         return;
     }
-    
+
     var path = new DuAEProperty( props.pop() );
     var pathProp = path.pathProperty();
     if (!pathProp)
