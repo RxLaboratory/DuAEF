@@ -392,7 +392,7 @@ DuAEProperty.prototype.keys = function ( selected, timeRange ) {
     if ( prop.propertyValueType == PropertyValueType.NO_VALUE ) return [];
     if ( prop.propertyValueType == PropertyValueType.CUSTOM_VALUE ) return [];
 
-    var comp = this.comp( );
+    var comp = this.comp;
     if ( timeRange == undefined ) timeRange = [ 0, comp.duration ];
     if ( selected == undefined ) selected = false;
 
@@ -430,7 +430,7 @@ DuAEProperty.prototype.keys = function ( selected, timeRange ) {
  * @return {DuAEPropertyGroupAnimation|DuAEPropertyAnimation}	The animations. A DuAEPropertyAnimation if prop is a Property, a PopertyGroupAnim if it is a PropertyGroup
  */
 DuAEProperty.prototype.animation = function ( selected, timeRange ) {
-    var comp = this.comp( );
+    var comp = this.comp;
     timeRange = def( timeRange, [ 0, comp.duration ] );
     selected = def( selected, false );
 
@@ -556,7 +556,7 @@ DuAEProperty.prototype.setKey = function ( key, timeOffset ) {
     if ( prop.isSeparationLeader )
         if ( prop.dimensionsSeparated ) return;
 
-    if ( timeOffset == undefined ) timeOffset = this.comp( ).time;
+    if ( timeOffset == undefined ) timeOffset = this.comp.time;
     var time = key._time + timeOffset;
     var propDimensions = this.dimensions( );
     var val = key.value;
@@ -610,6 +610,7 @@ DuAEProperty.prototype.setKey = function ( key, timeOffset ) {
  * @return {bool}
  */
 DuAEProperty.prototype.numerical = function ( ) {
+    var prop = this.getProperty();
     if ( prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL ) return true;
     if ( prop.propertyValueType == PropertyValueType.ThreeD ) return true;
     if ( prop.propertyValueType == PropertyValueType.TwoD_SPATIAL ) return true;
@@ -675,7 +676,7 @@ DuAEProperty.prototype.setValueAtTime = function ( value, time ) {
     var prop = this.getProperty();
     var dimensions = this.dimensions();
 
-    time = def( time, this.comp().time );
+    time = def( time, this.comp.time );
 
     if ( !prop.canVaryOverTime ) return false;
     if ( prop.isSeparationLeader )
@@ -726,7 +727,7 @@ DuAEProperty.prototype.setValueAtTime = function ( value, time ) {
 DuAEProperty.prototype.setAnim = function ( anim, time, setExpression, replace, offset )
 {
     var prop = this.getProperty();
-    var comp = this.comp();
+    var comp = this.comp;
 
     time = def( time, comp.time );
     setExpression = def( setExpression, false );
@@ -805,14 +806,13 @@ DuAEProperty.prototype.setAnim = function ( anim, time, setExpression, replace, 
 DuAEProperty.prototype.setAnimation = function ( anim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, set ) {
     var prop = this.getProperty();
 
-    time = def( time, this.comp( ).time );
+    time = def( time, this.comp.time );
     ignoreName = def( ignoreName, false );
     setExpression = def( setExpression, false );
     onlyKeyframes = def( onlyKeyframes, false );
     replace = def( replace, false );
     whiteList = def( whiteList, [] );
     offset = def( offset, false );
-    reverse = def( reverse, false );
     set = def( set, false );
 
     if ( whiteList.length == 0 ) set = true;
@@ -1216,7 +1216,7 @@ DuAEProperty.prototype.getSpeed = function ( time, preExpression ) {
     if ( prop.propertyType != PropertyType.PROPERTY ) return 0;
     if ( prop.numKeys == 0 && preExpression ) return 0;
 
-    var comp = this.comp();
+    var comp = this.comp;
     time = def(time, comp.time);
 
     var speed = DuMath.length( prop.valueAtTime( time + comp.frameDuration / 2, preExpression ), prop.valueAtTime( time - comp.frameDuration / 2, preExpression ) );
@@ -1296,7 +1296,7 @@ DuAEProperty.prototype.pickWhip = function ( parentProp, useThisComp ) {
 
     if ( typeof useThisComp === 'undefined' ) {
         var parentComp = parent.comp(  );
-        var childComp = this.comp( );
+        var childComp = this.comp;
         if ( parentComp.id == childComp.id ) useThisComp = true;
         else useThisComp = false;
     }
@@ -1326,7 +1326,7 @@ DuAEProperty.prototype.linkProperties = function ( parentProp, useThisComp, time
 
         if ( typeof useThisComp === 'undefined' ) {
             var parentComp = parent.comp( );
-            var childComp = this.comp( );
+            var childComp = this.comp;
             useThisComp = parentComp.id == childComp.id;
         }
 
@@ -1481,7 +1481,7 @@ DuAEProperty.prototype.addToEGP = function ( ) {
     if ( prop.name.toLowerCase() == 'data' ) return numProps;
 
     if ( prop.propertyType == PropertyType.PROPERTY && prop.propertyValueType != PropertyValueType.NO_VALUE ) {
-        var comp = this.comp( );
+        var comp = this.comp;
         var layer = this.layer( );
 
         //set the link
@@ -1623,7 +1623,7 @@ DuAEProperty.prototype.getRange = function ( axis, preExpression, fastMode ) {
 
     if ( prop.expression == '' || !prop.expressionEnabled ) preExpression = true;
 
-    var comp = this.comp();
+    var comp = this.comp;
     var frames = comp.duration / comp.frameDuration;
     var min = prop.valueAtTime( 0, preExpression );
     var minTime = 0;
@@ -1683,7 +1683,7 @@ DuAEProperty.prototype.getMaxVelocity = function ( preExpression, fastMode ) {
 
     if ( prop.expression == '' ) preExpression = true;
 
-    var comp = this.comp();
+    var comp = this.comp;
     var frames = comp.duration / comp.frameDuration;
 
     var startFrame = 0;
