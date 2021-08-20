@@ -554,6 +554,10 @@ DuAEComp.addNull = function (comp)
     stroke("ADBE Vector Stroke Dashes").addProperty( "ADBE Vector Stroke Dash 1" );
     stroke("ADBE Vector Stroke Dashes")("ADBE Vector Stroke Dash 1").setValue(2);
 
+    // Select and close
+    nullLayer.selected = true;
+    DuAE.executeCommand( DuAE.MenuCommandID.REVEAL_EXPRESSION_ERRORS, true );
+
     return nullLayer;
 }
 

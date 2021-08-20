@@ -596,7 +596,8 @@ DuAE.MenuCommandID =
 	UNDO: 16,
 	GENERAL_PREFERENCES: 2359,
 	SCRIPTING_PREFERENCES: 3131,
-	LAYER_CONTROLS: 2435
+	LAYER_CONTROLS: 2435,
+	REVEAL_EXPRESSION_ERRORS: 2731
 }
 
 /**
@@ -921,14 +922,15 @@ DuAE.endUndoGroup = function (groupName) {
  * Runs app.executeCommand in a safer way, taking care of undogroups.
  * @param {int|string} commandID - The ID of the command as given by app.findMenuCommandID(), or if it is a string, the name of the command.
  */
-DuAE.executeCommand = function ( commandID ) {
-    if ( commandID === "" ) return;
+DuAE.executeCommand = function ( commandID, ignoreUndoGroups ) {
+    ignoreUndoGroups = def(ignoreUndoGroups, false);
+	if ( commandID === "" ) return;
     if ( jstype( commandID ) == 'string' ) commandID = app.findMenuCommandId( commandID );
     //the command will mess undo groups up if there already is one opened.
     openedUndoGroup = DuAE.openedUndoGroup;
-    DuAE.endUndoGroup();
+    if (!ignoreUndoGroups) DuAE.endUndoGroup();
     app.executeCommand( commandID );
-    if ( openedUndoGroup ) DuAE.beginUndoGroup( DuAE.undoGroupName );
+    if ( openedUndoGroup && !ignoreUndoGroups ) DuAE.beginUndoGroup( DuAE.undoGroupName );
 }
 
 /**
