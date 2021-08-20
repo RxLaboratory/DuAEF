@@ -16,6 +16,7 @@ DuScriptUI.String.GROUP_NAME = "Group name";
 DuScriptUI.String.GUIDE_LAYERS = "Guide layers";
 DuScriptUI.String.INVALID_PSEUDO_EFFECT = "Invalid pseudo effect file or match name.";
 DuScriptUI.String.LOCK_LAYERS = "Lock layers";
+DuScriptUI.String.LOCK_PROPERTIES = "Lock properties";
 DuScriptUI.String.MAIN_NAME = "Main name";
 DuScriptUI.String.MISSING_PSEUDO_EFFECT = "The pseudo effect file does not exist.";
 DuScriptUI.String.NEW_VERSION_TITLE = "New version available";
