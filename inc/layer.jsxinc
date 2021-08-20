@@ -486,6 +486,8 @@ DuAELayer.addPseudoEffect = function ( layer, preset, matchName, name ) {
         var n = comp.layers.addNull();
         //apply preset
         n.applyPreset( preset );
+        var fx = n.effect(1);
+        if (fx) matchName = fx.matchName;
         //remove all
         var nullSource = n.source;
         n.remove();

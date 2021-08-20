@@ -281,7 +281,7 @@ DuAEComp.unselectLayers = function ( comp ) {
 
 /**
  * Selects the layers
- * @param {Layer[]} layers - The layers
+ * @param {Layer[]|DuList.<Layer>} layers - The layers
  */
 DuAEComp.selectLayers = function ( layers ) {
     new DuList( layers ).do( function ( layer ) {

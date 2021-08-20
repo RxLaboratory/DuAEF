@@ -166,12 +166,6 @@ function DuAEPseudoEffect( binaryFile )
     */
 DuAEPseudoEffect.prototype.apply = function(layer,name)
 {
-	if (this.matchName == '')
-	{
-		DuAELayer.applyPreset(layer, this.file);
-		return null;
-	}
-
 	name = def( name, this.name );
 
 	return DuAELayer.addPseudoEffect( layer, this.file, this.matchName, name);
