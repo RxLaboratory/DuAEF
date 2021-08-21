@@ -550,36 +550,36 @@ DuAEExpression.Library["gaussianInterpolation"].expression = ['function gaussian
 DuAEExpression.Library["gaussianInterpolation"].requirements = [];
 
 /**
- * Gets the key immediately after the given time<br />
- * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * Gets the key immediately before the given time
  * @function
- * @param {number} [t=time] Time at which to get the key
+ * @param {number} t Time at which to get the key
+ * @param {Property} prop The property from which to get the key
  * @return {Key|null} The key, or null if there's no key before.
  */
 DuAEExpression.Library["getNextKey"] = {};
-DuAEExpression.Library["getNextKey"].expression = ['function getNextKey(t) {',
-	'if (numKeys == 0) return null;',
-	'var nKey = nearestKey(t);',
+DuAEExpression.Library["getNextKey"].expression = ['function getNextKey(t, prop) {',
+	'if (prop.numKeys == 0) return null;',
+	'var nKey = prop.nearestKey(t);',
 	'if (nKey.time >= t) return nKey;',
-	'if (nKey.index < numKeys) return key(nKey.index + 1);',
+	'if (nKey.index < prop.numKeys) return prop.key(nKey.index + 1);',
 	'return null;',
 	'}'
 	].join('\n');
 DuAEExpression.Library["getNextKey"].requirements = [];
 
 /**
- * Gets the key immediately before the given time<br />
- * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * Gets the key immediately before the given time
  * @function
- * @param {number} [t=time] Time at which to get the key
+ * @param {number} t Time at which to get the key
+ * @param {Property} prop The property from which to get the key
  * @return {Key|null} The key, or null if there's no key before.
  */
 DuAEExpression.Library["getPrevKey"] = {};
-DuAEExpression.Library["getPrevKey"].expression = ['function getPrevKey(t) {',
-	'if (numKeys == 0) return null;',
-	'var nKey = nearestKey(t);',
+DuAEExpression.Library["getPrevKey"].expression = ['function getPrevKey(t, prop) {',
+	'if (prop.numKeys == 0) return null;',
+	'var nKey = prop.nearestKey(t);',
 	'if (nKey.time <= t) return nKey;',
-	'if (nKey.index > 1) return key(nKey.index - 1);',
+	'if (nKey.index > 1) return prop.key(nKey.index - 1);',
 	'return null;',
 	'}'
 	].join('\n');
@@ -598,6 +598,35 @@ DuAEExpression.Library["isAfterLastKey"].expression = ['function isAfterLastKey(
 	'}'
 	].join('\n');
 DuAEExpression.Library["isAfterLastKey"].requirements = [];
+
+/**
+ * Adds two lists of points/vectors.
+ * @function
+ * @param {float[][]} p1 The list of points
+ * @param {float[][]} p2 The other list of points
+ * @param {float} w A weight to multiply the values of p2
+ * @returns {float[][]} The added points
+ */
+DuAEExpression.Library["addPoints"] = {};
+DuAEExpression.Library["addPoints"].expression = ['function addPoints(p1, p2, w) {',
+	'var n = p1.length;',
+	'if (p2.length > n) n = p2.length;',
+	'var r = [];',
+	'for (var i = 0; i < n; i++) {',
+	'if (i >= p1.length) {',
+	'r.push(p2[i] * w);',
+	'continue;',
+	'}',
+	'if (i >= p2.length) {',
+	'r.push(p1[i]);',
+	'continue;',
+	'}',
+	'r.push(p1[i] + p2[i] * w);',
+	'}',
+	'return r;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["addPoints"].requirements = [];
 
 /**
     * The gaussian function<br />
@@ -712,6 +741,45 @@ DuAEExpression.Library["mean"].expression = ['function mean( values )',
 DuAEExpression.Library["mean"].requirements = [];
 
 /**
+ * Multiplies a list of points/vectors with a scalar.
+ * @function
+ * @param {float[][]} p The list of points
+ * @param {float} w The multiplier
+ * @returns {float[][]} The multiplied points
+ */
+DuAEExpression.Library["multPoints"] = {};
+DuAEExpression.Library["multPoints"].expression = ['function multPoints(p, w) {',
+	'var r = [];',
+	'for (var i = 0, n = p.length; i < n; i++) {',
+	'r.push(p[i] * w);',
+	'}',
+	'return r;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["multPoints"].requirements = [];
+
+/**
+ * Normalizes a list of weights so their sum equals 1.0
+ * @function
+ * @param {float[]} weights The weights to normalize
+ * @param {float} sum The sum of the weights
+ * @returns {float[]} The normalized weights
+ */
+DuAEExpression.Library["normalizeWeights"] = {};
+DuAEExpression.Library["normalizeWeights"].expression = ['function normalizeWeights(weights, sum) {',
+	'if (sum == 1 || sum == 0) return weights;',
+	'var o = 1 - sum;',
+	'var normalized = [];',
+	'for (var i = 0, n = weights.length; i < n; i++) {',
+	'var w = weights[i];',
+	'normalized.push(w + (w / sum) * o);',
+	'}',
+	'return normalized;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["normalizeWeights"].requirements = [];
+
+/**
     * Fix for the ExtendScript engine, implements the Math.sign function.
     * @function
     * @name Math.sign
@@ -722,6 +790,106 @@ DuAEExpression.Library["sign"] = {};
 DuAEExpression.Library["sign"].expression = ['if (typeof Math.sign === \'undefined\') Math.sign = function(x) { return ((x > 0) - (x < 0)) || +x; };'
 	].join('\n');
 DuAEExpression.Library["sign"].requirements = [];
+
+/**
+ * Substracts two lists of points/vectors.
+ * @function
+ * @param {float[][]} p1 The list of points
+ * @param {float[][]} p2 The other list of points
+ * @param {float} w A weight to multiply the values of p2
+ * @returns {float[][]} The substracted points
+ */
+DuAEExpression.Library["subPoints"] = {};
+DuAEExpression.Library["subPoints"].expression = ['function subPoints(p1, p2, w) {',
+	'var n = p1.length;',
+	'if (p2.length > n) n = p2.length;',
+	'var r = [];',
+	'for (var i = 0; i < n; i++) {',
+	'if (i >= p1.length) {',
+	'r.push(-p2[i] * w);',
+	'continue;',
+	'}',
+	'if (i >= p2.length) {',
+	'r.push(p1[i]);',
+	'continue;',
+	'}',
+	'r.push(p1[i] - p2[i] * w);',
+	'}',
+	'return r;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["subPoints"].requirements = [];
+
+/**
+ * Adds two paths together.<br />
+ * The paths must be objects with three array attributes: points, inTangents, outTangents
+ * @function
+ * @param {Object} path1 First path
+ * @param {Object} path2 Second path
+ * @param {float} path2weight A weight to multiply the second path values
+ * @returns {Object} A path object with three array attributes: points, inTangents, outTangents
+ * @requires addPoints
+ */
+DuAEExpression.Library["addPath"] = {};
+DuAEExpression.Library["addPath"].expression = ['function addPath(path1, path2, path2weight) {',
+	'var vertices = addPoints(path1.points, path2.points, path2weight);',
+	'var inT = addPoints(path1.inTangents, path2.inTangents, path2weight);',
+	'var outT = addPoints(path1.outTangents, path2.outTangents, path2weight);',
+	'var path = {};',
+	'path.points = vertices;',
+	'path.inTangents = inT;',
+	'path.outTangents = outT;',
+	'return path;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["addPath"].requirements = ["addPoints"];
+
+/**
+ * Multiplies a path with a scalar.<br />
+ * The path must be an object with three array attributes: points, inTangents, outTangents
+ * @function
+ * @param {Object} path The path
+ * @param {float} weight The multipliers
+ * @returns {Object} A path object with three array attributes: points, inTangents, outTangents
+ * @requires multPoints
+ */
+DuAEExpression.Library["multPath"] = {};
+DuAEExpression.Library["multPath"].expression = ['function multPath(path, weight) {',
+	'var vertices = multPoints(path.points, weight);',
+	'var inT = multPoints(path.inTangents, weight);',
+	'var outT = multPoints(path.outTangents, weight);',
+	'var path = {};',
+	'path.points = vertices;',
+	'path.inTangents = inT;',
+	'path.outTangents = outT;',
+	'return path;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["multPath"].requirements = ["multPoints"];
+
+/**
+ * Substracts two paths together.<br />
+ * The paths must be objects with three array attributes: points, inTangents, outTangents
+ * @function
+ * @param {Object} path1 First path
+ * @param {Object} path2 Second path
+ * @param {float} path2weight A weight to multiply the second path values
+ * @returns {Object} A path object with three array attributes: points, inTangents, outTangents
+ * @requires subPoints
+ */
+DuAEExpression.Library["subPath"] = {};
+DuAEExpression.Library["subPath"].expression = ['function subPath(path1, path2, path2weight) {',
+	'var vertices = subPoints(path1.points, path2.points, path2weight);',
+	'var inT = subPoints(path1.inTangents, path2.inTangents, path2weight);',
+	'var outT = subPoints(path1.outTangents, path2.outTangents, path2weight);',
+	'var path = {};',
+	'path.points = vertices;',
+	'path.inTangents = inT;',
+	'path.outTangents = outT;',
+	'return path;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["subPath"].requirements = ["subPoints"];
 
 /**
  * Checks the type of a pseudo-effect used by Duik.<br />
@@ -794,6 +962,22 @@ DuAEExpression.Library["getEffectLayer"].expression = ['function getEffectLayer(
 DuAEExpression.Library["getEffectLayer"].requirements = [];
 
 /**
+ * Gets the path from the current property at a given time.
+ * @function
+ * @return {Object} A path object with three array attributes: points, inTangents, outTangents
+ */
+DuAEExpression.Library["getPath"] = {};
+DuAEExpression.Library["getPath"].expression = ['function getPath(t) {',
+	'var path = {};',
+	'path.points = points(t);',
+	'path.inTangents = inTangents(t);',
+	'path.outTangents = outTangents(t);',
+	'return path;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["getPath"].requirements = [];
+
+/**
  * Checks if a property is a layer. Useful when traversing up the property tree to stop when getting the layer.
  * @function
  * @param {Property} prop - The property to test
@@ -806,6 +990,24 @@ DuAEExpression.Library["isLayer"].expression = ['function isLayer( prop ) {',
 	'}'
 	].join('\n');
 DuAEExpression.Library["isLayer"].requirements = [];
+
+/**
+ * Checks if a property is a path property.
+ * @function
+ * @param {Property} prop The property
+ * @return {boolean} true if the property is a path property.
+ */
+DuAEExpression.Library["isPath"] = {};
+DuAEExpression.Library["isPath"].expression = ['function isPath(prop) {',
+	'try {',
+	'createPath();',
+	'return true;',
+	'} catch (e) {',
+	'return false;',
+	'}',
+	'}'
+	].join('\n');
+DuAEExpression.Library["isPath"].requirements = [];
 
 /**
  * Checks if a property is a transform.position property.<br />
@@ -863,6 +1065,45 @@ DuAEExpression.Library["isStill"].expression = ['function isStill(t, threshold) 
 	'}'
 	].join('\n');
 DuAEExpression.Library["isStill"].requirements = [];
+
+/**
+ * Generates a "zero" value for the current property, i.e. <code>0</code> or <code>[0,0]</code>, etc. according to the property type.<br />
+ * Note that for path properties, this method returns a path object with three array attributes: points, inTangents, outTangents.
+ * @function
+ * @return {any} The zero value.
+ */
+DuAEExpression.Library["zero"] = {};
+DuAEExpression.Library["zero"].expression = ['function zero() {',
+	'if (typeof thisProperty.value === "number") return 0;',
+	'if (thisProperty.value instanceof Array) {',
+	'var result = [0];',
+	'for (var i = 1, n = value.length; i < n; i++) result.push(0);',
+	'return result;',
+	'}',
+	'if (isPath(thisProperty)) {',
+	'var path = {};',
+	'var vertices = [',
+	'[0, 0]',
+	'];',
+	'var inT = [',
+	'[0, 0]',
+	'];',
+	'var outT = [',
+	'[0, 0]',
+	'];',
+	'for (var i = 1, n = points(0).length; i < n; i++) {',
+	'vertices.push([0, 0]);',
+	'inT.push([0, 0]);',
+	'outT.push([0, 0]);',
+	'}',
+	'path.points = vertices;',
+	'path.inTangents = inT;',
+	'path.outTangents = outT;',
+	'return path;',
+	'}',
+	'}'
+	].join('\n');
+DuAEExpression.Library["zero"].requirements = [];
 
 /**
  * Adds some noise to a value.<br />
