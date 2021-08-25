@@ -546,7 +546,7 @@ DuAELayer.firstKeyFrameTime = function ( layers, selected ) {
 
 /**
  * Sort the layers by their parenting (root at first index 0)
- * @param {Layer[]|Collection} layers - The layers to sort
+ * @param {Layer[]|Collection|DuList.<Layer>} layers - The layers to sort
  * @return {Layer[]} The sorted array
  */
 DuAELayer.sortByParent = function ( layers ) {
@@ -616,18 +616,19 @@ DuAELayer.sortByIndex = function ( layers ) {
 
 /**
  * Parents all the layers together beginning by the end of the array
- * @param {Layer[]} layers - The layers to parent
+ * @param {Layer[]|DuList.<Layer>} layers - The layers to parent
  */
 DuAELayer.parentChain = function ( layers ) {
+    layers = new DuList(layers);
     //unparent  all but the first
     var layersUnparent = [];
-    for ( var i = 1, numL = layers.length; i < numL; i++ ) {
-        layersUnparent.push( layers[ i ] );
+    for ( var i = 1, numL = layers.length(); i < numL; i++ ) {
+        layersUnparent.push( layers.at(i) );
     }
     DuAELayer.unparent( layersUnparent );
 
-    for ( var i = layers.length - 1; i >= 1; i-- ) {
-        try { layers[ i ].parent = layers[ i - 1 ]; }
+    for ( var i = layers.length() - 1; i >= 1; i-- ) {
+        try { layers.at(i).parent = layers.at( i - 1 ); }
         catch (e) { if (DuESF.debug) alert(e); }
     }
 }
