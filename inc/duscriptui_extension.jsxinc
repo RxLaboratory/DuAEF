@@ -126,7 +126,7 @@ DuScriptUI.askFilesAndNetworkAccess = function( callback, ui, scriptName, reInit
     }
 
     DuScriptUI.showUI( ui, false );
-
+    DuScriptUI.uiShown = false;
 
 }
 
