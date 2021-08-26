@@ -523,12 +523,14 @@ DuAEComp.checkLayerNames = function (comp) {
 /**
  * Creates a new "Shape Null" in the comp.
  * @param {CompItem} [comp=DuAEProject.getActiveComp] The comp where to create the layer
+ * @param {float} [size=100] The size of the null
  * @returns {ShapeLayer} The null layer
  */
-DuAEComp.addNull = function (comp)
+DuAEComp.addNull = function (comp, size)
 {
     comp = def(comp, DuAEProject.getActiveComp());
     if (!comp) return;
+    size = def(size, 100);
 
     var nullLayer = comp.layers.addShape();
     nullLayer.guideLayer = true;
@@ -547,6 +549,7 @@ DuAEComp.addNull = function (comp)
     squareGroup.name = 'Icon';
     var squareContent = squareGroup.property("ADBE Vectors Group");
     var square = squareContent.addProperty("ADBE Vector Shape - Rect");
+    square('ADBE Vector Rect Size').setValue([size, size]);
     var stroke = squareContent.addProperty("ADBE Vector Graphic - Stroke");
     stroke("ADBE Vector Stroke Color").setValue(DuColor.Color.APP_HIGHLIGHT_COLOR.floatRGBA());
     stroke("ADBE Vector Stroke Width").setValue(1);
