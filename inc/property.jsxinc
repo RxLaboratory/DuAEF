@@ -1376,11 +1376,10 @@ DuAEProperty.prototype.linkProperties = function ( parentProp, useThisComp, time
                 var sub = new DuAEProperty( subProp );
 
                 if ( insideData == 0 ) child.linkProperties( subProp, useThisComp, timeLayer );
-                else subProp.linkProperties( child, useThisComp, timeLayer );
+                else sub.linkProperties( child, useThisComp, timeLayer );
             }
         } else {
             for ( var p = 1, num = childProp.numProperties; p <= num; p++ ) {
-
                 try {
                     var child = new DuAEProperty( childProp( p ) );
                     child.linkProperties( parentProp( p ), useThisComp, timeLayer );
