@@ -696,8 +696,9 @@ DuAE.ColorLabels[16] = [045/255, 062/255, 045/255 ];	// 16. DarkGreen
  * Gets the compact expression synonym of a matchName
  * @param {string} matchName The matchName of a property
  * @param {string} [name] A replacement name (or index) in case the compact expression does not exist. If omitted, the matchName will be used.
+ * @param {Proeprty} [prop] The original property; may be needed to differenciate between 3D layers / cam / lights, etc
  */
-DuAE.getCompactExpression = function( matchName, name )
+DuAE.getCompactExpression = function( matchName, name, prop )
 {
 	name = def(name, '');
 	var translatedName = DuAE.CompactExpression[ matchName ];

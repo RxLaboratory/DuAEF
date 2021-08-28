@@ -933,7 +933,7 @@ DuAEProperty.prototype.expressionLink = function ( useThisComp, fromLayer ) {
             } else {
                 name = "\"" + prop.matchName + "\"";
             }
-            compactName = DuAE.getCompactExpression( prop.matchName, name );
+            compactName = DuAE.getCompactExpression( prop.matchName, name, prop );
             exprCode = compactName + exprCode;
         }
         else
@@ -1481,12 +1481,12 @@ DuAEProperty.prototype.addToEGP = function ( ) {
 
     if ( prop.propertyType == PropertyType.PROPERTY && prop.propertyValueType != PropertyValueType.NO_VALUE ) {
         var comp = this.comp;
-        var layer = this.layer( );
+        var layer = this.layer;
 
         //set the link
         if ( prop.canAddToMotionGraphicsTemplate( comp ) && !prop.elided && prop.canSetExpression ) {
             //get the name 
-            var mPropName = layer.name + ' / ' + this.getExpressionLink( true, false );
+            var mPropName = layer.name + ' / ' + this.expressionLink( true, false );
             //add with name
             if ( DuAE.version.version >= 16.1 ) {
                 prop.addToMotionGraphicsTemplateAs( comp, mPropName);
@@ -1531,8 +1531,8 @@ DuAEProperty.prototype.addToEGP = function ( ) {
                 if ( insideData == 0 ) numProps += new DuAEProperty( subProp ).addToEGP( );
             }
         } else {
-            for ( var p = 1, numP = this.numProperties(); p <= numP; p++ ) {
-                numProps += this.property(p).addToEGP( );
+            for ( var p = 1, numP = prop.numProperties; p <= numP; p++ ) {
+                numProps += new DuAEProperty( prop.property(p) ).addToEGP( );
             }
         }
     }
