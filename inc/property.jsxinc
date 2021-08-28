@@ -1321,18 +1321,20 @@ DuAEProperty.prototype.linkProperties = function ( parentProp, useThisComp, time
     var parent = new DuAEProperty( parentProp );
     var parentProp = parent.getProperty();
 
+
     if ( childProp.propertyType == PropertyType.PROPERTY && !childProp.elided && childProp.propertyValueType != PropertyValueType.NO_VALUE ) {
+
         timeLayer = def(timeLayer, null);
 
         if ( typeof useThisComp === 'undefined' ) {
-            var parentComp = parent.comp( );
+            var parentComp = parent.comp;
             var childComp = this.comp;
             useThisComp = parentComp.id == childComp.id;
         }
 
         //copy paste the animation / value
         var anim = parent.animation( false );
-        if ( anim != null ) this.setAnim( anim, 0, true, true, false );      
+        if ( anim != null ) this.setAnim( anim, 0, true, true, false );
         
         // Expression
         var exp = [ DuAEExpression.Id.LINK,

@@ -1147,12 +1147,12 @@ DuAELayer.expressionLink = function( layer, useThisComp ) {
     var exprCode;
     // Prefix the layer reference
     name = "\"" + layer.name + "\"";
-    exprCode = "layer(" + name + ")" + exprCode;
+    exprCode = "layer(" + name + ")";
     // Prefix the comp reference
     if ( useThisComp ) exprCode = "thisComp." + exprCode;
     else exprCode = "comp(\"" + comp.name + "\")." + exprCode;
 
-     return exprCode;
+    return exprCode;
 }
 
 /**
