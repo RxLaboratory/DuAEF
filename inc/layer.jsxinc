@@ -825,7 +825,7 @@ DuAELayer.copyToComp = function ( layers, destinationComp, withPropertyLinks ) {
 
 /**
  * Parents all (unparented) layers
- * @param {Layer|LayerCollection|Layer[]} layers - The layers to parent
+ * @param {Layer|LayerCollection|Layer[]|DuList.<Layer>} layers - The layers to parent
  * @param {Layer} [parent] - The parent. If not defined, will use the last layer of the list
  * @param {boolean} [unparentedOnly=true] - True to parent only layers which do not have a parent yet 
  * @param {boolean} [insert=false] - When true, the parent will be parented to the previous parent of the given layer (or first layer if the layers param is a list)
@@ -833,19 +833,16 @@ DuAELayer.copyToComp = function ( layers, destinationComp, withPropertyLinks ) {
 DuAELayer.parent = function ( layers, parent, unparentedOnly, insert ) {
     unparentedOnly = def( unparentedOnly, true );
     insert = def( insert, false );
+    layers = new DuList(layers);
 
     if ( typeof parent === 'undefined' ) {
-        if ( !layers.length ) return;
-        if ( layers.length == 1 ) return;
+        if ( layers.length() <= 1 ) return;
         parent = layers.pop();
     }
 
-    if ( !layers.length ) layers = [layers];
-
-    if (insert) parent.parent = layers[0].parent;
+    if (insert) parent.parent = layers.first().parent;
     
-    var it = new DuList( layers );
-    it.do( function ( layer ) {
+    layers.do( function ( layer ) {
         var locked = layer.locked;
         layer.locked = false;
         if ( ( layer.parent == null && unparentedOnly ) || !unparentedOnly ) {
