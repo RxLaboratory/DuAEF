@@ -1295,7 +1295,7 @@ DuAEProperty.prototype.pickWhip = function ( parentProp, useThisComp ) {
     if ( !this.riggable() ) return;
 
     if ( typeof useThisComp === 'undefined' ) {
-        var parentComp = parent.comp(  );
+        var parentComp = parent.comp;
         var childComp = this.comp;
         if ( parentComp.id == childComp.id ) useThisComp = true;
         else useThisComp = false;

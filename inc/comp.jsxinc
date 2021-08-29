@@ -524,13 +524,15 @@ DuAEComp.checkLayerNames = function (comp) {
  * Creates a new "Shape Null" in the comp.
  * @param {CompItem} [comp=DuAEProject.getActiveComp] The comp where to create the layer
  * @param {float} [size=100] The size of the null
+ * @param {Layer} [layer] A layer for the location of the null
  * @returns {ShapeLayer} The null layer
  */
-DuAEComp.addNull = function (comp, size)
+DuAEComp.addNull = function (comp, size, layer)
 {
     comp = def(comp, DuAEProject.getActiveComp());
     if (!comp) return;
     size = def(size, 100);
+    layer = def(layer, null);
 
     var nullLayer = comp.layers.addShape();
     nullLayer.guideLayer = true;
@@ -560,6 +562,16 @@ DuAEComp.addNull = function (comp, size)
     // Select and close
     nullLayer.selected = true;
     DuAE.executeCommand( DuAE.MenuCommandID.REVEAL_EXPRESSION_ERRORS, true );
+
+    if (layer != null)
+    {
+        layerParent = layer.parent;
+        layer.parent = null;
+        nullLayer.transform.position.setValue( layer.transform.position.value );
+        layer.parent = layerParent;
+        nullLayer.moveBefore( layer );
+        nullLayer.name = "Null " + layer.name;
+    }
 
     return nullLayer;
 }

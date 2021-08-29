@@ -749,20 +749,13 @@ DuAELayer.sequence = function ( layers, expr ) {
 }
 
 /**
- * Adds a new Null object just above a layer, at the same position
+ * Adds a new Null object just above a layer, at the same position.<br />
+ * This is a convenience function calling {@link DuAEComp.addNull}.
  * @param {Layer} layer - The layer
  * @return {Layer} the null
  */
 DuAELayer.addNull = function ( layer ) {
-    if ( typeof layer === 'undefined' ) return null;
-    var nullLayer = layer.containingComp.layers.addNull();
-    layerParent = layer.parent;
-    layer.parent = null;
-    nullLayer.transform.position.setValue( layer.transform.position.value );
-    layer.parent = layerParent;
-    nullLayer.moveBefore( layer );
-    nullLayer.name = "N | " + layer.name;
-    return nullLayer;
+    return DuAEComp.addNull(layer.containingComp, undefined, layer);
 }
 
 /**
