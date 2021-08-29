@@ -186,11 +186,11 @@ DuAEProperty.prototype.numProperties = function() {
  * @param {string|int} index Either the name, matchName or the index.
  * @return {DuAEProperty|null} The sub-property as DuAEProperty object or null if not found.
  */
-DuAEProperty.prototype.property = function ( index )
+DuAEProperty.prototype.prop = function ( index )
 {
     var prop = this.getProperty();
     if ( prop.propertyType === PropertyType.PROPERTY ) return null;
-    return prop.property(index);
+    return new DuAEProperty( prop.property(index) );
 }
 
 /**
@@ -1425,9 +1425,8 @@ DuAEProperty.prototype.removeDataExpressions = function ( prop ) {
         }
     } else {
         if ( prop.name.toLowerCase() == 'data' ) this.removeExpressions( );
-        for ( var p = 1, num = prop.numProperties; p <= num; p++ ) {
-            var sub = new DuAEProperty( prop(p) );
-            sub.removeDataExpressions( );
+        for ( var p = 1, num = this.numProperties(); p <= num; p++ ) {
+            this.prop(p).removeDataExpressions( );
         }
     }
 }
@@ -1456,7 +1455,7 @@ DuAEProperty.prototype.removeExpressions = function ( filter, keepPostExpression
         }
     } else {
         for ( var p = 1, num = this.numProperties(); p <= num; p++ ) {
-            this.property(p).removeExpressions( filter, keepPostExpressionValue );
+            this.prop(p).removeExpressions( filter, keepPostExpressionValue );
         }
     }
 }
