@@ -1,4 +1,4 @@
-
+﻿
 /**
 	* Constructs a new DuAEProperty
 	* @example
@@ -2322,4 +2322,18 @@ DuAEProperty.isPathProperty = function( prop )
     if ( prop.matchName == "ADBE Vector Shape - Group" ) return true;
     if ( prop.matchName == "ADBE Mask Atom" ) return true;
     return false;
+}
+
+/**
+ * Safely renames a property (without breaking expressions)
+ * @param {PropertyBase} prop The property
+ * @param {string} name The new name.
+ * @returns {string} The new name.
+ */
+DuAEProperty.rename = function( prop, name )
+{
+    var oldName = prop.name;
+    prop.name = name;
+    var newName = prop.name;
+    app.project.autoFixExpressions(oldName, newName);
 }
