@@ -1208,3 +1208,21 @@ DuAELayer.moveInsideComp = function( layer, useBounds )
     layer.transform.position.setValue( [comp.width/2, comp.height/2] );
     layer.parent = layerParent;
 }
+
+/**
+ * Gets the last corresponding effect (instead of the first with the native layer.effect() method)
+ * @param {Layer} layer The layer
+ * @param {string} [name] The name or matchname to look for. If omitted, will return the last effect.
+ * @returns {PropertyGroup|null} The effect or null if not found.
+ */
+DuAELayer.lastEffect = function (layer, name)
+{
+    name = def(name, '');
+    for (var i = layer.property('ADBE Effect Parade').numProperties, n = 0; i > n; i--)
+    {
+        var e = layer.effect(i);
+        if (e.matchName == name) return e;
+        if (e.name == name) return e;
+    }
+    return null;
+}
