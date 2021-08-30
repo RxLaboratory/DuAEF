@@ -1177,3 +1177,35 @@ DuAELayer.isComp = function( layer ) {
     
     return false;
 }
+
+/**
+ * Checks if the layer is inside the bounds of the composition
+ * @param {Layer} layer the layer to check
+ * @param {Boolean} [useBounds=false] (not implemented yet) Checks the layer bounds if true, just the anchor point if false.
+ * @returns {Boolean} true if the layer is inside the composition
+ */
+DuAELayer.insideComp = function ( layer, useBounds )
+{
+    useBounds = def(useBounds, false);
+
+    var comp = layer.containingComp;
+    var layerPos = DuAELayer.getWorldPos( layer );
+
+    var compBounds = [0 , comp.width, 0, comp.height, -9999999, 9999999];
+    return DuMath.isInside( layerPos, compBounds );
+}
+
+/**
+ * Moves a layer in the center of the comp if it is outside
+ * @param {Layer} layer the layer to check
+ * @param {Boolean} [useBounds=false] (not implemented yet) Checks the layer bounds if true, just the anchor point if false.
+ */
+DuAELayer.moveInsideComp = function( layer, useBounds )
+{
+    if (DuAELayer.insideComp( layer ) ) return;
+    var comp = layer.containingComp;
+    var layerParent = layer.parent;
+    layer.parent = null;
+    layer.transform.position.setValue( [comp.width/2, comp.height/2] );
+    layer.parent = layerParent;
+}
