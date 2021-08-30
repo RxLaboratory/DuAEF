@@ -108,9 +108,8 @@ DuAEExpression.scriptifyExpression = function ( prop, varName ) {
         return "'" + str.replace( "\r", "" ).replace(/'/g , "\\'") + "'";
     }
 
-    var propType = jstype( prop );
     var exp = '';
-    if ( propType.toLowerCase() === 'string' ) exp = prop;
+    if ( jstype( prop ) === 'string' ) exp = prop;
     else {
         if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
         exp = prop.expression;

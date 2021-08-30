@@ -48,7 +48,7 @@ DuAEProjectXMP.setPropertyValue = function(prop, value)
 
     //Check type
     //TODO if array, use setArrayItem (see XMP doc)
-    if (jstype(value) === 'Array')
+    if (jstype(value) === 'array')
     {
         options = XMPConst.PROP_IS_ARRAY;
         isArray = true;
@@ -72,7 +72,7 @@ DuAEProjectXMP.setPropertyValue = function(prop, value)
     {
         type = XMPConst.BOOLEAN;
     }
-    else if (jstype(testVal) === 'Date')
+    else if (jstype(testVal) === 'date')
     {
         type = XMPConst.XMPDATE;
     }

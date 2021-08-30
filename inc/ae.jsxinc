@@ -664,6 +664,19 @@ DuAE.LoopType =
 }
 
 /**
+ * The type of AE preferences
+ * @enum {int}
+ * @readonly
+*/
+DuAE.PrefType =
+{
+	BOOL: 0,
+	STRING: 1,
+	FLOAT: 2,
+	LONG: 3
+}
+
+/**
  * List of file extensions whih may be imported as several items with the same source
  */
 DuAE.DuAELayeredFileType = ["psd","psb","ai","fla"];
@@ -712,6 +725,43 @@ DuAE.getCompactExpression = function( matchName, name, prop )
 }
 
 /**
+ * Checks if After Effects has the given preference
+ * @param {string} section The section of the preferences
+ * @param {string} key The key
+ * @param {PREFType} [file=PREFType.PREF_Type_MACHINE_SPECIFIC] The preference file, from the <code>PREFType</code> enum value of the After Effects API
+ * @returns {Boolean} true if the pref exists
+ */
+DuAE.hasPref = function( section, key, file)
+{
+	app.preferences.saveToDisk();
+	app.preferences.reload();
+	file = def(file, PREFType.PREF_Type_MACHINE_SPECIFIC);
+	return app.preferences.havePref(section, key, file);
+}
+
+/**
+ * Gets a pref
+ * @param {string} section The section of the preferences
+ * @param {string} key The key
+ * @param {PREFType} [file=PREFType.PREF_Type_MACHINE_SPECIFIC] The preference file, from the <code>PREFType</code> enum value of the After Effects API
+ * @param {DuAE.PrefType} [type=DuAE.PrefType.STRING] The type of the preference to return
+ * @returns {any|null} The pref or null if it does not exists
+ */
+DuAE.getPref = function( section, key, file, type)
+{
+	app.preferences.saveToDisk();
+	app.preferences.reload();
+	file = def(file, PREFType.PREF_Type_MACHINE_SPECIFIC);
+
+	if ( !DuAE.hasPref( section, key, file) ) return null;
+	type = def(type, DuAE.PrefType.STRING);
+	if (type == DuAE.PrefType.STRING) return app.preferences.getPrefAsString(section, key, file);
+	if (type == DuAE.PrefType.LONG) return app.preferences.getPrefAsLong(section, key, file);
+	if (type == DuAE.PrefType.FLOAT) return app.preferences.getPrefAsFloat(section, key, file);
+	if (type == DuAE.PrefType.BOOL) return app.preferences.getPrefAsBool(section, key, file);
+}
+
+/**
 	* Gets the DuAEProperty for the properties
 	* @param {PropertyBase[]} props - The Properties
 	* @return {DuAEProperty[]} The info
@@ -755,7 +805,7 @@ DuAE.version = new DuVersion( app.version );
  */
 DuAE.hasFileAndNetworkAccess = function()
 {
-	return app.preferences.getPrefAsLong( "Main Pref Section", "Pref_SCRIPTING_FILE_NETWORK_SECURITY" ) == 1;
+	return DuAE.getPref( "Main Pref Section v2", "Pref_SCRIPTING_FILE_NETWORK_SECURITY", PREFType.PREF_Type_MACHINE_SPECIFIC, DuAE.PrefType.LONG) == 1;
 }
 
 /**
@@ -778,6 +828,15 @@ DuAE.askFilesAndNetworkAccess = function ( showAlert, message ) {
 	else DuAE.executeCommand( DuAE.MenuCommandID.SCRIPTING_PREFERENCES );
 
     return DuAE.hasFileAndNetworkAccess();
+}
+
+/**
+ * Checks if the javascript debugger is enabled
+ * @return {Boolean} true if the debugger is enabled.
+ */
+DuAE.isDebuggerEnabled = function()
+{
+	return DuAE.getPref( "Main Pref Section v2", "Pref_JAVASCRIPT_DEBUGGER", PREFType.PREF_Type_MACHINE_INDEPENDENT, DuAE.PrefType.LONG) == 1;
 }
 
 /**
@@ -1002,7 +1061,7 @@ DuAE.undo = function () {
  * @return {boolean} true if the folder is an auto-save folder 
  */
 DuAE.isAutoSaveFolder = function ( folder ) {
-    if (jstype(folder).toLowerCase() == 'string' ) folder = new Folder(folder);
+    if (jstype(folder) == 'string' ) folder = new Folder(folder);
     if (!(folder instanceof Folder)) {
         DuDebug.throwTypeError( folder, 'folder', 'Folder/string', 'DuAE.isAutoSaveFolder( folder )');
         return false;

@@ -462,8 +462,7 @@ DuAELayer.applyPreset = function ( layer, preset, matchName ) {
  * @return {PropertyGroup|null} The effect or null if anything went wrong
  */
 DuAELayer.addPseudoEffect = function ( layer, preset, matchName, name ) {
-    var typeofPreset = jstype( preset );
-    if ( typeofPreset != 'File' )
+    if ( jstype( preset ) != 'file' )
     {
         DuDebug.throwTypeError(preset, 'preset', 'File', 'DuAELayer.addPseudoEffect');
         return null;
