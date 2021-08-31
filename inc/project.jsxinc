@@ -10,10 +10,20 @@ DuAEProject.activeComp = null;
 
 /**
  * Sets the project in "waiting mode" to speed up things.
- * @param {bool} [inProgress=true] - True to set progress mode, false to stop it.
+ * @param {Boolean} [inProgress=true] - True to set progress mode, false to stop it.
+ * @param {Boolean} [showProgressBar=true] - Will show a nice progress bar if true
  */
-DuAEProject.setProgressMode = function ( inProgress ) {
+DuAEProject.setProgressMode = function ( inProgress, showProgressBar ) {
     inProgress = def (inProgress, true);
+    showProgressBar = def (showProgressBar, true);
+
+    if (showProgressBar && inProgress)
+    {
+        DuScriptUI.progressBar.reset();
+        DuScriptUI.progressBar.show();
+    }
+    else if (showProgressBar) DuScriptUI.progressBar.hide();
+    
     if ( !inProgress && !DuAEProject.progressMode ) return;
 
     if ( inProgress ) {
