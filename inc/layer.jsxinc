@@ -1213,12 +1213,17 @@ DuAELayer.moveInsideComp = function( layer, useBounds )
  * Gets the last corresponding effect (instead of the first with the native layer.effect() method)
  * @param {Layer} layer The layer
  * @param {string} [name] The name or matchname to look for. If omitted, will return the last effect.
+ * @param {int} [skip=0] Number of effects to skip
  * @returns {PropertyGroup|null} The effect or null if not found.
  */
-DuAELayer.lastEffect = function (layer, name)
+DuAELayer.lastEffect = function (layer, name, skip)
 {
+    skip = def(skip, 0);
     name = def(name, '');
-    for (var i = layer.property('ADBE Effect Parade').numProperties, n = 0; i > n; i--)
+
+    if ( layer.property('ADBE Effect Parade').numProperties <= skip ) return null;
+
+    for (var i = layer.property('ADBE Effect Parade').numProperties - skip, n = 0; i > n; i--)
     {
         var e = layer.effect(i);
         if (e.matchName == name) return e;
