@@ -1232,28 +1232,40 @@ DuAEProperty.prototype.getSpeed = function ( time, preExpression ) {
 DuAEProperty.prototype.setExpression = function ( expr, keepValue ) {
     keepValue = def( keepValue, true );
 
-    if ( !this.riggable() ) return;
     var prop = this.getProperty();
-    var comp = this.comp;
-    var originalValue = prop.valueAtTime( comp.time, false );
 
-    //remove current expression
-    if ( keepValue ) this.removeExpression( );
-    else try {
-        prop.expression = ""
-    } catch ( e ) {
-        if ( DuESF.debug ) alert( e.description );
-        return;
-    }
-    //set new expression
-    try {
-        prop.expression = expr;
-    } catch ( e ) {
-        if ( DuESF.debug ) alert( e.description );
-    }
+    if ( prop.propertyType == PropertyType.PROPERTY )
+    {
+        if ( !this.riggable() ) return;
+        var comp = this.comp;
+        var originalValue = prop.valueAtTime( comp.time, false );
 
-    //restore value
-    if ( this.editable() && keepValue && this.dimensions() > 0 ) this.setValue( 2 * originalValue - prop.valueAtTime( comp.time, false ) );
+        //remove current expression
+        if ( keepValue ) this.removeExpression( );
+        else try {
+            prop.expression = ""
+        } catch ( e ) {
+            if ( DuESF.debug ) alert( e.description );
+            return;
+        }
+        //set new expression
+        try {
+            prop.expression = expr;
+        } catch ( e ) {
+            if ( DuESF.debug ) alert( e.description );
+        }
+
+        //restore value
+        if ( this.editable() && keepValue && this.dimensions() > 0 ) this.setValue( 2 * originalValue - prop.valueAtTime( comp.time, false ) );
+    }
+    else 
+    {
+        for (var i = 1, n = prop.numProperties; i < n; i++)
+        {
+            p = new DuAEProperty( prop.property(i) );
+            p.setExpression( expr, keepValue );
+        }
+    }
 }
 
 /**
