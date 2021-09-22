@@ -978,6 +978,64 @@ DuAEExpression.Library["getPath"].expression = ['function getPath(t) {',
 DuAEExpression.Library["getPath"].requirements = [];
 
 /**
+ * Gets a property from an array of indices as returned by getPropPath.
+ * @function
+ * @param {Layer} l The layer containing the needed property
+ * @param {int[]} p The indices to the property.
+ * @return {Property} The property.
+ */
+DuAEExpression.Library["getPropFromPath"] = {};
+DuAEExpression.Library["getPropFromPath"].expression = ['function getPropFromPath( l, p )',
+	'{',
+	'prop = l;',
+	'for ( var i = p.length - 1; i >= 0; i-- )',
+	'prop = prop(p[i]);',
+	'return prop;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["getPropFromPath"].requirements = [];
+
+/**
+ * Gets an array of all indices needed to get the current property from the layer level.
+ * @function
+ * @return {int[]} All indices to the property.
+ */
+DuAEExpression.Library["getPropPath"] = {};
+DuAEExpression.Library["getPropPath"].expression = ['function getPropPath()',
+	'{',
+	'var path = [];',
+	'var prop = thisProperty;',
+	'ok = true;',
+	'while( ok )',
+	'{',
+	'try {',
+	'path.push( prop.propertyIndex );',
+	'prop = prop.propertyGroup();',
+	'}',
+	'catch (e) { ok = false; }',
+	'}',
+	'return path;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["getPropPath"].requirements = [];
+
+/**
+ * Gets the same property as the current one but from another layer.
+ * @function
+ * @param {Layer} l The layer containing the needed property
+ * @return {Property} The property.
+ * @requires getPropFromPath
+ * @requires getPropPath
+ */
+DuAEExpression.Library["getSameProp"] = {};
+DuAEExpression.Library["getSameProp"].expression = ['function getSameProp( l )',
+	'{',
+	'return getPropFromPath( l, getPropPath() );',
+	'}'
+	].join('\n');
+DuAEExpression.Library["getSameProp"].requirements = ["getPropFromPath","getPropPath"];
+
+/**
  * Checks if a property is a layer. Useful when traversing up the property tree to stop when getting the layer.
  * @function
  * @param {Property} prop - The property to test
