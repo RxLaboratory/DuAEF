@@ -600,6 +600,176 @@ DuAEExpression.Library["isAfterLastKey"].expression = ['function isAfterLastKey(
 DuAEExpression.Library["isAfterLastKey"].requirements = [];
 
 /**
+ * Animatable equivalent to loopIn('continue').
+ * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all previous frames.
+ * @returns {float|float[]} The new value
+ * @function
+ */
+DuAEExpression.Library["continueIn"] = {};
+DuAEExpression.Library["continueIn"].expression = ['function continueIn( t ) {',
+	'if (numKeys <= 1) return value;',
+	'var firstKey = key(1);',
+	'if ( t >= firstKey.time) return value;',
+	'var firstVelocity = velocityAtTime( firstKey.time + 0.001 );',
+	'var timeSpent = firstKey.time - t;',
+	'return firstKey.value - timeSpent * firstVelocity;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["continueIn"].requirements = [];
+
+/**
+ * Animatable equivalent to loopOut('continue').
+ * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all subsequent frames.
+ * @returns {float|float[]} The new value
+ * @function
+ */
+DuAEExpression.Library["continueOut"] = {};
+DuAEExpression.Library["continueOut"].expression = ['function continueOut( t ) {',
+	'if (numKeys <= 1) return value;',
+	'var lastKey = key(numKeys);',
+	'if (t <= lastKey.time) return value;',
+	'var lastVelocity = velocityAtTime( lastKey.time - 0.001 );',
+	'var timeSpent = t - lastKey.time;',
+	'return lastKey.value + timeSpent * lastVelocity;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["continueOut"].requirements = [];
+
+/**
+ * Animatable equivalent to loopIn('cycle') and loopIn('offset').
+ * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all previous frames.
+ * @param {int} nK The number of keyframes to loop. Use 0 to loop all keyframes
+ * @param {Boolean} o Wether to offset or cycle
+ * @returns {float|float[]} The new value
+ * @function
+ */
+DuAEExpression.Library["cycleIn"] = {};
+DuAEExpression.Library["cycleIn"].expression = ['function cycleIn( t, nK, o ) {',
+	'if (numKeys <= 1) return value;',
+	'var lastKeyIndex = numKeys;',
+	'if (nK >= 2)',
+	'{',
+	'nK = nK - 1;',
+	'lastKeyIndex = 1 + nK;',
+	'if (lastKeyIndex > numKeys) lastKeyIndex = numKeys;',
+	'}',
+	'var loopStartTime = key( 1 ).time;',
+	'var loopEndTime = key( lastKeyIndex ).time;',
+	'var loopDuration = loopEndTime - loopStartTime;',
+	'if (t >= loopStartTime) return value;',
+	'var timeSpent = loopStartTime - t;',
+	'var numLoops = Math.floor( timeSpent / loopDuration );',
+	'var loopTime = loopDuration - timeSpent;',
+	'if (numLoops > 0) loopTime = loopDuration - ( timeSpent - numLoops * loopDuration );',
+	'var r = valueAtTime( loopStartTime + loopTime );',
+	'if (o) r -= ( key( lastKeyIndex ).value - key( 1 ).value ) * ( numLoops + 1 );',
+	'return r;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["cycleIn"].requirements = [];
+
+/**
+ * Animatable equivalent to loopOut('cycle') and loopOut('offset').
+ * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all subsequent frames.
+ * @param {int} nK The number of keyframes to loop. Use 0 to loop all keyframes
+ * @param {Boolean} o Wether to offset or cycle
+ * @returns {float|float[]} The new value
+ * @function
+ */
+DuAEExpression.Library["cycleOut"] = {};
+DuAEExpression.Library["cycleOut"].expression = ['function cycleOut( t, nK, o ) {',
+	'if (numKeys <= 1) return value;',
+	'var firstKeyIndex = 1;',
+	'if (nK >= 2)',
+	'{',
+	'nK = nK - 1;',
+	'firstKeyIndex = numKeys - nK;',
+	'if (firstKeyIndex < 1) firstKeyIndex = 1;',
+	'}',
+	'var loopStartTime = key( firstKeyIndex ).time;',
+	'var loopEndTime = key( numKeys ).time;',
+	'var loopDuration = loopEndTime - loopStartTime;',
+	'if (t <= loopEndTime) return value;',
+	'var timeSpent = t - loopEndTime;',
+	'var numLoops = Math.floor( timeSpent / loopDuration );',
+	'var loopTime = timeSpent;',
+	'if (numLoops > 0) loopTime = timeSpent - numLoops * loopDuration;',
+	'var r = valueAtTime( loopStartTime + loopTime );',
+	'if (o) r += ( key( numKeys ).value - key( firstKeyIndex ).value ) * ( numLoops + 1 );',
+	'return r;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["cycleOut"].requirements = [];
+
+/**
+ * Animatable equivalent to loopIn('pingpong').
+ * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all previous frames.
+ * @param {int} nK The number of keyframes to loop. Use 0 to loop all keyframes
+ * @returns {float} The new value
+ * @function
+ */
+DuAEExpression.Library["pingPongIn"] = {};
+DuAEExpression.Library["pingPongIn"].expression = ['function pingPongIn( t, nK ) {',
+	'if (numKeys <= 1) return value;',
+	'var lasttKeyIndex = numKeys;',
+	'if (nK >= 2)',
+	'{',
+	'nK = nK - 1;',
+	'lasttKeyIndex = 1 + nK;',
+	'if (lasttKeyIndex > numKeys) lasttKeyIndex = numKeys;',
+	'}',
+	'var loopStartTime = key( 1 ).time;',
+	'var loopEndTime = key( lasttKeyIndex ).time;',
+	'var loopDuration = loopEndTime - loopStartTime;',
+	'if (t >= loopStartTime) return value;',
+	'var timeSpent = loopStartTime - t;',
+	'var numLoops = Math.floor( timeSpent / loopDuration );',
+	'var loopTime = timeSpent;',
+	'if (numLoops > 0)',
+	'{',
+	'loopTime = timeSpent - numLoops * loopDuration;',
+	'if (numLoops % 2 != 0) loopTime = loopDuration - loopTime;',
+	'}',
+	'return valueAtTime( loopStartTime + loopTime );',
+	'}'
+	].join('\n');
+DuAEExpression.Library["pingPongIn"].requirements = [];
+
+/**
+ * Animatable equivalent to loopOut('pingpong').
+ * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all subsequent frames.
+ * @param {int} nK The number of keyframes to loop. Use 0 to loop all keyframes
+ * @returns {float} The new value
+ * @function
+ */
+DuAEExpression.Library["pingPongOut"] = {};
+DuAEExpression.Library["pingPongOut"].expression = ['function pingPongOut( t, nK ) {',
+	'if (numKeys <= 1) return value;',
+	'var firstKeyIndex = 1;',
+	'if (nK >= 2)',
+	'{',
+	'nK = nK - 1;',
+	'firstKeyIndex = numKeys - nK;',
+	'if (firstKeyIndex < 1) firstKeyIndex = 1;',
+	'}',
+	'var loopStartTime = key( firstKeyIndex ).time;',
+	'var loopEndTime = key( numKeys ).time;',
+	'var loopDuration = loopEndTime - loopStartTime;',
+	'if (t <= loopEndTime) return value;',
+	'var timeSpent = t - loopEndTime;',
+	'var numLoops = Math.floor( timeSpent / loopDuration );',
+	'var loopTime = loopDuration - timeSpent;',
+	'if (numLoops > 0)',
+	'{',
+	'loopTime = timeSpent - numLoops * loopDuration;',
+	'if (numLoops % 2 == 0) loopTime = loopDuration - loopTime;',
+	'}',
+	'return valueAtTime( loopStartTime + loopTime );',
+	'}'
+	].join('\n');
+DuAEExpression.Library["pingPongOut"].requirements = [];
+
+/**
  * Adds two lists of points/vectors.
  * @function
  * @param {float[][]} p1 The list of points
@@ -1123,6 +1293,53 @@ DuAEExpression.Library["isStill"].expression = ['function isStill(t, threshold) 
 	'}'
 	].join('\n');
 DuAEExpression.Library["isStill"].requirements = [];
+
+/**
+ * Checks the last previous time at which the property value was not 0. (meant to be used on boolean property, works on single dimension properties too).
+ * @param {Property} prop The property to check
+ * @param {float} t The time before which to run the check
+ * @returns {float} The last active time before t
+ * @function
+ * @requires getPrevKey
+ */
+DuAEExpression.Library["lastActiveTime"] = {};
+DuAEExpression.Library["lastActiveTime"].expression = ['function lastActiveTime( prop, t ) {',
+	'if ( prop.valueAtTime(t) ) return t;',
+	'while( t > 0 )',
+	'{',
+	'var prevKey = getPrevKey( t, prop );',
+	'if ( !prevKey ) break;',
+	'if ( prevKey.value ) return t;',
+	't = prevKey.time - .001;',
+	'}',
+	'return 0;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["lastActiveTime"].requirements = ["getPrevKey"];
+
+/**
+ * Checks the next time at which the property value was not 0. (meant to be used on boolean property, works on single dimension properties too).
+ * @param {Property} prop The property to check
+ * @param {float} t The time after which to run the check
+ * @returns {float} The next active time after t
+ * @function
+ * @requires getNextKey
+ */
+DuAEExpression.Library["nextActiveTime"] = {};
+DuAEExpression.Library["nextActiveTime"].expression = ['function nextActiveTime( prop, t )',
+	'{',
+	'if ( prop.valueAtTime(t) ) return t;',
+	'while( t < thisComp.duration )',
+	'{',
+	'var nextKey = getNextKey( t + .001, prop );',
+	'if ( !nextKey ) break;',
+	't = nextKey.time;',
+	'if ( nextKey.value ) return t;',
+	'}',
+	'return 0;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["nextActiveTime"].requirements = ["getNextKey"];
 
 /**
  * Generates a "zero" value for the current property, i.e. <code>0</code> or <code>[0,0]</code>, etc. according to the property type.<br />
