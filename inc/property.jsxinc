@@ -1211,7 +1211,7 @@ DuAEProperty.prototype.cleanKeyframes = function ( ) {
 DuAEProperty.prototype.getSpeed = function ( time, preExpression ) {
     preExpression = def (preExpression, true);
 
-    var prop = prop.getProperty();
+    var prop = this.getProperty();
 
     if ( prop.propertyType != PropertyType.PROPERTY ) return 0;
     if ( prop.numKeys == 0 && preExpression ) return 0;
@@ -1624,7 +1624,7 @@ DuAEProperty.prototype.getAnimatedProps = function ( filter, strict, caseSensiti
  * @return {float[]} The minimum and maximum value.<br />
  * The first item in the Array is not necesarily the lowest value, it is the first in time.
  */
-DuAEProperty.prototype.getRange = function ( axis, preExpression, fastMode ) {
+DuAEProperty.prototype.range = function ( axis, preExpression, fastMode ) {
     axis = def(axis, 0);
     preExpression = def(preExpression, true);
     fastMode = def(fastMode, true);
@@ -1684,7 +1684,7 @@ DuAEProperty.prototype.getRange = function ( axis, preExpression, fastMode ) {
  * When true and if there are more than one keyframe, the velocity is sampled only between keyframes.
  * @return {float} The velocity.
  */
-DuAEProperty.prototype.getMaxVelocity = function ( preExpression, fastMode ) {
+DuAEProperty.prototype.maxVelocity = function ( preExpression, fastMode ) {
     preExpression = def(preExpression, true);
     fastMode = def(fastMode, true);
 
@@ -1848,6 +1848,21 @@ DuAEProperty.prototype.pathProperty = function ( ) {
     if ( prop.propertyValueType !== PropertyValueType.SHAPE ) return null;
 
     return this;
+}
+
+/**
+ * Gets the average speed of the animated propreties
+ * @static
+ * @param {Property[]|DuAEProperty[]} props - The Properties
+ * @param {bool}	 [preExpression=true]	- True to get the velocity from keyframes instead of the result of the exression
+ * @param {bool}	 [fastMode=true]	- True to limit the number of samples used to compute the velocity and make the process faster.
+ * @return {float} The average speed in unit per second
+ */
+DuAEProperty.prototype.averageSpeed = function ( preExpression, fastMode ) {
+    preExpression = def(preExpression, true);
+    fastMode = def(fastMode, true);
+
+    return DuAEProperty.getAverageSpeed([this], preExpression, fastMode );
 }
 
 // =========== STATIC ====================
@@ -2136,7 +2151,7 @@ DuAEProperty.getMaximumSpeed = function ( props ) {
 
     for ( var i = 0; i < props.length; i++ ) {
         var prop = new DuAEProperty(prop);
-        var speed = prop.getMaxVelocity( false );
+        var speed = prop.maxVelocity( false );
         if ( speed > maxSpeed ) maxSpeed = speed;
     }
 
@@ -2187,7 +2202,7 @@ DuAEProperty.getAverageSpeed = function ( props, preExpression, fastMode ) {
         if ( !prop.canVaryOverTime ) continue;
         if ( prop.numKeys < 1 && !preExpression ) continue;
 
-        var comp = aeprop.comp( );
+        var comp = aeprop.comp;
         var frames = comp.duration / comp.frameDuration;
         var lastTime = comp.duration;
         var firstTime = 0;

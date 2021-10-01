@@ -384,11 +384,20 @@ DuAELayer.getRelation = function ( layer1, layer2 ) {
 
 /**
  * Measures the distance between two layers
- * @param {Layer} layer1 - The first layer
- * @param {Layer} layer2 - The second layer
- * @return {int} The distance (in pixels)
+ * @param {Layer} [layer1] - The first layer. If omitted, will use the selected layers in the current comp
+ * @param {Layer} [layer2] - The second layer
+ * @return {int} The distance (in pixels). -1 if less than two layers are found
  */
 DuAELayer.getDistance = function ( layer1, layer2 ) {
+
+    if (typeof layer1 === 'undefined')
+    {
+        var layers = DuAEComp.getSelectedLayers();
+        if (layers.length < 2) return -1;
+        layer1 = layers[0];
+        layer2 = layers[1];
+    }
+
     var O = DuAELayer.getWorldPos( layer1 );
     var A = DuAELayer.getWorldPos( layer2 );
     var OA = DuMath.length( O, A );
