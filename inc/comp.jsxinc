@@ -129,7 +129,7 @@ DuAEComp.setUniqueLayerNames = function ( layers, comp ) {
  * Gets the After Effects selected properties in the current comp
  * @param {PropertyType|PropertyValueType|string|function}	 [filter]	- A filter to get only a certain type, or value type, or property name or matchName.<br />
  * A function which take one PropertyBase as argument can be used to filter the properties: the Property will be returned if the function returns true.
- * @param {boolean}	[strict=false]	- If a string filter is provided, wether to search for the exact name/matchName or if it contains the filter.
+ * @param {boolean}	[strict=false]	- If a string filter is provided, whether to search for the exact name/matchName or if it contains the filter.
  * @param {boolean}	[caseSensitive=true]	- If a string filter is provided, and not strict is false, does the search have to be case sensitive?
  * @return {DuAEProperty[]} The selected properties, an empty Array if nothing active or selected
  */
@@ -214,7 +214,7 @@ DuAEComp.doLayers = function ( method, undoGroupName, comp ) {
  * Gets the After Effects animated (with keyframes) properties in the current comp
  * @param {PropertyType|PropertyValueType|string|function}	 [filter]	- A filter to get only a certain type, or value type, or property name or matchName.<br />
  * A function which take one PropertyBase as argument can be used to filter the properties: the Property will be returned if the function returns true.
- * @param {boolean}	[strict=false]	- If a string filter is provided, wether to search for the exact name/matchName or if it contains the filter.
+ * @param {boolean}	[strict=false]	- If a string filter is provided, whether to search for the exact name/matchName or if it contains the filter.
  * @param {boolean}	[caseSensitive=true]	- If a string filter is provided, and not strict is false, does the search have to be case sensitive?
  * @param {boolean}	[selectedLayersOnly=false]	- True to get the properties on the selected layers only
  * @param {CompItem}	[comp=DuAEProject.getActiveComp]	- The composition

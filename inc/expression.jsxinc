@@ -25,7 +25,7 @@ DuAEExpression.Id = {
  * It's automatically run when needed if it's not been updated in a long time (1 mn) or if it's empty
  * @param {bool} [currentComp=false] true: in current compositions, false: in all compositions of the project
  * @param {bool} [selectedComps=false] When currentComp is false, true to replace only in selected compositions
- * @param {bool} [selectedLayers=false] When currentComp is true, wether to replace only on selected layers
+ * @param {bool} [selectedLayers=false] When currentComp is true, whether to replace only on selected layers
  */
 DuAEExpression.updateCache = function (currentComp, selectedComps, selectedLayers) {
 
@@ -63,7 +63,7 @@ DuAEExpression.updateCache = function (currentComp, selectedComps, selectedLayer
  * @param {function} func The function to run, which takes one param, a {@link DuAEPropertyExpression} object.
  * @param {bool} [currentComp=false] true: in current compositions, false: in all compositions of the project
  * @param {bool} [selectedComps=false] When currentComp is false, true to replace only in selected compositions
- * @param {bool} [selectedLayers=false] When currentComp is true, wether to replace only on selected layers
+ * @param {bool} [selectedLayers=false] When currentComp is true, whether to replace only on selected layers
  * @param {boolean} [updateCache=true] When false, the cache won't be updated before running the function. Set this to false if you already have updated the cache to improve performance.
  * @param {boolean} [apply=true] When false, the cache won't be applied back to Ae. Set this to false if you need to run other methods on expressions before applying the result to improve performance.
  */

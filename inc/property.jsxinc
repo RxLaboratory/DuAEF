@@ -470,7 +470,7 @@ DuAEProperty.prototype.animation = function ( selected, timeRange ) {
                 if ( groupAnim.startTime == null ) groupAnim.startTime = anim.startTime;
                 else if ( groupAnim.startTime > anim.startTime ) groupAnim.startTime = anim.startTime;
                 if ( groupAnim.endTime == null ) groupAnim.endTime = anim.endTime;
-                else if ( groupAnim.endTime > anim.endTime ) groupAnim.endTime = anim.endTimeendTime;
+                else if ( groupAnim.endTime < anim.endTime ) groupAnim.endTime = anim.endTime;
                 groupAnim.anims.push( anim );
             }
         }
@@ -504,7 +504,7 @@ DuAEProperty.prototype.addToExpressionCache = function ( ) {
 DuAEProperty.prototype.firstKeyTime = function ( selected ) {
     var time = null;
     
-    var prop = prop.getProperty();
+    var prop = this.getProperty();
 
     if ( prop.propertyType == PropertyType.PROPERTY ) {
         if ( !prop.canVaryOverTime ) return null;
@@ -1062,7 +1062,7 @@ DuAEProperty.prototype.hasSelectedKeys = function ( ) {
         }
     } else if ( prop.numProperties > 0 ) {
         for ( var propIndex = 1, numP = this.numProperties(); propIndex <= numP; propIndex++ ) {
-            yes = this.property( propIndex ).hasSelectedKeys();
+            yes = this.prop( propIndex ).hasSelectedKeys();
             if ( yes ) break;
         }
     }
@@ -1568,7 +1568,7 @@ DuAEProperty.prototype.animated = function ( ) {
  * Gets the After Effects animated (with keyframes) properties in the propertyGroup
  * @param {PropertyType|PropertyValueType|string|function}	 [filter]	- A filter to get only a certain type, or value type, or property name or matchName.<br />
  * A function which take one PropertyBase as argument can be used to filter the properties: the Property will be returned if the function returns true.
- * @param {boolean}	[strict=false]	- If a string filter is provided, wether to search for the exact name/matchName or if it contains the filter.
+ * @param {boolean}	[strict=false]	- If a string filter is provided, whether to search for the exact name/matchName or if it contains the filter.
  * @param {boolean}	[caseSensitive=true]	- If a string filter is provided, and not strict is false, does the search have to be case sensitive?
  * @return {DuAEProperty[]} The selected properties, an empty Array if nothing active or selected
  */
@@ -1873,7 +1873,7 @@ DuAEProperty.prototype.averageSpeed = function ( preExpression, fastMode ) {
  * @param {PropertyBase|DuAEProperty}	property	- The layer
  * @param {PropertyType|PropertyValueType|string|function}	 [filter]	- A filter to get only a certain type, or value type, or property name or matchName.<br />
  * A function which take one PropertyBase as argument can be used to filter the properties: the Property will be returned if the function returns true.
- * @param {boolean}	[strict=false]	- If a string filter is provided, wether to search for the exact name/matchName or if it contains the filter.
+ * @param {boolean}	[strict=false]	- If a string filter is provided, whether to search for the exact name/matchName or if it contains the filter.
  * @param {boolean}	[caseSensitive=true]	- If a string filter is provided, and not strict is false, does the search have to be case sensitive?
  * @return {DuAEProperty[]} The selected properties, an empty Array if nothing found
  */

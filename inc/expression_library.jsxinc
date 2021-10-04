@@ -639,7 +639,7 @@ DuAEExpression.Library["continueOut"].requirements = [];
  * Animatable equivalent to loopIn('cycle') and loopIn('offset').
  * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all previous frames.
  * @param {int} nK The number of keyframes to loop. Use 0 to loop all keyframes
- * @param {Boolean} o Wether to offset or cycle
+ * @param {Boolean} o whether to offset or cycle
  * @returns {float|float[]} The new value
  * @function
  */
@@ -672,7 +672,7 @@ DuAEExpression.Library["cycleIn"].requirements = [];
  * Animatable equivalent to loopOut('cycle') and loopOut('offset').
  * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all subsequent frames.
  * @param {int} nK The number of keyframes to loop. Use 0 to loop all keyframes
- * @param {Boolean} o Wether to offset or cycle
+ * @param {Boolean} o whether to offset or cycle
  * @returns {float|float[]} The new value
  * @function
  */

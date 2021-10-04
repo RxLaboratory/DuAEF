@@ -65,7 +65,7 @@ DuAELayer.newUniqueMarkerName = function ( newName, layer, increment ) {
  * @param {Layer}	layer	- The layer
  * @param {PropertyType|PropertyValueType|string|function}	 [filter]	- A filter to get only a certain type, or value type, or property name or matchName.<br />
  * A function which take one PropertyBase as argument can be used to filter the properties: the Property will be returned if the function returns true.
- * @param {boolean}	[strict=false]	- If a string filter is provided, wether to search for the exact name/matchName or if it contains the filter.
+ * @param {boolean}	[strict=false]	- If a string filter is provided, whether to search for the exact name/matchName or if it contains the filter.
  * @param {boolean}	[caseSensitive=true]	- If a string filter is provided, and not strict is false, does the search have to be case sensitive?
  * @return {DuAEProperty[]} The selected properties, an empty Array if nothing active or selected
  */
@@ -130,7 +130,8 @@ DuAELayer.getAnim = function ( layer, selected, timeRange ) {
         var prop = layer.property( propIndex );
         if ( prop.matchName == 'ADBE Marker' ) continue;
 
-        var subAnim = DuAEProperty.getAnim( prop, selected, timeRange );
+        prop = new DuAEProperty( prop );
+        var subAnim = prop.animation( selected, timeRange );
         if ( subAnim != null ) {
             if ( anim.startTime == null ) anim.startTime = subAnim.startTime;
             else if ( anim.startTime > subAnim.startTime ) anim.startTime = subAnim.startTime;
@@ -191,7 +192,8 @@ DuAELayer.setAnim = function ( layer, anim, time, ignoreName, setExpression, onl
             var subProp = layer.property( propIndex );
             if ( subProp == null ) continue;
             if ( subProp.matchName == subAnim._matchName && subProp.matchName != 'ADBE Marker' ) {
-                var ok = DuAEProperty.setGroupAnim( subProp, subAnim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse );
+                subProp = new DuAEProperty( subProp );
+                var ok = subProp.setAnimation( subAnim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse );
                 if ( ok ) break;
             }
         }
@@ -225,7 +227,7 @@ DuAELayer.setAllAnims = function ( layers, anims, time, ignoreName, setExpressio
     if ( reverse ) DuAELayer.reverseAnims( anims );
 
     layers.do( function( layer ) {
-        if ( layer ) DuAELayer.setAnim( layer, anims[ i ], time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, false );
+        if ( layer ) DuAELayer.setAnim( layer, anims[ layers.current ], time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, false );
     });
 }
 
@@ -283,15 +285,15 @@ DuAELayer.reverseAnims = function ( anims ) {
     //get times
     var startTime = null;
     var endTime = null;
+
     it.do( function ( anim ) {
-        if ( startTime == null ) startTime = anim.startTime;
+        if ( startTime == null && typeof anim.startTime !== 'undefined') startTime = anim.startTime;
         else if ( startTime > anim.startTime ) startTime = anim.startTime;
-        if ( endTime == null ) endTime = anim.endTime;
-        else if ( endTime > anim.endTime ) endTime = anim.endTime;
+        if ( endTime == null && typeof anim.endTime !== 'undefined') endTime = anim.endTime;
+        else if ( endTime < anim.endTime ) endTime = anim.endTime;
     } );
 
     var duration = endTime - startTime;
-
 
     //recursive function to reverse keyframes in anim
     function reverse( anim ) {
@@ -541,7 +543,8 @@ DuAELayer.firstKeyFrameTime = function ( layers, selected ) {
     var time = null;
 
     it.do( function(layer) {
-        var test = DuAEProperty.firstKeyFrameTime( layers[ i ], selected );
+        var layerProp = new DuAEProperty( layer );
+        var test = layerProp.firstKeyTime( selected );
         if ( time == null ) time = test;
         else if ( test != null ) {
             if ( time > test ) time = test;

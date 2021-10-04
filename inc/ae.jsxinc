@@ -90,7 +90,7 @@ function DuAEPropertyGroupAnimation()
 	this.anims = [];
 	this.type = "group";
 	this.startTime = null;
-	this.endTile = null;
+	this.endTime = null;
 }
 
 /**
@@ -112,7 +112,7 @@ function DuAELayerAnimation()
 	this.anims = [];
 	this.type = 'layer';
 	this.startTime = null;
-	this.endTile = null;
+	this.endTime = null;
 }
 
 /**
