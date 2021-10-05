@@ -1,4 +1,4 @@
-/**
+﻿/**
  * After Effects layer methods
  * @namespace
  */
@@ -527,7 +527,8 @@ DuAELayer.haveSelectedKeys = function ( layers ) {
     var it = new DuList( layers );
     if ( it.length() == 0 ) return;
     while ( layer = it.next() ) {
-        if ( DuAEProperty.hasSelectedKeys( layer ) ) return true;
+        var layerInfo = new DuAEProperty( layer );
+        if ( layerInfo.hasSelectedKeys( ) ) return true;
     }
     return false;
 }
