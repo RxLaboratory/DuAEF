@@ -556,7 +556,7 @@ DuAEProperty.prototype.setKey = function ( key, timeOffset ) {
     if ( prop.isSeparationLeader )
         if ( prop.dimensionsSeparated ) return;
 
-    if ( timeOffset == undefined ) timeOffset = this.comp.time;
+    timeOffset = def( timeOffset, this.comp.time );
     var time = key._time + timeOffset;
     var propDimensions = this.dimensions( );
     var val = key.value;
