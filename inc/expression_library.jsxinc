@@ -510,6 +510,34 @@ DuAEExpression.Library["bezierInterpolation"].expression = ['function bezierInte
 DuAEExpression.Library["bezierInterpolation"].requirements = [];
 
 /**
+ * Interpolates a value with an exponential function.<br />
+ * This method can replace <code>linear()</code> and <code>ease()</code> with a gaussian interpolation.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * @function
+ * @param {number} t The value to interpolate
+ * @param {number} [tMin=0] The minimum value of the initial range
+ * @param {number} [tMax=1] The maximum value of the initial range
+ * @param {number} [value1=0] The minimum value of the interpolated result
+ * @param {number} [value2=1] The maximum value of the interpolated result
+ * @param {number} [rate=1] The raising speed in the range [0, inf].
+ * @return {number} the value.
+ * @requires linearExtrapolation
+ */
+DuAEExpression.Library["expInterpolation"] = {};
+DuAEExpression.Library["expInterpolation"].expression = ['function expInterpolation(t, tMin, tMax, vMin, vMax, rate)',
+	'{',
+	'if (rate == 0) return linearExtrapolation(t, tMin, tMax, vMin, vMax);',
+	'tMax = ( tMax - tMin ) * rate;',
+	't = ( t - tMin ) * rate;',
+	'if (t <= 0) return vMin;',
+	'var m = Math.exp(tMax);',
+	't = Math.exp(t);',
+	'return linearExtrapolation(t, 1, m, vMin, vMax);',
+	'}'
+	].join('\n');
+DuAEExpression.Library["expInterpolation"].requirements = ["linearExtrapolation"];
+
+/**
  * Interpolates a value with a gaussian function.<br />
  * This method can replace <code>linear()</code> and <code>ease()</code> with a gaussian interpolation.<br />
  * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
@@ -548,6 +576,83 @@ DuAEExpression.Library["gaussianInterpolation"].expression = ['function gaussian
 	'}'
 	].join('\n');
 DuAEExpression.Library["gaussianInterpolation"].requirements = [];
+
+/**
+ * Interpolates a value with a linear function, but also extrapolates it outside of known values.<br />
+ * This method can replace <code>linear()</code>, adding extrapolation.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * @function
+ * @param {number} t The value to interpolate and extrapolate
+ * @param {number} [tMin=0] The minimum value of the initial range
+ * @param {number} [tMax=1] The maximum value of the initial range
+ * @param {number} [value1=0] The minimum value of the interpolated result
+ * @param {number} [value2=1] The maximum value of the interpolated result
+ * @return {number} the value.
+ */
+DuAEExpression.Library["linearExtrapolation"] = {};
+DuAEExpression.Library["linearExtrapolation"].expression = ['function linearExtrapolation( t, tMin, tMax, value1, value2 )',
+	'{',
+	'if (tMax == tMin) return (value1+value2) / 2;',
+	'return value1 + (( t - tMin) / (tMax - tMin)) * (value2 - value1);',
+	'}'
+	].join('\n');
+DuAEExpression.Library["linearExtrapolation"].requirements = [];
+
+/**
+ * Interpolates a value with a logarithmic function.<br />
+ * This method can replace <code>linear()</code> and <code>ease()</code> with a gaussian interpolation.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * @function
+ * @param {number} t The value to interpolate
+ * @param {number} [tMin=0] The minimum value of the initial range
+ * @param {number} [tMax=1] The maximum value of the initial range
+ * @param {number} [value1=0] The minimum value of the interpolated result
+ * @param {number} [value2=1] The maximum value of the interpolated result
+ * @param {number} [rate=1] The raising speed in the range [0, inf].
+ * @return {number} the value.
+ * @requires linearExtrapolation
+ */
+DuAEExpression.Library["logInterpolation"] = {};
+DuAEExpression.Library["logInterpolation"].expression = ['function logInterpolation(t, tMin, tMax, vMin, vMax, rate)',
+	'{',
+	'if (rate == 0) return linearExtrapolation(t, tMin, tMax, vMin, vMax);',
+	'tMax = ( tMax - tMin ) * rate + 1;',
+	't = ( t - tMin ) * rate + 1;',
+	'if (t <= 1) return vMin;',
+	'var m = Math.log(tMax);',
+	'var v = Math.log(t);',
+	'return linearExtrapolation(v, 0, m, vMin, vMax);',
+	'}'
+	].join('\n');
+DuAEExpression.Library["logInterpolation"].requirements = ["linearExtrapolation"];
+
+/**
+ * Interpolates a value with a logistic (sigmoid) function.<br />
+ * This method can replace <code>linear()</code> and <code>ease()</code> with a gaussian interpolation.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * @function
+ * @param {number} t The value to interpolate
+ * @param {number} [tMin=0] The minimum value of the initial range
+ * @param {number} [tMax=1] The maximum value of the initial range
+ * @param {number} [value1=0] The minimum value of the interpolated result
+ * @param {number} [value2=1] The maximum value of the interpolated result
+ * @param {number} [rate=1] The raising speed in the range [0, inf].
+ * @param {number} [tMid=0.5] The t value at which the interpolated value should be half way.
+ * @return {number} the value.
+ * @requires logistic
+ * @requires linearExtrapolation
+ */
+DuAEExpression.Library["logisticInterpolation"] = {};
+DuAEExpression.Library["logisticInterpolation"].expression = ['function logisticInterpolation( t, tMin, tMax, value1, value2, rate, tMid )',
+	'{',
+	'if (rate == 0) return linearExtrapolation(t, tMin, tMax, value1, value2);',
+	't = logistic( t, tMid, tMin, tMax, rate);',
+	'var m = logistic( tMin, tMid, tMin, tMax, rate);',
+	'var M = logistic( tMax, tMid, tMin, tMax, rate);',
+	'return linearExtrapolation( t, m, M, value1, value2);',
+	'}'
+	].join('\n');
+DuAEExpression.Library["logisticInterpolation"].requirements = ["logistic","linearExtrapolation"];
 
 /**
  * Gets the key immediately before the given time
@@ -639,12 +744,13 @@ DuAEExpression.Library["continueOut"].requirements = [];
  * Animatable equivalent to loopIn('cycle') and loopIn('offset').
  * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all previous frames.
  * @param {int} nK The number of keyframes to loop. Use 0 to loop all keyframes
- * @param {Boolean} o whether to offset or cycle
+ * @param {Boolean} o Wether to offset or cycle
+ * @param {function} [vAtTime=valueAtTime] A function to replace valueAtTime. Use this to loop after an expression+keyframe controlled animation, by providing a function used to generate the animation.
  * @returns {float|float[]} The new value
  * @function
  */
 DuAEExpression.Library["cycleIn"] = {};
-DuAEExpression.Library["cycleIn"].expression = ['function cycleIn( t, nK, o ) {',
+DuAEExpression.Library["cycleIn"].expression = ['function cycleIn( t, nK, o, vAtTime ) {',
 	'if (numKeys <= 1) return value;',
 	'var lastKeyIndex = numKeys;',
 	'if (nK >= 2)',
@@ -661,7 +767,7 @@ DuAEExpression.Library["cycleIn"].expression = ['function cycleIn( t, nK, o ) {'
 	'var numLoops = Math.floor( timeSpent / loopDuration );',
 	'var loopTime = loopDuration - timeSpent;',
 	'if (numLoops > 0) loopTime = loopDuration - ( timeSpent - numLoops * loopDuration );',
-	'var r = valueAtTime( loopStartTime + loopTime );',
+	'var r = vAtTime( loopStartTime + loopTime );',
 	'if (o) r -= ( key( lastKeyIndex ).value - key( 1 ).value ) * ( numLoops + 1 );',
 	'return r;',
 	'}'
@@ -672,12 +778,13 @@ DuAEExpression.Library["cycleIn"].requirements = [];
  * Animatable equivalent to loopOut('cycle') and loopOut('offset').
  * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all subsequent frames.
  * @param {int} nK The number of keyframes to loop. Use 0 to loop all keyframes
- * @param {Boolean} o whether to offset or cycle
+ * @param {Boolean} o Wether to offset or cycle
+ * @param {function} [vAtTime=valueAtTime] A function to replace valueAtTime. Use this to loop after an expression+keyframe controlled animation, by providing a function used to generate the animation.
  * @returns {float|float[]} The new value
  * @function
  */
 DuAEExpression.Library["cycleOut"] = {};
-DuAEExpression.Library["cycleOut"].expression = ['function cycleOut( t, nK, o ) {',
+DuAEExpression.Library["cycleOut"].expression = ['function cycleOut( t, nK, o, vAtTime ) {',
 	'if (numKeys <= 1) return value;',
 	'var firstKeyIndex = 1;',
 	'if (nK >= 2)',
@@ -694,7 +801,7 @@ DuAEExpression.Library["cycleOut"].expression = ['function cycleOut( t, nK, o ) 
 	'var numLoops = Math.floor( timeSpent / loopDuration );',
 	'var loopTime = timeSpent;',
 	'if (numLoops > 0) loopTime = timeSpent - numLoops * loopDuration;',
-	'var r = valueAtTime( loopStartTime + loopTime );',
+	'var r = vAtTime( loopStartTime + loopTime );',
 	'if (o) r += ( key( numKeys ).value - key( firstKeyIndex ).value ) * ( numLoops + 1 );',
 	'return r;',
 	'}'
@@ -705,11 +812,12 @@ DuAEExpression.Library["cycleOut"].requirements = [];
  * Animatable equivalent to loopIn('pingpong').
  * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all previous frames.
  * @param {int} nK The number of keyframes to loop. Use 0 to loop all keyframes
+ * @param {function} [vAtTime=valueAtTime] A function to replace valueAtTime. Use this to loop after an expression+keyframe controlled animation, by providing a function used to generate the animation.
  * @returns {float} The new value
  * @function
  */
 DuAEExpression.Library["pingPongIn"] = {};
-DuAEExpression.Library["pingPongIn"].expression = ['function pingPongIn( t, nK ) {',
+DuAEExpression.Library["pingPongIn"].expression = ['function pingPongIn( t, nK, vAtTime ) {',
 	'if (numKeys <= 1) return value;',
 	'var lasttKeyIndex = numKeys;',
 	'if (nK >= 2)',
@@ -730,20 +838,22 @@ DuAEExpression.Library["pingPongIn"].expression = ['function pingPongIn( t, nK )
 	'loopTime = timeSpent - numLoops * loopDuration;',
 	'if (numLoops % 2 != 0) loopTime = loopDuration - loopTime;',
 	'}',
-	'return valueAtTime( loopStartTime + loopTime );',
+	'return vAtTime( loopStartTime + loopTime );',
 	'}'
 	].join('\n');
 DuAEExpression.Library["pingPongIn"].requirements = [];
 
 /**
  * Animatable equivalent to loopOut('pingpong').
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all subsequent frames.
  * @param {int} nK The number of keyframes to loop. Use 0 to loop all keyframes
+ * @param {function} [vAtTime=valueAtTime] A function to replace valueAtTime. Use this to loop after an expression+keyframe controlled animation, by providing a function used to generate the animation.
  * @returns {float} The new value
  * @function
  */
 DuAEExpression.Library["pingPongOut"] = {};
-DuAEExpression.Library["pingPongOut"].expression = ['function pingPongOut( t, nK ) {',
+DuAEExpression.Library["pingPongOut"].expression = ['function pingPongOut( t, nK, vAtTime ) {',
 	'if (numKeys <= 1) return value;',
 	'var firstKeyIndex = 1;',
 	'if (nK >= 2)',
@@ -764,7 +874,7 @@ DuAEExpression.Library["pingPongOut"].expression = ['function pingPongOut( t, nK
 	'loopTime = timeSpent - numLoops * loopDuration;',
 	'if (numLoops % 2 == 0) loopTime = loopDuration - loopTime;',
 	'}',
-	'return valueAtTime( loopStartTime + loopTime );',
+	'return vAtTime( loopStartTime + loopTime );',
 	'}'
 	].join('\n');
 DuAEExpression.Library["pingPongOut"].requirements = [];
@@ -903,15 +1013,15 @@ DuAEExpression.Library["isZero"].requirements = [];
     * @param {Number} [rate=1] The logistic growth rate or steepness of the function
     * @return {Number} The result in the range [min, max] (excluding min and max)
     */
-DuAEExpression.Library["logisitic"] = {};
-DuAEExpression.Library["logisitic"].expression = ['function logistic( value, midValue, min, max, rate)',
+DuAEExpression.Library["logistic"] = {};
+DuAEExpression.Library["logistic"].expression = ['function logistic( value, midValue, min, max, rate)',
 	'{',
 	'var exp = -rate*(value - midValue);',
 	'var result = 1 / (1 + Math.pow(Math.E, exp));',
 	'return result * (max-min) + min;',
 	'}'
 	].join('\n');
-DuAEExpression.Library["logisitic"].requirements = [];
+DuAEExpression.Library["logistic"].requirements = [];
 
 /**
     * Returns the mean of a set of values
