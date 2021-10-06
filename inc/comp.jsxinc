@@ -1,4 +1,4 @@
-/**
+﻿/**
  * After Effects composition methods
  * @namespace
  */
@@ -698,4 +698,37 @@ DuAEComp.addShape = function (shape, color, comp)
     fill("ADBE Vector Fill Color").setValue(DuColor.Color.RAINBOX_RED.floatRGBA());
 
     return layer;
+}
+
+/**
+ * Saves a thumbnail of the comp to a PNG file
+ * @param {File} file The file to save the thumbnail
+ * @param {int[]} [maxRes=[500,500]] The maximum resolution of the thumbnail, which will be smaller than that, but not exactly this size.
+ * @param {float} [time] The time at which to grab the picture. If omitted, will use the current time.
+ * @param {CompItem} [comp=DuAEProject.getActiveComp()] The composition
+ * @returns {Boolean} True on success, false otherwise.
+ */
+DuAEComp.thumbnail = function ( file, maxRes, time, comp )
+{
+    comp = def(comp, DuAEProject.getActiveComp());
+    if (!comp) return false;
+    
+    maxRes = def(maxRes,[500,500]);
+    time = def(time, comp.time);
+
+    // Downsample
+    var currentResolution = comp.resolutionFactor;
+
+    var newFactor = Math.ceil( comp.width / maxRes[0] );
+    var test = Math.ceil( comp.height / maxRes[1] );
+    if (test > newFactor) newFactor = test;
+
+    comp.resolutionFactor = [newFactor, newFactor];
+
+    comp.saveFrameToPng( time, file );
+
+    // Restore
+    comp.resolutionFactor = currentResolution;
+
+    return true;
 }
