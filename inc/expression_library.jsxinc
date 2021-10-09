@@ -483,10 +483,10 @@ DuAEExpression.Library["FuzzyLogic"].requirements = ["logistic","inverseLogistic
  */
 DuAEExpression.Library["bezierInterpolation"] = {};
 DuAEExpression.Library["bezierInterpolation"].expression = ['function bezierInterpolation(t, tMin, tMax, value1, value2, bezierPoints) {',
-	'if (arguments.length !== 5 && arguments.length !== 6) return t;',
+	'if (arguments.length !== 5 && arguments.length !== 6) return (value1+value2)/2;',
 	'var a = value2 - value1;',
 	'var b = tMax - tMin;',
-	'if (b == 0) return t;',
+	'if (b == 0) return (value1+value2)/2;',
 	'var c = clamp((t - tMin) / b, 0, 1);',
 	'if (!(bezierPoints instanceof Array) || bezierPoints.length !== 4) bezierPoints = [0.33,0.0,0.66,1];',
 	'return a * h(c, bezierPoints) + value1;',
