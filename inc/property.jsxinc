@@ -334,7 +334,14 @@ DuAEProperty.prototype.keyAtIndex = function ( keyIndex ) {
 
     var key = new DuAEKeyFrame();
     key._time = prop.keyTime( keyIndex );
-    key.value = prop.keyValue( keyIndex );
+    if (prop.propertyValueType == PropertyValueType.TEXT_DOCUMENT)
+    {
+        key.value = prop.keyValue( keyIndex ).text;
+    }
+    else 
+    {
+        key.value = prop.keyValue( keyIndex );
+    }
     key._inInterpolationType = prop.keyInInterpolationType( keyIndex );
     key._outInterpolationType = prop.keyOutInterpolationType( keyIndex );
     if ( prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL || prop.propertyValueType == PropertyValueType.TwoD_SPATIAL ) {
@@ -445,8 +452,17 @@ DuAEProperty.prototype.animation = function ( selected, timeRange ) {
         var anim = new DuAEPropertyAnimation();
         anim._name = prop.name;
         anim._matchName = prop.matchName;
-        anim.startValue = prop.valueAtTime( timeRange[ 0 ], true );
-        anim.endValue = prop.valueAtTime( timeRange[ 1 ], true );
+        if (prop.propertyValueType == PropertyValueType.TEXT_DOCUMENT)
+        {
+            anim.startValue = prop.valueAtTime( timeRange[ 0 ], true ).text;
+            anim.endValue = prop.valueAtTime( timeRange[ 1 ], true ).text;
+        }
+        else 
+        {
+            anim.startValue = prop.valueAtTime( timeRange[ 0 ], true );
+            anim.endValue = prop.valueAtTime( timeRange[ 1 ], true );
+        }
+        
         anim.keys = this.keys( selected, timeRange );
         if ( anim.keys.length > 0 ) {
             anim.startTime = anim.keys[ 0 ]._time;
@@ -561,21 +577,8 @@ DuAEProperty.prototype.setKey = function ( key, timeOffset ) {
     var propDimensions = this.dimensions( );
     var val = key.value;
 
-    if ( propDimensions > 1 && !( val instanceof Array ) ) {
-        val = [ val ];
-    }
-
-    //adjust dimensions
-    if ( val instanceof Array ) {
-        while ( val.length < propDimensions ) {
-            val.push( 0 );
-        }
-        while ( val.length > propDimensions ) {
-            val.pop();
-        }
-    }
-
     this.setValueAtTime( val, time );
+    
     if ( prop.numKeys == 0 ) return;
 
     //get the index of the created key
@@ -629,40 +632,21 @@ DuAEProperty.prototype.numerical = function ( ) {
 DuAEProperty.prototype.setValue = function ( value, defaultTime ) {
     var prop = this.getProperty();
 
-    var dimensions = this.dimensions();
-
     if ( prop.isSeparationLeader )
         if ( prop.dimensionsSeparated ) return false;
 
     if ( !this.editable() ) return false;
 
+    value = this.fixValue(value);
+
     if ( prop.numKeys > 0 ) return this.setValueAtTime( value, defaultTime );
 
-    //check dimensions of the property
-    if ( dimensions == 0 || dimensions == 1 ) {
-        if ( value instanceof Array ) value = value[ 0 ];
-        try {
-            prop.setValue( value );
-            return true;
-        } catch ( e ) {
-            if ( DuESF.debug ) alert( e.description );
-            return false;
-        }
-    } else {
-        if ( !( value instanceof Array ) ) value = [ value ];
-        while ( value.length < dimensions ) {
-            value.push( 0 );
-        }
-        while ( value.length > dimensions ) {
-            value.pop();
-        }
-        try {
-            prop.setValue( value );
-            return true;
-        } catch ( e ) {
-            if ( DuESF.debug ) alert( e.description );
-            return false;
-        }
+    try {
+        prop.setValue( value );
+        return true;
+    } catch ( e ) {
+        if ( DuESF.debug ) alert( e.description );
+        return false;
     }
 }
 
@@ -684,31 +668,14 @@ DuAEProperty.prototype.setValueAtTime = function ( value, time ) {
 
     if ( !this.editable() ) return false;
 
-    //check dimensions of the property
-    if ( dimensions == 0 || dimensions == 1 ) {
-        if ( value instanceof Array ) value = value[ 0 ];
-        try {
-            prop.setValueAtTime( time, value );
-            return true;
-        } catch ( e ) {
-            if ( DuESF.debug ) alert( e.description );
-            return false;
-        }
-    } else {
-        if ( !( value instanceof Array ) ) value = [ value ];
-        while ( value.length < dimensions ) {
-            value.push( 0 );
-        }
-        while ( value.length > dimensions ) {
-            value.pop();
-        }
-        try {
-            prop.setValueAtTime( time, value );
-            return true;
-        } catch ( e ) {
-            if ( DuESF.debug ) alert( e.description );
-            return false;
-        }
+    value = this.fixValue(value);
+
+    try {
+        prop.setValueAtTime( time, value );
+        return true;
+    } catch ( e ) {
+        if ( DuESF.debug ) alert( e.description );
+        return false;
     }
 }
 
@@ -1865,7 +1832,60 @@ DuAEProperty.prototype.averageSpeed = function ( preExpression, fastMode ) {
     return DuAEProperty.getAverageSpeed([this], preExpression, fastMode );
 }
 
+/**
+ * Adjust the value so it can be set on the specific property (adjust the number of dimensions or the type of value)
+ * @param {Property|DuAEProperty} property The property
+ * @param {any} value The value to set
+ * @returns {any} The converted value
+ */
+DuAEProperty.prototype.fixValue = function( value ) {
+
+    prop = this.getProperty();
+
+    var dimensions = this.dimensions();
+
+    // Numeric
+    if (dimensions > 0)
+    {
+        // Single
+        if (dimenions == 1 && value instanceof Array)
+        {
+            value = value[0];
+            return parseFloat( value );
+        }
+        // Array
+        if ( !( value instanceof Array ) ) value = [ value ];
+
+        while ( value.length < dimensions ) {
+            value.push( 0 );
+        }
+        while ( value.length > dimensions ) {
+            value.pop();
+        }
+
+        return value;
+    }
+
+    // Non numeric
+
+    var valueType = prop.propertyValueType;
+
+    // Text
+    if (valueType == PropertyValueType.TEXT_DOCUMENT)
+    {
+        var textDoc = prop.value;
+        textDoc.text = value;
+        return textDoc;
+    }
+
+    // TODO Path
+
+
+    return value;
+}
+
 // =========== STATIC ====================
+
 
 /**
  * Gets the After Effects properties in the property
