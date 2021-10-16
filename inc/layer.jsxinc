@@ -268,7 +268,7 @@ DuAELayer.setAnims = function ( layers, anims, time, ignoreName, setExpression, 
                 break;
             }
         }
-        if ( ok ) remaining.pop();
+        if ( ok ) remaining.splice(i, 1);
     }
 
     return remaining;
