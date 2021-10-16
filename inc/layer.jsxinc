@@ -683,7 +683,10 @@ DuAELayer.toggleEditMode = function ( layer ) {
         for ( var j = 0, num = children.length; j < num; j++ ) {
             var child = children[ j ];
             childLayers.push(child.index);
+            var l = child.locked;
+            child.locked = false;
             child.parent = null;
+            child.locked = l;
         }
 
         // Set the name
@@ -711,7 +714,11 @@ DuAELayer.toggleEditMode = function ( layer ) {
         for (var i = 0, n = childLayers.length; i < n; i ++)
         {
             var index = parseInt( childLayers[i] );
-            comp.layer(index).parent = layer;
+            var child = comp.layer(index);
+            var l = child.locked;
+            child.locked = false;
+            child.parent = layer;
+            child.locked = l;
         }
 
         DuAETag.setValue( layer, DuAETag.Key.CHILD_LAYERS, '' );
