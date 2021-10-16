@@ -1848,7 +1848,7 @@ DuAEProperty.prototype.fixValue = function( value ) {
     if (dimensions > 0)
     {
         // Single
-        if (dimenions == 1 && value instanceof Array)
+        if (dimensions == 1 && value instanceof Array)
         {
             value = value[0];
             return parseFloat( value );
