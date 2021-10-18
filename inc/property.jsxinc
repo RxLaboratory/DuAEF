@@ -1446,7 +1446,7 @@ DuAEProperty.prototype.removeExpressions = function ( filter, keepPostExpression
  * @memberof DuAEProperty.prototype
  * @function
  */
-DuAEProperty.prototype.removeExpression = DuAEProperty.prototype.removeExpressions
+DuAEProperty.prototype.removeExpression = DuAEProperty.prototype.removeExpressions;
     
 /**
  * Recursilvely adds all the (supported) properties found to the essential graphics panel<br />
