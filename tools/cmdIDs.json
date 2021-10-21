@@ -387,6 +387,8 @@
     "3736": "ShapeLayer",
     "3737": "EnablePercharacter3D",
     "3739": "LayerStyles",
+    "3741": "GroupShapes",
+    "3742": "UnGroupShapes",
     "3745": "MaskandShapePath",
     "3754": "HDTVRec709",
     "3755": "SDTVNTSC",
