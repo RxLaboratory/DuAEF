@@ -16,6 +16,6 @@ cd ..
 cd ..
 cd docs
 xcopy /Y DuAEF.html index.html
-echo duaef-reference.rainboxlab.org > "CNAME"
+echo duaef.rxlab.io > "CNAME"
 echo theme: jekyll-theme-cayman > _config.yml
 pause
