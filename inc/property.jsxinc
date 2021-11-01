@@ -1299,6 +1299,7 @@ DuAEProperty.prototype.linkProperties = function ( parentProp, useThisComp, time
     var childProp = this.getProperty();
     var parent = new DuAEProperty( parentProp );
     var parentProp = parent.getProperty();
+    if ( childProp.matchName != parentProp.matchName ) return;
 
 
     if ( childProp.propertyType == PropertyType.PROPERTY && !childProp.elided && childProp.propertyValueType != PropertyValueType.NO_VALUE ) {
@@ -1335,7 +1336,7 @@ DuAEProperty.prototype.linkProperties = function ( parentProp, useThisComp, time
         this.setExpression( exp, false );
 
     } else {
-        if ( parentProp.isEffect ) {
+        if ( parent.isEffect ) {
             var insideData = 0;
             for ( var p = 1, num = childProp.numProperties; p <= num; p++ ) {
                 
@@ -1366,7 +1367,7 @@ DuAEProperty.prototype.linkProperties = function ( parentProp, useThisComp, time
                     child.linkProperties( parentProp( p ), useThisComp, timeLayer );
                 }
                 catch(e) {
-                    DuDebug.throwError(childProp.name + ' could not be linked.', 'DuAEProperty.prototype.linkProperties', e);
+                    DuDebug.throwError(childProp( p ).name + ' could not be linked.', 'DuAEProperty.prototype.linkProperties', e, true);
                 };
             }
         }
