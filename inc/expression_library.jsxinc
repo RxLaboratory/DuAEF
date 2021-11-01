@@ -749,7 +749,7 @@ DuAEExpression.Library["bounce"].expression = ['function bounce(t, elasticity, d
 	'cycleDuration = framesToTime(cycleDuration);',
 	'midDuration = cycleDuration / 2;',
 	'maxValue = bounceValue * midDuration / damp;',
-	'if (numEndCycles > 100 / damping && maxValue < threshold) return value;',
+	'if (numEndCycles > 100 / damping && maxValue < 0.001 ) return value;',
 	'}',
 	'if (cycvarime < midDuration) bounceValue = bezierInterpolation(cycvarime, 0, midDuration, 0, maxValue, [0, .1, .33, 1]);',
 	'else bounceValue = bezierInterpolation(cycvarime, midDuration, cycleDuration, maxValue, 0, [.66, 0, 1, .9]);',
@@ -772,18 +772,20 @@ DuAEExpression.Library["bounce"].requirements = ["getPrevKey","bezierInterpolati
 /**
  * Animatable equivalent to loopIn('continue').
  * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all previous frames.
+ * @param {float} [damping=0] Exponentially attenuates the effect over time
  * @returns {float|float[]} The new value
  * @function
  * @requires getNextKey
  */
 DuAEExpression.Library["continueIn"] = {};
-DuAEExpression.Library["continueIn"].expression = ['function continueIn(t) {',
+DuAEExpression.Library["continueIn"].expression = ['function continueIn(t, damping) {',
 	'if (numKeys <= 1) return value;',
 	'var firstKey = getNextKey(t, thisProperty);',
 	'if (!firstKey) return value;',
 	'var firstVelocity = velocityAtTime(firstKey.time + 0.001);',
 	'var timeSpent = firstKey.time - t;',
-	'return firstKey.value - timeSpent * firstVelocity;',
+	'var damp = Math.exp(timeSpent * damping);',
+	'return (-timeSpent * firstVelocity) / damp + firstKey.value;',
 	'}'
 	].join('\n');
 DuAEExpression.Library["continueIn"].requirements = ["getNextKey"];
@@ -791,18 +793,20 @@ DuAEExpression.Library["continueIn"].requirements = ["getNextKey"];
 /**
  * Animatable equivalent to loopOut('continue').
  * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all subsequent frames.
+ * @param {float} [damping=0] Exponentially attenuates the effect over time
  * @returns {float|float[]} The new value
  * @function
  * @requires getNextKey
  */
 DuAEExpression.Library["continueOut"] = {};
-DuAEExpression.Library["continueOut"].expression = ['function continueOut(t) {',
+DuAEExpression.Library["continueOut"].expression = ['function continueOut(t, damping) {',
 	'if (numKeys <= 1) return value;',
 	'var lastKey = getPrevKey(t, thisProperty);',
 	'if (!lastKey) return value;',
 	'var lastVelocity = velocityAtTime(lastKey.time - 0.001);',
 	'var timeSpent = t - lastKey.time;',
-	'return lastKey.value + timeSpent * lastVelocity;',
+	'var damp = Math.exp(timeSpent * damping);',
+	'return lastKey.value + (timeSpent * lastVelocity) / damp;',
 	'}'
 	].join('\n');
 DuAEExpression.Library["continueOut"].requirements = ["getNextKey"];
@@ -813,17 +817,19 @@ DuAEExpression.Library["continueOut"].requirements = ["getNextKey"];
  * @param {int} nK The number of keyframes to loop. Use 0 to loop all keyframes
  * @param {Boolean} o Wether to offset or cycle
  * @param {function} [vAtTime=valueAtTime] A function to replace valueAtTime. Use this to loop after an expression+keyframe controlled animation, by providing a function used to generate the animation.
+ * @param {float} [damping=0] Exponentially attenuates the effect over time
  * @returns {float|float[]} The new value
  * @function
  * @requires getNextKey
  */
 DuAEExpression.Library["cycleIn"] = {};
-DuAEExpression.Library["cycleIn"].expression = ['function cycleIn(t, nK, o, vAtTime) {',
-	'if (numKeys <= 1) return value;',
+DuAEExpression.Library["cycleIn"].expression = ['function cycleIn(t, nK, o, vAtTime, damping) {',
+	'var currentValue = vAtTime(t);',
+	'if (numKeys <= 1) return currentValue;',
 	'var lastKeyIndex = numKeys;',
 	'var firstKey = getNextKey(t, thisProperty);',
-	'if (!firstKey) return value;',
-	'if (firstKey.index == lastKeyIndex) return value;',
+	'if (!firstKey) return currentValue;',
+	'if (firstKey.index == lastKeyIndex) return currentValue;',
 	'if (nK >= 2) {',
 	'nK = nK - 1;',
 	'lastKeyIndex = firstKey.index + nK;',
@@ -832,14 +838,15 @@ DuAEExpression.Library["cycleIn"].expression = ['function cycleIn(t, nK, o, vAtT
 	'var loopStartTime = firstKey.time;',
 	'var loopEndTime = key(lastKeyIndex).time;',
 	'var loopDuration = loopEndTime - loopStartTime;',
-	'if (t >= loopStartTime) return value;',
+	'if (t >= loopStartTime) return currentValue;',
 	'var timeSpent = loopStartTime - t;',
 	'var numLoops = Math.floor(timeSpent / loopDuration);',
 	'var loopTime = loopDuration - timeSpent;',
 	'if (numLoops > 0) loopTime = loopDuration - (timeSpent - numLoops * loopDuration);',
 	'var r = vAtTime(loopStartTime + loopTime);',
 	'if (o) r -= (key(lastKeyIndex).value - firstKey.value) * (numLoops + 1);',
-	'return r;',
+	'var damp = Math.exp(timeSpent * damping);',
+	'return (r-currentValue) / damp + currentValue;',
 	'}'
 	].join('\n');
 DuAEExpression.Library["cycleIn"].requirements = ["getNextKey"];
@@ -850,17 +857,19 @@ DuAEExpression.Library["cycleIn"].requirements = ["getNextKey"];
  * @param {int} nK The number of keyframes to loop. Use 0 to loop all keyframes
  * @param {Boolean} o Wether to offset or cycle
  * @param {function} [vAtTime=valueAtTime] A function to replace valueAtTime. Use this to loop after an expression+keyframe controlled animation, by providing a function used to generate the animation.
+ * @param {float} [damping=0] Exponentially attenuates the effect over time
  * @returns {float|float[]} The new value
  * @function
  * @requires getPrevKey
  */
 DuAEExpression.Library["cycleOut"] = {};
-DuAEExpression.Library["cycleOut"].expression = ['function cycleOut(t, nK, o, vAtTime) {',
-	'if (numKeys <= 1) return value;',
+DuAEExpression.Library["cycleOut"].expression = ['function cycleOut(t, nK, o, vAtTime, damping) {',
+	'var currentValue = vAtTime(t);',
+	'if (numKeys <= 1) return currentValue;',
 	'var firstKeyIndex = 1;',
 	'var lastKey = getPrevKey(t, thisProperty);',
-	'if (!lastKey) return value;',
-	'if (lastKey.index == firstKeyIndex) return value;',
+	'if (!lastKey) return currentValue;',
+	'if (lastKey.index == firstKeyIndex) return currentValue;',
 	'if (nK >= 2) {',
 	'nK = nK - 1;',
 	'firstKeyIndex = lastKey.index - nK;',
@@ -869,14 +878,15 @@ DuAEExpression.Library["cycleOut"].expression = ['function cycleOut(t, nK, o, vA
 	'var loopStartTime = key(firstKeyIndex).time;',
 	'var loopEndTime = key(lastKey.index).time;',
 	'var loopDuration = loopEndTime - loopStartTime;',
-	'if (t <= loopEndTime) return value;',
+	'if (t <= loopEndTime) return currentValue;',
 	'var timeSpent = t - loopEndTime;',
 	'var numLoops = Math.floor(timeSpent / loopDuration);',
 	'var loopTime = timeSpent;',
 	'if (numLoops > 0) loopTime = timeSpent - numLoops * loopDuration;',
 	'var r = vAtTime(loopStartTime + loopTime);',
 	'if (o) r += (key(lastKey.index).value - key(firstKeyIndex).value) * (numLoops + 1);',
-	'return r;',
+	'var damp = Math.exp(timeSpent * damping);',
+	'return (r-currentValue) / damp + currentValue;',
 	'}'
 	].join('\n');
 DuAEExpression.Library["cycleOut"].requirements = ["getPrevKey"];
@@ -922,17 +932,19 @@ DuAEExpression.Library["overshoot"].requirements = ["getPrevKey"];
  * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all previous frames.
  * @param {int} nK The number of keyframes to loop. Use 0 to loop all keyframes
  * @param {function} [vAtTime=valueAtTime] A function to replace valueAtTime. Use this to loop after an expression+keyframe controlled animation, by providing a function used to generate the animation.
+ * @param {float} [damping=0] Exponentially attenuates the effect over time
  * @returns {float} The new value
  * @function
  * @requires getNextKey
  */
 DuAEExpression.Library["pingPongIn"] = {};
-DuAEExpression.Library["pingPongIn"].expression = ['function pingPongIn(t, nK, vAtTime) {',
-	'if (numKeys <= 1) return value;',
+DuAEExpression.Library["pingPongIn"].expression = ['function pingPongIn(t, nK, vAtTime, damping) {',
+	'var currentValue = vAtTime(t);',
+	'if (numKeys <= 1) return currentValue;',
 	'var lastKeyIndex = numKeys;',
 	'var firstKey = getNextKey(t, thisProperty);',
-	'if (!firstKey) return value;',
-	'if (firstKey.index == lastKeyIndex) return value;',
+	'if (!firstKey) return currentValue;',
+	'if (firstKey.index == lastKeyIndex) return currentValue;',
 	'if (nK >= 2) {',
 	'nK = nK - 1;',
 	'lastKeyIndex = firstKey.index + nK;',
@@ -941,7 +953,7 @@ DuAEExpression.Library["pingPongIn"].expression = ['function pingPongIn(t, nK, v
 	'var loopStartTime = firstKey.time;',
 	'var loopEndTime = key(lastKeyIndex).time;',
 	'var loopDuration = loopEndTime - loopStartTime;',
-	'if (t >= loopStartTime) return value;',
+	'if (t >= loopStartTime) return currentValue;',
 	'var timeSpent = loopStartTime - t;',
 	'var numLoops = Math.floor(timeSpent / loopDuration);',
 	'var loopTime = timeSpent;',
@@ -949,7 +961,8 @@ DuAEExpression.Library["pingPongIn"].expression = ['function pingPongIn(t, nK, v
 	'loopTime = timeSpent - numLoops * loopDuration;',
 	'if (numLoops % 2 != 0) loopTime = loopDuration - loopTime;',
 	'}',
-	'return vAtTime(loopStartTime + loopTime);',
+	'var damp = Math.exp(timeSpent * damping);',
+	'return ( vAtTime(loopStartTime + loopTime) - currentValue) / damp + currentValue;',
 	'}'
 	].join('\n');
 DuAEExpression.Library["pingPongIn"].requirements = ["getNextKey"];
@@ -960,17 +973,19 @@ DuAEExpression.Library["pingPongIn"].requirements = ["getNextKey"];
  * @param {float} t The time at which the value must be got. To end the loop, pass the same time for all subsequent frames.
  * @param {int} nK The number of keyframes to loop. Use 0 to loop all keyframes
  * @param {function} [vAtTime=valueAtTime] A function to replace valueAtTime. Use this to loop after an expression+keyframe controlled animation, by providing a function used to generate the animation.
+ * @param {float} [damping=0] Exponentially attenuates the effect over time
  * @returns {float} The new value
  * @function
  * @requires getPrevKey
  */
 DuAEExpression.Library["pingPongOut"] = {};
-DuAEExpression.Library["pingPongOut"].expression = ['function pingPongOut(t, nK, vAtTime) {',
-	'if (numKeys <= 1) return value;',
+DuAEExpression.Library["pingPongOut"].expression = ['function pingPongOut(t, nK, vAtTime, damping) {',
+	'var currentValue = vAtTime(t);',
+	'if (numKeys <= 1) return currentValue;',
 	'var firstKeyIndex = 1;',
 	'var lastKey = getPrevKey(t, thisProperty);',
-	'if (!lastKey) return value;',
-	'if (lastKey.index == firstKeyIndex) return value;',
+	'if (!lastKey) return currentValue;',
+	'if (lastKey.index == firstKeyIndex) return currentValue;',
 	'if (nK >= 2) {',
 	'nK = nK - 1;',
 	'firstKeyIndex = lastKey.index - nK;',
@@ -979,7 +994,7 @@ DuAEExpression.Library["pingPongOut"].expression = ['function pingPongOut(t, nK,
 	'var loopStartTime = key(firstKeyIndex).time;',
 	'var loopEndTime = key(lastKey.index).time;',
 	'var loopDuration = loopEndTime - loopStartTime;',
-	'if (t <= loopEndTime) return value;',
+	'if (t <= loopEndTime) return currentValue;',
 	'var timeSpent = t - loopEndTime;',
 	'var numLoops = Math.floor(timeSpent / loopDuration);',
 	'var loopTime = loopDuration - timeSpent;',
@@ -987,7 +1002,8 @@ DuAEExpression.Library["pingPongOut"].expression = ['function pingPongOut(t, nK,
 	'loopTime = timeSpent - numLoops * loopDuration;',
 	'if (numLoops % 2 == 0) loopTime = loopDuration - loopTime;',
 	'}',
-	'return vAtTime(loopStartTime + loopTime);',
+	'var damp = Math.exp(timeSpent * damping);',
+	'return ( vAtTime(loopStartTime + loopTime) - currentValue) / damp + currentValue;',
 	'}'
 	].join('\n');
 DuAEExpression.Library["pingPongOut"].requirements = ["getPrevKey"];
