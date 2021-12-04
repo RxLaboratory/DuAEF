@@ -749,8 +749,13 @@ DuAE.hasPref = function( section, key, file)
  */
 DuAE.getPref = function( section, key, file, type)
 {
-	app.preferences.saveToDisk();
-	app.preferences.reload();
+	try // Won't work without file access
+	{
+		app.preferences.saveToDisk();
+		app.preferences.reload();
+	}
+	catch (e) {}
+	
 	file = def(file, PREFType.PREF_Type_MACHINE_SPECIFIC);
 
 	if ( !DuAE.hasPref( section, key, file) ) return null;
@@ -798,37 +803,6 @@ DuAE.isLayeredFile = function(file)
  * @readonly
  */
 DuAE.version = new DuVersion( app.version );
-
-/**
- * Has scripting file and network authorization
- * @return {Boolean} true if the preference for file and network access is enabled.
- */
-DuAE.hasFileAndNetworkAccess = function()
-{
-	return DuAE.getPref( "Main Pref Section v2", "Pref_SCRIPTING_FILE_NETWORK_SECURITY", PREFType.PREF_Type_MACHINE_SPECIFIC, DuAE.PrefType.LONG) == 1;
-}
-
-/**
- * Asks the user to check the file and network security pref if not already set.
- * Opens the general prefrences of After Effects.
- * @memberof DuAE
- * @param {boolean}	[showAlert=true]	- Whether to display an alert before opening the preferences
- * @param {string}	[message=The Duduf After Effects scripting framework needs to be allowed to write files\nPlease, check the box called 'Allow Scripts to write files...' in the general preferences of After Effects.]	- The message to display in the alert.
- * @return {boolean}	Whether the preference has been set
- */
-DuAE.askFilesAndNetworkAccess = function ( showAlert, message ) {
-	if ( DuAE.hasFileAndNetworkAccess() ) return true;
-
-	showAlert = def(showAlert, true);
-	message = def( message, DuScriptUI.String.ASK_FILES_NETWORK_ACCESS );
-	message = tr( message );
-
-	if ( showAlert ) alert( message );
-	if ( DuAE.version.version < 16.1 ) DuAE.executeCommand( DuAE.MenuCommandID.GENERAL_PREFERENCES );
-	else DuAE.executeCommand( DuAE.MenuCommandID.SCRIPTING_PREFERENCES );
-
-    return DuAE.hasFileAndNetworkAccess();
-}
 
 /**
  * Checks if the javascript debugger is enabled

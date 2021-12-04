@@ -1,6 +1,4 @@
 DuScriptUI.String.ADJUSTMENT_LAYER = "Adjustment Layer";
-DuScriptUI.String.ASK_FILES_NETWORK_ACCESS = "{#} needs to be allowed to write files.\nPlease, check the box called 'Allow Scripts to write files...' in the scripting preferences of After Effects.";
-DuScriptUI.String.ASK_FILES_NETWORK_ACCESS_TITLE = "File and network access";
 DuScriptUI.String.BEST_QUALITY = "Use best quality";
 DuScriptUI.String.CLIP = "Clip";
 DuScriptUI.String.COMPOSITION_SHORT = "Comp";
@@ -27,8 +25,6 @@ DuScriptUI.String.NULL_LAYER = "Null";
 DuScriptUI.String.OPEN_PREFS = "Open preferences";
 DuScriptUI.String.OUT_TIME = "Out";
 DuScriptUI.String.RANGE = "Range";
-DuScriptUI.String.REINIT_PROMPT = "/!\\ ======\n/!\\ It seems something went wrong with {#} the last time you used it.\n/!\\ Check the box below to re-initialize {#} and try to make it work again.\n/!\\ ======";
-DuScriptUI.String.REINIT_SCRIPT = "Re-initialize {#} before launch.";
 DuScriptUI.String.RENDER = "Render";
 DuScriptUI.String.SECONDARY_NAME = "Secondary name";
 DuScriptUI.String.SET_FRAME_BLENDING = "Set frame blending mode";
@@ -59,82 +55,6 @@ DuScriptUI.setupScript = function( callback, ui, scriptName, reInit, reInitMetho
     function version( ) { DuScriptUI.checkUpdate( callback, ui ); }
 
     function language( ) { DuScriptUI.askLanguage( version, ui ); }
-
-    DuScriptUI.askFilesAndNetworkAccess( language, ui, scriptName, reInit, reInitMethod );
-}
-
-/**
- * Displays an invitation to enable file and network access.<br />
- * Won't do nothing if the script already has file and network access, just run the callback.<br />
- * Use this method before loading any script which needs this authorization. 
- * @param {function} callback - The function to execute when the user has granted access to file and network.<br />
- * This function should be the one which loads the script.
- * @param {Panel|Window} [ui]	- A container to display the UI. A modal Dialog is created if omitted
- * @param {string} [scriptName=DuESF.scriptName] - The name of the script, used in the UI.
- * @param {boolean} [reInit=false] - Set to true to display to prompt to reinit/reinstall the script below the button to ask for file access.
- * @param {function} [reInitMethod] - A function to run in order to reinit/reinstall the script as soon as we get file access, before running the callback
- */
-DuScriptUI.askFilesAndNetworkAccess = function( callback, ui, scriptName, reInit, reInitMethod )
-{
-    if (! (ui instanceof Panel || ui instanceof Window) )
-    {
-        ui = new Window('dialog', DuScriptUI.String.ASK_FILES_NETWORK_ACCESS_TITLE)
-    }
-
-    reInit = def( reInit, false);
-	scriptName = def(scriptName, DuESF.scriptName);
-
-    if ( DuAE.hasFileAndNetworkAccess() )
-    {
-        callback();
-        return;
-    }
-
-    var ui_accessFileAndNetworkGroup = DuScriptUI.group( ui, 'column' );
-
-    var accessExplanation = tr( DuScriptUI.String.ASK_FILES_NETWORK_ACCESS, undefined, scriptName);
-    var reInitPrompt = tr( DuScriptUI.String.REINIT_PROMPT, undefined, [scriptName, scriptName]);
-
-    var ui_reinitCheckbox;
-    
-    ui_accessFileAndNetworkGroup.add( 'statictext', undefined, accessExplanation,
-    {
-        multiline: true
-    } );
-
-    //if reinit add prompt
-    if (reInit)
-    {
-        ui_accessFileAndNetworkGroup.add( 'statictext', undefined, reInitPrompt,
-        {
-            multiline: true
-        } );
-        ui_reinitCheckbox = ui_accessFileAndNetworkGroup.add( 'checkbox', undefined, tr( DuScriptUI.String.REINIT_SCRIPT, undefined, scriptName) );
-    }
-
-    var ui_fileAndNetworkPrefButton = ui_accessFileAndNetworkGroup.add( 'button', undefined, tr( DuScriptUI.String.OPEN_PREFS ) );
-
-    ui_fileAndNetworkPrefButton.onClick = function()
-    {
-        var ok = DuAE.askFilesAndNetworkAccess( false );
-        if ( ok )
-        {
-            //if reinit and box checked, reinitmethod before callback
-            if (reInit)
-            {
-                if (ui_reinitCheckbox.value) reInitMethod();
-            }
-
-            // Delete
-            ui.remove( ui_accessFileAndNetworkGroup );
-
-            callback();
-        }
-    }
-
-    DuScriptUI.showUI( ui, false );
-    DuScriptUI.uiShown = false;
-
 }
 
 /**
