@@ -45,7 +45,7 @@ function askFilesAndNetworkAccess(scriptName, reInit, reInitMethod )
 {
     // Check if we already have file and network access
     var hasAccess = hasFileAndNetworkAccess();
-    if ( hasAccess ) return;
+    if ( hasAccess ) return true;
 
 
     var ui = new Window('dialog', "File and network access");
