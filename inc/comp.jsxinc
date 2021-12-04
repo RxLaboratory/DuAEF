@@ -734,3 +734,36 @@ DuAEComp.thumbnail = function ( file, maxRes, time, comp )
 
     return true;
 }
+
+/**
+ * Gets the camera in the comp, in the given layers if possible.
+ * @param {Layer[]|DuList.<Layer>} [layers] Some layers to find the camera first. Selected layers if omitted.
+ * @return {CameraLayer|null} The camera if it was found.
+ */
+DuAEComp.camera = function( layers )
+{
+    layers = def(layers, DuAEComp.getSelectedLayers() );
+    layers = new DuList(layers);
+
+    // Search in selected layers
+    var layer;
+    while(layer = layers.next())
+    {
+        if (layer instanceof CameraLayer) return layer;
+    }
+
+    // Get composition
+    var comp;
+    if (layers.isEmpty()) comp = DuAEProject.getActiveComp();
+    else comp = layers.at(0).containingComp;
+    if (!comp) return null;
+
+    // Search in all comp layers
+    for (var i = 1, n = comp.numLayers; i < n; i++)
+    {
+        var l = comp.layer(i);
+        if (l instanceof CameraLayer) return l;
+    }
+
+    return null;
+}
