@@ -613,7 +613,7 @@ DuAELayer.sortByParent = function ( layers ) {
 
 /**
  * Sort the layers by their indices. Returns a new Array, the original array or collection is not changed.
- * @param {Layer[]|LayerCollection} layers - The layers to sort
+ * @param {Layer[]|LayerCollection|DuList.<Layer>} layers - The layers to sort
  * @return {Layer[]} The sorted array
  */
 DuAELayer.sortByIndex = function ( layers ) {

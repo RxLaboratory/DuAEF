@@ -759,7 +759,7 @@ DuAEComp.camera = function( layers )
     if (!comp) return null;
 
     // Search in all comp layers
-    for (var i = 1, n = comp.numLayers; i < n; i++)
+    for (var i = 1, n = comp.numLayers; i <= n; i++)
     {
         var l = comp.layer(i);
         if (l instanceof CameraLayer) return l;
