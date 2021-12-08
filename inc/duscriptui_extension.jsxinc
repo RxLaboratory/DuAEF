@@ -1,4 +1,6 @@
-DuScriptUI.String.ADJUSTMENT_LAYER = "Adjustment Layer";
+DuScriptUI.String.ACTIVE_COMPOSITION = "Active composition";
+DuScriptUI.String.ADJUSTMENT_LAYER = "Adjustment layer";
+DuScriptUI.String.ALL_COMPOSITIONS = "All Compositions";
 DuScriptUI.String.BEST_QUALITY = "Use best quality";
 DuScriptUI.String.CLIP = "Clip";
 DuScriptUI.String.COMPOSITION_SHORT = "Comp";
@@ -27,6 +29,8 @@ DuScriptUI.String.OUT_TIME = "Out";
 DuScriptUI.String.RANGE = "Range";
 DuScriptUI.String.RENDER = "Render";
 DuScriptUI.String.SECONDARY_NAME = "Secondary name";
+DuScriptUI.String.SELECTED_COMPOSITIONS = "Selected compositions";
+DuScriptUI.String.SELECTED_PROPERTIES = "Selected properties";
 DuScriptUI.String.SET_FRAME_BLENDING = "Set frame blending mode";
 DuScriptUI.String.SHAPE_LAYER = "Shape";
 DuScriptUI.String.SHOW_HIDE_LAYERS_TIP = "Show/Hide layers";
@@ -806,4 +810,37 @@ DuScriptUI.refreshPanel = function( panel, scriptFile )
         return true;
     }
     return false;
+}
+
+/**
+ * Creates a selector to choose a selection mode
+ * @param {DuAE.SelectionMode} [minimalMode=DuAE.SelectionMode.SELECTED_PROPERTIES] The lowest mode to use
+ * @return {DuSelector} The selector
+ */
+DuScriptUI.selectionModeSelector = function( container, minimalMode )
+{
+    minimalMode = def(minimalMode, DuAE.SelectionMode.SELECTED_PROPERTIES);
+    var selector = DuScriptUI.selector( container );
+    if (minimalMode <= DuAE.SelectionMode.SELECTED_PROPERTIES) selector.addButton(
+        DuScriptUI.String.SELECTED_PROPERTIES,
+        w16_selected_props
+    );
+    if (minimalMode <= DuAE.SelectionMode.SELECTED_LAYERS) selector.addButton(
+        DuScriptUI.String.SELECTED_LAYERS,
+        w16_selected_layers
+    );
+    if (minimalMode <= DuAE.SelectionMode.ACTIVE_COMPOSITION) selector.addButton(
+        DuScriptUI.String.ACTIVE_COMPOSITION,
+        w16_layers
+    );
+    if (minimalMode <= DuAE.SelectionMode.SELECTED_COMPOSITIONS) selector.addButton(
+        DuScriptUI.String.SELECTED_COMPOSITIONS,
+        w16_selected_compositions
+    );
+    if (minimalMode <= DuAE.SelectionMode.ALL_COMPOSITIONS) selector.addButton(
+        DuScriptUI.String.ALL_COMPOSITIONS,
+        w16_compositions
+    );
+
+    return selector;
 }
