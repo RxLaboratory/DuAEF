@@ -132,6 +132,8 @@ function DuAEPropertyExpression(property)
 		return property;
 	}
 
+	var propInfo = new DuAEProperty( property );
+
 	/**
 		* The original property containing the expression
 		* @memberof DuAEPropertyExpression.prototype
@@ -145,14 +147,14 @@ function DuAEPropertyExpression(property)
 		* @name layer
 		* @type {LayerItem}
 		*/
-	this.layer = DuAEProperty.getLayer(property);
+	this.layer = propInfo.layer;
 	/**
 		* The original composition containing the expression
 		* @memberof DuAEPropertyExpression.prototype
 		* @name comp
 		* @type {CompItem}
 		*/
-	this.comp = this.layer.containingComp;
+	this.comp = propInfo.comp;
 	/**
 		* true if there's no expression in this property
 		* @memberof DuAEPropertyExpression.prototype
@@ -161,7 +163,7 @@ function DuAEPropertyExpression(property)
 		*/
 	this.empty = false;
 
-	if ( !DuAEProperty.isRiggable(property) ) {
+	if ( !propInfo.riggable() ) {
 		this.empty = true;
 		return;
 	} 
@@ -680,6 +682,20 @@ DuAE.PrefType =
  * List of file extensions whih may be imported as several items with the same source
  */
 DuAE.DuAELayeredFileType = ["psd","psb","ai","fla"];
+
+/**
+	* Enum for selections
+	* @readonly
+	* @static
+	* @enum {int}
+	*/
+DuAE.SelectionMode = {
+    SELECTED_PROPERTIES: 0,
+    SELECTED_LAYERS: 1,
+    ACTIVE_COMPOSITION: 2,
+    SELECTED_COMPOSITIONS: 3,
+    ALL_COMPOSITIONS: 4
+}
 
 /**
  * Default color labels

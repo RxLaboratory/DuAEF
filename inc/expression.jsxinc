@@ -23,35 +23,33 @@ DuAEExpression.Id = {
 /**
  * Updates the cache of the expressions used by Duik to speed up batch process of expressions in the whole project.<br />
  * It's automatically run when needed if it's not been updated in a long time (1 mn) or if it's empty
- * @param {bool} [currentComp=false] true: in current compositions, false: in all compositions of the project
- * @param {bool} [selectedComps=false] When currentComp is false, true to replace only in selected compositions
- * @param {bool} [selectedLayers=false] When currentComp is true, whether to replace only on selected layers
+ * @param {bool} [selectionMode=DuAE.SelectionMode.ALL_COMPOSITIONS] What to update
  */
-DuAEExpression.updateCache = function (currentComp, selectedComps, selectedLayers) {
+DuAEExpression.updateCache = function ( selectionMode ) {
 
     if ( DuAEExpression.suspendCacheUpdates ) return;
 
-    currentComp = def(currentComp, false);
-    selectedComps = def(selectedComps, false);
-    selectedLayers = def(selectedLayers, false);
+    selectionMode = def( selectionMode, DuAE.SelectionMode.ALL_COMPOSITIONS );
 
     //clear cache
     DuAEExpression.cache = [];
 
     var comps = [];
-    if (currentComp) comps = [DuAEProject.getActiveComp()];
-    else if (selectedComps) comps = app.project.selection;
-    else comps = DuAEProject.getComps();
+    if (selectionMode == DuAE.SelectionMode.ACTIVE_COMPOSITION || selectionMode == DuAE.SelectionMode.SELECTED_LAYERS || selectionMode == DuAE.SelectionMode.SELECTED_PROPERTIES ) comps = [DuAEProject.getActiveComp()];
+    else if (selectionMode == DuAE.SelectionMode.SELECTED_COMPOSITIONS) comps = app.project.selection;
+    else if (selectionMode == DuAE.SelectionMode.ALL_COMPOSITIONS) comps = DuAEProject.getComps();
 
     for ( var i = 0, num = comps.length; i < num; i++ ) {
         var comp = comps[i];
         if ( !( comp instanceof CompItem ) ) continue;
 
         var layers = comp.layers;
-        if (selectedLayers) layers = comp.selectedLayers;
+        if (selectionMode == DuAE.SelectionMode.SELECTED_LAYERS) layers = comp.selectedLayers;
+        else if (selectionMode == DuAE.SelectionMode.SELECTED_PROPERTIES) layers = DuAEComp.getSelectedProps();
 
         new DuList(layers).do(function (layer) {
-            DuAEProperty.addToExpressionCache( layer );
+            layer = new DuAEProperty( layer );
+            layer.addToExpressionCache( );
         });
     }
 
@@ -61,21 +59,17 @@ DuAEExpression.updateCache = function (currentComp, selectedComps, selectedLayer
 /**
  * Runs a function on all expressions
  * @param {function} func The function to run, which takes one param, a {@link DuAEPropertyExpression} object.
- * @param {bool} [currentComp=false] true: in current compositions, false: in all compositions of the project
- * @param {bool} [selectedComps=false] When currentComp is false, true to replace only in selected compositions
- * @param {bool} [selectedLayers=false] When currentComp is true, whether to replace only on selected layers
+ * @param {bool} [selectionMode=false] What to update
  * @param {boolean} [updateCache=true] When false, the cache won't be updated before running the function. Set this to false if you already have updated the cache to improve performance.
  * @param {boolean} [apply=true] When false, the cache won't be applied back to Ae. Set this to false if you need to run other methods on expressions before applying the result to improve performance.
  */
-DuAEExpression.doInExpresssions = function ( func, currentComp, selectedComps, selectedLayers, updateCache, apply )
+DuAEExpression.doInExpresssions = function ( func, selectionMode, updateCache, apply )
 {
-    currentComp = def(currentComp, false);
-    selectedComps = def(selectedComps, false);
-    selectedLayers = def(selectedLayers, false);
+    selectionMode = def(selectionMode, DuAE.SelectionMode.ALL_COMPOSITIONS);
     updateCache = def(updateCache, true);
     apply = def(apply, true);
 
-    if (updateCache) DuAEExpression.updateCache( currentComp, selectedComps, selectedLayers );
+    if (updateCache) DuAEExpression.updateCache( selectionMode );
 
     for (var i = 0, num = DuAEExpression.cache.length; i < num; i++) {
         func( DuAEExpression.cache[i] );

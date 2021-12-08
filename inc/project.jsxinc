@@ -402,38 +402,6 @@ DuAEProject.replaceInExpressions = function ( oldString, newString, caseSensitiv
 }
 
 /**
- * Replace all <code>thisComp</code> occurences by <code>comp("name")</code>.
- * @param {bool} [selectedComps=false] true to replace only in selected compositions
- */
-DuAEProject.removeThisCompInExpressions = function( selectedComps )
-{
-    selectedComps = def(selectedComps, false);
-    
-    var re = new RegExp("(^|" + DuRegExp.javascriptSymbols + ")thisComp(?!" + DuRegExp.javascriptVarChars + ")",'gm')
-
-    DuAEExpression.doInExpresssions(function(e) {
-        e.changed = re.test( e.expression );
-        if (e.changed) e.expression = e.expression.replace( re, '$1comp("' + e.comp.name + '")' );
-    }, false, selectedComps);
-}
-
-/**
- * Replace all <code>comp("name")</code> occurences by <code>thisComp</code>.
- * @param {bool} [selectedComps=false] true to replace only in selected compositions
- */
-DuAEProject.removeCompInExpressions = function( selectedComps )
-{
-    selectedComps = def(selectedComps, false);
-    
-    DuAEExpression.doInExpresssions(function(e) {
-        var name = e.comp.name;
-        var re = new RegExp("(^|" + DuRegExp.javascriptSymbols + ")comp\\s*\\(\\s*[\"']" + DuRegExp.escape(name) + "[\"']\\s*\\)", 'gm');
-        e.changed = re.test( e.expression );
-        if (e.changed) e.expression = e.expression.replace( re, '$1thisComp' );
-    }, false, selectedComps);
-}
-
-/**
  * Gets the unused footages.
  * @return {FootageItem[]} The list of unused items.
  */

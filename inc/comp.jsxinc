@@ -58,34 +58,66 @@ DuAEComp.replaceInExpressions = function ( oldString, newString, caseSensitive, 
 
 /**
  * Replace all <code>thisComp</code> occurences by <code>comp("name")</code>.
- * @param {bool} [selectedLayers=false] true to replace only in selected layers
+ * @param {DuAE.SelectionMode} [selectionMode=DuAE.ACTIVE_COMPOSITION] The comp(s)/layers/properties to use.
  */
-DuAEComp.removeThisCompInExpressions = function( selectedLayers )
+DuAEComp.removeThisCompInExpressions = function( selectionMode )
 {
-    selectedLayers = def(selectedLayers, false);
+    selectionMode = def(selectionMode, DuAE.ACTIVE_COMPOSITION);
     
-    var re = new RegExp("(^|" + DuRegExp.javascriptSymbols + ")thisComp(?!" + DuRegExp.javascriptVarChars + ")",'gm')
+    var re = new RegExp("(^\\s*|" + DuRegExp.javascriptSymbols + ")thisComp(?!" + DuRegExp.javascriptVarChars + ")",'gm')
 
     DuAEExpression.doInExpresssions(function(e) {
         e.changed = re.test( e.expression );
         if (e.changed) e.expression = e.expression.replace( re, '$1comp("' + e.comp.name + '")' );
-    }, true, false, selectedLayers);
+    }, selectionMode);
 }
 
 /**
  * Replace all <code>comp("name")</code> occurences by <code>thisComp</code>.
- * @param {bool} [selectedComps=false] true to replace only in selected compositions
+ * @param {DuAE.SelectionMode} [selectionMode=DuAE.ACTIVE_COMPOSITION] The comp(s)/layers/properties to use.
  */
-DuAEComp.removeCompInExpressions = function( selectedLayers )
+DuAEComp.removeCompInExpressions = function( selectionMode )
 {
-    selectedLayers = def(selectedLayers, false);
+    selectionMode = def(selectionMode, DuAE.ACTIVE_COMPOSITION);
     
     DuAEExpression.doInExpresssions(function(e) {
         var name = e.comp.name;
-        var re = new RegExp("(^|" + DuRegExp.javascriptSymbols + ")comp\\s*\\(\\s*[\"']" + DuRegExp.escape(name) + "[\"']\\s*\\)", 'gm');
+        var re = new RegExp("(^\\s*|" + DuRegExp.javascriptSymbols + ")comp\\s*\\(\\s*[\"']" + DuRegExp.escape(name) + "[\"']\\s*\\)", 'gm');
         e.changed = re.test( e.expression );
         if (e.changed) e.expression = e.expression.replace( re, '$1thisComp' );
-    }, true, false, selectedLayers);
+    }, selectionMode);
+}
+
+/**
+ * Replace all <code>thisLayer</code> occurences by <code>layer("name")</code>.
+ * @param {DuAE.SelectionMode} [selectionMode=DuAE.ACTIVE_COMPOSITION] The comp(s)/layers/properties to use.
+ */
+DuAEComp.removeThisLayerInExpressions = function( selectionMode )
+{
+    selectionMode = def(selectionMode, DuAE.ACTIVE_COMPOSITION);
+    
+    var re = new RegExp("(^\\s*|" + DuRegExp.javascriptSymbols + ")thisLayer(?!" + DuRegExp.javascriptVarChars + ")",'gm')
+
+    DuAEExpression.doInExpresssions(function(e) {
+        e.changed = re.test( e.expression );
+        if (e.changed) e.expression = e.expression.replace( re, '$1thisComp.layer("' + e.layer.name + '")' );
+    }, selectionMode);
+}
+
+/**
+ * Replace all <code>comp("name")</code> occurences by <code>thisComp</code>.
+ * @param {DuAE.SelectionMode} [selectionMode=DuAE.ACTIVE_COMPOSITION] The comp(s)/layers/properties to use.
+ */
+DuAEComp.removeLayerInExpressions = function( selectionMode )
+{
+    selectionMode = def(selectionMode, DuAE.ACTIVE_COMPOSITION);
+    
+    DuAEExpression.doInExpresssions(function(e) {
+        var name = e.layer.name;
+        var re = new RegExp("(^\\s*|" + DuRegExp.javascriptSymbolsNoDot + ")(thisComp.)?layer\\s*\\(\\s*[\"']" + DuRegExp.escape(name) + "[\"']\\s*\\)", 'gm');
+        e.changed = re.test( e.expression );
+        if (e.changed) e.expression = e.expression.replace( re, '$1thisLayer' );
+    }, selectionMode);
 }
 
 /**
