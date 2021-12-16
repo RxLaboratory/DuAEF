@@ -96,6 +96,7 @@ DuAEExpression.applyCache = function ( ) {
  */
 DuAEExpression.scriptifyExpression = function ( prop, varName ) {
     varName = def( varName, '' );
+    varName = DuString.toCamelCase(varName);
 
     function line(str)
     {
