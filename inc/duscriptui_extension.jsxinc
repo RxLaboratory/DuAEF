@@ -26,6 +26,7 @@ DuScriptUI.String.NEW_VERSION_TITLE = "New version available";
 DuScriptUI.String.NULL_LAYER = "Null";
 DuScriptUI.String.OPEN_PREFS = "Open preferences";
 DuScriptUI.String.OUT_TIME = "Out";
+DuScriptUI.String.PROJECT = "Project";
 DuScriptUI.String.RANGE = "Range";
 DuScriptUI.String.RENDER = "Render";
 DuScriptUI.String.SECONDARY_NAME = "Secondary name";

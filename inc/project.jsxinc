@@ -485,3 +485,12 @@ DuAEProject.getPrecompsAtRoot = function()
     }
     return precomps;
 }
+
+/**
+ * Gets the project name (i.e. the file name without extension)
+ * @return {string} The project name.
+ */
+DuAEProject.name = function()
+{
+    return DuPath.getBasename( app.project.file );
+}
