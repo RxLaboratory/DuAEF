@@ -9,12 +9,12 @@ var DuAELayer = {};
  * @param {function} method - The function to run on the layers, which takes a layer as its only argument.
  * @param {string} [undoGroupName] - The name of the undoGroup created before the execution. If not provided, there will not be any undoGroup created.
  */
-DuAELayer.doLayers = function ( layers, method, undoGroupName ) {
+DuAELayer.doLayers = function(layers, method, undoGroupName) {
     undoGroupName = def(undoGroupName, "");
     // run
-    if ( undoGroupName != "" ) DuAE.beginUndoGroup( undoGroupName );
-    new DuList( layers ).do( method );
-    if ( undoGroupName != "" ) DuAE.endUndoGroup();
+    if (undoGroupName != "") DuAE.beginUndoGroup(undoGroupName);
+    new DuList(layers).do(method);
+    if (undoGroupName != "") DuAE.endUndoGroup();
 }
 
 /**
@@ -24,24 +24,22 @@ DuAELayer.doLayers = function ( layers, method, undoGroupName ) {
  * @param {boolean} [increment=true] - true to automatically increment the new name if it already ends with a digit
  * @return {string}	The unique name, with a new number at the end if needed.
  */
-DuAELayer.newUniqueEffectName = function ( newName, layer, increment ) {
-    if ( !layer )
-    {
-        DuDebug.throwUndefinedError( 'layer', 'DuAELayer.newUniqueEffectName' );
+DuAELayer.newUniqueEffectName = function(newName, layer, increment) {
+    if (!layer) {
+        DuDebug.throwUndefinedError('layer', 'DuAELayer.newUniqueEffectName');
         return;
     }
-    if ( typeof newName === 'undefined' )
-    {
-        DuDebug.throwUndefinedError( 'newName', 'DuAELayer.newUniqueEffectName' );
+    if (typeof newName === 'undefined') {
+        DuDebug.throwUndefinedError('newName', 'DuAELayer.newUniqueEffectName');
         return;
     }
-    increment = def( increment, true );
-    if ( newName == "" ) return "";
+    increment = def(increment, true);
+    if (newName == "") return "";
     var effectNames = [];
-    for ( var i = 1, numP = layer.effect.numProperties; i <= numP; i++ ) {
-        effectNames.push( layer.effect( i ).name );
+    for (var i = 1, numP = layer.effect.numProperties; i <= numP; i++) {
+        effectNames.push(layer.effect(i).name);
     }
-    return DuString.generateUnique( newName, effectNames, increment );
+    return DuString.generateUnique(newName, effectNames, increment);
 }
 
 /**
@@ -51,13 +49,13 @@ DuAELayer.newUniqueEffectName = function ( newName, layer, increment ) {
  * @param {boolean} [increment=true] - true to automatically increment the new name if it already ends with a digit
  * @return {string}	The unique name, with a new number at the end if needed.
  */
-DuAELayer.newUniqueMarkerName = function ( newName, layer, increment ) {
+DuAELayer.newUniqueMarkerName = function(newName, layer, increment) {
     increment = def(increment, true);
     var markerNames = [];
-    for ( var i = 1, num = layer.property( 'ADBE Marker' ).numKeys; i <= num; i++ ) {
-        markerNames.push( layer.property( 'ADBE Marker' ).keyValue( i ).comment );
+    for (var i = 1, num = layer.property('ADBE Marker').numKeys; i <= num; i++) {
+        markerNames.push(layer.property('ADBE Marker').keyValue(i).comment);
     }
-    return DuString.generateUnique( newName, markerNames, increment );
+    return DuString.generateUnique(newName, markerNames, increment);
 }
 
 /**
@@ -69,48 +67,48 @@ DuAELayer.newUniqueMarkerName = function ( newName, layer, increment ) {
  * @param {boolean}	[caseSensitive=true]	- If a string filter is provided, and not strict is false, does the search have to be case sensitive?
  * @return {DuAEProperty[]} The selected properties, an empty Array if nothing active or selected
  */
-DuAELayer.getSelectedProps = function ( layer, filter, strict, caseSensitive ) {
+DuAELayer.getSelectedProps = function(layer, filter, strict, caseSensitive) {
     strict = def(strict, false);
-    caseSensitive = def( caseSensitive, true);
+    caseSensitive = def(caseSensitive, true);
 
     var props = [];
 
-    if ( !caseSensitive && typeof filter === "string" ) filter = filter.toLowerCase();
+    if (!caseSensitive && typeof filter === "string") filter = filter.toLowerCase();
 
     var selectedProps = layer.selectedProperties;
-    if ( typeof filter === 'undefined' ) {
-        props = props.concat( selectedProps );
+    if (typeof filter === 'undefined') {
+        props = props.concat(selectedProps);
     } else {
-        for ( var j = 0, numP = selectedProps.length; j < numP; j++ ) {
-            var prop = selectedProps[ j ];
+        for (var j = 0, numP = selectedProps.length; j < numP; j++) {
+            var prop = selectedProps[j];
 
             var name = prop.name;
             var matchName = prop.matchName;
-            if ( !caseSensitive ) {
+            if (!caseSensitive) {
                 name = name.toLowerCase();
                 matchName = matchName.toLowerCase();
             }
 
-            if ( strict && name === filter ) {
-                props.push( prop );
-            } else if ( strict && matchName === filter ) {
-                props.push( prop );
-            } else if ( typeof filter === "string" ) {
-                if ( name.indexOf( filter ) >= 0 ) props.push( prop );
-                else if ( matchName.indexOf( filter ) >= 0 ) props.push( prop );
-            } else if ( prop.propertyType == PropertyType.PROPERTY ) {
-                if ( prop.propertyValueType == filter ) props.push( prop );
-            } else if ( props.length == 0 && filter == PropertyValueType.SHAPE ) {
-                if ( matchName == 'ADBE Mask Atom' ) props.push( prop.property( 'ADBE Mask Shape' ) );
-                else if ( matchName == 'ADBE Vector Shape - Group' ) props.push( prop.property( 'ADBE Vector Shape' ) );
-            } else if ( prop.propertyType == filter ) {
-                props.push( prop );
-            } else if ( typeof filter === "function" ) {
-                if ( filter( prop ) ) props.push( prop );
+            if (strict && name === filter) {
+                props.push(prop);
+            } else if (strict && matchName === filter) {
+                props.push(prop);
+            } else if (typeof filter === "string") {
+                if (name.indexOf(filter) >= 0) props.push(prop);
+                else if (matchName.indexOf(filter) >= 0) props.push(prop);
+            } else if (prop.propertyType == PropertyType.PROPERTY) {
+                if (prop.propertyValueType == filter) props.push(prop);
+            } else if (props.length == 0 && filter == PropertyValueType.SHAPE) {
+                if (matchName == 'ADBE Mask Atom') props.push(prop.property('ADBE Mask Shape'));
+                else if (matchName == 'ADBE Vector Shape - Group') props.push(prop.property('ADBE Vector Shape'));
+            } else if (prop.propertyType == filter) {
+                props.push(prop);
+            } else if (typeof filter === "function") {
+                if (filter(prop)) props.push(prop);
             };
         }
     }
-    return DuAE.getDuAEProperty( props );
+    return DuAE.getDuAEProperty(props);
 }
 
 /**
@@ -121,23 +119,23 @@ DuAELayer.getSelectedProps = function ( layer, filter, strict, caseSensitive ) {
  * @param {float[]}	[timeRange]	- The time range, an array of two time values, in seconds.
  * @return {DuAELayerAnimation}	The animation.
  */
-DuAELayer.getAnim = function ( layer, selected, timeRange ) {
+DuAELayer.getAnim = function(layer, selected, timeRange) {
     var anim = new DuAELayerAnimation();
     anim._name = layer.name;
     anim._index = layer.index;
     anim.anims = [];
-    for ( var propIndex = 1; propIndex <= layer.numProperties; propIndex++ ) {
-        var prop = layer.property( propIndex );
-        if ( prop.matchName == 'ADBE Marker' ) continue;
+    for (var propIndex = 1; propIndex <= layer.numProperties; propIndex++) {
+        var prop = layer.property(propIndex);
+        if (prop.matchName == 'ADBE Marker') continue;
 
-        prop = new DuAEProperty( prop );
-        var subAnim = prop.animation( selected, timeRange );
-        if ( subAnim != null ) {
-            if ( anim.startTime == null ) anim.startTime = subAnim.startTime;
-            else if ( anim.startTime > subAnim.startTime ) anim.startTime = subAnim.startTime;
-            if ( anim.endTime == null ) anim.endTime = subAnim.endTime;
-            else if ( anim.endTime > subAnim.endTime ) anim.endTime = subAnim.endTimeendTime;
-            anim.anims.push( subAnim );
+        prop = new DuAEProperty(prop);
+        var subAnim = prop.animation(selected, timeRange);
+        if (subAnim != null) {
+            if (anim.startTime == null) anim.startTime = subAnim.startTime;
+            else if (anim.startTime > subAnim.startTime) anim.startTime = subAnim.startTime;
+            if (anim.endTime == null) anim.endTime = subAnim.endTime;
+            else if (anim.endTime > subAnim.endTime) anim.endTime = subAnim.endTimeendTime;
+            anim.anims.push(subAnim);
         }
 
     }
@@ -152,11 +150,11 @@ DuAELayer.getAnim = function ( layer, selected, timeRange ) {
  * @param {float[]}	[timeRange]	- The time range, an array of two time values, in seconds.
  * @return {DuAELayerAnimation[]}	The animations.
  */
-DuAELayer.getAnims = function ( layers, selected, timeRange ) {
+DuAELayer.getAnims = function(layers, selected, timeRange) {
     var anims = [];
-    new DuList( layers ).do( function ( layer ) {
-        anims.push( DuAELayer.getAnim( layer, selected, timeRange ) );
-    } );
+    new DuList(layers).do(function(layer) {
+        anims.push(DuAELayer.getAnim(layer, selected, timeRange));
+    });
     return anims;
 }
 
@@ -176,25 +174,25 @@ DuAELayer.getAnims = function ( layers, selected, timeRange ) {
  * @param {Boolean}	[reverse=false]	- true to reverse the keyframes (in time)
  * @return {Boolean} true if the anim was actually set.
  */
-DuAELayer.setAnim = function ( layer, anim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse ) {
-    time = def( time, layer.containingComp.time);
+DuAELayer.setAnim = function(layer, anim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse) {
+    time = def(time, layer.containingComp.time);
     ignoreName = def(ignoreName, false);
-    setExpression = def( setExpression, false);
-    onlyKeyframes = def( onlyKeyframes, false);
-    replace = def( replace, false);
-    offset = def( offset, false);
+    setExpression = def(setExpression, false);
+    onlyKeyframes = def(onlyKeyframes, false);
+    replace = def(replace, false);
+    offset = def(offset, false);
 
-    if ( reverse ) DuAELayer.reverseAnims( anim );
+    if (reverse) DuAELayer.reverseAnims(anim);
 
-    for ( var i = 0; i < anim.anims.length; i++ ) {
-        var subAnim = anim.anims[ i ];
-        for ( var propIndex = 1; propIndex <= layer.numProperties; propIndex++ ) {
-            var subProp = layer.property( propIndex );
-            if ( subProp == null ) continue;
-            if ( subProp.matchName == subAnim._matchName && subProp.matchName != 'ADBE Marker' ) {
-                subProp = new DuAEProperty( subProp );
-                var ok = subProp.setAnimation( subAnim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse );
-                if ( ok ) break;
+    for (var i = 0; i < anim.anims.length; i++) {
+        var subAnim = anim.anims[i];
+        for (var propIndex = 1; propIndex <= layer.numProperties; propIndex++) {
+            var subProp = layer.property(propIndex);
+            if (subProp == null) continue;
+            if (subProp.matchName == subAnim._matchName && subProp.matchName != 'ADBE Marker') {
+                subProp = new DuAEProperty(subProp);
+                var ok = subProp.setAnimation(subAnim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse);
+                if (ok) break;
             }
         }
     }
@@ -219,15 +217,15 @@ DuAELayer.setAnim = function ( layer, anim, time, ignoreName, setExpression, onl
  * @param {Boolean}	[reverse=false]	- true to reverse the keyframes (in time)<br />
  * Note: the remaining animations which are returned will already be reversed, do not set this to true again if you plan to set them later.
  */
-DuAELayer.setAllAnims = function ( layers, anims, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse ) {
+DuAELayer.setAllAnims = function(layers, anims, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse) {
     layers = new DuList(layers);
     var num = anims.length;
-    if ( num > layers.length() ) num = layers.length();
+    if (num > layers.length()) num = layers.length();
 
-    if ( reverse ) DuAELayer.reverseAnims( anims );
+    if (reverse) DuAELayer.reverseAnims(anims);
 
-    layers.do( function( layer ) {
-        if ( layer ) DuAELayer.setAnim( layer, anims[ layers.current ], time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, false );
+    layers.do(function(layer) {
+        if (layer) DuAELayer.setAnim(layer, anims[layers.current], time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, false);
     });
 }
 
@@ -250,25 +248,25 @@ DuAELayer.setAllAnims = function ( layers, anims, time, ignoreName, setExpressio
  * Note: the remaining animations which are returned will already be reversed, do not set this to true again if you plan to set them later.
  * @return {DuAELayerAnimation[]} The animations which were not set (no corresponding layers)
  */
-DuAELayer.setAnims = function ( layers, anims, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse ) {
+DuAELayer.setAnims = function(layers, anims, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse) {
     //clone the array
     var remaining = anims.slice();
 
-    if ( reverse ) DuAELayer.reverseAnims( anims );
+    if (reverse) DuAELayer.reverseAnims(anims);
 
     //for each layeranim, search for the layer and apply anim
-    for ( var i = remaining.length - 1; i >= 0; i-- ) {
-        var anim = remaining[ i ];
-        var it = new DuList( layers );
+    for (var i = remaining.length - 1; i >= 0; i--) {
+        var anim = remaining[i];
+        var it = new DuList(layers);
         var ok = false;
-        while ( layer = it.next() ) {
-            if ( layer.name == anim._name && layer.index == anim._index ) {
-                DuAELayer.setAnim( layer, anim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, false );
+        while (layer = it.next()) {
+            if (layer.name == anim._name && layer.index == anim._index) {
+                DuAELayer.setAnim(layer, anim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, false);
                 ok = true;
                 break;
             }
         }
-        if ( ok ) remaining.splice(i, 1);
+        if (ok) remaining.splice(i, 1);
     }
 
     return remaining;
@@ -278,45 +276,45 @@ DuAELayer.setAnims = function ( layers, anims, time, ignoreName, setExpression, 
  * Reverses the times of the keyframes to reverse the animation
  * @param {DuAELayerAnimation[]|DuAELayerAnimation} anims The animation
  */
-DuAELayer.reverseAnims = function ( anims ) {
+DuAELayer.reverseAnims = function(anims) {
 
-    var it = new DuList( anims );
+    var it = new DuList(anims);
 
     //get times
     var startTime = null;
     var endTime = null;
 
-    it.do( function ( anim ) {
-        if ( startTime == null && typeof anim.startTime !== 'undefined') startTime = anim.startTime;
-        else if ( startTime > anim.startTime ) startTime = anim.startTime;
-        if ( endTime == null && typeof anim.endTime !== 'undefined') endTime = anim.endTime;
-        else if ( endTime < anim.endTime ) endTime = anim.endTime;
-    } );
+    it.do(function(anim) {
+        if (startTime == null && typeof anim.startTime !== 'undefined') startTime = anim.startTime;
+        else if (startTime > anim.startTime) startTime = anim.startTime;
+        if (endTime == null && typeof anim.endTime !== 'undefined') endTime = anim.endTime;
+        else if (endTime < anim.endTime) endTime = anim.endTime;
+    });
 
     var duration = endTime - startTime;
 
     //recursive function to reverse keyframes in anim
-    function reverse( anim ) {
-        if ( anim.type == 'anim' ) {
+    function reverse(anim) {
+        if (anim.type == 'anim') {
             //reverse the array
             anim.keys = anim.keys.reverse();
             //set the new times
-            for ( var i = 0, num = anim.keys.length; i < num; i++ ) {
-                var ratio = 1 - ( ( anim.keys[ i ]._time - startTime ) / duration );
-                anim.keys[ i ]._time = ratio * duration + startTime;
+            for (var i = 0, num = anim.keys.length; i < num; i++) {
+                var ratio = 1 - ((anim.keys[i]._time - startTime) / duration);
+                anim.keys[i]._time = ratio * duration + startTime;
                 var sV = anim.endValue;
                 anim.endValue = anim.startValue;
                 anim.startValue = sV;
             }
-        } else if ( anim.anims ) {
-            for ( var i = 0, num = anim.anims.length; i < num; i++ ) {
-                reverse( anim.anims[ i ] );
+        } else if (anim.anims) {
+            for (var i = 0, num = anim.anims.length; i < num; i++) {
+                reverse(anim.anims[i]);
             }
         }
     }
 
     //reverse keyframes and times
-    it.do( reverse );
+    it.do(reverse);
 }
 
 /**
@@ -324,14 +322,14 @@ DuAELayer.reverseAnims = function ( anims ) {
  * @param {Layer}	layer	- The layer.
  * @return {Layer[]} All the children of the layer
  */
-DuAELayer.getChildren = function ( layer ) {
+DuAELayer.getChildren = function(layer) {
     var comp = layer.containingComp;
     var children = [];
-    for ( var i = 1, numL = comp.layers.length; i <= numL; i++ ) {
-        var l = comp.layer( i );
-        if ( l.index == layer.index ) continue;
-        if ( l.parent == null ) continue;
-        if ( l.parent.index == layer.index ) children.push( l );
+    for (var i = 1, numL = comp.layers.length; i <= numL; i++) {
+        var l = comp.layer(i);
+        if (l.index == layer.index) continue;
+        if (l.parent == null) continue;
+        if (l.parent.index == layer.index) children.push(l);
     }
     return children;
 }
@@ -341,13 +339,13 @@ DuAELayer.getChildren = function ( layer ) {
  * @param {Layer} layer The layer to test
  * @returns {Boolean} true if the layer has at least one child.
  */
-DuAELayer.hasChild = function( layer ) {
+DuAELayer.hasChild = function(layer) {
     var comp = layer.containingComp;
-    for ( var i = 1, numL = comp.layers.length; i <= numL; i++ ) {
-        var l = comp.layer( i );
-        if ( l.index == layer.index ) continue;
-        if ( l.parent == null ) continue;
-        if ( l.parent.index == layer.index ) return true;
+    for (var i = 1, numL = comp.layers.length; i <= numL; i++) {
+        var l = comp.layer(i);
+        if (l.index == layer.index) continue;
+        if (l.parent == null) continue;
+        if (l.parent.index == layer.index) return true;
     }
     return false;
 }
@@ -360,25 +358,25 @@ DuAELayer.hasChild = function( layer ) {
  * negative if layer2 is a descendant of layer1, positive if layer2 is an ancestor.<br />
  * null if the two layers are not in the same composition or if they are the same layer.
  */
-DuAELayer.getRelation = function ( layer1, layer2 ) {
+DuAELayer.getRelation = function(layer1, layer2) {
     var comp1 = layer1.containingComp;
     var comp2 = layer2.containingComp;
-    if ( comp1 !== comp2 ) return null;
-    if ( layer1.index == layer2.index ) return null;
-    if ( layer1.parent == null && layer2.parent == null ) return 0;
+    if (comp1 !== comp2) return null;
+    if (layer1.index == layer2.index) return null;
+    if (layer1.parent == null && layer2.parent == null) return 0;
     //check
     var degree = 0;
     var parent = layer1.parent;
-    while ( parent ) {
+    while (parent) {
         degree++;
-        if ( layer2.index == parent.index ) return degree;
+        if (layer2.index == parent.index) return degree;
         parent = parent.parent;
     }
     var parent = layer2.parent;
     degree = 0;
-    while ( parent ) {
+    while (parent) {
         degree++;
-        if ( layer1.index == parent.index ) return -degree;
+        if (layer1.index == parent.index) return -degree;
         parent = parent.parent;
     }
     return 0;
@@ -390,44 +388,46 @@ DuAELayer.getRelation = function ( layer1, layer2 ) {
  * @param {Layer} [layer2] - The second layer
  * @return {int} The distance (in pixels). -1 if less than two layers are found
  */
-DuAELayer.getDistance = function ( layer1, layer2 ) {
+DuAELayer.getDistance = function(layer1, layer2) {
 
-    if (typeof layer1 === 'undefined')
-    {
+    if (typeof layer1 === 'undefined') {
         var layers = DuAEComp.getSelectedLayers();
         if (layers.length < 2) return -1;
         layer1 = layers[0];
         layer2 = layers[1];
     }
 
-    var O = DuAELayer.getWorldPos( layer1 );
-    var A = DuAELayer.getWorldPos( layer2 );
-    var OA = DuMath.length( O, A );
+    var O = DuAELayer.getWorldPos(layer1);
+    var A = DuAELayer.getWorldPos(layer2);
+    var OA = DuMath.length(O, A);
 
-    return Math.round( OA );
+    return Math.round(OA);
 }
 
 /**
  * Gets the world coordinates of the point of a layer
  * @param {Layer} layer - The layer
  * @param {float[]} [point=layer.transform.anchorPoint.value] - the point
+ * @param {float} [time] - the time at which to get the coordinates. Current time by default.
  * @return {float[]} The world coordinates of the layer
  */
-DuAELayer.getWorldPos = function ( layer, point ) {
-    if ( layer instanceof CameraLayer || layer instanceof LightLayer || layer.threeDLayer ) {
+DuAELayer.getWorldPos = function(layer, point, time) {
+    time = def(time, layer.containingComp.time);
+
+    if (layer instanceof CameraLayer || layer instanceof LightLayer || layer.threeDLayer) {
         var parent = layer.parent;
         layer.parent = null;
-        var pos = layer.transform.position.value;
+        var pos = layer.transform.position.valueAtTime(time, false);
         layer.parent = parent;
         return pos;
     }
 
-    var matrix = DuAELayer.getTransformMatrix( layer );
-    if ( typeof point === 'undefined' ) {
-        if ( layer.transform.anchorPoint ) point = layer.transform.anchorPoint.value;
+    var matrix = DuAELayer.getTransformMatrix(layer, time);
+    if (typeof point === 'undefined') {
+        if (layer.transform.anchorPoint) point = layer.transform.anchorPoint.valueAtTime(time, false);
     }
 
-    return matrix.applyToPoint( point );
+    return matrix.applyToPoint(point);
 }
 
 /**
@@ -439,27 +439,27 @@ DuAELayer.getWorldPos = function ( layer, point ) {
  * @param {string} matchName - The pseudo Effect matchName
  * @return {PropertyGroup|null} The effect corresponding to matchName or null if anything went wrong
  */
-DuAELayer.applyPreset = function ( layer, preset, matchName ) {
-    if ( typeof layer === 'undefined' ) return null;
-    if ( typeof preset === 'undefined' ) return null;
+DuAELayer.applyPreset = function(layer, preset, matchName) {
+    if (typeof layer === 'undefined') return null;
+    if (typeof preset === 'undefined') return null;
     matchName = def(matchName, '');
-    if ( !preset.exists ) throw new Error( DuScriptUI.String.MISSING_PSEUDO_EFFECT );
+    if (!preset.exists) throw new Error(DuScriptUI.String.MISSING_PSEUDO_EFFECT);
 
     //remove layer selection
     var comp = layer.containingComp;
     var selection = DuAEComp.unselectLayers(comp);
 
     layer.selected = true;
-    layer.applyPreset( preset );
+    layer.applyPreset(preset);
 
     //applying a preset gets out of progress mode
-    if (DuAEProject.progressMode) DuAEProject.setProgressMode( true );
+    if (DuAEProject.progressMode) DuAEProject.setProgressMode(true);
 
     var effect = null;
-    if ( matchName != '' ) effect = layer.property( "ADBE Effect Parade" )( matchName );
+    if (matchName != '') effect = layer.property("ADBE Effect Parade")(matchName);
 
     //restore selection
-    DuAEComp.selectLayers( selection );
+    DuAEComp.selectLayers(selection);
 
     return effect;
 }
@@ -472,30 +472,28 @@ DuAELayer.applyPreset = function ( layer, preset, matchName ) {
  * @param {string} [name] - The name to set on the effect
  * @return {PropertyGroup|null} The effect or null if anything went wrong
  */
-DuAELayer.addPseudoEffect = function ( layer, preset, matchName, name ) {
-    if ( jstype( preset ) != 'file' )
-    {
+DuAELayer.addPseudoEffect = function(layer, preset, matchName, name) {
+    if (jstype(preset) != 'file') {
         DuDebug.throwTypeError(preset, 'preset', 'File', 'DuAELayer.addPseudoEffect');
         return null;
     }
-    if ( !preset.exists )
-    {
-        DuDebug.throwError( DuScriptUI.String.MISSING_PSEUDO_EFFECT, 'DuAELayer.addPseudoEffect( layer, preset, matchName, name)' );
+    if (!preset.exists) {
+        DuDebug.throwError(DuScriptUI.String.MISSING_PSEUDO_EFFECT, 'DuAELayer.addPseudoEffect( layer, preset, matchName, name)');
         return null;
     }
-    if ( layer == undefined ) return null;
-    if ( preset == undefined ) return null;
-    if ( matchName == undefined ) return null;
+    if (layer == undefined) return null;
+    if (preset == undefined) return null;
+    if (matchName == undefined) return null;
 
-    var effects = layer( "ADBE Effect Parade" );
+    var effects = layer("ADBE Effect Parade");
     //add the preset to a temp comp if not available as an effect
-    if ( !effects.canAddProperty( matchName ) || DuESF.debug ) {
+    if (!effects.canAddProperty(matchName) || DuESF.debug) {
         //create comp
-        var comp = app.project.items.addComp( "DuAEF Temp", 10, 10, 1, 1, 24 );
+        var comp = app.project.items.addComp("DuAEF Temp", 10, 10, 1, 1, 24);
         //add null
         var n = comp.layers.addNull();
         //apply preset
-        n.applyPreset( preset );
+        n.applyPreset(preset);
         var fx = n.effect(1);
         if (fx) matchName = fx.matchName;
         //remove all
@@ -505,16 +503,16 @@ DuAELayer.addPseudoEffect = function ( layer, preset, matchName, name ) {
         comp.remove();
     }
 
-    if ( !effects.canAddProperty( matchName ) ) {
-        DuDebug.throwError( DuScriptUI.String.INVALID_PSEUDO_EFFECT, 'DuAELayer.addPseudoEffect( layer, preset, matchName, name)' );
+    if (!effects.canAddProperty(matchName)) {
+        DuDebug.throwError(DuScriptUI.String.INVALID_PSEUDO_EFFECT, 'DuAELayer.addPseudoEffect( layer, preset, matchName, name)');
         return null;
     }
 
     //add the pseudoEffect as a property
     var newEffectName = "";
-    newEffectName = DuAELayer.newUniqueEffectName( name, layer );
-    var effect = effects.addProperty( matchName );
-    if ( newEffectName != "" ) effect.name = newEffectName;
+    newEffectName = DuAELayer.newUniqueEffectName(name, layer);
+    var effect = effects.addProperty(matchName);
+    if (newEffectName != "") effect.name = newEffectName;
     return effect;
 }
 
@@ -523,12 +521,12 @@ DuAELayer.addPseudoEffect = function ( layer, preset, matchName, name ) {
  * @param {Layer[]|LayerCollection} layers - The layers
  * @return {boolean} true if the layers have at least one selected keyframe
  */
-DuAELayer.haveSelectedKeys = function ( layers ) {
-    var it = new DuList( layers );
-    if ( it.length() == 0 ) return;
-    while ( layer = it.next() ) {
-        var layerInfo = new DuAEProperty( layer );
-        if ( layerInfo.hasSelectedKeys( ) ) return true;
+DuAELayer.haveSelectedKeys = function(layers) {
+    var it = new DuList(layers);
+    if (it.length() == 0) return;
+    while (layer = it.next()) {
+        var layerInfo = new DuAEProperty(layer);
+        if (layerInfo.hasSelectedKeys()) return true;
     }
     return false;
 }
@@ -539,16 +537,16 @@ DuAELayer.haveSelectedKeys = function ( layers ) {
  * @param {boolean} selected - true to check selected keyframes only
  * @return {float|null} The keyframe time or null if there are no keyframe
  */
-DuAELayer.firstKeyFrameTime = function ( layers, selected ) {
-    var it = new DuList( layers );
+DuAELayer.firstKeyFrameTime = function(layers, selected) {
+    var it = new DuList(layers);
     var time = null;
 
-    it.do( function(layer) {
-        var layerProp = new DuAEProperty( layer );
-        var test = layerProp.firstKeyTime( selected );
-        if ( time == null ) time = test;
-        else if ( test != null ) {
-            if ( time > test ) time = test;
+    it.do(function(layer) {
+        var layerProp = new DuAEProperty(layer);
+        var test = layerProp.firstKeyTime(selected);
+        if (time == null) time = test;
+        else if (test != null) {
+            if (time > test) time = test;
         }
 
     });
@@ -561,47 +559,47 @@ DuAELayer.firstKeyFrameTime = function ( layers, selected ) {
  * @param {Layer[]|Collection|DuList.<Layer>} layers - The layers to sort
  * @return {Layer[]} The sorted array
  */
-DuAELayer.sortByParent = function ( layers ) {
+DuAELayer.sortByParent = function(layers) {
     var sortedLayers = [];
-    var layersToSort = new DuList( layers );
+    var layersToSort = new DuList(layers);
 
     //add layers with a parent outside
     //those with a parent outside of the selection
-    for ( var i = layersToSort.length() - 1; i >= 0; i-- ) {
+    for (var i = layersToSort.length() - 1; i >= 0; i--) {
         var l = layersToSort.at(i);
         var parent = l.parent;
-        if ( parent == null ) continue;
+        if (parent == null) continue;
         var isParentOutside = true;
-        for ( var j = 0, numL = layersToSort.length(); j < numL; j++ ) {
-            if ( parent.index == layersToSort.at(j).index ) {
+        for (var j = 0, numL = layersToSort.length(); j < numL; j++) {
+            if (parent.index == layersToSort.at(j).index) {
                 isParentOutside = false;
                 break;
             }
         }
-        if ( isParentOutside ) {
-            sortedLayers.push( l );
-            layersToSort.remove( i );
+        if (isParentOutside) {
+            sortedLayers.push(l);
+            layersToSort.remove(i);
         }
     }
 
     //add layers with no parents
-    for ( var i = layersToSort.length() - 1; i >= 0; i-- ) {
+    for (var i = layersToSort.length() - 1; i >= 0; i--) {
         var l = layersToSort.at(i);
-        if ( l.parent == null ) {
-            sortedLayers.push( l );
-            layersToSort.remove( i );
+        if (l.parent == null) {
+            sortedLayers.push(l);
+            layersToSort.remove(i);
         }
     }
 
     //sort the rest
-    while ( layersToSort.length() > 0 ) {
-        for ( var i = layersToSort.length() - 1; i >= 0; i-- ) {
-            var l = layersToSort.at( i );
-            for ( var j = 0, numL = sortedLayers.length; j < numL; j++ ) {
-                var sL = sortedLayers[ j ];
-                if ( l.parent.index == sL.index ) {
-                    sortedLayers.push( l );
-                    layersToSort.remove( i );
+    while (layersToSort.length() > 0) {
+        for (var i = layersToSort.length() - 1; i >= 0; i--) {
+            var l = layersToSort.at(i);
+            for (var j = 0, numL = sortedLayers.length; j < numL; j++) {
+                var sL = sortedLayers[j];
+                if (l.parent.index == sL.index) {
+                    sortedLayers.push(l);
+                    layersToSort.remove(i);
                     break;
                 }
             }
@@ -616,32 +614,35 @@ DuAELayer.sortByParent = function ( layers ) {
  * @param {Layer[]|LayerCollection|DuList.<Layer>} layers - The layers to sort
  * @return {Layer[]} The sorted array
  */
-DuAELayer.sortByIndex = function ( layers ) {
-    var sortedLayers = new DuList( layers );
+DuAELayer.sortByIndex = function(layers) {
+    var sortedLayers = new DuList(layers);
 
-    function compareLayerIndices( lay1, lay2 ) {
+    function compareLayerIndices(lay1, lay2) {
         return lay1.index - lay2.index;
     }
 
-    return sortedLayers.sort( compareLayerIndices );
+    return sortedLayers.sort(compareLayerIndices);
 }
 
 /**
  * Parents all the layers together beginning by the end of the array
  * @param {Layer[]|DuList.<Layer>} layers - The layers to parent
  */
-DuAELayer.parentChain = function ( layers ) {
+DuAELayer.parentChain = function(layers) {
     layers = new DuList(layers);
     //unparent  all but the first
     var layersUnparent = [];
-    for ( var i = 1, numL = layers.length(); i < numL; i++ ) {
-        layersUnparent.push( layers.at(i) );
+    for (var i = 1, numL = layers.length(); i < numL; i++) {
+        layersUnparent.push(layers.at(i));
     }
-    DuAELayer.unparent( layersUnparent );
+    DuAELayer.unparent(layersUnparent);
 
-    for ( var i = layers.length() - 1; i >= 1; i-- ) {
-        try { layers.at(i).parent = layers.at( i - 1 ); }
-        catch (e) { if (DuESF.debug) alert(e); }
+    for (var i = layers.length() - 1; i >= 1; i--) {
+        try {
+            layers.at(i).parent = layers.at(i - 1);
+        } catch (e) {
+            if (DuESF.debug) alert(e);
+        }
     }
 }
 
@@ -649,9 +650,9 @@ DuAELayer.parentChain = function ( layers ) {
  * Un-parents all the layers
  * @param {Layer[]} layers - The layers
  */
-DuAELayer.unparent = function ( layers ) {
-    for ( var i = layers.length - 1; i >= 0; i-- ) {
-        layers[ i ].parent = null;
+DuAELayer.unparent = function(layers) {
+    for (var i = layers.length - 1; i >= 0; i--) {
+        layers[i].parent = null;
     }
 }
 
@@ -661,27 +662,26 @@ DuAELayer.unparent = function ( layers ) {
  * When toggled again, the effect is removed, and the name is restored.
  * @param {Layer} layer - The layer to toggle.
  */
-DuAELayer.toggleEditMode = function ( layer ) {
+DuAELayer.toggleEditMode = function(layer) {
 
     // Check if it's already in edit mode
     var setEditMode = true;
-    var editMode = DuAETag.getValue( layer, DuAETag.Key.EDIT_MODE, DuAETag.Type.BOOL );
-    if ( editMode )
-    {
+    var editMode = DuAETag.getValue(layer, DuAETag.Key.EDIT_MODE, DuAETag.Type.BOOL);
+    if (editMode) {
         setEditMode = false;
     }
 
     var comp = layer.containingComp;
 
-    var editName = tr( DuAETag.Name.EDIT_MODE );
+    var editName = tr(DuAETag.Name.EDIT_MODE);
 
-    if ( setEditMode ) {
+    if (setEditMode) {
 
         // Get children
-        var children = DuAELayer.getChildren( layer );
+        var children = DuAELayer.getChildren(layer);
         var childLayers = [];
-        for ( var j = 0, num = children.length; j < num; j++ ) {
-            var child = children[ j ];
+        for (var j = 0, num = children.length; j < num; j++) {
+            var child = children[j];
             childLayers.push(child.index);
             var l = child.locked;
             child.locked = false;
@@ -692,28 +692,27 @@ DuAELayer.toggleEditMode = function ( layer ) {
         // Set the name
         layer.name = '=EDIT= ' + layer.name;
         // The previous tag name
-        var tagName = DuAETag.getName( layer );
+        var tagName = DuAETag.getName(layer);
         // Set new Tag
-        DuAETag.set( layer, tagName + ' | =' + editName + '=' );
+        DuAETag.set(layer, tagName + ' | =' + editName + '=');
         // Add to edit group
-        DuAETag.addGroup( layer, editName );
+        DuAETag.addGroup(layer, editName);
         // Store the list of children
         childLayers = childLayers.join(',');
-        DuAETag.setValue( layer, DuAETag.Key.CHILD_LAYERS, childLayers );
-        DuAETag.setValue( layer, DuAETag.Key.EDIT_MODE, true );
+        DuAETag.setValue(layer, DuAETag.Key.CHILD_LAYERS, childLayers);
+        DuAETag.setValue(layer, DuAETag.Key.EDIT_MODE, true);
 
         // Tint the layer
-        var tint = layer.property( 'ADBE Effect Parade' ).addProperty( 'ADBE Tint' );
-        tint.name =  editName;
-        tint( 1 ).setValue( [ 0.5, 0, 0, 1 ] );
-        tint( 2 ).setValue( [ 1, 0, 0, 1 ] );
+        var tint = layer.property('ADBE Effect Parade').addProperty('ADBE Tint');
+        tint.name = editName;
+        tint(1).setValue([0.5, 0, 0, 1]);
+        tint(2).setValue([1, 0, 0, 1]);
 
     } else {
-        var childLayers = DuAETag.getValue( layer, DuAETag.Key.CHILD_LAYERS, DuAETag.Type.ARRAY );
-        if ( childLayers == null ) return;
-        for (var i = 0, n = childLayers.length; i < n; i ++)
-        {
-            var index = parseInt( childLayers[i] );
+        var childLayers = DuAETag.getValue(layer, DuAETag.Key.CHILD_LAYERS, DuAETag.Type.ARRAY);
+        if (childLayers == null) return;
+        for (var i = 0, n = childLayers.length; i < n; i++) {
+            var index = parseInt(childLayers[i]);
             var child = comp.layer(index);
             var l = child.locked;
             child.locked = false;
@@ -721,20 +720,20 @@ DuAELayer.toggleEditMode = function ( layer ) {
             child.locked = l;
         }
 
-        DuAETag.setValue( layer, DuAETag.Key.CHILD_LAYERS, '' );
-        DuAETag.setValue( layer, DuAETag.Key.EDIT_MODE, false );
+        DuAETag.setValue(layer, DuAETag.Key.CHILD_LAYERS, '');
+        DuAETag.setValue(layer, DuAETag.Key.EDIT_MODE, false);
         // Remove from edit group
-        DuAETag.removeGroup( layer, editName );
+        DuAETag.removeGroup(layer, editName);
         // Reset original tag
-        var tagName = DuAETag.getName( layer );
-        tagName = tagName.replace( ' | =' + editName + '=', '');
-        if (tagName == '') DuAETag.remove( layer );
-        else DuAETag.set( layer, tagName )
+        var tagName = DuAETag.getName(layer);
+        tagName = tagName.replace(' | =' + editName + '=', '');
+        if (tagName == '') DuAETag.remove(layer);
+        else DuAETag.set(layer, tagName)
         // Reset the layer name
         layer.name = layer.name.replace('=EDIT= ', '');
 
         //Remove tint
-        layer.property( 'ADBE Effect Parade' ).property( editName ).remove();
+        layer.property('ADBE Effect Parade').property(editName).remove();
     }
 }
 
@@ -744,27 +743,27 @@ DuAELayer.toggleEditMode = function ( layer ) {
  * @param {Layer[]|LayerCollection} layers - The layers
  * @param {string} [expr] - An expression to add to the opacity of the layers
  */
-DuAELayer.sequence = function ( layers, expr ) {
-    if ( layers.length == 0 ) return;
+DuAELayer.sequence = function(layers, expr) {
+    if (layers.length == 0) return;
     expr = def(expr, '');
-    var comp = layers[ 0 ].containingComp;
-    var it = new DuList( layers );
-    it.do( function ( layer ) {
-        while ( layer.transform.opacity.numKeys > 0 ) {
-            layer.transform.opacity.removeKey( layer.transform.opacity.numKeys );
+    var comp = layers[0].containingComp;
+    var it = new DuList(layers);
+    it.do(function(layer) {
+        while (layer.transform.opacity.numKeys > 0) {
+            layer.transform.opacity.removeKey(layer.transform.opacity.numKeys);
         }
         var i = it.current;
         var t = i * comp.frameDuration;
-        var endTime = ( layers.length - 1 ) * comp.frameDuration;
-        layer.transform.opacity.setValueAtTime( 0, 0 );
-        layer.transform.opacity.setValueAtTime( endTime, 0 );
-        layer.transform.opacity.setValueAtTime( t, 100 );
-        if ( i < layers.length - 1 ) layer.transform.opacity.setValueAtTime( t + comp.frameDuration, 0 );
-        for ( var keyIndex = 1; keyIndex <= layer.transform.opacity.numKeys; keyIndex++ ) {
-            layer.transform.opacity.setInterpolationTypeAtKey( keyIndex, KeyframeInterpolationType.HOLD, KeyframeInterpolationType.HOLD );
+        var endTime = (layers.length - 1) * comp.frameDuration;
+        layer.transform.opacity.setValueAtTime(0, 0);
+        layer.transform.opacity.setValueAtTime(endTime, 0);
+        layer.transform.opacity.setValueAtTime(t, 100);
+        if (i < layers.length - 1) layer.transform.opacity.setValueAtTime(t + comp.frameDuration, 0);
+        for (var keyIndex = 1; keyIndex <= layer.transform.opacity.numKeys; keyIndex++) {
+            layer.transform.opacity.setInterpolationTypeAtKey(keyIndex, KeyframeInterpolationType.HOLD, KeyframeInterpolationType.HOLD);
         }
         layer.transform.opacity.expression = expr;
-    } );
+    });
 }
 
 /**
@@ -773,7 +772,7 @@ DuAELayer.sequence = function ( layers, expr ) {
  * @param {Layer} layer - The layer
  * @return {Layer} the null
  */
-DuAELayer.addNull = function ( layer ) {
+DuAELayer.addNull = function(layer) {
     return DuAEComp.addNull(layer.containingComp, undefined, layer);
 }
 
@@ -781,8 +780,8 @@ DuAELayer.addNull = function ( layer ) {
  * Locks the scale with an expression so its value cannot be changed
  * @param {Layer} layer - The layer
  */
-DuAELayer.lockScale = function ( layer ) {
-    DuAEProperty.lock( layer.transform.scale );
+DuAELayer.lockScale = function(layer) {
+    DuAEProperty.lock(layer.transform.scale);
 }
 
 /**
@@ -793,13 +792,13 @@ DuAELayer.lockScale = function ( layer ) {
  * Works only on 12.0 and above, ignored on 11.0 (CS6) and below
  * @return {Layer[]} The new layers
  */
-DuAELayer.copyToComp = function ( layers, destinationComp, withPropertyLinks ) {
-    if ( DuAE.version.version < 12.0 ) withPropertyLinks = false;
-    withPropertyLinks = def( withPropertyLinks, false );
+DuAELayer.copyToComp = function(layers, destinationComp, withPropertyLinks) {
+    if (DuAE.version.version < 12.0) withPropertyLinks = false;
+    withPropertyLinks = def(withPropertyLinks, false);
 
-    if ( layers.length == 0 ) return;
+    if (layers.length == 0) return;
 
-    var it = new DuList( layers );
+    var it = new DuList(layers);
 
     var previousActiveComp = DuAEProject.getActiveComp();
 
@@ -808,18 +807,18 @@ DuAELayer.copyToComp = function ( layers, destinationComp, withPropertyLinks ) {
     originComp.openInViewer();
 
     //select the layers
-    var previousSelection = DuAEComp.unselectLayers( originComp );
-    DuAEComp.selectLayers( layers );
+    var previousSelection = DuAEComp.unselectLayers(originComp);
+    DuAEComp.selectLayers(layers);
 
     //copy
-    if ( withPropertyLinks ) DuAE.copyWithPropertyLinks();
+    if (withPropertyLinks) DuAE.copyWithPropertyLinks();
     else DuAE.copy();
 
     //destination
     destinationComp.openInViewer();
 
     //unselect layers in destination
-    var previousSelectionDestination = DuAEComp.unselectLayers( destinationComp );
+    var previousSelectionDestination = DuAEComp.unselectLayers(destinationComp);
 
     //paste
     DuAE.paste();
@@ -828,9 +827,9 @@ DuAELayer.copyToComp = function ( layers, destinationComp, withPropertyLinks ) {
     var newLayers = destinationComp.selectedLayers;
 
     //restore previous state
-    DuAEComp.selectLayers( previousSelection );
+    DuAEComp.selectLayers(previousSelection);
     previousActiveComp.openInViewer();
-    DuAEComp.selectLayers( previousSelectionDestination );
+    DuAEComp.selectLayers(previousSelectionDestination);
 
     return newLayers;
 }
@@ -842,26 +841,26 @@ DuAELayer.copyToComp = function ( layers, destinationComp, withPropertyLinks ) {
  * @param {boolean} [unparentedOnly=true] - True to parent only layers which do not have a parent yet 
  * @param {boolean} [insert=false] - When true, the parent will be parented to the previous parent of the given layer (or first layer if the layers param is a list)
  */
-DuAELayer.parent = function ( layers, parent, unparentedOnly, insert ) {
-    unparentedOnly = def( unparentedOnly, true );
-    insert = def( insert, false );
+DuAELayer.parent = function(layers, parent, unparentedOnly, insert) {
+    unparentedOnly = def(unparentedOnly, true);
+    insert = def(insert, false);
     layers = new DuList(layers);
 
-    if ( typeof parent === 'undefined' ) {
-        if ( layers.length() <= 1 ) return;
+    if (typeof parent === 'undefined') {
+        if (layers.length() <= 1) return;
         parent = layers.pop();
     }
 
     if (insert) parent.parent = layers.first().parent;
-    
-    layers.do( function ( layer ) {
+
+    layers.do(function(layer) {
         var locked = layer.locked;
         layer.locked = false;
-        if ( ( layer.parent == null && unparentedOnly ) || !unparentedOnly ) {
-            if ( layer.parent != parent ) layer.parent = parent;
+        if ((layer.parent == null && unparentedOnly) || !unparentedOnly) {
+            if (layer.parent != parent) layer.parent = parent;
         }
         layer.locked = locked;
-    } );
+    });
 }
 
 /**
@@ -870,37 +869,37 @@ DuAELayer.parent = function ( layers, parent, unparentedOnly, insert ) {
  * @param {Layer} layer - The layer
  * @return {DuAEProperty[]} The properties
  */
-DuAELayer.getPuppetPins = function ( layer ) {
+DuAELayer.getPuppetPins = function(layer) {
     var pins = [];
     var selectedProps = layer.selectedProperties;
 
-    function getPins( puppet ) {
+    function getPins(puppet) {
         //get pins
-        var mesh = puppet.property( "ADBE FreePin3 ARAP Group" ).property( "ADBE FreePin3 Mesh Group" ).property( "ADBE FreePin3 Mesh Atom" ).property( "ADBE FreePin3 PosPins" );
-        for ( var i = 1, num = mesh.numProperties; i <= num; i++ ) {
-            pins.push( new DuAEProperty( mesh.property( i ) ) );
+        var mesh = puppet.property("ADBE FreePin3 ARAP Group").property("ADBE FreePin3 Mesh Group").property("ADBE FreePin3 Mesh Atom").property("ADBE FreePin3 PosPins");
+        for (var i = 1, num = mesh.numProperties; i <= num; i++) {
+            pins.push(new DuAEProperty(mesh.property(i)));
         }
     }
 
-    if ( selectedProps == 0 ) {
+    if (selectedProps == 0) {
         //look for puppet effects
-        for ( var i = 1, num = layer( 'ADBE Effect Parade' ).numProperties; i <= num; i++ ) {
-            var effect = layer.effect( i );
-            if ( effect.matchName == 'ADBE FreePin3' ) {
-                getPins( effect );
+        for (var i = 1, num = layer('ADBE Effect Parade').numProperties; i <= num; i++) {
+            var effect = layer.effect(i);
+            if (effect.matchName == 'ADBE FreePin3') {
+                getPins(effect);
             }
         }
     } else {
         //get any selected pin
-        var itProps = new DuList( selectedProps );
-        itProps.do( function ( prop ) {
-            if ( prop.matchName == 'ADBE FreePin3 PosPin Atom' ) pins.push( new DuAEProperty( prop ) );
-        } );
+        var itProps = new DuList(selectedProps);
+        itProps.do(function(prop) {
+            if (prop.matchName == 'ADBE FreePin3 PosPin Atom') pins.push(new DuAEProperty(prop));
+        });
         //try to find selected puppets
-        if ( pins.length == 0 ) {
-            itProps.do( function ( prop ) {
-                if ( prop.matchName == 'ADBE FreePin3' ) getPins( prop );
-            } );
+        if (pins.length == 0) {
+            itProps.do(function(prop) {
+                if (prop.matchName == 'ADBE FreePin3') getPins(prop);
+            });
         }
     }
 
@@ -913,10 +912,10 @@ DuAELayer.getPuppetPins = function ( layer ) {
  * @param {Layer} layer - The layer to align.
  * @param {Layer} target - The reference layer.
  */
-DuAELayer.alignPosition = function ( layer, target ) {
+DuAELayer.alignPosition = function(layer, target) {
     //parent to target
     var layerParent = layer.parent;
-    if ( layerParent != target ) layer.parent = target;
+    if (layerParent != target) layer.parent = target;
 
     var comp = layer.containingComp;
 
@@ -924,11 +923,11 @@ DuAELayer.alignPosition = function ( layer, target ) {
     //TODO if 3D
 
     //set position
-    if ( layer.transform.position.numKeys == 0 ) layer.transform.position.setValue( target.transform.anchorPoint.value );
-    else layer.transform.position.setValueAtTime( comp.time, target.transform.anchorPoint.value );
+    if (layer.transform.position.numKeys == 0) layer.transform.position.setValue(target.transform.anchorPoint.value);
+    else layer.transform.position.setValueAtTime(comp.time, target.transform.anchorPoint.value);
 
     //reparent
-    if ( layerParent != target ) layer.parent = layerParent;
+    if (layerParent != target) layer.parent = layerParent;
 }
 
 /**
@@ -936,21 +935,21 @@ DuAELayer.alignPosition = function ( layer, target ) {
  * @param {Layer} layer - The layer to align.
  * @param {Layer} target - The reference layer.
  */
-DuAELayer.alignOrientation = function ( layer, target ) {
+DuAELayer.alignOrientation = function(layer, target) {
     //parent to target
     var layerParent = layer.parent;
-    if ( layerParent != target ) layer.parent = target;
+    if (layerParent != target) layer.parent = target;
 
     var comp = layer.containingComp;
 
     //TODO if 3D/2D
 
     //set rotation
-    if ( layer.transform.rotation.numKeys == 0 ) layer.transform.rotation.setValue( 0 );
-    else layer.transform.rotation.setValueAtTime( comp.time, 0 );
+    if (layer.transform.rotation.numKeys == 0) layer.transform.rotation.setValue(0);
+    else layer.transform.rotation.setValueAtTime(comp.time, 0);
 
     //reparent
-    if ( layerParent != target ) layer.parent = layerParent;
+    if (layerParent != target) layer.parent = layerParent;
 }
 
 /**
@@ -958,21 +957,21 @@ DuAELayer.alignOrientation = function ( layer, target ) {
  * @param {Layer} layer - The layer to align.
  * @param {Layer} target - The reference layer.
  */
-DuAELayer.alignScale = function ( layer, target ) {
+DuAELayer.alignScale = function(layer, target) {
     //parent to target
     var layerParent = layer.parent;
-    if ( layerParent != target ) layer.parent = target;
+    if (layerParent != target) layer.parent = target;
 
     var comp = layer.containingComp;
 
     //TODO 3D
 
     //set scale
-    if ( layer.transform.scale.numKeys == 0 ) layer.transform.scale.setValue( [ 100, 100 ] );
-    else layer.transform.scale.setValueAtTime( comp.time, [ 100, 100 ] );
+    if (layer.transform.scale.numKeys == 0) layer.transform.scale.setValue([100, 100]);
+    else layer.transform.scale.setValueAtTime(comp.time, [100, 100]);
 
     //reparent
-    if ( layerParent != target ) layer.parent = layerParent;
+    if (layerParent != target) layer.parent = layerParent;
 }
 
 /**
@@ -980,12 +979,12 @@ DuAELayer.alignScale = function ( layer, target ) {
  * @param {Layer} layer - The layer to align.
  * @param {Layer} target - The reference layer.
  */
-DuAELayer.alignOpacity = function ( layer, target ) {
+DuAELayer.alignOpacity = function(layer, target) {
     var comp = layer.containingComp;
 
     //set scale
-    if ( layer.transform.opacity.numKeys == 0 ) layer.transform.opacity.setValue( target.transform.opacity.value );
-    else layer.transform.opacity.setValueAtTime( comp.time, target.transform.opacity.value );
+    if (layer.transform.opacity.numKeys == 0) layer.transform.opacity.setValue(target.transform.opacity.value);
+    else layer.transform.opacity.setValueAtTime(comp.time, target.transform.opacity.value);
 }
 
 /**
@@ -997,26 +996,26 @@ DuAELayer.alignOpacity = function ( layer, target ) {
  * @param {boolean} [scale=true] - True to align scale.
  * @param {boolean} [opacity=false] - True to align opcacity.
  */
-DuAELayer.align = function ( layers, target, position, rotation, scale, opacity ) {
-    position = def( position, true);
-    rotation =  def( rotation, true);
-    scale =  def( scale, true);
-    opacity =  def( opacity, false);
+DuAELayer.align = function(layers, target, position, rotation, scale, opacity) {
+    position = def(position, true);
+    rotation = def(rotation, true);
+    scale = def(scale, true);
+    opacity = def(opacity, false);
 
-    var it = new DuList( layers );
+    var it = new DuList(layers);
 
     var targetParent = target.parent;
     target.parent = null;
 
     //set values
-    it.do( function ( layer ) {
-        if ( layer == target ) return;
+    it.do(function(layer) {
+        if (layer == target) return;
 
-        if ( position ) DuAELayer.alignPosition( layer, target );
-        if ( rotation ) DuAELayer.alignOrientation( layer, target );
-        if ( scale ) DuAELayer.alignScale( layer, target );
-        if ( opacity ) DuAELayer.alignOpacity( layer, target );
-    } );
+        if (position) DuAELayer.alignPosition(layer, target);
+        if (rotation) DuAELayer.alignOrientation(layer, target);
+        if (scale) DuAELayer.alignScale(layer, target);
+        if (opacity) DuAELayer.alignOpacity(layer, target);
+    });
 
     target.parent = targetParent;
 }
@@ -1025,40 +1024,45 @@ DuAELayer.align = function ( layers, target, position, rotation, scale, opacity 
  * Gets the transformation matrix of the layer from the compostion.<br />
  * Use Matrix.applyToPoint(point) to transform any coordinate with the matrix returned by this method.
  * @param {Layer[]} layer - the layer
- * @param {Boolean} [parentSpace=false] When true, returns a matrix relative to the parent instead of the world.
+ * @param {float} [time] - the time at which to get the coordinates. Current time by default.
  * @return {Matrix} The coordinates.
  */
-DuAELayer.getTransformMatrix = function ( layer ) {
+DuAELayer.getTransformMatrix = function(layer, time) {
+
+    time = def(time, layer.containingComp.time);
+
     var matrix = new Matrix();
 
     //get the ancestors
-    var layers = [ layer ];
+    var layers = [layer];
     var parent = layer.parent;
-    while ( parent ) {
-        if (parentSpace) break;
+    while (parent) {
+        layers.push(parent);
         parent = parent.parent;
     }
 
     //apply transforms from the ancestor
-    for ( var i = layers.length - 1; i >= 0; i-- ) {
-        var l = layers[ i ];
+    for (var i = layers.length - 1; i >= 0; i--) {
+        var l = layers[i];
 
         //position
-        matrix.translate( l.transform.position.value );
+        matrix.translate(l.transform.position.valueAtTime(time, false));
 
         //rotation
-        if ( l.threeDLayer || l instanceof CameraLayer ) matrix.rotate( l.transform.zRotation.value );
-        else matrix.rotate( l.transform.rotation.value );
+        if (l.threeDLayer || l instanceof CameraLayer) matrix.rotate(l.transform.zRotation.valueAtTime(time, false));
+        else matrix.rotate(l.transform.rotation.valueAtTime(time, false));
 
-        if ( !( l instanceof CameraLayer ) ) {
+        if (!(l instanceof CameraLayer)) {
             //anchor point inverse transform, taking scale into account
-            var aPX = -( l.transform.anchorPoint.value[ 0 ] * l.transform.scale.value[ 0 ] / 100 );
-            var aPY = -( l.transform.anchorPoint.value[ 1 ] * l.transform.scale.value[ 1 ] / 100 );
+            var ap = l.transform.anchorPoint.valueAtTime(time, false);
+            var sca = l.transform.scale.valueAtTime(time, false);
+            var aPX = -(ap[0] * sca[0] / 100);
+            var aPY = -(ap[1] * sca[1] / 100);
 
-            matrix.translate( [ aPX, aPY ] );
+            matrix.translate([aPX, aPY]);
 
             //scale
-            matrix.scale( l.transform.scale.value / 100 );
+            matrix.scale(l.transform.scale.valueAtTime(time, false) / 100);
         }
     }
 
@@ -1070,29 +1074,29 @@ DuAELayer.getTransformMatrix = function ( layer ) {
  * @param {Layer} layer - The layer
  * @param {Property|DuAEProperty} prop - The property
  */
-DuAELayer.moveLayerToProperty = function ( layer, prop ) {
+DuAELayer.moveLayerToProperty = function(layer, prop) {
     var propInfo;
-    if ( prop instanceof DuAEProperty ) {
+    if (prop instanceof DuAEProperty) {
         propInfo = prop;
         prop = propInfo.getProperty();
     } else {
-        propInfo = new DuAEProperty( prop );
+        propInfo = new DuAEProperty(prop);
     }
 
     var propLayer = propInfo.layer;
     var comp = propInfo.comp;
 
-    if ( !( propLayer instanceof ShapeLayer ) ) {
-        var matrix = DuAELayer.getTransformMatrix( propLayer );
-        var pos = matrix.applyToPoint( prop.value );
+    if (!(propLayer instanceof ShapeLayer)) {
+        var matrix = DuAELayer.getTransformMatrix(propLayer);
+        var pos = matrix.applyToPoint(prop.value);
         var parent = layer.parent;
         layer.parent = null;
-        layer.position.setValue( pos );
+        layer.position.setValue(pos);
         layer.parent = parent;
     } else {
         var parent = layer.parent;
         layer.parent = null;
-        layer.position.setValue( prop.value );
+        layer.position.setValue(prop.value);
         layer.parent = parent;
     }
 }
@@ -1102,8 +1106,8 @@ DuAELayer.moveLayerToProperty = function ( layer, prop ) {
  * @param {Layer} layer - The layer
  * @param {boolean} [preExpression=false] - Whether to check for the opacity post or pre-expression value
  */
-DuAELayer.autoDuration = function ( layer, preExpression ) {
-    if ( typeof preExpression === 'undefined' ) preExpression = false;
+DuAELayer.autoDuration = function(layer, preExpression) {
+    if (typeof preExpression === 'undefined') preExpression = false;
 
     var comp = layer.containingComp;
 
@@ -1113,26 +1117,26 @@ DuAELayer.autoDuration = function ( layer, preExpression ) {
     var outFrame = outPoint / comp.frameDuration;
 
     //search in
-    if ( layer.transform.opacity.valueAtTime( inPoint, preExpression ) == 0 ) {
-        for ( var i = inFrame; i < outFrame; i++ ) {
+    if (layer.transform.opacity.valueAtTime(inPoint, preExpression) == 0) {
+        for (var i = inFrame; i < outFrame; i++) {
             var time = i * comp.frameDuration;
-            if ( layer.transform.opacity.valueAtTime( time, preExpression ) == 0 ) inPoint = time + comp.frameDuration;
+            if (layer.transform.opacity.valueAtTime(time, preExpression) == 0) inPoint = time + comp.frameDuration;
             else break;
         }
     }
 
     //search out 
-    if ( layer.transform.opacity.valueAtTime( outPoint, preExpression ) == 0 ) {
-        for ( var i = outFrame; i > inFrame; i-- ) {
+    if (layer.transform.opacity.valueAtTime(outPoint, preExpression) == 0) {
+        for (var i = outFrame; i > inFrame; i--) {
             var time = i * comp.frameDuration;
-            if ( layer.transform.opacity.valueAtTime( time, preExpression ) == 0 ) outPoint = time;
+            if (layer.transform.opacity.valueAtTime(time, preExpression) == 0) outPoint = time;
             else break;
         }
     }
 
     //set new in and out points
-    if ( inPoint != layer.inPoint ) layer.inPoint = inPoint;
-    if ( outPoint != layer.outPoint ) layer.outPoint = outPoint;
+    if (inPoint != layer.inPoint) layer.inPoint = inPoint;
+    if (outPoint != layer.outPoint) layer.outPoint = outPoint;
 }
 
 /**
@@ -1140,7 +1144,7 @@ DuAELayer.autoDuration = function ( layer, preExpression ) {
  * @param {Layer} layer - The layer
  * @return {bool} true if the layer is a 3D layer
  */
-DuAELayer.isThreeD = function ( layer ) {
+DuAELayer.isThreeD = function(layer) {
     if (layer.threeDLayer) return true;
     if (layer instanceof CameraLayer) return true;
     if (layer instanceof LightLayer) return true;
@@ -1153,7 +1157,7 @@ DuAELayer.isThreeD = function ( layer ) {
  * @param {Boolean} [useThisComp=false] Whether to begin the expression by 'thisComp' or 'comp("name")'
  * @return {str} The expression link to the layer
  */
-DuAELayer.expressionLink = function( layer, useThisComp ) {
+DuAELayer.expressionLink = function(layer, useThisComp) {
     useThisComp = def(useThisComp, false);
 
     var comp = layer.containingComp;
@@ -1162,7 +1166,7 @@ DuAELayer.expressionLink = function( layer, useThisComp ) {
     name = "\"" + layer.name + "\"";
     exprCode = "layer(" + name + ")";
     // Prefix the comp reference
-    if ( useThisComp ) exprCode = "thisComp." + exprCode;
+    if (useThisComp) exprCode = "thisComp." + exprCode;
     else exprCode = "comp(\"" + comp.name + "\")." + exprCode;
 
     return exprCode;
@@ -1173,13 +1177,13 @@ DuAELayer.expressionLink = function( layer, useThisComp ) {
  * @param {Layer} layer The layer to test
  * @returns {Boolean} true if it is a solid
  */
-DuAELayer.isSolid = function( layer ) {
-    if ( layer.nullLayer ) return false;
+DuAELayer.isSolid = function(layer) {
+    if (layer.nullLayer) return false;
 
     if (!(layer instanceof AVLayer)) return false;
 
     if (!(layer.source instanceof FootageItem)) return false;
-    
+
     if (layer.source.mainSource instanceof SolidSource) return true;
 }
 
@@ -1188,13 +1192,13 @@ DuAELayer.isSolid = function( layer ) {
  * @param {Layer} layer The layer to test
  * @returns {Boolean} true if it is a composition
  */
-DuAELayer.isComp = function( layer ) {
-    if ( layer.nullLayer ) return false;
+DuAELayer.isComp = function(layer) {
+    if (layer.nullLayer) return false;
 
     if (!(layer instanceof AVLayer)) return false;
 
     if (layer.source instanceof CompItem) return true;
-    
+
     return false;
 }
 
@@ -1204,15 +1208,14 @@ DuAELayer.isComp = function( layer ) {
  * @param {Boolean} [useBounds=false] (not implemented yet) Checks the layer bounds if true, just the anchor point if false.
  * @returns {Boolean} true if the layer is inside the composition
  */
-DuAELayer.insideComp = function ( layer, useBounds )
-{
+DuAELayer.insideComp = function(layer, useBounds) {
     useBounds = def(useBounds, false);
 
     var comp = layer.containingComp;
-    var layerPos = DuAELayer.getWorldPos( layer );
+    var layerPos = DuAELayer.getWorldPos(layer);
 
-    var compBounds = [0 , comp.width, 0, comp.height, -9999999, 9999999];
-    return DuMath.isInside( layerPos, compBounds );
+    var compBounds = [0, comp.width, 0, comp.height, -9999999, 9999999];
+    return DuMath.isInside(layerPos, compBounds);
 }
 
 /**
@@ -1220,13 +1223,12 @@ DuAELayer.insideComp = function ( layer, useBounds )
  * @param {Layer} layer the layer to check
  * @param {Boolean} [useBounds=false] (not implemented yet) Checks the layer bounds if true, just the anchor point if false.
  */
-DuAELayer.moveInsideComp = function( layer, useBounds )
-{
-    if (DuAELayer.insideComp( layer ) ) return;
+DuAELayer.moveInsideComp = function(layer, useBounds) {
+    if (DuAELayer.insideComp(layer)) return;
     var comp = layer.containingComp;
     var layerParent = layer.parent;
     layer.parent = null;
-    layer.transform.position.setValue( [comp.width/2, comp.height/2] );
+    layer.transform.position.setValue([comp.width / 2, comp.height / 2]);
     layer.parent = layerParent;
 }
 
@@ -1237,15 +1239,13 @@ DuAELayer.moveInsideComp = function( layer, useBounds )
  * @param {int} [skip=0] Number of effects to skip
  * @returns {PropertyGroup|null} The effect or null if not found.
  */
-DuAELayer.lastEffect = function (layer, name, skip)
-{
+DuAELayer.lastEffect = function(layer, name, skip) {
     skip = def(skip, 0);
     name = def(name, '');
 
-    if ( layer.property('ADBE Effect Parade').numProperties <= skip ) return null;
+    if (layer.property('ADBE Effect Parade').numProperties <= skip) return null;
 
-    for (var i = layer.property('ADBE Effect Parade').numProperties - skip, n = 0; i > n; i--)
-    {
+    for (var i = layer.property('ADBE Effect Parade').numProperties - skip, n = 0; i > n; i--) {
         var e = layer.effect(i);
         if (e.matchName == name) return e;
         if (e.name == name) return e;
@@ -1254,22 +1254,47 @@ DuAELayer.lastEffect = function (layer, name, skip)
 }
 
 /**
- * Changes the coordinates of the anchorpoint without moving the layer
+ * Changes the coordinates of the anchor point without moving the layer
  * @param {Layer} layer The layer
  * @param {float[]} value The new coordinates
  */
-DuAELayer.repositionAnchorPoint = function (layer, value)
-{
+DuAELayer.repositionAnchorPoint = function(layer, value) {
     // Unparent
     var parent = layer.parent;
     layer.parent = null;
-    // Get current and future position
-    var pos = layer.transform.position.value;
-    var newPos = DuAELayer.getWorldPos( layer,value );
+
+    // Get future position for each position keyframe
+
+    // New positions, one per keyframe
+    var newPositions = [];
+    // The position property
+    var positionProp = layer.transform.position;
+    // Number of keyframes
+    var nK = positionProp.numKeys;
+    if (nK > 0) {
+        for (var i = 1; i <= nK; i++) {
+            var newPos = DuAELayer.getWorldPos(layer, value, positionProp.keyTime(i));
+            newPositions.push(newPos);
+        }
+    }
+    else {
+        var newPos = DuAELayer.getWorldPos(layer, value);
+        newPositions.push(newPos);
+    }
+
     // Set anchor point
-    layer.transform.anchorPoint.setValue( value );
-    // Adjust position
-    layer.transform.position.setValue( newPos );
+    layer.transform.anchorPoint.setValue(value);
+
+    // Adjust position for keyframes
+    if (nK > 0) {
+        for (var i = 1; i <= nK; i++) {
+            positionProp.setValueAtKey(i, newPositions[i-1]);
+        }
+    }
+    else {
+        positionProp.setValue(newPositions[0]);
+    }
+    
     // Reparent
     layer.parent = parent;
 }
@@ -1282,8 +1307,7 @@ DuAELayer.repositionAnchorPoint = function (layer, value)
  * @param {Boolean} [includeMasks=true] Includes the masks
  * @return {float[]} The bounds [top, left, width, height]
  */
-DuAELayer.sourceRect = function ( layer, time, includeExtents, includeMasks )
-{
+DuAELayer.sourceRect = function(layer, time, includeExtents, includeMasks) {
     time = def(layer.containingComp.time);
     includeExtents = def(includeExtents, true);
     includeMasks = def(includeMasks, true);
@@ -1294,14 +1318,13 @@ DuAELayer.sourceRect = function ( layer, time, includeExtents, includeMasks )
     var height = layer.height;
 
     // Texts and shapes: use an expression
-    if (layer instanceof ShapeLayer || layer instanceof TextLayer)
-    {
+    if (layer instanceof ShapeLayer || layer instanceof TextLayer) {
         // Expression
         var exp = 'thisLayer.sourceRectAtTime(' + time + ',';
-        if (includeExtents) exp +='true';
-        else exp +='false';
+        if (includeExtents) exp += 'true';
+        else exp += 'false';
         exp += ').{*};'
-        
+
         // Create a slider
         var slider = layer.property('ADBE Effect Parade').addProperty('ADBE Slider Control');
 
@@ -1319,18 +1342,16 @@ DuAELayer.sourceRect = function ( layer, time, includeExtents, includeMasks )
     }
 
     // Get masks
-    if (includeMasks)
-    {
-        var masks = DuAEProperty.getProps( layer.property('ADBE Mask Parade'), 'ADBE Mask Shape' );
-        if (masks.length > 0)
-        {
-            var maskBounds = DuAEProperty.pathBounds( masks, false );
+    if (includeMasks) {
+        var masks = DuAEProperty.getProps(layer.property('ADBE Mask Parade'), 'ADBE Mask Shape');
+        if (masks.length > 0) {
+            var maskBounds = DuAEProperty.pathBounds(masks, false);
             if (maskBounds[0] > top) top = maskBounds[0];
             if (maskBounds[1] > left) left = maskBounds[1];
             if (maskBounds[2] < width) width = maskBounds[2];
             if (maskBounds[3] < height) height = maskBounds[3];
         }
-        
+
     }
 
     return [top, left, width, height];
