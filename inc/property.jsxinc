@@ -2360,6 +2360,78 @@ DuAEProperty.pathVerticalSymetry = function ( pathProperties ) {
 }
 
 /**
+ * Gets the sourceRect of the properties (their bounds) in layer coordinates
+ * @param {Property[]}	pathProperties	- The After Effects Properties containing the paths
+ * @param {Boolean}	[includeTangents=false]	Wether to include tangents in the bounds or not
+ * @return {float[]} The bounds [top, left, width, height]
+ */
+DuAEProperty.pathBounds = function( pathProperties, includeTangents ) {
+    if ( !( pathProperties instanceof Array ) ) pathProperties = [ pathProperties ];
+
+    includeTangents = def(includeTangents, false);
+
+    var top = 32000;
+    var left = 32000;
+    var width = 0;
+    var height = 0;
+
+    var verts = [];
+    var inTs = [];
+    var outTs = [];
+
+    for (var i = 0, n = pathProperties.length; i < n; i++)
+    {
+        var prop = new DuAEProperty( pathProperties[i] );
+        var pathProp = prop.pathProperty().getProperty();
+        if (!pathProp) continue;
+        var shape = pathProp.value;
+        var vert = shape.vertices;
+        var inT = shape.inTangents;
+        var outT = shape.outTangents;
+
+        verts = verts.concat(vert);
+        inTs = inTs.concat(inT);
+        outTs = outTs.concat(outT);
+    }
+
+    var sBounds = DuMath.bounds(verts);
+    if (sBounds[0] < left) left = sBounds[0];
+    if (sBounds[1] < top) top = sBounds[1];
+    var w = sBounds[2] - left;
+    if (w > width) width = w;
+    var h = sBounds[3] - top;
+    if (h > height) height = h;
+
+    if (includeTangents)
+    {
+        // Adjust coordinates because tangents are given relative to their vertex
+        for (var j = 0, nj = vert.length; j < nj; j++)
+        {
+            inTs[j] = inTs[j] + verts[j];
+            outTs[j] = outTs[j] + verts[j];
+        }
+
+        var iBounds = DuMath.bounds(inTs);
+        if (iBounds[0] < left) left = iBounds[0];
+        if (iBounds[1] < top) top = iBounds[1];
+        var w = iBounds[2] - left;
+        if (w > width) width = w;
+        var h = iBounds[3] - top;
+        if (h > height) height = h;
+
+        var oBounds = DuMath.bounds(outTs);
+        if (oBounds[0] < left) left = oBounds[0];
+        if (oBounds[1] < top) top = oBounds[1];
+        var w = oBounds[2] - left;
+        if (w > width) width = w;
+        var h = oBounds[3] - top;
+        if (h > height) height = h;
+    }
+
+    return [top, left, width, height];
+}
+
+/**
  * Checks if the property contains a Bézier "path" property (it's a mask path or a shape layer path).<br />
  * The function can be used as a filter for {@link DuAELayer.getSelectedProps}.
  * @param {PropertyGroup} prop The property to check

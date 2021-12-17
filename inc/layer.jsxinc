@@ -1025,6 +1025,7 @@ DuAELayer.align = function ( layers, target, position, rotation, scale, opacity 
  * Gets the transformation matrix of the layer from the compostion.<br />
  * Use Matrix.applyToPoint(point) to transform any coordinate with the matrix returned by this method.
  * @param {Layer[]} layer - the layer
+ * @param {Boolean} [parentSpace=false] When true, returns a matrix relative to the parent instead of the world.
  * @return {Matrix} The coordinates.
  */
 DuAELayer.getTransformMatrix = function ( layer ) {
@@ -1034,7 +1035,7 @@ DuAELayer.getTransformMatrix = function ( layer ) {
     var layers = [ layer ];
     var parent = layer.parent;
     while ( parent ) {
-        layers.push( parent );
+        if (parentSpace) break;
         parent = parent.parent;
     }
 
@@ -1250,4 +1251,87 @@ DuAELayer.lastEffect = function (layer, name, skip)
         if (e.name == name) return e;
     }
     return null;
+}
+
+/**
+ * Changes the coordinates of the anchorpoint without moving the layer
+ * @param {Layer} layer The layer
+ * @param {float[]} value The new coordinates
+ */
+DuAELayer.repositionAnchorPoint = function (layer, value)
+{
+    // Unparent
+    var parent = layer.parent;
+    layer.parent = null;
+    // Get current and future position
+    var pos = layer.transform.position.value;
+    var newPos = DuAELayer.getWorldPos( layer,value );
+    // Set anchor point
+    layer.transform.anchorPoint.setValue( value );
+    // Adjust position
+    layer.transform.position.setValue( newPos );
+    // Reparent
+    layer.parent = parent;
+}
+
+/**
+ * Returns the bounds of the layer in local coordinates, like the sourceRectAtTime() function does in expressions, but can also include masks.
+ * @param {Layer} layer The layer
+ * @param {float} [time] The time at which to get the bounds, the current time by default
+ * @param {Boolean} [includeExtents=true] Includes the extents (strokes, accents...)
+ * @param {Boolean} [includeMasks=true] Includes the masks
+ * @return {float[]} The bounds [top, left, width, height]
+ */
+DuAELayer.sourceRect = function ( layer, time, includeExtents, includeMasks )
+{
+    time = def(layer.containingComp.time);
+    includeExtents = def(includeExtents, true);
+    includeMasks = def(includeMasks, true);
+
+    var top = 0;
+    var left = 0;
+    var width = layer.width;
+    var height = layer.height;
+
+    // Texts and shapes: use an expression
+    if (layer instanceof ShapeLayer || layer instanceof TextLayer)
+    {
+        // Expression
+        var exp = 'thisLayer.sourceRectAtTime(' + time + ',';
+        if (includeExtents) exp +='true';
+        else exp +='false';
+        exp += ').{*};'
+        
+        // Create a slider
+        var slider = layer.property('ADBE Effect Parade').addProperty('ADBE Slider Control');
+
+        slider(1).expression = exp.replace('{*}', 'top');
+        top = slider(1).value;
+        slider(1).expression = exp.replace('{*}', 'left');
+        left = slider(1).value;
+        slider(1).expression = exp.replace('{*}', 'width');
+        width = slider(1).value;
+        slider(1).expression = exp.replace('{*}', 'height');
+        height = slider(1).value;
+
+        // Remove slider
+        slider.remove();
+    }
+
+    // Get masks
+    if (includeMasks)
+    {
+        var masks = DuAEProperty.getProps( layer.property('ADBE Mask Parade'), 'ADBE Mask Shape' );
+        if (masks.length > 0)
+        {
+            var maskBounds = DuAEProperty.pathBounds( masks, false );
+            if (maskBounds[0] > top) top = maskBounds[0];
+            if (maskBounds[1] > left) left = maskBounds[1];
+            if (maskBounds[2] < width) width = maskBounds[2];
+            if (maskBounds[3] < height) height = maskBounds[3];
+        }
+        
+    }
+
+    return [top, left, width, height];
 }
