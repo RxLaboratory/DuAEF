@@ -121,18 +121,27 @@ function DuAELayerAnimation()
 	* @classdesc This class describes an expression and the property containing it.<br />
 	* It is used by the cache engine of DuAEF to work on expressions without applying them and improve performance.<br />
 	* This class is very similar to {@link DuAEProperty} except it is lighter and faster, to improve the performance of the expression cache.
-	* @param {PropertyBase|DuAEPropertyExpression} property - The property. If a DuAEPropertyExpression is provided, the constructor returns it (it does not make a copy).<br />
+	* @param {PropertyBase|DuAEPropertyExpression|DuAEProperty} property - The property. If a DuAEPropertyExpression is provided, the constructor returns it (it does not make a copy).<br />
 	* This makes it easy to avoid type checking, as you can always pass any property or DuAEPropertyExpression to the constructor to be sure to handle a DuAEPropertyExpression, without any impact on performance.
 */
 function DuAEPropertyExpression(property)
 {
+	var propInfo;
 	if (property instanceof DuAEPropertyExpression)
 	{
 		property.expression = property.getProperty().expression;
 		return property;
 	}
+	else if (property instanceof DuAEProperty)
+	{
+		propInfo = property;
+		property = propInfo.getProperty();
 
-	var propInfo = new DuAEProperty( property );
+	}
+	else 
+	{
+		propInfo = new DuAEProperty( property );
+	}
 
 	/**
 		* The original property containing the expression

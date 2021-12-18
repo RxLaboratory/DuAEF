@@ -8,7 +8,8 @@
  * @classdesc Get some handy informations about a property<br />
  * This class is able to "fix" effects properties which have been broken by
  * the addition of another effect on the same layer, as long as the class has been
- * instanciated before the effect has been broken.
+ * instanciated before the effect has been broken.<br />
+ * Some methods in this class (but not all) are recursive: they can be run even if the property is a group containing other properties.
  * @param {PropertyBase|DuAEProperty} property - The property. If a DuAEProperty is provided, the constructor returns it (it does not make a copy).<br />
  * This makes it easy to avoid type checking, as you can always pass any property or DuAEProperty to the constructor to be sure to handle a DuAEProperty, without any impact on performance.<br />
  * @example
@@ -160,6 +161,21 @@ function DuAEProperty(property) {
     if (this.isAngle) this.unit = "°";
     if (this.isPixels) this.unit = localize("$$$/AE/TLW/GraphEditor/PixelsDest=px");
 
+}
+
+/**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
+ * Recursively runs a method on all nested properties
+ * @param {function} func The function to run. It must take a DuAEProperty object as its single argument
+ */
+DuAEProperty.prototype.do = function(func) {
+    if (this.getProperty().propertyType == PropertyType.PROPERTY) {
+        func(this);
+    } else {
+        for (var p = 1, num = this.numProperties(); p <= num; p++) {
+            this.prop(p).do(func);
+        }
+    }
 }
 
 /**
@@ -417,6 +433,7 @@ DuAEProperty.prototype.keys = function(selected, timeRange) {
 }
 
 /**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
  * Recursilvely gets all animations in the property and subproperties in the whole timeline or in the time range<br />
  * The first DuAEKeyFrame._time will be adjusted relatively to the start of the time range (if provided) instead of the startTime of the composition.
  * @param {boolean}	[selected=false]	- true to get only selected keyframes.
@@ -481,22 +498,14 @@ DuAEProperty.prototype.animation = function(selected, timeRange) {
 
 // low-level undocumented method to get all expressions and cache them
 DuAEProperty.prototype.addToExpressionCache = function() {
-    var prop = this.getProperty();
-    //it it's a prop, add to cache
-    if (prop.propertyType === PropertyType.PROPERTY) {
+    this.do(function(prop) {
         var exp = new DuAEPropertyExpression(prop);
         if (!exp.empty) DuAEExpression.cache.push(exp);
-    }
-    //if it's a group, get props inside
-    else if (prop.numProperties > 0) {
-        for (var p = 1, numP = prop.numProperties; p <= numP; p++) {
-            var subProp = new DuAEProperty(prop.property(p));
-            subProp.addToExpressionCache();
-        }
-    }
+    });
 }
 
 /**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
  * Recursilvely gets the time of the first keyFrame in this prop or subprops
  * @param {boolean} selected - true to check selected keyframes only
  * @return {float|null} The keyframe time or null if there are no keyframe
@@ -739,6 +748,7 @@ DuAEProperty.prototype.setAnim = function(anim, time, setExpression, replace, of
 }
 
 /**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
  * Sets all animations on a Property or a PropertyGroup.
  * @param {DuAEPropertyAnimation|DuAEPropertyGroupAnimation} anim The animation
  * @param {float}	[time=comp().time]	- The time where to begin the animation
@@ -807,34 +817,38 @@ DuAEProperty.prototype.setAnimation = function(anim, time, ignoreName, setExpres
 }
 
 /**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
  * Removes the animation from the property
  * @param {Property|DuAEProperty} prop -The property
  * @param {boolean} [removeExpression=false] - Set to true to remove the expression too
  */
 DuAEProperty.prototype.removeAnimation = function(prop, removeExpression) {
-    var prop = this.getProperty();
     removeExpression = def(removeExpression, false);
-
-    while (prop.numKeys > 0) {
-        prop.removeKey(1);
-    }
-    if (removeExpression && prop.canSetExpression) {
-        prop.expression = '';
-    }
+    this.do(function(prop) {
+        prop = prop.getProperty();
+        while (prop.numKeys > 0) {
+            prop.removeKey(1);
+        }
+        if (removeExpression && prop.canSetExpression) {
+            prop.expression = '';
+        }
+    });
 }
 
 /**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
  * Selects the keyframes in the propoerty.<br />
  * Selects all nested keyframes if the property is a group.
  * @param {float} [inTime=0] - The time at which to select the keyframes
  * @param {float} [outTime=inTime] - The end time
  */
 DuAEProperty.prototype.selectKeys = function(inTime, outTime) {
+    // Defaults
     inTime = def(inTime, 0);
     outTime = def(outTime, inTime);
-    var prop = this.getProperty();
-
-    if (prop.propertyType == PropertyType.PROPERTY) {
+    // Run
+    this.do(function(prop) {
+        prop = prop.getProperty();
         if (prop.elided) return;
         if (prop.isSeparationLeader)
             if (prop.dimensionsSeparated) return;
@@ -850,12 +864,7 @@ DuAEProperty.prototype.selectKeys = function(inTime, outTime) {
                 prop.setSelectedAtKey(keys[i]._index, true);
             }
         }
-    } else if (prop.numProperties > 0) {
-        for (var i = 1, numP = prop.numProperties; i <= numP; i++) {
-            var subProp = new DuAEProperty(prop.property(i));
-            subProp.selectKeys(inTime, outTime);
-        }
-    }
+    });
 }
 
 /**
@@ -955,6 +964,31 @@ DuAEProperty.prototype.setKeyInterpolation = function(key, typeIn, typeOut, ease
 }
 
 /**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
+ * Sets interpolations for all keyframes.
+ * @param {KeyframeInterpolationType|string} typeIn - The in interpolation type (see AE API) or the string "roving" or "continuous"
+ * @param {KeyframeInterpolationType|string} [typeOut=typeIn] - The out interpolation type (see AE API)
+ * @param {int[]|int} [easeInValue=33] - The in interpolation ease value (used if typeIn is KeyframeInterpolationType.BEZIER)
+ * @param {int[]|int} [easeOutValue=easeInValue] - The out interpolation ease value (used if typeOut is KeyframeInterpolationType.BEZIER)
+ */
+DuAEProperty.prototype.setInterpolation = function(typeIn, typeOut, easeInValue, easeOutValue) {
+    // Defaults
+    if (typeOut == undefined) typeOut = def(typeOut, typeIn);
+    if (easeInValue == undefined) easeInValue = 33;
+    if (isNaN(easeInValue)) easeInValue = 33;
+    if (easeOutValue == undefined) easeOutValue = easeInValue;
+    if (isNaN(easeOutValue)) easeOutValue = 33;
+
+    // Run 
+    this.do(function(propInfo) {
+        var prop = propInfo.getProperty();
+        for (var i = 1, n = prop.numKeys; i <= n; i++) {
+            propInfo.setKeyInterpolation(i, typeIn, typeOut, easeInValue, easeOutValue);
+        }
+    });
+}
+
+/**
  * Computes a percentage from a velocity on a given keyframe. 
  * @param {int} keyIndex - The index of the keyframe where to compute the velocity
  * @return {float[]} The velocities [in, out] as a percentage.
@@ -993,6 +1027,7 @@ DuAEProperty.prototype.velocityToPercent = function(key) {
 }
 
 /**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
  * Checks if the property has some selected keyframes.<br />
  * The property can be either a Property or a PropertyGroup.
  * @return {boolean} true if the property have at least one selected keyframe
@@ -1110,50 +1145,57 @@ DuAEProperty.prototype.fixSpatialInterpolation = function() {
 }
 
 /**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
  * Removes all unneeded keyframes from the property.< br/>
  * Also checks the interpolation values to reset the correct display as linear/smooth.
  */
 DuAEProperty.prototype.cleanKeyframes = function() {
     var prop = this.getProperty();
 
-    var numKeys = prop.numKeys;
-    if (numKeys == 0) return;
-    if (numKeys == 1) {
-        prop.removeKey(1);
-        return;
-    }
-
-    for (var i = numKeys; i > 0; i--) {
-        var currentKey = this.keyAtIndex(i);
-
-        //check values
-        var currentValue = new DuList(currentKey.value);
-
-        if (i > 1) {
-            var prevKey = this.keyAtIndex(i - 1);
-            var prevValue = new DuList(prevKey.value);
-        }
-        if (i < prop.numKeys) {
-            var nextKey = this.keyAtIndex(i + 1);
-            var nextValue = new DuList(nextKey.value);
+    if (prop.propertyType == PropertyType.PROPERTY) {
+        var numKeys = prop.numKeys;
+        if (numKeys == 0) return;
+        if (numKeys == 1) {
+            prop.removeKey(1);
+            return;
         }
 
-        if (i > 1 && !currentValue.equals(prevValue, undefined, 3)) continue;
-        if (i < prop.numKeys && !currentValue.equals(nextValue, undefined, 3)) continue;
+        for (var i = numKeys; i > 0; i--) {
+            var currentKey = this.keyAtIndex(i);
 
-        //check velocities
-        var remove = false;
-        for (var j = 0, n = currentKey.inEase.length; j < n; j++) {
-            remove = false
-            if (i > 1 && !DuMath.equals(prevKey.outEase[j].speed, 0, 4)) break;
-            if (i > 1 && !DuMath.equals(currentKey.inEase[j].speed, 0, 4)) break;
-            if (i < prop.numKeys && !DuMath.equals(currentKey.outEase[j].speed, 0, 4)) break;
-            if (i < prop.numKeys && !DuMath.equals(nextKey.inEase[j].speed, 0, 4)) break;
-            remove = true;
+            //check values
+            var currentValue = new DuList(currentKey.value);
+
+            if (i > 1) {
+                var prevKey = this.keyAtIndex(i - 1);
+                var prevValue = new DuList(prevKey.value);
+            }
+            if (i < prop.numKeys) {
+                var nextKey = this.keyAtIndex(i + 1);
+                var nextValue = new DuList(nextKey.value);
+            }
+
+            if (i > 1 && !currentValue.equals(prevValue, undefined, 3)) continue;
+            if (i < prop.numKeys && !currentValue.equals(nextValue, undefined, 3)) continue;
+
+            //check velocities
+            var remove = false;
+            for (var j = 0, n = currentKey.inEase.length; j < n; j++) {
+                remove = false
+                if (i > 1 && !DuMath.equals(prevKey.outEase[j].speed, 0, 4)) break;
+                if (i > 1 && !DuMath.equals(currentKey.inEase[j].speed, 0, 4)) break;
+                if (i < prop.numKeys && !DuMath.equals(currentKey.outEase[j].speed, 0, 4)) break;
+                if (i < prop.numKeys && !DuMath.equals(nextKey.inEase[j].speed, 0, 4)) break;
+                remove = true;
+            }
+
+            //remove key
+            if (remove) prop.removeKey(i);
         }
-
-        //remove key
-        if (remove) prop.removeKey(i);
+    } else {
+        for (var p = 1, num = this.numProperties(); p <= num; p++) {
+            this.prop(p).cleanKeyframes();
+        }
     }
 }
 
@@ -1220,29 +1262,27 @@ DuAEProperty.prototype.setExpression = function(expr, keepValue) {
 }
 
 /**
- * Recursively (if it's a group) replaces text in Expressions
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
+ * Replaces text in Expressions
  * @param {string} oldString - The string to replace
  * @param {string} newString - The new string
  * @param {boolean} [caseSensitive=true] - Whether the search has to be case sensitive
  */
 DuAEProperty.prototype.replaceInExpressions = function(prop, oldString, newString, caseSensitive) {
+    // Defaults
     caseSensitive = def(caseSensitive, true);
 
-    var prop = this.getProperty();
-
-    if (prop.propertyType == PropertyType.PROPERTY) {
-        if (this.riggable()) {
+    // Run
+    this.do(function(prop) {
+        if (prop.riggable()) {
+            prop = prop.getProperty();
             if (prop.expression = '') return;
             if (prop.expression.length < oldString.length) return;
             try {
                 prop.expression = DuString.replace(prop.expression, oldString, newString, caseSensitive);
             } catch (e) {};
         }
-    } else if (prop.numProperties > 0) {
-        for (var propertyIndex = 1, numP = this.numProperties(); propertyIndex <= numP; propertyIndex++) {
-            this.property(propertyIndex).replaceInExpressions(oldString, newString, caseSensitive);
-        }
-    }
+    });
 }
 
 /**
@@ -1268,6 +1308,7 @@ DuAEProperty.prototype.pickWhip = function(parentProp, useThisComp) {
 }
 
 /**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
  * Link all the properties found in this prop to all the same properties of parentProp (this is a recursive method)<br />
  * Note: any Property or PropertyGroup (and its subproperties) named "Data" will be linked the opposite way (from parentProp to childProp).
  * @memberof DuAEProperty
@@ -1357,6 +1398,7 @@ DuAEProperty.prototype.linkProperties = function(parentProp, useThisComp, timeLa
 }
 
 /**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
  * Removes all expressions found in groups or sections named "Data" in the property.
  */
 DuAEProperty.prototype.removeDataExpressions = function(prop) {
@@ -1393,16 +1435,18 @@ DuAEProperty.prototype.removeDataExpressions = function(prop) {
 }
 
 /**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
  * Removes all expressions found in the property.
  * @param {function} filter - A function which takes a string as a parameter (the expression). Returns true if the expression has to be removed.
  * @param {Boolean} [keepPostExpressionValue=true] Set to false to just remove the expressions and get back the pre expression value
  */
 DuAEProperty.prototype.removeExpressions = function(filter, keepPostExpressionValue) {
+    // Defaults
     keepPostExpressionValue = def(keepPostExpressionValue, true);
-    var prop = this.getProperty();
 
-    if (prop.propertyType == PropertyType.PROPERTY) {
-
+    // Run
+    this.do(function(propInfo) {
+        prop = propInfo.getProperty();
         var expression = prop.expression;
 
         if (expression == '') return;
@@ -1410,20 +1454,16 @@ DuAEProperty.prototype.removeExpressions = function(filter, keepPostExpressionVa
             if (!filter(expression)) return;
         }
 
-        if (this.riggable()) {
-            if (keepPostExpressionValue) this.setValue(prop.value);
+        if (propInfo.riggable()) {
+            if (keepPostExpressionValue) propInfo.setValue(prop.value);
             prop.expression = '';
         }
-    } else {
-        for (var p = 1, num = this.numProperties(); p <= num; p++) {
-            this.prop(p).removeExpressions(filter, keepPostExpressionValue);
-        }
-    }
+    });
 }
 
 /**
  * Alias for {@link DuAEProperty#removeExpressions DuAEProperty.removeExpressions()}
- * @alias DuList.removeExpressions()
+ * @alias DuAEProperty.removeExpressions()
  * @name removeExpression
  * @memberof DuAEProperty.prototype
  * @function
@@ -1431,6 +1471,7 @@ DuAEProperty.prototype.removeExpressions = function(filter, keepPostExpressionVa
 DuAEProperty.prototype.removeExpression = DuAEProperty.prototype.removeExpressions;
 
 /**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
  * Recursilvely adds all the (supported) properties found to the essential graphics panel<br />
  * Note: any Property or PropertyGroup (and its subproperties) named "data" will be ignored.
  * @return {int} The number of properties added
@@ -1513,6 +1554,7 @@ DuAEProperty.prototype.animated = function() {
 }
 
 /**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
  * Gets the After Effects animated (with keyframes) properties in the propertyGroup
  * @param {PropertyType|PropertyValueType|string|function}	 [filter]	- A filter to get only a certain type, or value type, or property name or matchName.<br />
  * A function which take one PropertyBase as argument can be used to filter the properties: the Property will be returned if the function returns true.
@@ -1799,9 +1841,7 @@ DuAEProperty.prototype.pathProperty = function() {
 }
 
 /**
- * Gets the average speed of the animated propreties
- * @static
- * @param {Property[]|DuAEProperty[]} props - The Properties
+ * Gets the average speed of the proprety
  * @param {bool}	 [preExpression=true]	- True to get the velocity from keyframes instead of the result of the exression
  * @param {bool}	 [fastMode=true]	- True to limit the number of samples used to compute the velocity and make the process faster.
  * @return {float} The average speed in unit per second
@@ -1863,33 +1903,116 @@ DuAEProperty.prototype.fixValue = function(value) {
 }
 
 /**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
  * Quickly bakes an expression, adding a keyframe/frame
  * @param {float} [frameStep=1.0] By default, adds one keyframe per frame. Use a lower value to add sub-frame keyframes, a higher value to add less keyframes.
  * @param {float[]} [range] The time range to bake. By default, the whole composition.
  */
-DuAEProperty.prototype.quickBakeExpression = function(frameStep, range) {
-    // Checks
-    var prop = this.getProperty();
-    if (!prop.canSetExpression) return;
-    if (prop.expression == "") return;
+DuAEProperty.prototype.quickBakeExpressions = function(frameStep, range) {
     // Defaults
     frameStep = def(frameStep, 1.0);
     range = def(range, [0, this.comp.duration]);
     var step = this.comp.frameDuration * frameStep;
-    // Get the values and times
-    var values = [];
-    var times = [];
-    for (var time = range[0]; time < range[1]; time += step) {
-        times.push(time);
-        values.push(prop.valueAtTime(time, false));
-    }
-    // Disable expression
-    prop.expressionEnabled = false;
-    // Set values
-    prop.setValuesAtTimes(times, values);
-    // Clean
-    this.cleanKeyframes();
+    // Run
+    this.do(function(propInfo) {
+        prop = propInfo.getProperty();
+        // Checks
+        if (!prop.canSetExpression) return;
+        if (prop.expression == "") return;
+        // Get the values and times
+        var values = [];
+        var times = [];
+        for (var time = range[0]; time < range[1]; time += step) {
+            times.push(time);
+            values.push(prop.valueAtTime(time, false));
+        }
+        // Disable expression
+        prop.expressionEnabled = false;
+        // Set values
+        prop.setValuesAtTimes(times, values);
+        // Clean
+        propInfo.cleanKeyframes();
+        // Set Continuous
+        propInfo.setInterpolation("continuous");
+    });
 }
+
+/**
+ * Alias for {@link DuAEProperty#quickBakeExpressions DuAEProperty.quickBakeExpressions()}
+ * @alias DuAEProperty.quickBakeExpressions()
+ * @name quickBakeExpression
+ * @memberof DuAEProperty.prototype
+ * @function
+ */
+DuAEProperty.prototype.quickBakeExpression = DuAEProperty.prototype.quickBakeExpressions;
+
+/**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
+ * Uses a smarter algorithm to bake the expression to keyframes
+ * @param {float} [frameStep=1.0] By default, checks one value per keyframe. A lower value increases the precision and allows for sub-frame sampling. A higher value is faster but less precise.
+ */
+DuAEProperty.prototype.smartBakeExpressions = function(frameStep, range) {
+    // Defaults
+    frameStep = def(frameStep, 1.0);
+    range = def(range, [0, this.comp.duration]);
+    var step = this.comp.frameDuration * frameStep;
+    // Run
+    this.do(function(propInfo) {
+        prop = propInfo.getProperty();
+        // Checks
+        if (!prop.canSetExpression) return;
+        if (prop.expression == "") return;
+        // Get the values and times
+        // The extremes
+        var extremeValues = [];
+        var extremeTimes = [];
+        // First and last points if they're not extremes
+        var startValue = null;
+        var endValue = null;
+        for (var time = range[0]; time <= range[1] + step; time += step) {
+            var currentValue = prop.valueAtTime(time, false);
+            var nextValue = prop.valueAtTime(time + step, false);
+            var prevValue = prop.valueAtTime(time - step, false);
+            var ok = false;
+            if (DuMath.isExtremePoint(prevValue, currentValue, nextValue)) {
+                extremeTimes.push(time);
+                extremeValues.push(currentValue);
+            } else if (time == range[0]) startValue = currentValue;
+            else if (time >= range[1]) {
+                endValue = currentValue;
+                break;
+            }
+        }
+        // Disable expression
+        prop.expressionEnabled = false;
+        // Set values
+        prop.setValuesAtTimes(extremeTimes, extremeValues);
+        // Clean
+        propInfo.cleanKeyframes();
+        // Set to default Bézier
+        propInfo.setInterpolation(KeyframeInterpolationType.BEZIER);
+        // Set start and end value
+        if (startValue !== null) {
+            prop.setValueAtTime(range[0], startValue);
+            var startKey = prop.nearestKeyIndex(range[0]);
+            propInfo.setKeyInterpolation(startKey, 'continuous');
+        }
+        if (endValue !== null) {
+            prop.setValueAtTime(range[1], endValue);
+            var endKey = prop.nearestKeyIndex(range[1]);
+            propInfo.setKeyInterpolation(endKey, 'continuous');
+        }
+    });
+}
+
+/**
+ * Alias for {@link DuAEProperty#smartBakeExpressions DuAEProperty.smartBakeExpressions()}
+ * @alias DuAEProperty.smartBakeExpressions()
+ * @name smartBakeExpression
+ * @memberof DuAEProperty.prototype
+ * @function
+ */
+DuAEProperty.prototype.smartBakeExpression = DuAEProperty.prototype.smartBakeExpressions;
 
 // =========== STATIC ====================
 

@@ -12,7 +12,7 @@
     var props = DuAEComp.getSelectedProps();
     props = new DuList(props);
     props.do(function(prop) {
-        prop.quickBakeExpression(4);
+        prop.smartBakeExpression(1);
     });
 
     DuAE.endUndoGroup();
