@@ -13,6 +13,16 @@ DuAEExpression.cache = [];
 DuAEExpression.lastCacheUpdateTime = 0;
 
 /**
+ * The different modes available to bake expressions
+ * @enum {int}
+ * @readonly
+*/
+DuAEExpression.BakeAlgorithm = {
+    SMART: 0,
+    PRECISE: 1
+}
+
+/**
  * The list of expression IDs, added at the beginning of generated expressions.
  * @enum {string}
  */

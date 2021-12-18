@@ -935,6 +935,8 @@ DuAEProperty.prototype.setKeyInterpolation = function(key, typeIn, typeOut, ease
 
     var prop = this.getProperty();
 
+    try {
+
     if (typeIn == "roving" && prop.isSpatial) {
         prop.setRovingAtKey(key, true);
     } else if (typeIn == "continuous") {
@@ -942,7 +944,7 @@ DuAEProperty.prototype.setKeyInterpolation = function(key, typeIn, typeOut, ease
         prop.setTemporalContinuousAtKey(key, true);
         prop.setTemporalAutoBezierAtKey(key, true);
         //not roving
-        if (prop.isSpatial) prop.setRovingAtKey(key, false);
+        if (prop.propertyValueType == PropertyValueType.TwoD_SPATIAL || prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL) prop.setRovingAtKey(key, false);
     } else if (typeIn != "roving") {
         //influences
         if (!prop.isSpatial && prop.value.length == 3) {
@@ -961,6 +963,31 @@ DuAEProperty.prototype.setKeyInterpolation = function(key, typeIn, typeOut, ease
         //not continuous
         prop.setTemporalContinuousAtKey(key, false);
     }
+    } catch (e) { if (DuESF.debug) DuDebug.throwError("Can't set interpolation on: " + prop.matchName + " | " + prop.name, "DuAEProperty.prototype.setKeyInterpolation", e, true ); }
+}
+
+/**
+ * Sets the speed of a keyframe.
+ * @param {int} key - The key index
+ * @param {float} speed - The speed
+ */
+DuAEProperty.prototype.setKeySpeed = function(key, speed) {
+    var prop = this.getProperty();
+    // Get the current ease to reset the same tangents
+    var inEase = prop.keyInTemporalEase(key);
+    var outEase = prop.keyOutTemporalEase(key);
+
+    if (!(speed instanceof Array)) speed = [speed];
+
+    while (speed.length < inEase.length) speed.push(speed[0]);
+
+    // Set the new speed
+    for (var i = 0, n = inEase.length; i < n; i++) {
+        inEase[i].speed = speed[i];
+        outEase[i].speed = speed[i];
+    }
+
+    prop.setTemporalEaseAtKey(key, inEase, outEase);
 }
 
 /**
@@ -1205,7 +1232,7 @@ DuAEProperty.prototype.cleanKeyframes = function() {
  * @param {boolean} [preExpression=true] - true to get the pre-expression speed.
  * @return {float} The speed
  */
-DuAEProperty.prototype.getSpeed = function(time, preExpression) {
+DuAEProperty.prototype.speedAtTime = function(time, preExpression) {
     preExpression = def(preExpression, true);
 
     var prop = this.getProperty();
@@ -1218,6 +1245,37 @@ DuAEProperty.prototype.getSpeed = function(time, preExpression) {
 
     var speed = DuMath.length(prop.valueAtTime(time + comp.frameDuration / 2, preExpression), prop.valueAtTime(time - comp.frameDuration / 2, preExpression));
     return speed / comp.frameDuration;
+}
+
+/**
+ * Gets the velocity of a property at a given time, in unit per second (and not per frame as speeds in the After Effects API)
+ * @param {float} [time=comp().time] - The time.
+ * @param {boolean} [preExpression=true] - true to get the pre-expression velocity.
+ * @return {float[]} The velocity
+ */
+DuAEProperty.prototype.velocityAtTime = function(time, preExpression) {
+    preExpression = def(preExpression, true);
+
+    var prop = this.getProperty();
+
+    if (prop.propertyType != PropertyType.PROPERTY) return 0;
+    if (prop.numKeys == 0 && preExpression) return 0;
+
+    var comp = this.comp;
+    time = def(time, comp.time);
+
+    // For each axis
+    var d = this.dimensions();
+    var velocity = [];
+    var nextValue = prop.valueAtTime(time + comp.frameDuration / 2, preExpression);
+    var prevValue = prop.valueAtTime(time - comp.frameDuration / 2, preExpression);
+    if (d == 1) velocity = (nextValue - prevValue) / comp.frameDuration;
+    else {
+        for (var i = 0; i < d; i++) {
+            velocity.push((nextValue[i] - prevValue[i]) / comp.frameDuration);
+        }
+    }
+    return velocity;
 }
 
 /**
@@ -1705,7 +1763,7 @@ DuAEProperty.prototype.maxVelocity = function(preExpression, fastMode) {
     }
 
     for (var i = startFrame; i < endFrame; i = i + step) {
-        var vel = this.getSpeed(i * comp.frameDuration, preExpression);
+        var vel = this.speedAtTime(i * comp.frameDuration, preExpression);
         if (vel > velocity) velocity = vel;
     }
 
@@ -1906,12 +1964,11 @@ DuAEProperty.prototype.fixValue = function(value) {
  * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
  * Quickly bakes an expression, adding a keyframe/frame
  * @param {float} [frameStep=1.0] By default, adds one keyframe per frame. Use a lower value to add sub-frame keyframes, a higher value to add less keyframes.
- * @param {float[]} [range] The time range to bake. By default, the whole composition.
  */
-DuAEProperty.prototype.quickBakeExpressions = function(frameStep, range) {
+DuAEProperty.prototype.quickBakeExpressions = function(frameStep) {
     // Defaults
     frameStep = def(frameStep, 1.0);
-    range = def(range, [0, this.comp.duration]);
+    range = [0, this.comp.duration];
     var step = this.comp.frameDuration * frameStep;
     // Run
     this.do(function(propInfo) {
@@ -1919,6 +1976,15 @@ DuAEProperty.prototype.quickBakeExpressions = function(frameStep, range) {
         // Checks
         if (!prop.canSetExpression) return;
         if (prop.expression == "") return;
+        // We don't support all kind of properties yet
+        var valueType = prop.propertyValueType;
+        if (valueType == PropertyValueType.NO_VALUE) return;
+        if (valueType == PropertyValueType.CUSTOM_VALUE) return;
+        if (valueType == PropertyValueType.MARKER) return;
+        if (valueType == PropertyValueType.LAYER_INDEX) return;
+        if (valueType == PropertyValueType.MASK_INDEX) return;
+        if (valueType == PropertyValueType.SHAPE) return;
+        if (valueType == PropertyValueType.TEXT_DOCUMENT) return;
         // Get the values and times
         var values = [];
         var times = [];
@@ -1928,6 +1994,8 @@ DuAEProperty.prototype.quickBakeExpressions = function(frameStep, range) {
         }
         // Disable expression
         prop.expressionEnabled = false;
+        // Remove current keyframes
+        propInfo.removeAnimation();
         // Set values
         prop.setValuesAtTimes(times, values);
         // Clean
@@ -1951,33 +2019,73 @@ DuAEProperty.prototype.quickBakeExpression = DuAEProperty.prototype.quickBakeExp
  * Uses a smarter algorithm to bake the expression to keyframes
  * @param {float} [frameStep=1.0] By default, checks one value per keyframe. A lower value increases the precision and allows for sub-frame sampling. A higher value is faster but less precise.
  */
-DuAEProperty.prototype.smartBakeExpressions = function(frameStep, range) {
+DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
     // Defaults
     frameStep = def(frameStep, 1.0);
-    range = def(range, [0, this.comp.duration]);
-    var step = this.comp.frameDuration * frameStep;
+    range = [0, this.comp.duration];
+    var step = this.comp.frameDuration;
     // Run
     this.do(function(propInfo) {
         prop = propInfo.getProperty();
         // Checks
         if (!prop.canSetExpression) return;
         if (prop.expression == "") return;
+        // We don't support all kind of properties yet
+        var valueType = prop.propertyValueType;
+        if (valueType == PropertyValueType.NO_VALUE) return;
+        if (valueType == PropertyValueType.CUSTOM_VALUE) return;
+        if (valueType == PropertyValueType.MARKER) return;
+        if (valueType == PropertyValueType.LAYER_INDEX) return;
+        if (valueType == PropertyValueType.MASK_INDEX) return;
+        if (valueType == PropertyValueType.SHAPE) return;
+        if (valueType == PropertyValueType.TEXT_DOCUMENT) return;
         // Get the values and times
         // The extremes
         var extremeValues = [];
         var extremeTimes = [];
+        // The inflexions
+        var inflexionValues = [];
+        var inflexionSpeeds = [];
+        var inflexionTimes = [];
         // First and last points if they're not extremes
         var startValue = null;
         var endValue = null;
+        // Max amplitude of the values (to adjust precision later)
+        var amplitude = 0;
         for (var time = range[0]; time <= range[1] + step; time += step) {
             var currentValue = prop.valueAtTime(time, false);
             var nextValue = prop.valueAtTime(time + step, false);
             var prevValue = prop.valueAtTime(time - step, false);
-            var ok = false;
+            var currentVelocity = propInfo.velocityAtTime(time, false);
+            var nextVelocity = propInfo.velocityAtTime(time + step, false);
+            var prevVelocity = propInfo.velocityAtTime(time - step, false);
+
+            // Get values and times
+            // Extremes
             if (DuMath.isExtremePoint(prevValue, currentValue, nextValue)) {
+                // Get amplitude
+                for (var i = 0, n = extremeValues.length; i < n; i++)
+                {
+                    var length = DuMath.length( currentValue, extremeValues[i] );
+                    if (length > amplitude) amplitude = length;
+                }
+                // Add to extremes
                 extremeTimes.push(time);
                 extremeValues.push(currentValue);
-            } else if (time == range[0]) startValue = currentValue;
+            }
+            // Inflexions
+            else if (DuMath.isInflexionPoint(prevVelocity, currentVelocity, nextVelocity)) {
+                inflexionValues.push(currentValue);
+                if (!(currentVelocity instanceof Array)) speed = currentVelocity;
+                else if (prop.propertyValueType != PropertyValueType.TwoD && prop.propertyValueType != PropertyValueType.ThreeD) {
+                    speed = propInfo.speedAtTime(time);
+                } else speed = currentVelocity;
+                inflexionSpeeds.push(speed);
+                inflexionTimes.push(time);
+            }
+            // Start value
+            else if (time == range[0]) startValue = currentValue;
+            // End value
             else if (time >= range[1]) {
                 endValue = currentValue;
                 break;
@@ -1985,12 +2093,34 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep, range) {
         }
         // Disable expression
         prop.expressionEnabled = false;
-        // Set values
-        prop.setValuesAtTimes(extremeTimes, extremeValues);
-        // Clean
-        propInfo.cleanKeyframes();
-        // Set to default Bézier
-        propInfo.setInterpolation(KeyframeInterpolationType.BEZIER);
+        // Remove current keyframes
+        propInfo.removeAnimation();
+        // Set extreme values
+        if (extremeValues.length > 0) {
+            prop.setValuesAtTimes(extremeTimes, extremeValues);
+            // Clean
+            propInfo.cleanKeyframes();
+            // Set to default Bézier
+            propInfo.setInterpolation(KeyframeInterpolationType.BEZIER);
+        }
+        // Set inflexion values
+        if (inflexionValues.length > 0) {
+            // Adjust the precision for comparison
+            var comparisonPrecision = amplitude / 10 * frameStep;
+            // Set inflexion values and speeds
+            for (var i = 0, n = inflexionValues.length; i < n; i++) {
+                var inflexionTime = inflexionTimes[i];
+                // Compare value to set the key frame
+                var inflexionValue =inflexionValues[i];
+                var currentValue = prop.valueAtTime(inflexionTime, true);
+                // Already close to the current curve, no need to add a keyframe
+                if (DuMath.length(inflexionValue, currentValue) <= comparisonPrecision) continue;
+                // Set the new keyframe
+                prop.setValueAtTime(inflexionTime, inflexionValue);
+                var inflexionKey = prop.nearestKeyIndex(inflexionTime);
+                propInfo.setKeySpeed(inflexionKey, inflexionSpeeds[i]);
+            }
+        }
         // Set start and end value
         if (startValue !== null) {
             prop.setValueAtTime(range[0], startValue);
@@ -2002,6 +2132,8 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep, range) {
             var endKey = prop.nearestKeyIndex(range[1]);
             propInfo.setKeyInterpolation(endKey, 'continuous');
         }
+        // Clean
+        propInfo.cleanKeyframes();
     });
 }
 
@@ -2013,6 +2145,28 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep, range) {
  * @function
  */
 DuAEProperty.prototype.smartBakeExpression = DuAEProperty.prototype.smartBakeExpressions;
+
+/**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
+ * Bakes the expressions to keyframes
+ * @param {DuAEExpression.BakeAlgorithm} [mode=DuAEExpression.BakeAlgorithm.SMART] By default, checks one value per keyframe. A lower value increases the precision and allows for sub-frame sampling. A higher value is faster but less precise.
+ * @param {float} [frameStep=1.0] By default, checks one value per keyframe. A lower value increases the precision and allows for sub-frame sampling. A higher value is faster but less precise.
+ */
+DuAEProperty.prototype.bakeExpressions = function(mode, frameStep) {
+    mode = def(mode, DuAEExpression.BakeAlgorithm.SMART);
+    frameStep = def(frameStep, 1.0);
+    if (mode == DuAEExpression.BakeAlgorithm.SMART) this.smartBakeExpressions(frameStep);
+    else this.quickBakeExpressions(frameStep);
+}
+
+/**
+ * Alias for {@link DuAEProperty#bakeExpressions DuAEProperty.bakeExpressions()}
+ * @alias DuAEProperty.bakeExpressions()
+ * @name bakeExpression
+ * @memberof DuAEProperty.prototype
+ * @function
+ */
+DuAEProperty.prototype.bakeExpression = DuAEProperty.prototype.bakeExpressions;
 
 // =========== STATIC ====================
 
@@ -2373,7 +2527,7 @@ DuAEProperty.getAverageSpeed = function(props, preExpression, fastMode) {
         var sum = 0;
         for (var frame = firstFrame; frame < lastFrame; frame = frame + step) {
             var time = frame * comp.frameDuration;
-            sum += aeprop.getSpeed(time, preExpression);
+            sum += aeprop.speedAtTime(time, preExpression);
         }
         var speed = sum / (lastFrame - firstFrame);
 

@@ -203,37 +203,17 @@ DuAEComp.getActiveLayer = function() {
 }
 
 /**
- * Runs a function on all the selected layers
- * @param {function} method - The function to run on the layers, which takes a layer as its only argument.
- * @param {string} [undoGroupName] - The name of the undoGroup created before the execution. If not provided, there will not be any undoGroup created.
- */
-DuAEComp.doSelectedLayers = function(method, undoGroupName) {
-    //get layers
-    var layers = DuAEComp.unselectLayers();
-
-    // run
-    DuAELayer.doLayers(layers, method, undoGroupName);
-
-    //reselect
-    DuAEComp.selectLayers(layers);
-}
-
-/**
  * Runs a function on all the layers
  * @param {function} method - The function to run on the layers, which takes a layer as its only argument.
- * @param {string} [undoGroupName] - The name of the undoGroup created before the execution. If not provided, there will not be any undoGroup created.
  * @param {CompItem} [comp] - The comp containing the layers. Will use the current comp if not provided.
  */
-DuAEComp.doLayers = function(method, undoGroupName, comp) {
+DuAEComp.doLayers = function(method, comp) {
     comp = def(comp, DuAEProject.getActiveComp());
-    if (!(comp instanceof CompItem)) return;
+    if (!(comp)) return;
 
     //get layers
-    var layers = comp.layers;
-    if (layers.length == 0) return;
-
-    // run
-    DuAELayer.doLayers(layers, method, undoGroupName);
+    var it = new DuList(comp.layers);
+    it.do( method );
 }
 
 /**
@@ -788,4 +768,17 @@ DuAEComp.crop = function(bounds, comp) {
     // Resize
     comp.width = parseInt(bounds[2]);
     comp.height = parseInt(bounds[3]);
+}
+
+/**
+ * Bakes the expressions to keyframes
+ * @param {DuAEExpression.BakeAlgorithm} [mode=DuAEExpression.BakeAlgorithm.SMART] The algorithm to use for baking the expressions.
+ * @param {float} [frameStep=1.0] By default, checks one value per keyframe. A lower value increases the precision and allows for sub-frame sampling. A higher value is faster but less precise.
+ * @param {CompItem} [comp] The composition. The active composition by default.
+ */
+DuAEComp.bakeExpressions = function(mode, frameStep, comp) {
+    DuAEComp.doLayers(function(layer) {
+        var l = new DuAEProperty(layer);
+        l.bakeExpressions(mode, frameStep);
+    }, comp);
 }
