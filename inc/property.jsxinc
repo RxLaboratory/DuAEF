@@ -1885,6 +1885,34 @@ DuAEProperty.prototype.fixValue = function( value ) {
     return value;
 }
 
+/**
+ * Quickly bakes an expression, adding a keyframe/frame
+ * @param {float} [frameStep=1.0] By default, adds one keyframe per frame. Use a lower value to add sub-frame keyframes, a higher value to add less keyframes.
+ * @param {float[]} [range] The time range to bake. By default, the whole composition.
+ */
+DuAEProperty.prototype.quickBakeExpression = function(frameStep, range) {
+    // Checks
+    var prop = this.getProperty();
+    if (!prop.canSetExpression) return;
+    if (prop.expression == "") return;
+    // Defaults
+    frameStep = def(frameStep, 1.0);
+    range = def(range, [0, this.comp.duration]);
+    var step = this.comp.frameDuration * frameStep;
+    // Get the values and times
+    var values = [];
+    var times = [];
+    for (var time = range[0]; time < range[1]; time += step)
+    {
+        times.push(time);
+        values.push(prop.valueAtTime(time, false));
+    }
+    // Disable expression
+    prop.expressionEnabled = false;
+    // Set values
+    prop.setValuesAtTimes(times, values);
+}
+
 // =========== STATIC ====================
 
 
