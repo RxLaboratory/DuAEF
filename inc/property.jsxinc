@@ -2168,6 +2168,32 @@ DuAEProperty.prototype.bakeExpressions = function(mode, frameStep) {
  */
 DuAEProperty.prototype.bakeExpression = DuAEProperty.prototype.bakeExpressions;
 
+/**
+ * Finds the same property in the given comp (same path & name)
+ * @param {CompItem} comp The composition where to find the property
+ * @return {DuAEProperty|null} The property or null if it wasn't found
+ */
+DuAEProperty.prototype.findInComp = function(comp) {
+    // Checks
+    // We need to find the same layer.
+    var layerIndex = this.layer.index;
+    if (layerIndex > comp.numLayers) return null;
+
+    // Go down the tree from the layer
+    var parentProp = comp.layer(this.layer.index);
+    for (var i = 0, n = this.parentIndices.length; i < n; i++) {
+        // Make sure the property index exists...
+        var propIndex = this.parentIndices[i];
+        if (propIndex > parentProp.numProperties) return null;
+        // Get the next prop
+        parentProp = parentProp.property(propIndex);
+    }
+
+    // Check the matchname
+    if (parentProp.matchName == this.matchName) return new DuAEProperty(parentProp);
+    return null;
+}
+
 // =========== STATIC ====================
 
 
