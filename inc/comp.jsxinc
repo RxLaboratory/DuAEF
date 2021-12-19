@@ -306,28 +306,40 @@ DuAEComp.selectLayers = function(layers) {
  */
 DuAEComp.newUniqueLayerName = function(newName, comp, increment) {
     // Ignore the last block
-    var nName = newName.split(' | ');
+    // Deactivated - Why did I do that in the first place??
+    // Answer: because I wanted the number not to be at the end... Which was a very bad idea
+    /*var nName = newName.split(' | ');
     var lastBlock = '';
     if (nName.length == 4) {
         lastBlock = nName.pop();
         newName = nName.join(' | ');
-    }
+    }//*/
+
+    // Let's try to remove any trailing number first, that's better
+    newName = DuString.trimNumbers(newName);
 
     increment = def(increment, true);
     comp = def(comp, DuAEProject.getActiveComp());
     var layerNames = [];
+    // Check if we really need to change the name
+    var isAlreadyUnique = true;
     for (var i = 1; i <= comp.layers.length; i++) {
-        // Ignore the last block
         var n = comp.layer(i).name;
-        var tName = n.split(' | ');
+        if (n == newName) isAlreadyUnique = false;
+        // Ignore the last block
+        /*var tName = n.split(' | ');
         if (tName.length == 4) {
             tName.pop();
             n = tName.join(' | ');
-        }
+        }//*/
         layerNames.push(n);
     }
+    // Let's stop here if there's no need to change it
+    if (isAlreadyUnique) return newName;
+
     newName = DuString.generateUnique(newName, layerNames, increment);
-    if (lastBlock != '') newName += ' | ' + lastBlock;
+    // Ignore the last block
+    //if (lastBlock != '') newName += ' | ' + lastBlock;
     return newName;
 }
 

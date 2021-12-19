@@ -310,7 +310,6 @@ DuAETag.addGroup = function (layer, groupName, tag )
     if (!groups) groups = [];
 
     groups = new DuList(groups);
-
     if (groups.indexOf(groupName) >= 0) return;
 
     groups.push( groupName );
