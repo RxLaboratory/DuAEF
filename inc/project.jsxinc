@@ -244,6 +244,7 @@ DuAEProject.reduce = function(comps, keepExpressionOnly) {
     comps = def(comps, DuAEProject.getComps(true));
     if (comps instanceof CompItem) comps = [comps];
     if (comps.length == 0) return;
+    comps = new Dulist(comps);
 
     //consolidate footage
     app.project.consolidateFootage();
@@ -254,7 +255,7 @@ DuAEProject.reduce = function(comps, keepExpressionOnly) {
     for (i = app.project.numItems; i > 0; i--) {
         var item = app.project.item(i);
         //if it's one of the comp, ignore
-        if (DuList.indexOf(comps, item, DuAEItem.compareItems) >= 0) continue;
+        if (comps.indexOf(item, DuAEItem.compareItems) >= 0) continue;
         //if AVItem
         if (item instanceof CompItem || item instanceof FootageItem) {
             var usedIn = DuAEItem.usedIn(item, true, keepExpressionOnly);
@@ -268,7 +269,7 @@ DuAEProject.reduce = function(comps, keepExpressionOnly) {
 
             for (j = 0, num = usedIn.length; j < num; j++) {
                 //if there's one of the comp to keep, do not remove
-                if (DuList.indexOf(comps, usedIn[j], DuAEItem.compareItems) >= 0) {
+                if (comps.indexOf(usedIn[j], DuAEItem.compareItems) >= 0) {
                     remove = false;
                     break;
                 }

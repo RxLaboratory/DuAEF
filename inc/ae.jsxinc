@@ -689,8 +689,9 @@ DuAE.PrefType =
 
 /**
  * List of file extensions whih may be imported as several items with the same source
+ * @type {DuList}
  */
-DuAE.DuAELayeredFileType = ["psd","psb","ai","fla"];
+DuAE.DuAELayeredFileType = new DuList( ["psd","psb","ai","fla"] );
 
 /**
 	* Enum for selections
@@ -818,8 +819,7 @@ DuAE.getDuAEProperty = function (props)
 DuAE.isLayeredFile = function(file)
 {
 	var ext = DuPath.getExtension(file);
-	var yes = DuList.indexOf( DuAE.DuAELayeredFileType , ext.toLowerCase() ) >= 0;
-	return yes;
+	return DuAE.DuAELayeredFileType.contains( ext.toLowerCase() );
 }
 
 /**

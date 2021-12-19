@@ -131,7 +131,8 @@ DuAEItem.usedIn = function (item, recursive, keepExpressionOnly ) {
         }
     }
 
-    DuList.removeDuplicates(usedIn, DuAEItem.compareItems);
+    usedIn = new DuList(usedIn);
+    usedIn.removeDuplicates(DuAEItem.compareItems);
 
     if (cacheSuspended) DuAEProject.suspendCacheUpdates = false;
 

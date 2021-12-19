@@ -420,8 +420,9 @@ DuAEComp.getPrecomps = function(comp, recursive) {
             if (recursive) precomps = precomps.concat(DuAEComp.getPrecomps(precomp));
         }
     });
+    precomps = new DuList(precomps);
     //remove duplicates
-    DuList.removeDuplicates(precomps);
+    precomps.removeDuplicates();
     return precomps;
 }
 
@@ -435,7 +436,8 @@ DuAEComp.getParentComps = function(item) {
     new DuList(parentComps).do(function(parentComp) {
         parentComps = parentComps.concat(DuAEComp.getParentComps(parentComp));
     });
-    DuList.removeDuplicates(parentComps);
+    parentComps = new DuList(parentComps);
+    parentComps.removeDuplicates();
     return parentComps;
 }
 

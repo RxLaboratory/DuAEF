@@ -16,7 +16,7 @@ DuAEExpression.lastCacheUpdateTime = 0;
  * The different modes available to bake expressions
  * @enum {int}
  * @readonly
-*/
+ */
 DuAEExpression.BakeAlgorithm = {
     SMART: 0,
     PRECISE: 1
@@ -35,31 +35,31 @@ DuAEExpression.Id = {
  * It's automatically run when needed if it's not been updated in a long time (1 mn) or if it's empty
  * @param {bool} [selectionMode=DuAE.SelectionMode.ALL_COMPOSITIONS] What to update
  */
-DuAEExpression.updateCache = function ( selectionMode ) {
+DuAEExpression.updateCache = function(selectionMode) {
 
-    if ( DuAEExpression.suspendCacheUpdates ) return;
+    if (DuAEExpression.suspendCacheUpdates) return;
 
-    selectionMode = def( selectionMode, DuAE.SelectionMode.ALL_COMPOSITIONS );
+    selectionMode = def(selectionMode, DuAE.SelectionMode.ALL_COMPOSITIONS);
 
     //clear cache
     DuAEExpression.cache = [];
 
     var comps = [];
-    if (selectionMode == DuAE.SelectionMode.ACTIVE_COMPOSITION || selectionMode == DuAE.SelectionMode.SELECTED_LAYERS || selectionMode == DuAE.SelectionMode.SELECTED_PROPERTIES ) comps = [DuAEProject.getActiveComp()];
+    if (selectionMode == DuAE.SelectionMode.ACTIVE_COMPOSITION || selectionMode == DuAE.SelectionMode.SELECTED_LAYERS || selectionMode == DuAE.SelectionMode.SELECTED_PROPERTIES) comps = [DuAEProject.getActiveComp()];
     else if (selectionMode == DuAE.SelectionMode.SELECTED_COMPOSITIONS) comps = app.project.selection;
     else if (selectionMode == DuAE.SelectionMode.ALL_COMPOSITIONS) comps = DuAEProject.getComps();
 
-    for ( var i = 0, num = comps.length; i < num; i++ ) {
+    for (var i = 0, num = comps.length; i < num; i++) {
         var comp = comps[i];
-        if ( !( comp instanceof CompItem ) ) continue;
+        if (!(comp instanceof CompItem)) continue;
 
         var layers = comp.layers;
         if (selectionMode == DuAE.SelectionMode.SELECTED_LAYERS) layers = comp.selectedLayers;
         else if (selectionMode == DuAE.SelectionMode.SELECTED_PROPERTIES) layers = DuAEComp.getSelectedProps();
 
-        new DuList(layers).do(function (layer) {
-            layer = new DuAEProperty( layer );
-            layer.addToExpressionCache( );
+        new DuList(layers).do(function(layer) {
+            layer = new DuAEProperty(layer);
+            layer.addToExpressionCache();
         });
     }
 
@@ -73,29 +73,27 @@ DuAEExpression.updateCache = function ( selectionMode ) {
  * @param {boolean} [updateCache=true] When false, the cache won't be updated before running the function. Set this to false if you already have updated the cache to improve performance.
  * @param {boolean} [apply=true] When false, the cache won't be applied back to Ae. Set this to false if you need to run other methods on expressions before applying the result to improve performance.
  */
-DuAEExpression.doInExpresssions = function ( func, selectionMode, updateCache, apply )
-{
+DuAEExpression.doInExpresssions = function(func, selectionMode, updateCache, apply) {
     selectionMode = def(selectionMode, DuAE.SelectionMode.ALL_COMPOSITIONS);
     updateCache = def(updateCache, true);
     apply = def(apply, true);
 
-    if (updateCache) DuAEExpression.updateCache( selectionMode );
+    if (updateCache) DuAEExpression.updateCache(selectionMode);
 
     for (var i = 0, num = DuAEExpression.cache.length; i < num; i++) {
-        func( DuAEExpression.cache[i] );
+        func(DuAEExpression.cache[i]);
     }
 
-    if (apply) DuAEExpression.applyCache( );
+    if (apply) DuAEExpression.applyCache();
 }
 
 /**
  * Applies all the expressions stored in the cache to the actual properties in After Effects, if and only if they've been modified.
  */
-DuAEExpression.applyCache = function ( ) {
-    for (var i = 0, num = DuAEExpression.cache.length; i < num; i++)
-    {
+DuAEExpression.applyCache = function() {
+    for (var i = 0, num = DuAEExpression.cache.length; i < num; i++) {
         DuAEExpression.cache[i].apply();
-    } 
+    }
 }
 
 /**
@@ -104,30 +102,29 @@ DuAEExpression.applyCache = function ( ) {
  * @param {string} [varName] - A name for the variable
  * @return {string} The stringified expression.
  */
-DuAEExpression.scriptifyExpression = function ( prop, varName ) {
-    varName = def( varName, '' );
+DuAEExpression.scriptifyExpression = function(prop, varName) {
+    varName = def(varName, '');
     varName = DuString.toCamelCase(varName);
 
-    function line(str)
-    {
-        return "'" + str.replace( "\r", "" ).replace(/'/g , "\\'") + "'";
+    function line(str) {
+        return "'" + str.replace("\r", "").replace(/'/g, "\\'") + "'";
     }
 
     var exp = '';
-    if ( jstype( prop ) === 'string' ) exp = prop;
+    if (jstype(prop) === 'string') exp = prop;
     else {
-        if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
+        if (prop instanceof DuAEProperty) prop = prop.getProperty();
         exp = prop.expression;
     }
 
-    var expArray = exp.split( '\n' );
+    var expArray = exp.split('\n');
     var expString = "";
-    if ( varName != '' ) expString += "var " + varName + " = ";
+    if (varName != '') expString += "var " + varName + " = ";
 
-    expString += "[" + line( expArray[0] );
+    expString += "[" + line(expArray[0]);
 
-    for ( var i = 1; i < expArray.length; i++ ) {
-        expString += ",\n\t" + line( expArray[i] );
+    for (var i = 1; i < expArray.length; i++) {
+        expString += ",\n\t" + line(expArray[i]);
     }
     expString += "\n\t].join('\\n');";
 
@@ -149,25 +146,23 @@ DuAEExpression.Library = {};
  * @param {string[]} functions The name of the functions to get
  * @return {string} The expression
  */
-DuAEExpression.Library.get = function( functions )
-{
-	var exp = functions;
-	new DuList(functions).do(function(functionName)
-	{
-		var r = DuAEExpression.Library.getRequirements( functionName );
-		exp = exp.concat(r);
-	});
+DuAEExpression.Library.get = function(functions) {
+    var exp = functions;
+    new DuList(functions).do(function(functionName) {
+        var r = DuAEExpression.Library.getRequirements(functionName);
+        exp = exp.concat(r);
+    });
 
-	DuList.removeDuplicates(exp);
+    exp = new DuList(exp);
+    exp.removeDuplicates();
 
-	var expString = '';
+    var expString = '';
 
-	new DuList(exp).do(function(expName)
-	{
-		expString += DuAEExpression.Library[ expName ].expression + '\n';
-	});
+    exp.do(function(expName) {
+        expString += DuAEExpression.Library[expName].expression + '\n';
+    });
 
-	return expString;
+    return expString;
 }
 
 /**
@@ -175,16 +170,13 @@ DuAEExpression.Library.get = function( functions )
  * @param {string} functionName The name of the function
  * @return {string[]} The names of the required functions, including the querried one
  */
-DuAEExpression.Library.getRequirements = function ( functionName )
-{
-	var r = DuAEExpression.Library[ functionName ].requirements;
-	if (r.length > 0)
-	{
-		for (var i = 0, iN = r.length; i < iN; i++)
-		{
-			r = r.concat(DuAEExpression.Library.getRequirements( r[i]) );
-		}
-	}
+DuAEExpression.Library.getRequirements = function(functionName) {
+    var r = DuAEExpression.Library[functionName].requirements;
+    if (r.length > 0) {
+        for (var i = 0, iN = r.length; i < iN; i++) {
+            r = r.concat(DuAEExpression.Library.getRequirements(r[i]));
+        }
+    }
 
-	return r;
+    return r;
 }
