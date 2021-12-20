@@ -112,6 +112,18 @@ DuAELayer.getSelectedProps = function(layer, filter, strict, caseSensitive) {
 }
 
 /**
+ * Gets the After Effects active property (the last selected one)
+ * @param {Layer}	layer	- The layer
+ * @return {DuAEProperty|null} The selected property, or null if there isn't any.
+ */
+DuAELayer.getActiveProperty = function(layer) {
+    var selectedProps = layer.selectedProperties;
+    if (selectedProps.length == 0) return null;
+    var p = selectedProps[selectedProps.length -1 ];
+    return new DuAEProperty(p);
+}
+
+/**
  * Gets all animations on the layer in the whole timeline or in the time range<br />
  * The first DuAEKeyFrame._time will be adjusted relatively to the start of the time range (if provided) instead of the startTime of the composition.
  * @param {Layer}	layer	- The layer.
@@ -1276,8 +1288,7 @@ DuAELayer.repositionAnchorPoint = function(layer, value) {
             var newPos = DuAELayer.getWorldPos(layer, value, positionProp.keyTime(i));
             newPositions.push(newPos);
         }
-    }
-    else {
+    } else {
         var newPos = DuAELayer.getWorldPos(layer, value);
         newPositions.push(newPos);
     }
@@ -1288,13 +1299,12 @@ DuAELayer.repositionAnchorPoint = function(layer, value) {
     // Adjust position for keyframes
     if (nK > 0) {
         for (var i = 1; i <= nK; i++) {
-            positionProp.setValueAtKey(i, newPositions[i-1]);
+            positionProp.setValueAtKey(i, newPositions[i - 1]);
         }
-    }
-    else {
+    } else {
         positionProp.setValue(newPositions[0]);
     }
-    
+
     // Reparent
     layer.parent = parent;
 }

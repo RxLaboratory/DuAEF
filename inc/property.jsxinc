@@ -27,17 +27,6 @@ function DuAEProperty(property) {
     }
 
     var expressionEnabled = property.expressionEnabled;
-    if (property.propertyType == PropertyType.PROPERTY) {
-        /**
-         * Whether this is built from a PropertyGroup and contains sub-properties, or a just a single Property
-         * @memberof DuAEProperty.prototype
-         * @name isGroup
-         * @type {Boolean}
-         */
-        this.isGroup = false;
-    } else {
-        this.isGroup = true;
-    }
 
     this.property = property;
     /**
@@ -116,51 +105,6 @@ function DuAEProperty(property) {
      * @type {CompItem}
      */
     this.comp = this.layer.containingComp;
-
-    /**
-     * The units text of the property, same as DuAEProperty.getProperty().unitsText
-     * @memberof DuAEProperty.prototype
-     * @name unitsText
-     * @readonly
-     * @type {string}
-     */
-    this.unitsText = property.unitsText;
-    /**
-     * Whether the value is a percent
-     * @memberof DuAEProperty.prototype
-     * @name isPercent
-     * @readonly
-     * @type {Boolean}
-     */
-    this.isPercent = this.unitsText == localize("$$$/AE/TLW/GraphEditor/PercentSource=percent");
-    /**
-     * Whether the value is an angle
-     * @memberof DuAEProperty.prototype
-     * @name isAngle
-     * @readonly
-     * @type {Boolean}
-     */
-    this.isAngle = this.unitsText == localize("$$$/AE/TLW/GraphEditor/DegreesSource=degrees");
-    /**
-     * Whether the value is a pixel value
-     * @memberof DuAEProperty.prototype
-     * @name isPixels
-     * @readonly
-     * @type {Boolean}
-     */
-    this.isPixels = this.unitsText == localize("$$$/AE/TLW/GraphEditor/PixelsSource=pixels");
-    /**
-     * The (localized) unit.
-     * @memberof DuAEProperty.prototype
-     * @name isPercent
-     * @readonly
-     * @type {string}
-     */
-    this.unit = "";
-    if (this.isPercent) this.unit = "%";
-    if (this.isAngle) this.unit = "°";
-    if (this.isPixels) this.unit = localize("$$$/AE/TLW/GraphEditor/PixelsDest=px");
-
 }
 
 /**
@@ -176,6 +120,108 @@ DuAEProperty.prototype.do = function(func) {
             this.prop(p).do(func);
         }
     }
+}
+
+/**
+ * Checks if this source property is a group of properties or a property
+ * @return {Boolean} True if it's a group
+ */
+DuAEProperty.prototype.isGroup = function() {
+    // Already checked
+    if (typeof this.__isGroup !== 'undefined') return this.__isGroup;
+    // Check
+    var p = this.getProperty();
+    if (p.propertyType == PropertyType.PROPERTY) {
+        this.__isGroup = false;
+    } else {
+        this.__isGroup = true;
+    }
+    return this.__isGroup;
+}
+
+/**
+ * Checks if this source property is a group of properties or a property
+ * @return {Boolean} True if it's a property
+ */
+DuAEProperty.prototype.isProperty = function() {
+    return !this.isGroup();
+}
+
+/**
+ * Gets the unit of the property
+ * @return {string} The unit
+ */
+DuAEProperty.prototype.unit = function() {
+    if (typeof this.__unit !== 'undefined') return this.__unit;
+
+    var prop = this.getProperty();
+    this.__unitsText = prop.unitsText;
+    this.__isPercent = this.__unitsText == localize("$$$/AE/TLW/GraphEditor/PercentSource=percent");
+    this.__isAngle = this.__unitsText == localize("$$$/AE/TLW/GraphEditor/DegreesSource=degrees");
+    this.__isPixels = this.__unitsText == localize("$$$/AE/TLW/GraphEditor/PixelsSource=pixels");
+    this.__unit = '';
+    if (this.__isPercent) this.__unit = "%";
+    if (this.__isAngle) this.__unit = "°";
+    if (this.__isPixels) this.__unit = localize("$$$/AE/TLW/GraphEditor/PixelsDest=px");
+    return this.__unit;
+}
+
+/**
+ * The units text of the property, same as DuAEProperty.getProperty().unitsText
+ * @return {string} The unit
+ */
+DuAEProperty.prototype.unitsText = function() {
+    this.unit();
+    return this.__unitsText;
+}
+
+/**
+ * Whether the value is a percent
+ * @return {Boolean}
+ */
+DuAEProperty.prototype.isPercent = function() {
+    this.unit();
+    return this.__isPercent;
+}
+
+/**
+ * Whether the value is an angle
+ * @return {Boolean}
+ */
+DuAEProperty.prototype.isAngle = function() {
+    this.unit();
+    return this.__isAngle;
+}
+
+/**
+ * Whether the value is a pixel value
+ * @return {Boolean}
+ */
+DuAEProperty.prototype.isPixels = function() {
+    this.unit();
+    return this.__isPixels;
+}
+
+/**
+ * Gets the number of keyframes in the property
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
+ * @return {int}
+ */
+DuAEProperty.prototype.numKeys = function () {
+    var prop = this.getProperty();
+
+    var numKeys = 0;
+
+    if (prop.propertyType == PropertyType.PROPERTY) {
+        return prop.numKeys;
+    }
+    else {
+        for (var p = 1, num = this.numProperties(); p <= num; p++) {
+            numKeys += this.prop(p).numKeys();
+        }
+    }
+
+    return numKeys;
 }
 
 /**
@@ -225,24 +271,27 @@ DuAEProperty.prototype.getProperty = function() {
  * @return {int}	The number of dimensions, 0 if this is not a dimensionnal value (ie color, text, shape...)
  */
 DuAEProperty.prototype.dimensions = function() {
+    // Already checked
+    if (typeof this.__dimensions !== 'undefined') return this.__dimensions;
+
     var prop = this.getProperty();
 
-    var dimensions = 0;
+    this.__dimensions = 0;
     if (prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL || prop.propertyValueType == PropertyValueType.ThreeD) {
         //if this is a position or scale and the layer is not 3D, AFX uses a 3D value in the position (with 0 as Z position), but the expression must return a 2D value.......
         if ((prop.matchName == "ADBE Scale" || prop.matchName == "ADBE Position") && !this.layer.threeDLayer) {
-            dimensions = 2;
+            this.__dimensions = 2;
         } else {
-            dimensions = 3;
+            this.__dimensions = 3;
         }
     } else if (prop.propertyValueType == PropertyValueType.TwoD_SPATIAL || prop.propertyValueType == PropertyValueType.TwoD) {
-        dimensions = 2;
+        this.__dimensions = 2;
     } else if (prop.propertyValueType == PropertyValueType.OneD) {
-        dimensions = 1;
+        this.__dimensions = 1;
     } else if (prop.propertyValueType == PropertyValueType.COLOR) {
-        dimensions = 4;
+        this.__dimensions = 4;
     }
-    return dimensions;
+    return this.__dimensions;
 }
 
 /**
@@ -937,33 +986,35 @@ DuAEProperty.prototype.setKeyInterpolation = function(key, typeIn, typeOut, ease
 
     try {
 
-    if (typeIn == "roving" && prop.isSpatial) {
-        prop.setRovingAtKey(key, true);
-    } else if (typeIn == "continuous") {
-        prop.setInterpolationTypeAtKey(key, KeyframeInterpolationType.BEZIER);
-        prop.setTemporalContinuousAtKey(key, true);
-        prop.setTemporalAutoBezierAtKey(key, true);
-        //not roving
-        if (prop.propertyValueType == PropertyValueType.TwoD_SPATIAL || prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL) prop.setRovingAtKey(key, false);
-    } else if (typeIn != "roving") {
-        //influences
-        if (!prop.isSpatial && prop.value.length == 3) {
-            prop.setTemporalEaseAtKey(key, [easeInValue, easeInValue, easeInValue], [easeOutValue, easeOutValue, easeOutValue]);
-        } else if (!prop.isSpatial && prop.value.length == 2) {
-            prop.setTemporalEaseAtKey(key, [easeInValue, easeInValue], [easeOutValue, easeOutValue]);
-        } else {
-            prop.setTemporalEaseAtKey(key, [easeInValue], [easeOutValue]);
+        if (typeIn == "roving" && prop.isSpatial) {
+            prop.setRovingAtKey(key, true);
+        } else if (typeIn == "continuous") {
+            prop.setInterpolationTypeAtKey(key, KeyframeInterpolationType.BEZIER);
+            prop.setTemporalContinuousAtKey(key, true);
+            prop.setTemporalAutoBezierAtKey(key, true);
+            //not roving
+            if (prop.propertyValueType == PropertyValueType.TwoD_SPATIAL || prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL) prop.setRovingAtKey(key, false);
+        } else if (typeIn != "roving") {
+            //influences
+            if (!prop.isSpatial && prop.value.length == 3) {
+                prop.setTemporalEaseAtKey(key, [easeInValue, easeInValue, easeInValue], [easeOutValue, easeOutValue, easeOutValue]);
+            } else if (!prop.isSpatial && prop.value.length == 2) {
+                prop.setTemporalEaseAtKey(key, [easeInValue, easeInValue], [easeOutValue, easeOutValue]);
+            } else {
+                prop.setTemporalEaseAtKey(key, [easeInValue], [easeOutValue]);
+            }
+            //type
+            prop.setInterpolationTypeAtKey(key, typeIn, typeOut);
+            //not roving
+            if (prop.isSpatial) {
+                if (prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL || prop.propertyValueType == PropertyValueType.TwoD_SPATIAL) prop.setRovingAtKey(key, false);
+            }
+            //not continuous
+            prop.setTemporalContinuousAtKey(key, false);
         }
-        //type
-        prop.setInterpolationTypeAtKey(key, typeIn, typeOut);
-        //not roving
-        if (prop.isSpatial) {
-            if (prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL || prop.propertyValueType == PropertyValueType.TwoD_SPATIAL) prop.setRovingAtKey(key, false);
-        }
-        //not continuous
-        prop.setTemporalContinuousAtKey(key, false);
+    } catch (e) {
+        if (DuESF.debug) DuDebug.throwError("Can't set interpolation on: " + prop.matchName + " | " + prop.name, "DuAEProperty.prototype.setKeyInterpolation", e, true);
     }
-    } catch (e) { if (DuESF.debug) DuDebug.throwError("Can't set interpolation on: " + prop.matchName + " | " + prop.name, "DuAEProperty.prototype.setKeyInterpolation", e, true ); }
 }
 
 /**
@@ -2064,9 +2115,8 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
             // Extremes
             if (DuMath.isExtremePoint(prevValue, currentValue, nextValue)) {
                 // Get amplitude
-                for (var i = 0, n = extremeValues.length; i < n; i++)
-                {
-                    var length = DuMath.length( currentValue, extremeValues[i] );
+                for (var i = 0, n = extremeValues.length; i < n; i++) {
+                    var length = DuMath.length(currentValue, extremeValues[i]);
                     if (length > amplitude) amplitude = length;
                 }
                 // Add to extremes
@@ -2111,7 +2161,7 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
             for (var i = 0, n = inflexionValues.length; i < n; i++) {
                 var inflexionTime = inflexionTimes[i];
                 // Compare value to set the key frame
-                var inflexionValue =inflexionValues[i];
+                var inflexionValue = inflexionValues[i];
                 var currentValue = prop.valueAtTime(inflexionTime, true);
                 // Already close to the current curve, no need to add a keyframe
                 if (DuMath.length(inflexionValue, currentValue) <= comparisonPrecision) continue;
