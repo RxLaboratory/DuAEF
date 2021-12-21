@@ -752,10 +752,11 @@ DuAELayer.toggleEditMode = function(layer) {
 /**
  * Creates a sequence with the layers, but using opacities.
  * This enables more possibilities to rig them, like with the Duik Connector
- * @param {Layer[]|LayerCollection} layers - The layers
+ * @param {Layer[]|LayerCollection} [layers] - The layers. The selected layers by default.
  * @param {string} [expr] - An expression to add to the opacity of the layers
  */
 DuAELayer.sequence = function(layers, expr) {
+    layers = def(DuAEComp.getSelectedLayers());
     if (layers.length == 0) return;
     expr = def(expr, '');
     var comp = layers[0].containingComp;
