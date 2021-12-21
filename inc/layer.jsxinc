@@ -398,7 +398,7 @@ DuAELayer.getRelation = function(layer1, layer2) {
  * Measures the distance between two layers
  * @param {Layer} [layer1] - The first layer. If omitted, will use the selected layers in the current comp
  * @param {Layer} [layer2] - The second layer
- * @return {int} The distance (in pixels). -1 if less than two layers are found
+ * @return {float} The distance (in pixels). -1 if less than two layers are found
  */
 DuAELayer.getDistance = function(layer1, layer2) {
 
@@ -414,6 +414,24 @@ DuAELayer.getDistance = function(layer1, layer2) {
     var OA = DuMath.length(O, A);
 
     return Math.round(OA);
+}
+
+/**
+ * Gets the maximum distance between a bunch of layers
+ * @param {Layer[]|DuList.<Layer>|LayerCollection} layers The layers
+ * @return {float} The distance (in pixels)
+ */
+DuAELayer.getMaxDistance = function(layers) {
+    layers = new DuList(layers);
+    var numLayers = layers.length();
+    var dist = 0;
+    for (var i = 0; i < numLayers; i++) {
+        for(var j = i+1; j < numLayers; j++) {
+            var d = DuAELayer.getDistance(layers.at(i), layers.at(j));
+            if (d > dist) dist = d;
+        }
+    }
+    return dist;
 }
 
 /**
@@ -1366,4 +1384,28 @@ DuAELayer.sourceRect = function(layer, time, includeExtents, includeMasks) {
     }
 
     return [top, left, width, height];
+}
+
+/**
+ * Gets or create a layer control effect targetting the given target layer.
+ * @param {Layer} layer The layer to get the effect from
+ * @param {Layer} targetLayer The targetted layer, which must be in the same comp than the layer.
+ * @param {string} [effectName] The name to use when creating the effect.
+ * @return {DuAEProperty|null} The effect or null if the two layers are not in the same comp.
+ */
+DuAELayer.getCreateLayerEffect = function (layer, targetLayer, effectName) {
+    var sourceComp = layer.containingComp;
+    var targetComp = targetLayer.containingComp;
+    if (sourceComp !== targetComp) return null;
+    var sourceEffects = layer.property('ADBE Effect Parade');
+    for (var i = 1, n = sourceEffects.numProperties; i <= n; i++)
+    {
+        var fx = sourceEffects(i);
+        if (fx.matchName != 'ADBE Layer Control') continue;
+        if (fx(1).value == targetLayer.index) return fx;
+    }
+    var fx = sourceEffects.addProperty('ADBE Layer Control');
+    if (typeof effectName !== 'undefined') fx.name = DuAELayer.newUniqueEffectName(effectName, layer);
+    fx(1).setValue(targetLayer.index);
+    return fx;
 }
