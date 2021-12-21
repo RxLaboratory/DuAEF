@@ -9,11 +9,6 @@
 
     DuAE.beginUndoGroup("DuAEF Test");
 
-    var props = DuAEComp.getSelectedProps();
-    props = new DuList(props);
-    props.do(function(prop) {
-        prop.smartBakeExpression(1);
-    });
-
+    alert(app.findMenuCommandId("Convert Audio to Keyframes"));
     DuAE.endUndoGroup();
 })(this);
