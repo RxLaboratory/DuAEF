@@ -203,6 +203,28 @@ DuAEProperty.prototype.isPixels = function() {
 }
 
 /**
+ * Check if this is a dropdown property or effect.<br />
+ * Note: On After Effects < 17.0.1 this always returns false.
+ * @return {Boolean}
+ */
+DuAEProperty.prototype.isDropdown = function() {
+    if(typeof this.__isDropdown !== 'undefined') return this.__isDropdown;
+    
+    if (this.isGroup()) {
+        this.__isDropdown = false;
+        return this.__isDropdown;
+    }
+    
+    if (DuAE.version.atLeast('17.0.1')) {
+        this.__isDropdown = this.getProperty().isDropdownEffect;
+        return this.__isDropdown;   
+    }
+
+    this.__isDropdown = false;
+    return this.__isDropdown;
+}
+
+/**
  * Gets the number of keyframes in the property
  * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
  * @return {int}
@@ -244,6 +266,50 @@ DuAEProperty.prototype.prop = function(index) {
     var prop = this.getProperty();
     if (prop.propertyType === PropertyType.PROPERTY) return null;
     return new DuAEProperty(prop.property(index));
+}
+
+/**
+ * Getter for the <code>PropertyBase.parentProperty</code> attribute for convenience.
+ * @return {DuAEProperty|null} The parent property or null if not found.
+ */
+DuAEProperty.prototype.parentProperty = function() {
+    return new DuAEProperty(
+        this.getProperty().parentProperty
+    );
+}
+
+/**
+ * Reimplements the <code>Property.setPropertyParameters()</code> method.<br/>
+ * <p>Works around issues caused by the AE API:<br/>
+ * - The property object is invalidated (-> fix: use of DuAEProperty.getProperty)<br/>
+ * - The effect loses its name (-> fix: name is reset afterwards)<br/>
+ * - Names are not sanitized and may throw errors (-> fix: names are sanitized so no errors are thrown)<br/>
+ * - Throws an error on AE < 17.0.1 (-> fix: just do nothing in this case)</p>
+ * This method can be called either from the actual Property or its containing effect.
+ * @param {string[]} names The list of names.
+ */
+DuAEProperty.prototype.setPropertyParameters = function( names ) {
+    if (!DuAE.version.atLeast('17.0.1')) return;
+    var p = null;
+    if (this.isGroup()) p = this.prop(1);
+    else p = this;
+    if (!p) return;
+    // Sanitize names
+    for (var i = 0, n = names.length; i < n; i++) {
+        var n = names[i];
+        n = DuString.replace(n, '|', '/');
+        n = DuString.trim(n);
+        if (n == '') n = '-';
+        // Must be unique
+        names[i] = '***Duik Temp Name***';
+        n = DuString.generateUnique(n, names);
+        names[i] = n;
+    }
+    var effect = p.parentProperty();
+    var name = effect.name;
+    p.getProperty().setPropertyParameters(names);
+    effect = p.parentProperty().getProperty();
+    effect.name = name;
 }
 
 /**

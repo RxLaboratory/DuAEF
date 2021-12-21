@@ -29,7 +29,7 @@ function DuAEPseudoEffect( binaryFile )
 	 */
 	this.matchName = '';
 	// A RegEx to get the matchName
-	var reMatchName = /\((Pseudo\/[a-z\s0-9]+)-/gi;
+	var reMatchName = /\((Pseudo\/[a-z\s0-9.]+)-/gi;
 
 	var matchMatchName = reMatchName.exec( binaryFile.binAsString );
 	if (matchMatchName)
