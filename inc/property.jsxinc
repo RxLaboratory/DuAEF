@@ -622,10 +622,11 @@ DuAEProperty.prototype.addToExpressionCache = function() {
 /**
  * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
  * Recursilvely gets the time of the first keyFrame in this prop or subprops
- * @param {boolean} selected - true to check selected keyframes only
+ * @param {Boolean} [selected=false] - true to check selected keyframes only
  * @return {float|null} The keyframe time or null if there are no keyframe
  */
 DuAEProperty.prototype.firstKeyTime = function(selected) {
+    selected = def(selected, false);
     var time = null;
 
     var prop = this.getProperty();
@@ -633,27 +634,65 @@ DuAEProperty.prototype.firstKeyTime = function(selected) {
     if (prop.propertyType == PropertyType.PROPERTY) {
         if (!prop.canVaryOverTime) return null;
         if (selected) {
-            if (prop.selectedKeys.length == 0) return null;
-            for (var keyIndex = 0, numK = prop.selectedKeys.length; keyIndex < numK; keyIndex++) {
-                var key = this.keyAtIndex(prop.selectedKeys[keyIndex]);
-                if (time == null) time = key._time;
-                else if (time > key._time) time = key._time;
+            var keys = prop.selectedKeys;
+            if (keys.length == 0) return null;
+            for (var i = 0, n = keys.length; i < n; i++) {
+                var t = prop.keyTime(keys[i]);
+                if (time == null) time = t;
+                else if (time > t) time = t;
             }
         } else {
             if (prop.numKeys == 0) return null;
-            for (var keyIndex = 1, numK = prop.numKeys; keyIndex <= numK; keyIndex++) {
-                var key = this.keyAtIndex(keyIndex);
-                if (time == null) time = key._time;
-                else if (time > key._time) time = key._time;
-            }
+            return prop.keyTime(1);
         }
     } else if (prop.numProperties > 0) {
-        for (var propIndex = 1, numP = prop.numProperties; propIndex <= numP; propIndex++) {
-            var subProp = new DuAEProperty(prop.property(propIndex));
-            var test = subProp.firstKeyTime(selected);
-            if (time == null) time = test;
-            else if (test != null) {
-                if (time > test) time = test;
+        for (var i = 1, n = prop.numProperties; i <= n; i++) {
+            var subProp = this.prop(i);
+            var t = subProp.firstKeyTime(selected);
+            if (time == null) time = t;
+            else if (t != null) {
+                if (time > t) time = t;
+            }
+        }
+    }
+
+    return time;
+}
+
+/**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
+ * Recursilvely gets the time of the last keyFrame in this prop or subprops
+ * @param {boolean} [selected=false] - true to check selected keyframes only
+ * @return {float|null} The keyframe time or null if there are no keyframe
+ */
+DuAEProperty.prototype.lastKeyTime = function(selected) {
+    selected = def(selected, false);
+    var time = null;
+
+    var prop = this.getProperty();
+
+    if (prop.propertyType == PropertyType.PROPERTY) {
+        if (!prop.canVaryOverTime) return null;
+        if (selected) {
+            var keys = prop.selectedKeys;
+            if (keys.length == 0) return null;
+            for (var i = 0, n = keys.length; i < n; i++) {
+                var t = prop.keyTime(keys[i]);
+                if (time == null) time = t;
+                else if (time < t) time = t;
+            }
+            return time;
+        } else {
+            if (prop.numKeys == 0) return null;
+            return prop.keyTime(prop.numKeys);
+        }
+    } else if (prop.numProperties > 0) {
+        for (var i = 1, n = prop.numProperties; i <= n; i++) {
+            var subProp = this.prop(i);
+            var t = subProp.lastKeyTime(selected);
+            if (time == null) time = t;
+            else if (t != null) {
+                if (time < t) time = t;
             }
         }
     }
