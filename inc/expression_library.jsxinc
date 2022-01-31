@@ -41,11 +41,12 @@ if (typeof DuAEExpression.Library === "undefined") DuAEExpression.Library = [];
   * @classdesc Fuzzy Logics for expressions. See {@link https://github.com/Nico-Duduf/DuFuzzyLogic} for more explanations
   * @author Nicolas "Duduf" Dufresne
   * @license GPL-v3
-  * @copyright 2020-2021 Nicolas Dufresne and contributors
+  * @copyright 2020-2022 Nicolas Dufresne and contributors
   * @requires logistic
   * @requires inverseLogistic
   * @requires gaussian
   * @requires inverseGaussian
+  * @requires mean
 */
 DuAEExpression.Library["FuzzyLogic"] = {};
 DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, valueNot, valueIS, shape, shapeAbove, plateauMin, plateauMax)',
@@ -170,7 +171,7 @@ DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, val
 	'else if (this.shapeIn === "sigmoid")',
 	'{',
 	'mid = (this.plateauMin + this.min) / 2;',
-	'crisp.push( inverseLogistic(veracity, mid) );',
+	'crisp.push( inverseLogistic(veracity, mid, 0, 1, 1) );',
 	'}',
 	'else if (this.shapeIn === "gaussian")',
 	'{',
@@ -195,7 +196,7 @@ DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, val
 	'else if (this.shapeOut === "sigmoid")',
 	'{',
 	'mid = (this.plateauMax + this.max) / 2;',
-	'crisp.push( inverseLogistic( 1-veracity, mid, 0, 1 ) );',
+	'crisp.push( inverseLogistic( 1-veracity, mid, 0, 1, 1 ) );',
 	'}',
 	'else if (this.shapeOut === "gaussian")',
 	'{',
@@ -250,16 +251,19 @@ DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, val
 	'v.ruleNum = this.numRules;',
 	'for (var i = 0, num = this.sets.length; i < num; i++)',
 	'{',
-	'if (fuzzyset.name == this.sets[i].name)',
+	'var s = this.sets[i].fuzzyset;',
+	'if (fuzzyset.name == s.name)',
 	'{',
 	'this.sets[i].quantifiers.push(quantifier);',
 	'this.sets[i].veracities.push(v);',
 	'return;',
 	'}',
 	'}',
-	'fuzzyset.quantifiers = [quantifier];',
-	'fuzzyset.veracities = [v];',
-	'this.sets.push( fuzzyset );',
+	'var s = {};',
+	's.fuzzyset = fuzzyset;',
+	's.quantifiers = [quantifier];',
+	's.veracities = [v];',
+	'this.sets.push( s );',
 	'},',
 	'crispify: function ( clearSets )',
 	'{',
@@ -274,12 +278,12 @@ DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, val
 	'var sumWeights = 0;',
 	'for (var i = 0, num = this.sets.length; i < num; i++)',
 	'{',
-	'var fuzzyset = this.sets[i];',
-	'for( var j = 0, numV = fuzzyset.veracities.length; j < numV; j++)',
+	'var s = this.sets[i];',
+	'for( var j = 0, numV = s.veracities.length; j < numV; j++)',
 	'{',
-	'var v = fuzzyset.veracities[j];',
-	'var q = fuzzyset.quantifiers[j];',
-	'var vals = fuzzyset.crispify( q, v );',
+	'var v = s.veracities[j];',
+	'var q = s.quantifiers[j];',
+	'var vals = s.fuzzyset.crispify( q, v );',
 	'var val;',
 	'var ver;',
 	'val = mean(vals);',
@@ -409,6 +413,7 @@ DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, val
 	'function FuzzyLogic( )',
 	'{',
 	'this.veracity = new FuzzyVeracity(0);',
+	'this.sets = [];',
 	'}',
 	'FuzzyLogic.prototype = {',
 	'newValue: function (val, unit)',
@@ -466,7 +471,7 @@ DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, val
 	'return qObj;',
 	'}'
 	].join('\n');
-DuAEExpression.Library["FuzzyLogic"].requirements = ["logistic","inverseLogistic","gaussian","inverseGaussian"];
+DuAEExpression.Library["FuzzyLogic"].requirements = ["logistic","inverseLogistic","gaussian","inverseGaussian","mean"];
 
 /**
  * Interpolates a value with a bezier curve.<br />
@@ -577,6 +582,29 @@ DuAEExpression.Library["gaussianInterpolation"].expression = ['function gaussian
 DuAEExpression.Library["gaussianInterpolation"].requirements = [];
 
 /**
+ * Converts a Gaussian rate (as used with <code>gaussianInterpolation</code>) to the closest possible Bézier controls for use with <code>bezierInterpolation</code>.
+ * @function
+ * @param {number} rate The raising speed in the range [-1.0, 1.0].
+ * @return {number} the value.
+ */
+DuAEExpression.Library["gaussianRateToBezierPoints"] = {};
+DuAEExpression.Library["gaussianRateToBezierPoints"].expression = ['function gaussianRateToBezierPoints(rate) {',
+	'var i = 0;',
+	'var o = 1;',
+	'if (rate <= -.025) {',
+	'i = linear(rate, -0.4, -0.025, 0.17, 0.415);',
+	'o = 1-easeIn(rate, -0.4, -0.025, 1, 0.415);',
+	'}',
+	'else {',
+	'i = linear(rate, -0.025, 0.7, 0.415, 1);',
+	'o = 1-easeOut(rate, -0.025, 0.7, 0.415, 0.15);',
+	'}',
+	'return [i,0,o,1];',
+	'}'
+	].join('\n');
+DuAEExpression.Library["gaussianRateToBezierPoints"].requirements = [];
+
+/**
  * Interpolates a value with a linear function, but also extrapolates it outside of known values.<br />
  * This method can replace <code>linear()</code>, adding extrapolation.<br />
  * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
@@ -656,12 +684,14 @@ DuAEExpression.Library["logisticInterpolation"].requirements = ["logistic","line
 /**
  * Gets the key immediately before the given time
  * @function
- * @param {number} t Time at which to get the key
- * @param {Property} prop The property from which to get the key
+ * @param {number} [t=time] Time at which to get the key
+ * @param {Property} [prop=thisProperty] The property from which to get the key
  * @return {Key|null} The key, or null if there's no key before.
  */
 DuAEExpression.Library["getNextKey"] = {};
 DuAEExpression.Library["getNextKey"].expression = ['function getNextKey(t, prop) {',
+	'if (typeof t === \'undefined\') t = time;',
+	'if (typeof prop === \'undefined\') prop = thisProperty;',
 	'if (prop.numKeys == 0) return null;',
 	'var nKey = prop.nearestKey(t);',
 	'if (nKey.time >= t) return nKey;',
@@ -672,14 +702,41 @@ DuAEExpression.Library["getNextKey"].expression = ['function getNextKey(t, prop)
 DuAEExpression.Library["getNextKey"].requirements = [];
 
 /**
+ * Gets the next key where there is no motion after it
+ * @function
+ * @param {number} [t=time] Time at which to get the key
+ * @param {Property} [prop=thisProperty] The property from which to get the key
+ * @return {Key|null} The key, or null if there's no key before.
+ * @requires isStill
+ * @requires getNextKey
+ */
+DuAEExpression.Library["getNextStopKey"] = {};
+DuAEExpression.Library["getNextStopKey"].expression = ['function getNextStopKey(t, prop) {',
+	'if (typeof t === \'undefined\') t = time;',
+	'if (typeof prop === \'undefined\') prop = thisProperty;',
+	'var k = getNextKey(t, prop);',
+	'if (!k) return null;',
+	'var i = k.index;',
+	'while (i < prop.numKeys) {',
+	'if (isStill( k.time + thisComp.frameDuration )) return k;',
+	'k = key(k.index + 1);',
+	'}',
+	'return k;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["getNextStopKey"].requirements = ["isStill","getNextKey"];
+
+/**
  * Gets the key immediately before the given time
  * @function
- * @param {number} t Time at which to get the key
- * @param {Property} prop The property from which to get the key
+ * @param {number} [t=time] Time at which to get the key
+ * @param {Property} [prop=thisProperty] The property from which to get the key
  * @return {Key|null} The key, or null if there's no key before.
  */
 DuAEExpression.Library["getPrevKey"] = {};
 DuAEExpression.Library["getPrevKey"].expression = ['function getPrevKey(t, prop) {',
+	'if (typeof t === \'undefined\') t = time;',
+	'if (typeof prop === \'undefined\') prop = thisProperty;',
 	'if (prop.numKeys == 0) return null;',
 	'var nKey = prop.nearestKey(t);',
 	'if (nKey.time <= t) return nKey;',
@@ -688,6 +745,31 @@ DuAEExpression.Library["getPrevKey"].expression = ['function getPrevKey(t, prop)
 	'}'
 	].join('\n');
 DuAEExpression.Library["getPrevKey"].requirements = [];
+
+/**
+ * Gets the previous key where there is no motion before it
+ * @function
+ * @param {number} [t=time] Time at which to get the key
+ * @param {Property} [prop=thisProperty] The property from which to get the key
+ * @return {Key|null} The key, or null if there's no key before.
+ * @requires isStill
+ * @requires getPrevKey
+ */
+DuAEExpression.Library["getPrevStartKey"] = {};
+DuAEExpression.Library["getPrevStartKey"].expression = ['function getPrevStartKey(t, prop) {',
+	'if (typeof t === \'undefined\') t = time;',
+	'if (typeof prop === \'undefined\') prop = thisProperty;',
+	'var k = getPrevKey(t, prop);',
+	'if (!k) return null;',
+	'var i = k.index;',
+	'while (i > 0) {',
+	'if (isStill( k.time - thisComp.frameDuration )) return k;',
+	'k = key(k.index - 1);',
+	'}',
+	'return k;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["getPrevStartKey"].requirements = ["isStill","getPrevKey"];
 
 /**
  * Checks if current time is after the time of the last key in the property
@@ -702,6 +784,27 @@ DuAEExpression.Library["isAfterLastKey"].expression = ['function isAfterLastKey(
 	'}'
 	].join('\n');
 DuAEExpression.Library["isAfterLastKey"].requirements = [];
+
+/**
+ * Checks if the key is a maximum or minimum
+ * @function
+ * @param {Keyframe} k The key to check
+ * @param {int} axis The axis to check for multi-dimensionnal properties
+ * @return {boolean} true if the key is a maximum or minimum
+ */
+DuAEExpression.Library["isKeyTop"] = {};
+DuAEExpression.Library["isKeyTop"].expression = ['function isKeyTop(k, axis) {',
+	'var prevSpeed = velocityAtTime(k.time - thisComp.frameDuration/2);',
+	'var nextSpeed = velocityAtTime(k.time + thisComp.frameDuration/2);',
+	'if (value instanceof Array) {',
+	'prevSpeed = prevSpeed[axis];',
+	'nextSpeed = nextSpeed[axis];',
+	'}',
+	'if (Math.abs(prevSpeed) < 0.01 || Math.abs(nextSpeed) < 0.01) return true;',
+	'return prevSpeed * nextSpeed < 0;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["isKeyTop"].requirements = [];
 
 /**
  * Bounce, to be used when the speed is 0.
@@ -1038,8 +1141,7 @@ DuAEExpression.Library["addPoints"].expression = ['function addPoints(p1, p2, w)
 DuAEExpression.Library["addPoints"].requirements = [];
 
 /**
-    * The gaussian function<br />
-    * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+    * The gaussian function
     * @function
     * @param {Number} value The variable
     * @param {Number} [min=0] The minimum return value
@@ -1051,6 +1153,10 @@ DuAEExpression.Library["addPoints"].requirements = [];
 DuAEExpression.Library["gaussian"] = {};
 DuAEExpression.Library["gaussian"].expression = ['function gaussian( value, min, max, center, fwhm)',
 	'{',
+	'if (typeof min === \'undefined\') min = 0;',
+	'if (typeof max === \'undefined\') max = 1;',
+	'if (typeof center === \'undefined\') center = 0;',
+	'if (typeof fwhm === \'undefined\') fwhm = 1;',
 	'if (fwhm === 0 && value == center) return max;',
 	'else if (fwhm === 0) return 0;',
 	'var exp = -4 * Math.LN2;',
@@ -1063,8 +1169,7 @@ DuAEExpression.Library["gaussian"].expression = ['function gaussian( value, min,
 DuAEExpression.Library["gaussian"].requirements = [];
 
 /**
-    * The inverse gaussian function<br />
-    * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+    * The inverse gaussian function
     * @function
     * @param {Number} v The variable
     * @param {Number} [min=0] The minimum return value of the corresponding gaussian function
@@ -1076,6 +1181,10 @@ DuAEExpression.Library["gaussian"].requirements = [];
 DuAEExpression.Library["inverseGaussian"] = {};
 DuAEExpression.Library["inverseGaussian"].expression = ['function inverseGaussian ( v, min, max, center, fwhm)',
 	'{',
+	'if (typeof min === \'undefined\') min = 0;',
+	'if (typeof max === \'undefined\') max = 1;',
+	'if (typeof center === \'undefined\') center = 0;',
+	'if (typeof fwhm === \'undefined\') fwhm = 1;',
 	'if (v == 1) return [center, center];',
 	'if (v === 0) return [center + fwhm/2, center - fwhm/2];',
 	'if (fwhm === 0) return [center, center];',
@@ -1089,8 +1198,7 @@ DuAEExpression.Library["inverseGaussian"].expression = ['function inverseGaussia
 DuAEExpression.Library["inverseGaussian"].requirements = [];
 
 /**
-    * The inverse logistic function (inverse sigmoid)<br />
-    * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.    * @function
+    * The inverse logistic function (inverse sigmoid)
     * @function
     * @param {Number} v The variable
     * @param {Number} [midValue=0] The midpoint value, at which the function returns max/2 in the original logistic function
@@ -1102,6 +1210,10 @@ DuAEExpression.Library["inverseGaussian"].requirements = [];
 DuAEExpression.Library["inverseLogisitic"] = {};
 DuAEExpression.Library["inverseLogisitic"].expression = ['function inverseLogistic ( v, midValue, min, max, rate)',
 	'{',
+	'if (typeof midValue === \'undefined\') midValue = 0;',
+	'if (typeof min === \'undefined\') min = 0;',
+	'if (typeof max === \'undefined\') max = 1;',
+	'if (typeof rate === \'undefined\') rate = 1;',
 	'if (v == min) return 0;',
 	'return midValue - Math.log( (max-min)/(v-min) - 1) / rate;',
 	'}'
@@ -1132,8 +1244,7 @@ DuAEExpression.Library["isZero"].expression = ['function isZero(a)',
 DuAEExpression.Library["isZero"].requirements = [];
 
 /**
-    * The logistic function (sigmoid)<br />
-    * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+    * The logistic function (sigmoid)
     * @function
     * @param {Number} value The value
     * @param {Number} [midValue=0] The midpoint value, at which the function returns max/2
@@ -1145,6 +1256,10 @@ DuAEExpression.Library["isZero"].requirements = [];
 DuAEExpression.Library["logistic"] = {};
 DuAEExpression.Library["logistic"].expression = ['function logistic( value, midValue, min, max, rate)',
 	'{',
+	'if (typeof midValue === \'undefined\') midValue = 0;',
+	'if (typeof min === \'undefined\') min = 0;',
+	'if (typeof max === \'undefined\') max = 1;',
+	'if (typeof rate === \'undefined\') rate = 1;',
 	'var exp = -rate*(value - midValue);',
 	'var result = 1 / (1 + Math.pow(Math.E, exp));',
 	'return result * (max-min) + min;',
@@ -1516,11 +1631,12 @@ DuAEExpression.Library["isPosition"].requirements = [];
 /**
  * Checks if a property is spatial
  * @function
- * @param {Property} prop The property to check
+ * @param {Property} [prop=thisProperty] The property to check
  * @return {boolean} true if the property is spatial.
  */
 DuAEExpression.Library["isSpatial"] = {};
 DuAEExpression.Library["isSpatial"].expression = ['function isSpatial(prop) {',
+	'if (typeof prop === \'undefined\') prop = thisProperty;',
 	'if (!(prop.value instanceof Array)) return false;',
 	'if (prop.value.length != 2 && prop.value.length != 3) return false;',
 	'try { if (typeof prop.speed !== "undefined") return true; }',
@@ -1530,28 +1646,26 @@ DuAEExpression.Library["isSpatial"].expression = ['function isSpatial(prop) {',
 DuAEExpression.Library["isSpatial"].requirements = [];
 
 /**
- * Checks if the current property is animated at a given time.<br />
- * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * Checks if the current property is animated at a given time.
  * @function
  * @param {number} [t=time] The time
- * @param {number} [threshold=0.1] The speed under which the property is considered still.
+ * @param {number} [threshold=0.01] The speed under which the property is considered still.
+ * @param {number} [axis=-1] The axis to check. If < 0, will check all axis.
  * @return {boolean} true if the property does not vary.
  */
 DuAEExpression.Library["isStill"] = {};
 DuAEExpression.Library["isStill"].expression = ['function isStill(t, threshold) {',
-	'var d = valueAtTime(t-.001) - valueAtTime(t + .001 );',
+	'if (typeof t === \'undefined\') t = time;',
+	'if (typeof threshold === \'undefined\') threshold = 0.01;',
+	'if (typeof axis === \'undefined\') axis = -1;',
+	'var d = valueAtTime(t) - valueAtTime(t + thisComp.frameDuration*.1);',
 	'if (d instanceof Array) {',
+	'if (axis >= 0) return Math.abs(d[i]) >= threshold;',
 	'for (var i = 0; i < d.length; i++) {',
-	'd[i] = Math.abs(d[i]);',
-	'if (d[i] > threshold) {',
-	'return false;',
-	'}',
+	'if (Math.abs(d[i]) >= threshold) return false;',
 	'}',
 	'return true;',
-	'} else {',
-	'd = Math.abs(d);',
-	'return d <= threshold;',
-	'}',
+	'} else return Math.abs(d) < threshold;',
 	'}'
 	].join('\n');
 DuAEExpression.Library["isStill"].requirements = [];
@@ -1840,8 +1954,7 @@ DuAEExpression.Library["getLayerCompPos"].expression = ['function getLayerCompPo
 DuAEExpression.Library["getLayerCompPos"].requirements = [];
 
 /**
- * Gets the world position of a layer.<br />
- * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * Gets the world position of a layer.
  * @function
  * @param {number} [t=time] Time from when to get the position
  * @param {Layer} [l=thisLayer] The layer
@@ -1849,6 +1962,8 @@ DuAEExpression.Library["getLayerCompPos"].requirements = [];
  */
 DuAEExpression.Library["getLayerWorldPos"] = {};
 DuAEExpression.Library["getLayerWorldPos"].expression = ['function getLayerWorldPos(t, l) {',
+	'if (typeof t === \'undefined\') t = time;',
+	'if (typeof l === \'undefined\') l = thisLayer;',
 	'return l.toWorld(l.anchorPoint, t);',
 	'}'
 	].join('\n');
@@ -1967,8 +2082,7 @@ DuAEExpression.Library["getPropWorldSpeed"].expression = ['function getPropWorld
 DuAEExpression.Library["getPropWorldSpeed"].requirements = ["getPropWorldVelocity"];
 
 /**
- * Gets the world coordinates of a property.<br />
- * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * Gets the world coordinates of a property.
  * @function
  * @param {number} [t=time] Time from when to get the position
  * @param {Layer} [prop=thisProperty] The property
@@ -1978,6 +2092,8 @@ DuAEExpression.Library["getPropWorldSpeed"].requirements = ["getPropWorldVelocit
  */
 DuAEExpression.Library["getPropWorldValue"] = {};
 DuAEExpression.Library["getPropWorldValue"].expression = ['function getPropWorldValue(t, prop) {',
+	'if (typeof t === \'undefined\') t = time;',
+	'if (typeof prop === \'undefined\') prop = thisProperty;',
 	'if (isPosition(prop)) return getLayerWorldPos(t, thisLayer);',
 	'return thisLayer.toWorld(prop.valueAtTime(t), t);',
 	'}'
