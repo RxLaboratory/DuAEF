@@ -99,13 +99,14 @@ function DuAEPseudoEffect( binaryFile )
 	
 	// Recursive method to get props
 	var textOffset = 0;
-	function getProps( groupIndex, textOffset )
+	var mn = this.matchName;
+	function getProps( groupIndex )
 	{
 		// The group
 		var groupProps = {};
 
 		// Each Text prop offsets the indices
-		textOffset = def(textOffset, 0);
+		//textOffset = def(textOffset, 0);
 
 		// For next props until we find the end of the group
 		for(var i = groupIndex, n = indexArray.length; i < n; i++)
@@ -115,7 +116,7 @@ function DuAEPseudoEffect( binaryFile )
 			// Recursion if it's a new group
 			if ( prop.type == 'group' )
 			{
-				var newGroup = getProps( i+1, textOffset );
+				var newGroup = getProps( i+1 );
 				// update properties for the group
 				newGroup.index = i+1+textOffset;
 				newGroup.name = prop.name;
