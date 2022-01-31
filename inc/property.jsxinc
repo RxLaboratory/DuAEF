@@ -1301,27 +1301,22 @@ DuAEProperty.prototype.fixSpatialInterpolation = function() {
     if (!prop.isSpatial) return;
     if (!prop.canVaryOverTime) return;
 
-    var keyIndices = prop.selectedKeys;
-    if (keyIndices.length < 2) return;
-
-    for (var k = 0, numK = keyIndices.length - 1; k < numK; k++) {
-        var key = keyIndices[k];
-        var nextKey = keyIndices[k + 1]
+    for (var k = 1, numK = prop.numKeys; k < numK; k++) {
         //get this key value
-        var keyValue = prop.valueAtTime(prop.keyTime(key), true);
+        var keyValue = prop.valueAtTime(prop.keyTime(k), true);
         //get next key value
-        var nextKeyValue = prop.valueAtTime(prop.keyTime(key + 1), true);
+        var nextKeyValue = prop.valueAtTime(prop.keyTime(k + 1), true);
 
         //compare and set
         if (prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL) {
             if (keyValue[0] == nextKeyValue[0] && keyValue[1] == nextKeyValue[1] && keyValue[2] == nextKeyValue[2]) {
-                prop.setSpatialTangentsAtKey(key, prop.keyInSpatialTangent(key), [0, 0, 0]);
-                prop.setSpatialTangentsAtKey(nextKey, [0, 0, 0], prop.keyOutSpatialTangent(nextKey));
+                prop.setSpatialTangentsAtKey(k, prop.keyInSpatialTangent(k), [0, 0, 0]);
+                prop.setSpatialTangentsAtKey(k+1, [0, 0, 0], prop.keyOutSpatialTangent(k+1));
             }
         } else if (prop.propertyValueType == PropertyValueType.TwoD_SPATIAL) {
             if (keyValue[0] == nextKeyValue[0] && keyValue[1] == nextKeyValue[1]) {
-                prop.setSpatialTangentsAtKey(key, prop.keyInSpatialTangent(key), [0, 0]);
-                prop.setSpatialTangentsAtKey(nextKey, [0, 0], prop.keyOutSpatialTangent(nextKey));
+                prop.setSpatialTangentsAtKey(k, prop.keyInSpatialTangent(k), [0, 0]);
+                prop.setSpatialTangentsAtKey(k+1, [0, 0], prop.keyOutSpatialTangent(k+1));
             }
         }
     }
@@ -1335,6 +1330,8 @@ DuAEProperty.prototype.fixSpatialInterpolation = function() {
 DuAEProperty.prototype.cleanKeyframes = function() {
     var prop = this.getProperty();
 
+    var frameDuration = this.comp.frameDuration;
+
     if (prop.propertyType == PropertyType.PROPERTY) {
         var numKeys = prop.numKeys;
         if (numKeys == 0) return;
@@ -1343,37 +1340,17 @@ DuAEProperty.prototype.cleanKeyframes = function() {
             return;
         }
 
-        for (var i = numKeys; i > 0; i--) {
-            var currentKey = this.keyAtIndex(i);
+        for (var i = numKeys; i >= 1; i--) {
 
-            //check values
-            var currentValue = new DuList(currentKey.value);
+            var t = prop.keyTime(i);
+            var cV = prop.keyValue(i);
+            var pV = prop.valueAtTime(t - frameDuration, true);
+            if (!DuMath.equals(pV, cV)) continue;
+            var nV = prop.valueAtTime(t + frameDuration, true);
+            if (!DuMath.equals(nV, cV)) continue;
 
-            if (i > 1) {
-                var prevKey = this.keyAtIndex(i - 1);
-                var prevValue = new DuList(prevKey.value);
-            }
-            if (i < prop.numKeys) {
-                var nextKey = this.keyAtIndex(i + 1);
-                var nextValue = new DuList(nextKey.value);
-            }
+            prop.removeKey(i);
 
-            if (i > 1 && !currentValue.equals(prevValue, undefined, 3)) continue;
-            if (i < prop.numKeys && !currentValue.equals(nextValue, undefined, 3)) continue;
-
-            //check velocities
-            var remove = false;
-            for (var j = 0, n = currentKey.inEase.length; j < n; j++) {
-                remove = false
-                if (i > 1 && !DuMath.equals(prevKey.outEase[j].speed, 0, 4)) break;
-                if (i > 1 && !DuMath.equals(currentKey.inEase[j].speed, 0, 4)) break;
-                if (i < prop.numKeys && !DuMath.equals(currentKey.outEase[j].speed, 0, 4)) break;
-                if (i < prop.numKeys && !DuMath.equals(nextKey.inEase[j].speed, 0, 4)) break;
-                remove = true;
-            }
-
-            //remove key
-            if (remove) prop.removeKey(i);
         }
     } else {
         for (var p = 1, num = this.numProperties(); p <= num; p++) {
@@ -2347,6 +2324,35 @@ DuAEProperty.prototype.findInComp = function(comp) {
     // Check the matchname
     if (parentProp.matchName == this.matchName) return new DuAEProperty(parentProp);
     return null;
+}
+
+/**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
+ * Automatically sets all "transition" keyframes to roving, if the property is spatial.
+ */
+DuAEProperty.prototype.setRoving = function() {
+    // Run
+    var frameDuration = this.comp.frameDuration;
+
+    this.do(function(propInfo) {
+        prop = propInfo.getProperty();
+        // checks
+        if (!prop.isSpatial) return;
+        if (!prop.canVaryOverTime) return;
+
+        // For each keyframe (except first and last one), check if the velocity just before or after is 0,
+        // if not, set to roving
+        for (var i = 2; i < prop.numKeys; i++)
+        {
+            var t = prop.keyTime(i);
+            var cV = prop.keyValue(i);
+            var pV = prop.valueAtTime(t - frameDuration, true);
+            if (DuMath.equals(pV, cV)) continue;
+            var nV = prop.valueAtTime(t + frameDuration, true);
+            if (DuMath.equals(nV, cV)) continue;
+            prop.setRovingAtKey(i, true);
+        }
+    });
 }
 
 // =========== STATIC ====================
