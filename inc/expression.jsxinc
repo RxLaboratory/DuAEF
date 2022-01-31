@@ -156,7 +156,14 @@ DuAEExpression.Library.get = function(functions) {
     exp = new DuList(exp);
     exp.removeDuplicates();
 
-    var expString = '';
+    var expString = "/*\n" +
+        "=== The following code uses DuAEF, the Duduf After Effects Framework ===\n\n" +
+        "   Copyright (c) 2008 - 2022 Nicolas Dufresne, RxLaboratory, and contributors\n\n" +
+        "   This code is free software: you can redistribute it and/or modify\n" +
+		"   it under the terms of the GNU General Public License as published by\n" +
+		"   the Free Software Foundation, either version 3 of the License, or\n" +
+		"   (at your option) any later version.\n" +
+        "*/\n\n";
 
     exp.do(function(expName) {
         expString += DuAEExpression.Library[expName].expression + '\n';

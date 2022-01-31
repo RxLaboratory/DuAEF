@@ -471,7 +471,7 @@ DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, val
 	'return qObj;',
 	'}'
 	].join('\n');
-DuAEExpression.Library["FuzzyLogic"].requirements = ["logistic","inverseLogistic","gaussian","inverseGaussian","mean"];
+DuAEExpression.Library["FuzzyLogic"].requirements = ["gaussian","inverseGaussian","inverseLogistic","logistic","mean"];
 
 /**
  * Interpolates a value with a bezier curve.<br />
@@ -1207,8 +1207,8 @@ DuAEExpression.Library["inverseGaussian"].requirements = [];
     * @param {Number} [rate=1] The logistic growth rate or steepness of the original logistic function
     * @return {Number} The result
     */
-DuAEExpression.Library["inverseLogisitic"] = {};
-DuAEExpression.Library["inverseLogisitic"].expression = ['function inverseLogistic ( v, midValue, min, max, rate)',
+DuAEExpression.Library["inverseLogistic"] = {};
+DuAEExpression.Library["inverseLogistic"].expression = ['function inverseLogistic ( v, midValue, min, max, rate)',
 	'{',
 	'if (typeof midValue === \'undefined\') midValue = 0;',
 	'if (typeof min === \'undefined\') min = 0;',
@@ -1218,7 +1218,7 @@ DuAEExpression.Library["inverseLogisitic"].expression = ['function inverseLogist
 	'return midValue - Math.log( (max-min)/(v-min) - 1) / rate;',
 	'}'
 	].join('\n');
-DuAEExpression.Library["inverseLogisitic"].requirements = [];
+DuAEExpression.Library["inverseLogistic"].requirements = [];
 
 /**
     * Checks if the value is 0; works with arrays.
