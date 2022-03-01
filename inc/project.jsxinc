@@ -506,3 +506,14 @@ DuAEProject.bakeExpressions = function(mode, frameStep) {
         DuAEComp.bakeExpressions(mode, frameStep, comp);
     });
 }
+
+/**
+ * Bakes the expressions to keyframes
+ * @param {DuAEExpression.BakeAlgorithm} [mode=DuAEExpression.BakeAlgorithm.SMART] The algorithm to use for baking the expressions.
+ * @param {float} [frameStep=1.0] By default, checks one value per keyframe. A lower value increases the precision and allows for sub-frame sampling. A higher value is faster but less precise.
+ */
+DuAEProject.bakeCompositions = function(mode, frameStep) {
+    DuAEProject.doComps(function(comp) {
+        DuAEComp.bake(mode, frameStep, comp);
+    });
+}

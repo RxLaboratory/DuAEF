@@ -206,14 +206,15 @@ DuAEComp.getActiveLayer = function() {
  * Runs a function on all the layers
  * @param {function} method - The function to run on the layers, which takes a layer as its only argument.
  * @param {CompItem} [comp] - The comp containing the layers. Will use the current comp if not provided.
+ * @param {Bool} [reverse=false] - Set this to true to iterate from the end.
  */
-DuAEComp.doLayers = function(method, comp) {
+DuAEComp.doLayers = function(method, comp, reverse) {
     comp = def(comp, DuAEProject.getActiveComp());
     if (!(comp)) return;
 
     //get layers
     var it = new DuList(comp.layers);
-    it.do( method );
+    it.do( method, reverse );
 }
 
 /**
@@ -785,7 +786,7 @@ DuAEComp.crop = function(bounds, comp) {
 }
 
 /**
- * Bakes the expressions to keyframes
+ * Bakes the expressions to keyframes.
  * @param {DuAEExpression.BakeAlgorithm} [mode=DuAEExpression.BakeAlgorithm.SMART] The algorithm to use for baking the expressions.
  * @param {float} [frameStep=1.0] By default, checks one value per keyframe. A lower value increases the precision and allows for sub-frame sampling. A higher value is faster but less precise.
  * @param {CompItem} [comp] The composition. The active composition by default.
@@ -795,4 +796,27 @@ DuAEComp.bakeExpressions = function(mode, frameStep, comp) {
         var l = new DuAEProperty(layer);
         l.bakeExpressions(mode, frameStep);
     }, comp);
+}
+
+/**
+ * Bakes the expressions to keyframes and removes all non-renderable layers.
+ * @param {DuAEExpression.BakeAlgorithm} [mode=DuAEExpression.BakeAlgorithm.SMART] The algorithm to use for baking the expressions.
+ * @param {float} [frameStep=1.0] By default, checks one value per keyframe. A lower value increases the precision and allows for sub-frame sampling. A higher value is faster but less precise.
+ * @param {CompItem} [comp] The composition. The active composition by default.
+ */
+DuAEComp.bake = function( mode, frameStep, comp ) {
+    // Bake all layers
+    DuAEComp.doLayers(function(layer) {
+        // Don't bake non-renderable layers
+        if (!DuAELayer.isRenderable(layer)) return;
+        DuAELayer.bake( mode, frameStep, layer );
+    }, comp, true);
+
+    // Remove non-renderable layers
+    DuAEComp.doLayers(function(layer) {
+        if ( !DuAELayer.isRenderable(layer) ) { 
+            layer.locked = false;
+            layer.remove();
+        }
+    }, comp, true)
 }

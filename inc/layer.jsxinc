@@ -1409,3 +1409,197 @@ DuAELayer.getCreateLayerEffect = function (layer, targetLayer, effectName) {
     fx(1).setValue(targetLayer.index);
     return fx;
 }
+
+/**
+ * Creates a new locator linked to the layer
+ * @param {Layer|CompItem} [layerOrComp] The layer or the containing comp
+ * @returns {ShapeLayer} The locator
+ */
+DuAELayer.createLocator = function( layerOrComp ) {
+    var layer = null;
+    var comp = null;
+    if (typeof layerOrComp === 'undefined') comp = DuAEProject.getActiveComp();
+    else if (layerOrComp instanceof CompItem) comp = layerOrComp;
+    else {
+        layer = layerOrComp;
+        comp = layer.containingComp;
+    }
+    if (!comp) return null;
+
+    //create null object
+    var loc = DuAEComp.addNull(comp, 50);
+    loc.moveToEnd();
+    var name = 'LOC';
+    if (layer) Duik.Layer.copyAttributes(loc, layer, Duik.Layer.Type.LOCATOR);
+    else Duik.Layer.setAttributes(loc, Duik.Layer.Type.LOCATOR, DuScriptUI.String.LOCATOR);
+
+    //add layer control
+    var layerfx = loc.property('ADBE Effect Parade').addProperty('ADBE Layer Control');
+    layerfx.name = DuScriptUI.String.LOCATOR;
+    if (layer) layerfx(1).setValue(layer.index);
+
+    //add expressions
+    loc.transform.rotation.expression = [DuAEExpression.Id.LOCATOR,
+        DuAEExpression.Library.get(['sign', 'dishineritRotation', 'getOrientation']),
+        'var result = 0;',
+        'var l = null;',
+        'try{ l = effect("' + layerfx.name + '")(1) } catch(e) { }',
+        'if (l)',
+        '{',
+        '    var sign = getScaleMirror( thisLayer );',
+        '    var flip = getScaleUTurn( thisLayer );',
+        '    result = getOrientation( l ) * sign + flip;',
+        '    result += dishineritRotation( thisLayer ) - value;',
+        '}',
+        'result;'
+    ].join('\n');
+
+    loc.transform.position.expression = [DuAEExpression.Id.LOCATOR,
+        'var result = [thisComp.width/2,thisComp.height/2];',
+        'var l = null;',
+        'try{ l = effect("' + layerfx.name + '")(1) } catch(e) { }',
+        'if (l)',
+        '{',
+        '   result = l.toWorld(l.anchorPoint);',
+        '}',
+        'if (hasParent)',
+        '{',
+        '   result = parent.fromWorld(result);',
+        '}',
+        'result;'
+    ].join('\n');
+
+    loc.transform.anchorPoint.expression = [DuAEExpression.Id.LOCATOR,
+        'var result = value;',
+        'var l = null;',
+        'try{ l = effect("' + layerfx.name + '")(1) } catch(e) { }',
+        'if (l)',
+        '{',
+        '   result =l.anchorPoint.value;',
+        '}',
+        'result;'
+    ].join('\n');
+
+    loc.transform.scale.expression = [DuAEExpression.Id.LOCATOR,
+        'var l = null;',
+        'try{ l = effect("' + layerfx.name + '")(1) } catch(e) { }',
+        DuAEExpression.Library.get(['getScale', 'dishineritScale']),
+        '',
+        'var threeD = value.length == 3;',
+        'var result = dishineritScale( thisLayer ) - value;',
+        'if (threeD) result += [100,100,100];',
+        'else result += [100,100];',
+        '',
+        'if (l)',
+        '{',
+        '    var sl = getScale( l )/100;',
+        '    if (result.length == 3 && sl.length == 3) {',
+        '        result = [ result[0]*sl[0], result[1]*sl[1], result[2]*sl[2] ];',
+        '    }',
+        '    else if (result.length == 3) {',
+        '        result = [result[0]*sl[0], result[1]*sl[1], result[2] ];',
+        '    }',
+        '    else {',
+        '        result = [result[0]*sl[0], result[1]*sl[1] ];',
+        '    }',
+        '}',
+        '',
+        'result;'
+    ].join('\n');
+
+    return loc;
+}
+
+/**
+ * Checks if a layer is renderable. A non-renderable layer can be:<br />
+ * <ul>
+ * <li>A Null layer</li>
+ * <li>A Guide layer</li>
+ * <li>An empty shape layer</li>
+ * <li>An empty text layer</li>
+ * <li>A layer with the opacity at 0% for the whole composition</li>
+ * </ul>
+ * @return {Bool}
+ */
+DuAELayer.isRenderable = function(layer) {
+    if (!layer.enabled) return false;
+    if (layer.guideLayer) return false;
+    if (layer.nullLayer) return false;
+    if (layer instanceof ShapeLayer) {
+        var contents = layer.property("ADBE Root Vectors Group");
+        if (contents.numProperties == 0) return false;
+    }
+    if (layer instanceof TextLayer) {
+        var contents = layer.sourceText.value.text;
+        if (contents == "") return false;
+    }
+    if (layer.transform.opacity.expression == "" && layer.transform.opacity.value == 0) return false;
+    else if (layer.transform.opacity.expression == "") return true;
+
+    // Check opacity for each frame if there's an expression in it
+    var comp = layer.containingComp;
+    var frameDuration = comp.frameDuration;
+    for (var i = 0, n = comp.duration; i <= n; i += frameDuration) {
+        if (layer.transform.opacity.valueAtTime(i, false) != 0) return true;
+    }
+
+    return false;
+}
+
+/**
+ * Bakes the expressions to keyframes and removes all non-renderable layers.
+ * @param {Layer} layer The layer to bake.
+ * @param {DuAEExpression.BakeAlgorithm} [mode=DuAEExpression.BakeAlgorithm.SMART] The algorithm to use for baking the expressions.
+ * @param {float} [frameStep=1.0] By default, checks one value per keyframe. A lower value increases the precision and allows for sub-frame sampling. A higher value is faster but less precise.
+ */
+DuAELayer.bake = function (mode, frameStep, layer) {
+    // First, check transform properties.
+    // If the parent layer is not renderable, we need a locator to get the transform properties
+    var parent = layer.parent;
+    var locked = layer.locked;
+    layer.locked = false;
+    if (parent) {
+        if (!DuAELayer.isRenderable(parent)) {
+            // Add locator
+            var loc = DuAELayer.createLocator(layer);
+            // Bake it's transform properties
+            var transformProp = new DuAEProperty( loc.transform );
+            transformProp.bakeExpressions( mode, frameStep );
+            // unparent the layer
+            layer.parent = null;
+
+            // Copy the locator transform property keyframes to the layer transform properties
+            loc.transform.anchorPoint.expression = "";
+            var apAnim = new DuAEProperty( loc.transform.anchorPoint ).animation();
+            layer.transform.anchorPoint.expression = "";
+            var ap = new DuAEProperty( layer.transform.anchorPoint );
+            ap.setAnim( apAnim, 0, false, true);
+
+            loc.transform.position.expression = "";
+            var posAnim = new DuAEProperty( loc.transform.position ).animation();
+            layer.transform.position.expression = "";
+            var pos = new DuAEProperty( layer.transform.position );
+            pos.setAnim( posAnim, 0, false, true);
+
+            loc.transform.rotation.expression = "";
+            var rotAnim = new DuAEProperty( loc.transform.rotation ).animation();
+            layer.transform.rotation.expression = "";
+            var rot = new DuAEProperty( layer.transform.rotation );
+            rot.setAnim( rotAnim, 0, false, true);
+
+            loc.transform.scale.expression = "";
+            var scaAnim = new DuAEProperty( loc.transform.scale ).animation();
+            layer.transform.scale.expression = "";
+            var sca = new DuAEProperty( layer.transform.scale );
+            sca.setAnim( scaAnim, 0, false, true);
+
+            // Remove the locator
+            loc.remove();
+        }
+    }
+
+    // Bake all expressions on the layer
+    new DuAEProperty( layer ).bakeExpressions( mode, frameStep );
+
+    layer.locked = locked;
+}
