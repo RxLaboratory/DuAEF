@@ -1335,8 +1335,11 @@ DuAEProperty.prototype.fixSpatialInterpolation = function( precision ) {
  * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
  * Removes all unneeded keyframes from the property.< br/>
  * Also checks the interpolation values to reset the correct display as linear/smooth.
+ * @param {int} [precision=1] - The precision for float number comparison, number of decimals. Set to -1 to not use.
  */
-DuAEProperty.prototype.cleanKeyframes = function() {
+DuAEProperty.prototype.cleanKeyframes = function( precision ) {
+    precision = def(precision, 1);
+    
     var prop = this.getProperty();
 
     var frameDuration = this.comp.frameDuration;
@@ -1354,9 +1357,9 @@ DuAEProperty.prototype.cleanKeyframes = function() {
             var t = prop.keyTime(i);
             var cV = prop.keyValue(i);
             var pV = prop.valueAtTime(t - frameDuration, true);
-            if (!DuMath.equals(pV, cV)) continue;
+            if (!DuMath.equals(pV, cV, precision)) continue;
             var nV = prop.valueAtTime(t + frameDuration, true);
-            if (!DuMath.equals(nV, cV)) continue;
+            if (!DuMath.equals(nV, cV, precision)) continue;
 
             prop.removeKey(i);
 
@@ -2298,8 +2301,8 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
             catch(e){}
         }
         // Clean
-        propInfo.cleanKeyframes();
-        propInfo.fixSpatialInterpolation();
+        propInfo.cleanKeyframes(Math.round(1/frameStep));
+        propInfo.fixSpatialInterpolation(Math.round(1/frameStep));
     });
 }
 
