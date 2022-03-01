@@ -370,6 +370,7 @@ DuAEProperty.prototype.editable = function() {
     if (prop.propertyType != PropertyType.PROPERTY) return false;
     if (prop.elided) return false;
     if (prop.dimensionsSeparated) return false;
+    if (!prop.canVaryOverTime) return false;
     if (prop.propertyValueType == PropertyValueType.NO_VALUE) return false;
     if (prop.propertyValueType == PropertyValueType.CUSTOM_VALUE) return false;
     if (prop.propertyValueType == PropertyValueType.LAYER_INDEX) return false;
@@ -386,7 +387,8 @@ DuAEProperty.prototype.editable = function() {
     //try to set a value if there's no keyframe
     if (prop.numKeys == 0) {
         try {
-            prop.setValue(prop.valueAtTime(0, true));
+            prop.setValueAtTime(0, prop.valueAtTime(0, true));
+            prop.removeKey(1);
             return true;
         } catch (e) {
             return false;
@@ -1101,7 +1103,7 @@ DuAEProperty.prototype.setKeyInterpolation = function(key, typeIn, typeOut, ease
             if (prop.propertyValueType == PropertyValueType.TwoD_SPATIAL || prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL) prop.setRovingAtKey(key, false);
         } else if (typeIn != "roving") {
             //type
-            prop.setInterpolationTypeAtKey(key, typeIn, typeOut); }
+            prop.setInterpolationTypeAtKey(key, typeIn, typeOut);
 
             //not roving
             if (prop.isSpatial) {
@@ -1117,7 +1119,7 @@ DuAEProperty.prototype.setKeyInterpolation = function(key, typeIn, typeOut, ease
             } else if (!prop.isSpatial && prop.value.length == 2) {
                 prop.setTemporalEaseAtKey(key, [easeInValue, easeInValue], [easeOutValue, easeOutValue]);
             } else {
-                prop.setTemporalEaseAtKey(key, [easeInValue], [easeOutValue]); }
+                prop.setTemporalEaseAtKey(key, [easeInValue], [easeOutValue]);
             }
         }
     } catch (e) {
@@ -2165,9 +2167,10 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
     var step = this.comp.frameDuration;
     // Run
     this.do(function(propInfo) {
+        $.write("Baking expression:\nLayer: " + propInfo.layer.name + "\nProperty: " + propInfo.name);
         prop = propInfo.getProperty();
         // Checks
-        if (!prop.canSetExpression) return;
+        if (!propInfo.riggable()) return;
         if (prop.expression == "") return;
         // We don't support all kind of properties yet
         var valueType = prop.propertyValueType;
@@ -2178,6 +2181,8 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
         if (valueType == PropertyValueType.MASK_INDEX) return;
         if (valueType == PropertyValueType.SHAPE) return;
         if (valueType == PropertyValueType.TEXT_DOCUMENT) return;
+        // Check if we can add keyframes on the property
+        if (!propInfo.editable()) return;
         // Get the values and times
         // The extremes
         var extremeValues = [];
@@ -2235,11 +2240,15 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
         propInfo.removeAnimation();
         // Set extreme values
         if (extremeValues.length > 0) {
-            prop.setValuesAtTimes(extremeTimes, extremeValues);
-            // Clean
-            propInfo.cleanKeyframes();
-            // Set to default Bézier
-            propInfo.setInterpolation(KeyframeInterpolationType.BEZIER);
+            // For some reason, there are still properties here which can't receive keyframes
+            try {
+                prop.setValuesAtTimes(extremeTimes, extremeValues);
+                // Clean
+                propInfo.cleanKeyframes();
+                // Set to default Bézier
+                propInfo.setInterpolation(KeyframeInterpolationType.BEZIER);
+            }
+            catch (e) {}
         }
         // Set inflexion values
         if (inflexionValues.length > 0) {
@@ -2254,21 +2263,32 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
                 // Already close to the current curve, no need to add a keyframe
                 if (DuMath.length(inflexionValue, currentValue) <= comparisonPrecision) continue;
                 // Set the new keyframe
-                prop.setValueAtTime(inflexionTime, inflexionValue);
-                var inflexionKey = prop.nearestKeyIndex(inflexionTime);
-                propInfo.setKeySpeed(inflexionKey, inflexionSpeeds[i]);
+                try {
+                    prop.setValueAtTime(inflexionTime, inflexionValue);
+                    var inflexionKey = prop.nearestKeyIndex(inflexionTime);
+                    propInfo.setKeySpeed(inflexionKey, inflexionSpeeds[i]);
+                }
+                catch(e){}
             }
         }
         // Set start and end value
         if (startValue !== null) {
-            prop.setValueAtTime(range[0], startValue);
-            var startKey = prop.nearestKeyIndex(range[0]);
-            propInfo.setKeyInterpolation(startKey, 'continuous');
+            // For some reason, there are still properties here which can't receive keyframes
+            try {
+                prop.setValueAtTime(range[0], startValue);
+                var startKey = prop.nearestKeyIndex(range[0]);
+                propInfo.setKeyInterpolation(startKey, 'continuous');
+            }
+            catch(e){}
         }
         if (endValue !== null) {
-            prop.setValueAtTime(range[1], endValue);
-            var endKey = prop.nearestKeyIndex(range[1]);
-            propInfo.setKeyInterpolation(endKey, 'continuous');
+            // For some reason, there are still properties here which can't receive keyframes
+            try {
+                prop.setValueAtTime(range[1], endValue);
+                var endKey = prop.nearestKeyIndex(range[1]);
+                propInfo.setKeyInterpolation(endKey, 'continuous');
+            }
+            catch(e){}
         }
         // Clean
         propInfo.cleanKeyframes();
