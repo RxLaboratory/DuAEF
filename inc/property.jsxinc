@@ -2113,9 +2113,10 @@ DuAEProperty.prototype.quickBakeExpressions = function(frameStep) {
     var step = this.comp.frameDuration * frameStep;
     // Run
     this.do(function(propInfo) {
+        $.write("Baking expression:\nLayer: " + propInfo.layer.name + "\nProperty: " + propInfo.name);
         prop = propInfo.getProperty();
         // Checks
-        if (!prop.canSetExpression) return;
+        if (!propInfo.riggable()) return;
         if (prop.expression == "") return;
         // We don't support all kind of properties yet
         var valueType = prop.propertyValueType;
@@ -2126,6 +2127,7 @@ DuAEProperty.prototype.quickBakeExpressions = function(frameStep) {
         if (valueType == PropertyValueType.MASK_INDEX) return;
         if (valueType == PropertyValueType.SHAPE) return;
         if (valueType == PropertyValueType.TEXT_DOCUMENT) return;
+        if (!propInfo.editable()) return;
         // Get the values and times
         var values = [];
         var times = [];
@@ -2138,7 +2140,8 @@ DuAEProperty.prototype.quickBakeExpressions = function(frameStep) {
         // Remove current keyframes
         propInfo.removeAnimation();
         // Set values
-        prop.setValuesAtTimes(times, values);
+        try { prop.setValuesAtTimes(times, values); }
+        catch (e) {}
         // Clean
         propInfo.cleanKeyframes();
         // Set Continuous
