@@ -148,6 +148,27 @@ DuAEProperty.prototype.isProperty = function() {
 }
 
 /**
+ * Reimplements the <code>Property.value</code> attribute for convenience.
+ * @param {Bool} [preExpression = false] Set to true to get the pre-expression value.
+ * @return {*} A value appropriate for the type of the property (see Property.propertyValueType), or null if the property doesn't have a value (i.e. it's a group)
+ */
+DuAEProperty.prototype.value = function( preExpression ) {
+    if (this.isGroup()) return null;
+    preExpression = def(preExpression, false);
+
+    var d = this.dimensions();
+    var v;
+    if (preExpression)
+        v = this.getProperty().valueAtTime(this.comp.time, true);
+    else
+        v = this.getProperty().value;
+
+    v = this.fixValue(v);
+
+    return v;
+}
+
+/**
  * Gets the unit of the property
  * @return {string} The unit
  */
