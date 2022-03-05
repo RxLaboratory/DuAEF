@@ -1217,6 +1217,24 @@ DuAEExpression.Library["addPoints"].expression = ['function addPoints(p1, p2, w)
 DuAEExpression.Library["addPoints"].requirements = [];
 
 /**
+    * Fix for the ExtendScript engine, implements the Math.cbrt (cubic root) function.
+    * @function
+    * @name Math.cbrt
+    * @param {Number} x The value
+    * @return {Number} The cubic root
+    */
+DuAEExpression.Library["cbrt"] = {};
+DuAEExpression.Library["cbrt"].expression = ['if (typeof Math.cbrt === \'undefined\') {',
+	'Math.cbrt = (function(pow) {',
+	'return function cbrt(x){',
+	'return x < 0 ? -pow(-x, 1/3) : pow(x, 1/3);',
+	'};',
+	'})(Math.pow);',
+	'}'
+	].join('\n');
+DuAEExpression.Library["cbrt"].requirements = [];
+
+/**
     * The gaussian function
     * @function
     * @param {Number} value The variable
