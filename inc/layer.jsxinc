@@ -1603,3 +1603,41 @@ DuAELayer.bake = function (mode, frameStep, layer) {
 
     layer.locked = locked;
 }
+
+/**
+ * Gets the actual width of a layer (including it's scale)
+ * @param {AVLayer} layer The layer
+ * @return {Number} The width, in pixels.
+ */
+DuAELayer.width = function( layer ) {
+
+    var parent = layer.parent;
+    layer.parent = null;
+
+    var rect = layer.sourceRectAtTime(0,false);
+    var w = rect.width*layer.transform.scale.value[0]/100;
+    w = Math.abs(w);
+
+    layer.parent = parent;
+
+    return w;
+}
+
+/**
+ * Gets the actual height of a layer (including it's scale)
+ * @param {AVLayer} layer The layer
+ * @return {Number} The height, in pixels.
+ */
+DuAELayer.height = function( layer ) {
+
+    var parent = layer.parent;
+    layer.parent = null;
+
+    var rect = layer.sourceRectAtTime(0,false);
+    var h = rect.height*layer.transform.scale.value[0]/100;
+    h = Math.abs(h);
+
+    layer.parent = parent;
+
+    return h;
+}
