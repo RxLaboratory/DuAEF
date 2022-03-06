@@ -1077,8 +1077,44 @@ DuAE.isAutoSaveFolder = function ( folder ) {
     return folderName.indexOf( aaeString ) >= 0 && folderName.indexOf( autosaveString ) >= 0;
 }
 
+/**
+ * Shows/hides the layer controls
+ */
 DuAE.toggleLayerControls = function ( ) {
 	app.executeCommand( DuAE.MenuCommandID.LAYER_CONTROLS );
+}
+
+/**
+ * Gets the list of folders where scripts may be installed
+ * @param {string} [suboflder] The name of a subfolder, like "ScriptUI Panels" or "Startup" or "Shutdown"...
+ * @return {Folder[]} the list of Folder objects.
+ */
+DuAE.scriptFolders = function( subfolder ) {
+	subfolder = def(subfolder, "");
+
+	var folders = [];
+	
+	// Get in Support files
+	var supportFiles = new Folder (
+		Folder.appPackage.absoluteURI + "/Scripts/" + subfolder
+	);
+
+	if (supportFiles.exists) folders.push( supportFiles);
+
+	// Get in appdata
+	// Try in the main version first
+	var appDataFiles = new Folder(
+		Folder.userData.absoluteURI + "/Adobe/After Effects/" + DuAE.version.major + "." + DuAE.version.minor + "/Scripts/" + subfolder
+	);
+
+	// Try the Beta
+	if (!appDataFiles.exists) appDataFiles = new Folder(
+		Folder.userData.absoluteURI + "/Adobe/After Effects (Beta)/" + DuAE.version.major + "." + DuAE.version.minor + "/Scripts/" + subfolder
+	);
+
+	if (appDataFiles.exists) folders.push( appDataFiles );
+
+	return folders;
 }
 
 // ========== DEPRECATED ==========
