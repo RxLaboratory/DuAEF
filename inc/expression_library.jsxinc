@@ -1748,18 +1748,18 @@ DuAEExpression.Library["isSpatial"].requirements = [];
  * @return {boolean} true if the property does not vary.
  */
 DuAEExpression.Library["isStill"] = {};
-DuAEExpression.Library["isStill"].expression = ['function isStill(t, threshold) {',
+DuAEExpression.Library["isStill"].expression = ['function isStill(t, threshold, axis) {',
 	'if (typeof t === \'undefined\') t = time;',
 	'if (typeof threshold === \'undefined\') threshold = 0.01;',
 	'if (typeof axis === \'undefined\') axis = -1;',
 	'var d = valueAtTime(t) - valueAtTime(t + thisComp.frameDuration*.1);',
 	'if (d instanceof Array) {',
-	'if (axis >= 0) return Math.abs(d[i]) >= threshold;',
+	'if (axis >= 0) return Math.abs(d[axis]) <= threshold;',
 	'for (var i = 0; i < d.length; i++) {',
 	'if (Math.abs(d[i]) >= threshold) return false;',
 	'}',
 	'return true;',
-	'} else return Math.abs(d) < threshold;',
+	'} else return Math.abs(d) <= threshold;',
 	'}'
 	].join('\n');
 DuAEExpression.Library["isStill"].requirements = [];
