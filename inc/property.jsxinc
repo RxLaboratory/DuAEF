@@ -169,6 +169,59 @@ DuAEProperty.prototype.value = function( preExpression ) {
 }
 
 /**
+ * Reimplements the <code>Property.selectedKeys</code> attribute for convenience.
+ * @return {int[]} The list of selected keyframe indices.
+ */
+DuAEProperty.prototype.selectedKeys = function() {
+    if (this.isGroup()) return [];
+    var prop = this.getProperty();
+    return prop.selectedKeys;
+}
+
+/**
+ * Reimplements the <code>Property.keyTime</code> method for convenience.
+ * @param {int} index The index of the keyframe.
+ * @return {float} The time of the key.
+ */
+DuAEProperty.prototype.keyTime = function(index) {
+    if (this.isGroup()) return 0;
+    var prop = this.getProperty();
+    return prop.keyTime(index);
+}
+
+/**
+ * Reimplements the <code>Property.keyValue</code> method for convenience.
+ * @param {int} index The index of the keyframe.
+ * @return {*} The value of the key.
+ */
+DuAEProperty.prototype.keyValue = function(index) {
+    if (this.isGroup()) return 0;
+    var prop = this.getProperty();
+    return prop.keyValue(index);
+}
+
+
+/**
+ * Reimplements the <code>Property.removeKey</code> method for convenience.
+ * @param {int} index The index of the keyframe.
+ */
+DuAEProperty.prototype.removeKey = function(index) {
+    if (this.isGroup()) return;
+    var prop = this.getProperty();
+    prop.removeKey(index);
+}
+
+/**
+ * Reimplements the <code>Property.nearestKeyIndex</code> method for convenience.
+ * @param {float} t The time of the keyframe.
+ */
+DuAEProperty.prototype.nearestKeyIndex = function(t) {
+    if (this.isGroup()) return 0;
+    var prop = this.getProperty();
+    return prop.nearestKeyIndex(t);
+}
+
+/**
  * Gets the unit of the property
  * @return {string} The unit
  */
@@ -841,6 +894,35 @@ DuAEProperty.prototype.setValueAtTime = function(value, time) {
 
     try {
         prop.setValueAtTime(time, value);
+        return true;
+    } catch (e) {
+        if (DuESF.debug) alert(e.description);
+        return false;
+    }
+}
+
+/**
+ * Sets a new keyframe value, adjusting the dimensions if needed
+ * @param {any} value - The value to set
+ * @param {int} key - The index the keyframe
+ * @return {boolean} True if the value has correctly been set, false otherwise.
+ */
+DuAEProperty.prototype.setValueAtKey = function(value, key) {
+    var prop = this.getProperty();
+    var dimensions = this.dimensions();
+
+    if (!prop.canVaryOverTime) return false;
+    if (prop.isSeparationLeader)
+        if (prop.dimensionsSeparated) return false;
+
+    if (!this.editable()) return false;
+
+    if (key <= 0 || key > prop.numKeys) return false;
+
+    value = this.fixValue(value);
+
+    try {
+        prop.setValueAtKey(key, value);
         return true;
     } catch (e) {
         if (DuESF.debug) alert(e.description);
