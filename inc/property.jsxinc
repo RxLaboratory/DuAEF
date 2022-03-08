@@ -1283,6 +1283,140 @@ DuAEProperty.prototype.setKeyInterpolation = function(key, typeIn, typeOut, ease
 }
 
 /**
+ * Changes the ease influences of the selected keys
+ * @param {PropertyBase[]|PropertyInfo[]} props - The properties
+ * @param {int[]|int} [easeInValue] - The in interpolation ease value. Will be ignored if undefined.
+ * @param {int[]|int} [easeOutValue] - The out interpolation ease value. Will be ignored if undefined.
+ * @param {int[]|int} [velocityInValue] - The out interpolation ease value. Will be ignored if undefined.
+ * @param {int[]|int} [velocityOutValue] - The out interpolation ease value. Will be ignored if undefined.
+ * @param {boolean} [velocityAsPercent=false] - Use a percent instead of a value to set velocities.<br />
+ * In this case, the proper velocity value will be deduced by multiplying the max speed of the property by the percent.
+ */
+DuAEProperty.prototype.setEase = function( easeInValue, easeOutValue, velocityInValue, velocityOutValue, velocityAsPercent ) {
+    if (this.isGroup()) return;
+
+    if (isNaN(easeInValue) && typeof easeInValue !== 'undefined') easeInValue = 33;
+    if (isNaN(easeOutValue) && typeof easeOutValue !== 'undefined') easeOutValue = 33;
+    if (isNaN(velocityInValue) && typeof velocityInValue !== 'undefined') velocityInValue = 0;
+    if (isNaN(velocityOutValue) && typeof velocityOutValue !== 'undefined') velocityOutValue = 0;
+
+    var comp = this.comp;
+    var prop = this.getProperty();
+
+    if (prop.canVaryOverTime) {
+
+        var vInValue = velocityInValue;
+        var vOutValue = velocityOutValue;
+
+        for (var k = 0, numK = prop.selectedKeys.length; k < numK; k++) {
+            var key = prop.selectedKeys[k];
+
+            if (typeof easeInValue !== 'undefined') {
+                if (typeof velocityInValue === 'undefined' && prop.keyInInterpolationType(key) == KeyframeInterpolationType.LINEAR) {
+                    vInValue = 0;
+                }
+            }
+
+            if (typeof easeOutValue !== 'undefined') {
+                if (typeof velocityOutValue === 'undefined' && prop.keyOutInterpolationType(key) == KeyframeInterpolationType.LINEAR) {
+                    vOutValue = 0;
+                }
+            }
+
+            //compute the velocity
+            if (velocityAsPercent) {
+                //get speed just before and after as if it was linear
+                var prevSpeed;
+                var nextSpeed;
+                var val = prop.keyValue(key);
+                var currentTime = prop.keyTime(key);
+                var valBefore = val;
+                var valAfter = val;
+                if (key > 1) {
+                    var valBefore = prop.keyValue(key - 1);
+                    var timeBefore = prop.keyTime(key - 1);
+                    prevSpeed = DuMath.length(val, valBefore) / (currentTime - timeBefore);
+                }
+
+                if (key < prop.numKeys) {
+                    var valAfter = prop.keyValue(key + 1);
+                    var timeAfter = prop.keyTime(key + 1);
+                    nextSpeed = DuMath.length(val, valBefore) / (timeAfter - currentTime);
+                }
+
+                if (typeof prevSpeed === 'undefined' && typeof nextSpeed === 'undefined') {
+                    prevSpeed = 0;
+                    nextSpeed = 0;
+                } else if (typeof prevSpeed === 'undefined') {
+                    prevSpeed = nextSpeed;
+                } else if (typeof nextSpeed === 'undefined') {
+                    nextSpeed = prevSpeed;
+                }
+
+                //detect sign
+                var signBefore = 1;
+                var signAfter = 1;
+                if (this.dimensions() == 1) {
+                    if (val - valBefore < 1) signBefore = -1;
+                    if (valAfter - val < 1) signAfter = -1;
+                }
+
+                if (velocityInValue == velocityOutValue) {
+                    //select average speed
+                    var speed = (prevSpeed + nextSpeed) / 2;
+
+                    vInValue = velocityInValue * speed / 100 * signBefore;
+                    vOutValue = velocityOutValue * speed / 100 * signBefore;
+                } else {
+
+                    vInValue = velocityInValue * prevSpeed / 100 * signBefore;
+                    vOutValue = velocityOutValue * nextSpeed / 100 * signAfter;
+                }
+
+            }
+
+            //set interpolation 
+            var easeIn = [new KeyframeEase(
+                def(vInValue, prop.keyInTemporalEase(key)[0].speed),
+                def(easeInValue, prop.keyInTemporalEase(key)[0].influence)
+            )];
+            var easeOut = [new KeyframeEase(
+                def(vOutValue, prop.keyOutTemporalEase(key)[0].speed),
+                def(easeOutValue, prop.keyOutTemporalEase(key)[0].influence)
+            )];
+
+            if (!prop.isSpatial) {
+                for (var j = 1; j < prop.keyInTemporalEase(prop.selectedKeys[k]).length; j++) {
+                    easeIn.push(new KeyframeEase(
+                        def(vInValue, prop.keyInTemporalEase(key)[j].speed),
+                        def(easeInValue, prop.keyInTemporalEase(key)[j].influence)
+                    ));
+                    easeOut.push(new KeyframeEase(
+                        def(vOutValue, prop.keyOutTemporalEase(key)[j].speed),
+                        def(easeOutValue, prop.keyOutTemporalEase(key)[j].influence)
+                    ));
+                }
+            }
+
+            //adjust interpolation types
+            var inType = KeyframeInterpolationType.BEZIER;
+            var outType = KeyframeInterpolationType.BEZIER;
+
+            if (typeof easeInValue === 'undefined' && typeof velocityInValue === 'undefined') {
+                inType = prop.keyInInterpolationType(key);
+            }
+            if (typeof easeOutValue === 'undefined' && typeof velocityOutValue === 'undefined') {
+                outType = prop.keyOutInterpolationType(key);
+            }
+
+            prop.setInterpolationTypeAtKey(key, inType, outType);
+
+            prop.setTemporalEaseAtKey(key, easeIn, easeOut);
+        }
+    }
+}
+
+/**
  * Sets the speed of a keyframe.
  * @param {int} key - The key index
  * @param {float} speed - The speed
@@ -1363,12 +1497,19 @@ DuAEProperty.prototype.velocityToPercent = function(key) {
         var valBefore = prop.keyValue(key - 1);
         var timeBefore = prop.keyTime(key - 1);
         prevSpeed = DuMath.length(val, valBefore) / (currentTime - timeBefore);
+        if (this.dimensions() == 1) {
+            if (val - valBefore < 0 && speedIn < 0) prevSpeed = -prevSpeed;
+        }
     }
 
     if (key < prop.numKeys) {
         var valAfter = prop.keyValue(key + 1);
         var timeAfter = prop.keyTime(key + 1);
-        nextSpeed = DuMath.length(val, valBefore) / (timeAfter - currentTime);
+        nextSpeed = DuMath.length(val, valAfter) / (timeAfter - currentTime);
+        // Sign
+        if (this.dimensions() == 1) {
+            if (valAfter - val < 0 && speedOut < 0) nextSpeed = -nextSpeed;
+        }
     }
 
     //get average speed
@@ -2658,171 +2799,6 @@ DuAEProperty.setInterpolationType = function(layers, props, typeIn, typeOut, eas
                 for (var k = 0, num = prop.selectedKeys.length; k < num; k++) {
                     aeprop.setKeyInterpolation(prop.selectedKeys[k], typeIn, typeOut, easeInValue, easeOutValue);
                 }
-            }
-        }
-    }
-}
-
-/**
- * Adds a new keyframe on the properties.<br />
- * To set a value of your choice on one property,<br />
- * you can create a new {@link DuAEKeyFrame}, then use {@link DuAEProperty.setKey}.
- * @static
- * @param {PropertyBase[]|DuAEProperty[]} props - The properties
- * @param {KeyframeInterpolationType|string} typeIn - The in interpolation type (see AE API) or the string "roving" or "continuous"
- * @param {KeyframeInterpolationType|string} [typeOut=typeIn] - The out interpolation type (see AE API)
- * @param {int[]|int} [easeInValue=33] - The in interpolation ease value (used if typeIn is KeyframeInterpolationType.BEZIER)
- * @param {int[]|int} [easeOutValue=easeInValue] - The out interpolation ease value (used if typeOut is KeyframeInterpolationType.BEZIER)
- * @param {float} [time=comp.time] - The time at which to add the key
- */
-DuAEProperty.addKey = function(props, typeIn, typeOut, easeInValue, easeOutValue, time) {
-    for (var i = 0; i < props.length; i++) {
-        var aeprop = new DuAEProerty(props[i]);
-        var prop = aeprop.getProperty();
-        var comp = prop.comp();
-
-        if (prop.canVaryOverTime) {
-            var keyTime;
-            if (typeof time === 'undefined') keyTime = comp.time;
-            else keyTime = time;
-            var key = prop.addKey(keyTime);
-            aeprop.setKeyInterpolation(key, typeIn, typeOut, easeInValue, easeOutValue);
-        }
-    }
-}
-
-/**
- * Changes the ease influences of the selected keys
- * @static
- * @param {PropertyBase[]|DuAEProperty[]} props - The properties
- * @param {int[]|int} [easeInValue] - The in interpolation ease value. Will be ignored if omitted.
- * @param {int[]|int} [easeOutValue] - The out interpolation ease value. Will be ignored if omitted.
- * @param {int[]|int} [velocityInValue] - The out interpolation ease value. Will be ignored if omitted.
- * @param {int[]|int} [velocityOutValue] - The out interpolation ease value. Will be ignored if omitted.
- * @param {boolean} [velocityAsPercent=false] - Use a percent instead of a value to set velocities.<br />
- * In this case, the proper velocity value will be deduced by multiplying the max speed of the property by the percent.
- */
-DuAEProperty.setEase = function(props, easeInValue, easeOutValue, velocityInValue, velocityOutValue, velocityAsPercent) {
-    if (isNaN(easeInValue) && typeof easeInValue !== 'undefined') easeInValue = 33;
-    if (isNaN(easeOutValue) && typeof easeOutValue !== 'undefined') easeOutValue = 33;
-    if (isNaN(velocityInValue) && typeof velocityInValue !== 'undefined') velocityInValue = 0;
-    if (isNaN(velocityOutValue) && typeof velocityOutValue !== 'undefined') velocityOutValue = 0;
-
-    for (var i = 0, numP = props.length; i < numP; i++) {
-        var propInfo = new DuAEProperty(props[i]);
-        var prop = propInfo.getProperty();
-
-        var comp = propInfo.comp();
-
-        if (prop.canVaryOverTime) {
-
-            var vInValue = velocityInValue;
-            var vOutValue = velocityOutValue;
-
-            for (var k = 0, numK = prop.selectedKeys.length; k < numK; k++) {
-                var key = prop.selectedKeys[k];
-
-                if (typeof easeInValue !== 'undefined') {
-                    if (typeof velocityInValue === 'undefined' && prop.keyInInterpolationType(key) == KeyframeInterpolationType.LINEAR) {
-                        vInValue = 0;
-                    }
-                }
-
-                if (typeof easeOutValue !== 'undefined') {
-                    if (typeof velocityOutValue === 'undefined' && prop.keyOutInterpolationType(key) == KeyframeInterpolationType.LINEAR) {
-                        vOutValue = 0;
-                    }
-                }
-
-                //compute the velocity
-                if (velocityAsPercent) {
-                    //get speed just before and after as if it was linear
-                    var prevSpeed;
-                    var nextSpeed;
-                    var val = prop.keyValue(key);
-                    var currentTime = prop.keyTime(key);
-                    var valBefore = val;
-                    var valAfter = val;
-                    if (key > 1) {
-                        var valBefore = prop.keyValue(key - 1);
-                        var timeBefore = prop.keyTime(key - 1);
-                        prevSpeed = DuMath.length(val, valBefore) / (currentTime - timeBefore);
-                    }
-
-                    if (key < prop.numKeys) {
-                        var valAfter = prop.keyValue(key + 1);
-                        var timeAfter = prop.keyTime(key + 1);
-                        nextSpeed = DuMath.length(val, valBefore) / (timeAfter - currentTime);
-                    }
-
-                    if (typeof prevSpeed === 'undefined' && typeof nextSpeed === 'undefined') {
-                        prevSpeed = 0;
-                        nextSpeed = 0;
-                    } else if (typeof prevSpeed === 'undefined') {
-                        prevSpeed = nextSpeed;
-                    } else if (typeof nextSpeed === 'undefined') {
-                        nextSpeed = prevSpeed;
-                    }
-
-                    //detect sign
-                    var signBefore = 1;
-                    var signAfter = 1;
-                    if (propInfo.dimensions() == 1) {
-                        if (val - valBefore < 1) signBefore = -1;
-                        if (valAfter - val < 1) signAfter = -1;
-                    }
-
-                    if (velocityInValue == velocityOutValue) {
-                        //select average speed
-                        var speed = (prevSpeed + nextSpeed) / 2;
-
-                        vInValue = velocityInValue * speed / 100 * signBefore;
-                        vOutValue = velocityOutValue * speed / 100 * signBefore;
-                    } else {
-
-                        vInValue = velocityInValue * prevSpeed / 100 * signBefore;
-                        vOutValue = velocityOutValue * nextSpeed / 100 * signAfter;
-                    }
-
-                }
-
-                //set interpolation 
-                var easeIn = [new KeyframeEase(
-                    def(vInValue, prop.keyInTemporalEase(key)[0].speed),
-                    def(easeInValue, prop.keyInTemporalEase(key)[0].influence)
-                )];
-                var easeOut = [new KeyframeEase(
-                    def(vOutValue, prop.keyOutTemporalEase(key)[0].speed),
-                    def(easeOutValue, prop.keyOutTemporalEase(key)[0].influence)
-                )];
-
-                if (!prop.isSpatial) {
-                    for (var j = 1; j < prop.keyInTemporalEase(prop.selectedKeys[k]).length; j++) {
-                        easeIn.push(new KeyframeEase(
-                            def(vInValue, prop.keyInTemporalEase(key)[j].speed),
-                            def(easeInValue, prop.keyInTemporalEase(key)[j].influence)
-                        ));
-                        easeOut.push(new KeyframeEase(
-                            def(vOutValue, prop.keyOutTemporalEase(key)[j].speed),
-                            def(easeOutValue, prop.keyOutTemporalEase(key)[j].influence)
-                        ));
-                    }
-                }
-
-                //adjust interpolation types
-                var inType = KeyframeInterpolationType.BEZIER;
-                var outType = KeyframeInterpolationType.BEZIER;
-
-                if (typeof easeInValue === 'undefined' && typeof velocityInValue === 'undefined') {
-                    inType = prop.keyInInterpolationType(key);
-                }
-                if (typeof easeOutValue === 'undefined' && typeof velocityOutValue === 'undefined') {
-                    outType = prop.keyOutInterpolationType(key);
-                }
-
-                prop.setInterpolationTypeAtKey(key, inType, outType);
-
-                prop.setTemporalEaseAtKey(key, easeIn, easeOut);
             }
         }
     }
