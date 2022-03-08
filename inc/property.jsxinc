@@ -148,6 +148,15 @@ DuAEProperty.prototype.isProperty = function() {
 }
 
 /**
+ * Reimplements the <code>Property.isSpatial</code> attribute for convenience.
+ * @return {Bool} true if the property is spatial.
+ */
+DuAEProperty.prototype.isSpatial = function() {
+    if (this.isGroup()) return false;
+    return this.getProperty().isSpatial;
+}
+
+/**
  * Reimplements the <code>Property.value</code> attribute for convenience.
  * @param {Bool} [preExpression = false] Set to true to get the pre-expression value.
  * @return {*} A value appropriate for the type of the property (see Property.propertyValueType), or null if the property doesn't have a value (i.e. it's a group)
@@ -165,6 +174,23 @@ DuAEProperty.prototype.value = function( preExpression ) {
 
     v = this.fixValue(v);
 
+    return v;
+}
+
+/**
+ * Reimplements the <code>Property.valueAtTime</code> mehtod for convenience.
+ * @param {float} [time] If omitted, the current comp time.
+ * @param {Bool} [preExpression = false] Set to true to get the pre-expression value.
+ * @return {*} A value appropriate for the type of the property (see Property.propertyValueType), or null if the property doesn't have a value (i.e. it's a group)
+ */
+DuAEProperty.prototype.valueAtTime = function(time, preExpression) {
+    if (this.isGroup()) return null;
+    preExpression = def(preExpression, false);
+    time = def(time, this.comp.time);
+
+    var d = this.dimensions();
+    var v = this.getProperty().valueAtTime(time, preExpression);
+    v = this.fixValue(v);
     return v;
 }
 
@@ -873,6 +899,26 @@ DuAEProperty.prototype.setValue = function(value, defaultTime) {
 }
 
 /**
+ * Adds a new key
+ * @param {KeyframeInterpolationType|string} [typeIn=KeyframeInterpolationType.LINEAR] - The in interpolation type (see AE API) or the string "roving" or "continuous"
+ * @param {KeyframeInterpolationType|string} [typeOut=typeIn] - The out interpolation type (see AE API)
+ * @param {float} [time] - If omitted, the current comp time
+ */
+DuAEProperty.prototype.addKey = function( typeIn, typeOut, time ) {
+    if (this.isGroup()) return;
+
+    typeIn = def(typeIn, KeyframeInterpolationType.LINEAR);
+    typeOut = def(typeOut, typeIn);
+    time = def(time, this.comp.time);
+
+    // Set value to create key
+    this.setValueAtTime( this.valueAtTime(time, true), time);
+    var prop = this.getProperty();
+    var keyIndex = prop.nearestKeyIndex(time);
+    this.setKeyInterpolation(keyIndex, typeIn, typeOut);
+}
+
+/**
  * Sets a new keyframe on a property, adjusting the dimensions if needed, at desired time
  * @param {any} value - The value to set
  * @param {float} [time] - The time of the new keyframe
@@ -1205,6 +1251,18 @@ DuAEProperty.prototype.setKeyInterpolation = function(key, typeIn, typeOut, ease
             //not roving
             if (prop.propertyValueType == PropertyValueType.TwoD_SPATIAL || prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL) prop.setRovingAtKey(key, false);
         } else if (typeIn != "roving") {
+            //influences
+            var inInf = [easeInValue];
+            var outInf = [easeOutValue];
+            if (!prop.isSpatial) {
+                var d = prop.value.length;
+                while (d > inInf.length) {
+                    inInf.push(easeInValue);
+                    outInf.push(easeOutValue);
+                }
+            }
+            prop.setTemporalEaseAtKey(key, inInf, outInf);
+            
             //type
             prop.setInterpolationTypeAtKey(key, typeIn, typeOut);
 
@@ -1215,15 +1273,6 @@ DuAEProperty.prototype.setKeyInterpolation = function(key, typeIn, typeOut, ease
 
             //not continuous
             prop.setTemporalContinuousAtKey(key, false);
-
-            //influences
-            if (!prop.isSpatial && prop.value.length == 3) {
-                prop.setTemporalEaseAtKey(key, [easeInValue, easeInValue, easeInValue], [easeOutValue, easeOutValue, easeOutValue]);
-            } else if (!prop.isSpatial && prop.value.length == 2) {
-                prop.setTemporalEaseAtKey(key, [easeInValue, easeInValue], [easeOutValue, easeOutValue]);
-            } else {
-                prop.setTemporalEaseAtKey(key, [easeInValue], [easeOutValue]);
-            }
         }
     } catch (e) {
 
@@ -1264,20 +1313,29 @@ DuAEProperty.prototype.setKeySpeed = function(key, speed) {
  * @param {KeyframeInterpolationType|string} [typeOut=typeIn] - The out interpolation type (see AE API)
  * @param {int[]|int} [easeInValue=33] - The in interpolation ease value (used if typeIn is KeyframeInterpolationType.BEZIER)
  * @param {int[]|int} [easeOutValue=easeInValue] - The out interpolation ease value (used if typeOut is KeyframeInterpolationType.BEZIER)
+ * @param {Bool} [selectedKeyframesOnly=false] - If true, only set the selected keyframes.
  */
-DuAEProperty.prototype.setInterpolation = function(typeIn, typeOut, easeInValue, easeOutValue) {
+DuAEProperty.prototype.setInterpolation = function(typeIn, typeOut, easeInValue, easeOutValue, selectedKeyframesOnly) {
     // Defaults
-    if (typeOut == undefined) typeOut = def(typeOut, typeIn);
-    if (easeInValue == undefined) easeInValue = 33;
+    selectedKeyframesOnly = def(selectedKeyframesOnly, false);
+    typeOut = def(typeOut, typeIn);
+    easeInValue = def(easeInValue, 33);
     if (isNaN(easeInValue)) easeInValue = 33;
-    if (easeOutValue == undefined) easeOutValue = easeInValue;
+    easeOutValue = def(easeOutValue, easeInValue);
     if (isNaN(easeOutValue)) easeOutValue = 33;
 
     // Run 
     this.do(function(propInfo) {
         var prop = propInfo.getProperty();
-        for (var i = 1, n = prop.numKeys; i <= n; i++) {
-            propInfo.setKeyInterpolation(i, typeIn, typeOut, easeInValue, easeOutValue);
+        if (selectedKeyframesOnly) {
+            for (var i = 0; i < prop.selectedKeys.length; i++) {
+                propInfo.setKeyInterpolation(prop.selectedKeys[i], typeIn, typeOut, easeInValue, easeOutValue);
+            }
+        }
+        else {
+            for (var i = 1, n = prop.numKeys; i <= n; i++) {
+                propInfo.setKeyInterpolation(i, typeIn, typeOut, easeInValue, easeOutValue);
+            }
         }
     });
 }
@@ -1903,7 +1961,7 @@ DuAEProperty.prototype.getAnimatedProps = function(filter, strict, caseSensitive
         }
     } else {
         for (var i = 0, num = this.numProperties(); i < num; i++) {
-            props = props.concat(this.property(i + 1).getAnimatedProps(filter, strict, caseSensitive));
+            props = props.concat(this.prop(i + 1).getAnimatedProps(filter, strict, caseSensitive));
         }
     }
 
