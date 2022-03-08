@@ -1251,6 +1251,9 @@ DuAEProperty.prototype.setKeyInterpolation = function(key, typeIn, typeOut, ease
             //not roving
             if (prop.propertyValueType == PropertyValueType.TwoD_SPATIAL || prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL) prop.setRovingAtKey(key, false);
         } else if (typeIn != "roving") {
+            // WARNING Influences HAVE TO be set BEFORE interpolation type
+            // otherwise, the type gets back to Bézier.
+
             //influences
             var inInf = [easeInValue];
             var outInf = [easeOutValue];
