@@ -696,7 +696,7 @@ DuAEComp.addShape = function(shape, color, comp) {
     }
 
     var fill = solidContent.addProperty("ADBE Vector Graphic - Fill");
-    fill("ADBE Vector Fill Color").setValue(DuColor.Color.RAINBOX_RED.floatRGBA());
+    fill("ADBE Vector Fill Color").setValue(DuColor.Color.APP_HIGHLIGHT_COLOR.floatRGBA());
 
     return layer;
 }
