@@ -1,7 +1,7 @@
 /* License
 	DuExpression Library
 
-	Copyright (c) 2020-2021 Nicolas Dufresne and contributors
+	Copyright (c) 2020-2022 Nicolas Dufresne and contributors
 
 	This file is part of DuExpression - The Duduf Expression Library.
 
@@ -2033,8 +2033,7 @@ DuAEExpression.Library["getGroupTransformMatrix"].expression = ['function getGro
 DuAEExpression.Library["getGroupTransformMatrix"].requirements = ["isLayer","Matrix"];
 
 /**
- * Gets the comp position (2D Projection in the comp) of a layer.<br />
- * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * Gets the comp position (2D Projection in the comp) of a layer.
  * @function
  * @param {number} [t=time] Time from when to get the position
  * @param {Layer} [l=thisLayer] The layer
@@ -2042,7 +2041,10 @@ DuAEExpression.Library["getGroupTransformMatrix"].requirements = ["isLayer","Mat
  */
 DuAEExpression.Library["getLayerCompPos"] = {};
 DuAEExpression.Library["getLayerCompPos"].expression = ['function getLayerCompPos( t, l ) {',
-	'return l.toComp( l.anchorPoint, t );',
+	'if (typeof t === \'undefined\') t = time;',
+	'if (typeof l === \'undefined\') l = thisLayer;',
+	'if (l.hasParent) return l.parent.toComp(l.position, t);',
+	'return l.toComp(l.anchorPoint, t);',
 	'}'
 	].join('\n');
 DuAEExpression.Library["getLayerCompPos"].requirements = [];
@@ -2058,7 +2060,8 @@ DuAEExpression.Library["getLayerWorldPos"] = {};
 DuAEExpression.Library["getLayerWorldPos"].expression = ['function getLayerWorldPos(t, l) {',
 	'if (typeof t === \'undefined\') t = time;',
 	'if (typeof l === \'undefined\') l = thisLayer;',
-	'return l.toWorld(l.anchorPoint, t);',
+	'if (l.hasParent) return l.parent.toWorld(l.position, t);',
+	'return l.position.valueAtTime(t);',
 	'}'
 	].join('\n');
 DuAEExpression.Library["getLayerWorldPos"].requirements = [];
