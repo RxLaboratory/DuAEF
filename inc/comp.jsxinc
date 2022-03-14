@@ -626,6 +626,7 @@ DuAEComp.addSolid = function(color, comp) {
     if (!comp) return;
 
     color = def(color, DuColor.Color.RAINBOX_RED);
+    if (!(color instanceof DuColor)) color = new DuColor(color);
 
     var layer = comp.layers.addShape();
     layer.name = DuScriptUI.String.SOLID_LAYER;
