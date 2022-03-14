@@ -229,12 +229,13 @@ DuAEProperty.prototype.keyValue = function(index) {
 
 /**
  * Reimplements the <code>Property.removeKey</code> method for convenience.
- * @param {int} index The index of the keyframe.
+ * @param {int|DuAEKeyframe} key The index or the keyframe.
  */
-DuAEProperty.prototype.removeKey = function(index) {
+DuAEProperty.prototype.removeKey = function(key) {
+    if (key instanceof DuAEKeyFrame) key = key._index;
     if (this.isGroup()) return;
     var prop = this.getProperty();
-    prop.removeKey(index);
+    prop.removeKey(key);
 }
 
 /**
@@ -326,10 +327,13 @@ DuAEProperty.prototype.isDropdown = function() {
 
 /**
  * Gets the number of keyframes in the property
- * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
+ * @param {Boolean} [recursive=true] If true and this is a group, returns the number of keyframes of all contained property
  * @return {int}
  */
-DuAEProperty.prototype.numKeys = function () {
+DuAEProperty.prototype.numKeys = function (recursive) {
+    recursive = def(recursive, true);
+    if (!recursive && this.isGroup()) return 0;
+
     var prop = this.getProperty();
 
     var numKeys = 0;
@@ -583,10 +587,11 @@ DuAEProperty.prototype.keyAtIndex = function(keyIndex) {
 
 /**
  * Gets the nearest key at a given time on a property
- * @param {float}	time	- The time of the key to retrieve.
- * @return {DuAEKeyFrame}	The keyframe, or null if incorrect time or not found
+ * @param {float}	[time]	- The time of the key to retrieve. The current time by default.
+ * @return {DuAEKeyFrame|null}	The keyframe, or null if incorrect time or not found
  */
 DuAEProperty.prototype.nearestKeyAtTime = function(time) {
+    time = def(time, this.comp.time);
     var prop = this.getProperty();
     return this.keyAtIndex(prop.nearestKeyIndex(time));
 }
@@ -1547,56 +1552,62 @@ DuAEProperty.prototype.hasSelectedKeys = function() {
 }
 
 /**
- * Sets the spatial interpolation of the selected keyframes on the property
+ * Sets the spatial interpolation of the keyframes on the property
  * @param {Property|DuAEProperty} prop - The property
  * @param {KeyframeInterpolationType} typeIn - The in interpolation type (see AE API)
  * @param {KeyframeInterpolationType} [typeOut=typeIn] - The in interpolation type (see AE API)
+ * @param {Bool} [selectedKeyframesOnly=false] - If true, only set the selected keyframes.
  */
-DuAEProperty.prototype.setSpatialInterpolation = function(typeIn, typeOut) {
+DuAEProperty.prototype.setSpatialInterpolation = function(typeIn, typeOut, selectedKeyframesOnly) {
     var prop = this.getProperty();
     typeOut = def(typeOut, typeIn);
+    selectedKeyframesOnly = def(selectedKeyframesOnly, false);
 
     if (!prop.isSpatial) return;
     if (prop.selectedKeys.length == 0) return;
 
-    for (var k = 0, numK = prop.selectedKeys.length; k < numK; k++) {
+    var keys = [];
+    if (selectedKeyframesOnly) keys = prop.selectedKeys;
+    else for (var k = 1, n = prop.numKeys; k <= n; k++) keys.push(k);
+
+    for (var k = 0, numK = keys.length; k < numK; k++) {
         if (typeIn == KeyframeInterpolationType.BEZIER && typeOut == KeyframeInterpolationType.BEZIER) {
-            prop.setSpatialAutoBezierAtKey(prop.selectedKeys[k], true);
+            prop.setSpatialAutoBezierAtKey(keys[k], true);
         } else if (typeIn == KeyframeInterpolationType.LINEAR && typeOut == KeyframeInterpolationType.LINEAR) {
-            prop.setSpatialContinuousAtKey(prop.selectedKeys[k], false);
-            prop.setSpatialAutoBezierAtKey(prop.selectedKeys[k], false);
+            prop.setSpatialContinuousAtKey(keys[k], false);
+            prop.setSpatialAutoBezierAtKey(keys[k], false);
             if (prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL) {
-                prop.setSpatialTangentsAtKey(prop.selectedKeys[k], [0, 0, 0], [0, 0, 0]);
+                prop.setSpatialTangentsAtKey(keys[k], [0, 0, 0], [0, 0, 0]);
             } else if (prop.propertyValueType == PropertyValueType.TwoD_SPATIAL) {
-                prop.setSpatialTangentsAtKey(prop.selectedKeys[k], [0, 0], [0, 0]);
+                prop.setSpatialTangentsAtKey(keys[k], [0, 0], [0, 0]);
             }
         } else if (typeIn == KeyframeInterpolationType.BEZIER) {
-            prop.setSpatialContinuousAtKey(prop.selectedKeys[k], false);
-            prop.setSpatialAutoBezierAtKey(prop.selectedKeys[k], false);
-            var keyIndex = prop.selectedKeys[k];
+            prop.setSpatialContinuousAtKey(keys[k], false);
+            prop.setSpatialAutoBezierAtKey(keys[k], false);
+            var keyIndex = keys[k];
             if (prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL) {
                 if (prop.keyInSpatialTangent(keyIndex)[0] == 0 && prop.keyInSpatialTangent(keyIndex)[1] == 0 && prop.keyInSpatialTangent(keyIndex)[2] == 0) {
-                    prop.setSpatialAutoBezierAtKey(prop.selectedKeys[k], true);
+                    prop.setSpatialAutoBezierAtKey(keys[k], true);
                 }
                 prop.setSpatialTangentsAtKey(keyIndex, prop.keyInSpatialTangent(keyIndex), [0, 0, 0]);
             } else if (prop.propertyValueType == PropertyValueType.TwoD_SPATIAL) {
                 if (prop.keyInSpatialTangent(keyIndex)[0] == 0 && prop.keyInSpatialTangent(keyIndex)[1] == 0) {
-                    prop.setSpatialAutoBezierAtKey(prop.selectedKeys[k], true);
+                    prop.setSpatialAutoBezierAtKey(keys[k], true);
                 }
                 prop.setSpatialTangentsAtKey(keyIndex, prop.keyInSpatialTangent(keyIndex), [0, 0]);
             }
         } else if (typeIn == KeyframeInterpolationType.LINEAR) {
             prop.setSpatialContinuousAtKey(prop.selectedKeys[k], false);
             prop.setSpatialAutoBezierAtKey(prop.selectedKeys[k], false);
-            var keyIndex = prop.selectedKeys[k];
+            var keyIndex = keys[k];
             if (prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL) {
                 if (prop.keyOutSpatialTangent(keyIndex)[0] == 0 && prop.keyOutSpatialTangent(keyIndex)[1] == 0 && prop.keyOutSpatialTangent(keyIndex)[2] == 0) {
-                    prop.setSpatialAutoBezierAtKey(prop.selectedKeys[k], true);
+                    prop.setSpatialAutoBezierAtKey(keys[k], true);
                 }
                 prop.setSpatialTangentsAtKey(keyIndex, [0, 0, 0], prop.keyOutSpatialTangent(keyIndex));
             } else if (prop.propertyValueType == PropertyValueType.TwoD_SPATIAL) {
                 if (prop.keyOutSpatialTangent(keyIndex)[0] == 0 && prop.keyOutSpatialTangent(keyIndex)[1] == 0) {
-                    prop.setSpatialAutoBezierAtKey(prop.selectedKeys[k], true);
+                    prop.setSpatialAutoBezierAtKey(keys[k], true);
                 }
                 prop.setSpatialTangentsAtKey(keyIndex, [0, 0], prop.keyOutSpatialTangent(keyIndex));
             }
@@ -1608,15 +1619,24 @@ DuAEProperty.prototype.setSpatialInterpolation = function(typeIn, typeOut) {
  * Fixes the spatial interpolation of the selected keys.<br />
  * Sets the interpolation to linear when the property does not move between keyframes
  * @param {int} [precision=1] - The precision for float number comparison, number of decimals. Set to -1 to not use.
+ * @param {Bool} [selectedKeyframesOnly=false] - If true, only set the selected keyframes.
  */
-DuAEProperty.prototype.fixSpatialInterpolation = function( precision ) {
+DuAEProperty.prototype.fixSpatialInterpolation = function( precision, selectedKeyframesOnly ) {
     precision = def(precision, 1);
     var prop = this.getProperty();
 
     if (!prop.isSpatial) return;
     if (!prop.canVaryOverTime) return;
 
-    for (var k = 1, numK = prop.numKeys; k < numK; k++) {
+    selectedKeyframesOnly = def(selectedKeyframesOnly, false);
+
+    var keys = [];
+    if (selectedKeyframesOnly) keys = prop.selectedKeys;
+    else for (var k = 1, n = prop.numKeys; k <= n; k++) keys.push(k);
+
+    for (var i = 0, numK = keys.length; i < numK; i++) {
+        var k = keys[i];
+        if (k == prop.numKeys) continue;
         //get this key value
         var keyValue = prop.valueAtTime(prop.keyTime(k), true);
         //get next key value
