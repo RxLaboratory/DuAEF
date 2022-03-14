@@ -139,7 +139,7 @@ DuAEProperty.isRiggable = function ( prop ) {
  * @deprecated
  * @param {Property|DuAEProperty}	prop	- The property.
  * @param {int}	keyIndex	- The index of the key to retrieve. If the index is negative, it is counted from the end i.e. to retrieve the keyframe before the last one, use -2 (-1 is the last)
- * @return {DuAEKeyFrame}	The keyframe, or null if incorrect index
+ * @return {DuAEKeyframe}	The keyframe, or null if incorrect index
  */
 DuAEProperty.getKeyFrameAtIndex = function ( prop, keyIndex ) {
     if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
@@ -150,7 +150,7 @@ DuAEProperty.getKeyFrameAtIndex = function ( prop, keyIndex ) {
         keyIndex = prop.numKeys - keyIndex + 1;
     }
 
-    var key = new DuAEKeyFrame();
+    var key = new DuAEKeyframe();
     key._time = prop.keyTime( keyIndex );
     key.value = prop.keyValue( keyIndex );
     key._inInterpolationType = prop.keyInInterpolationType( keyIndex );
@@ -178,7 +178,7 @@ DuAEProperty.getKeyFrameAtIndex = function ( prop, keyIndex ) {
  * @deprecated
  * @param {Property|DuAEProperty}	prop	- The property.
  * @param {float}	time	- The time of the key to retrieve.
- * @return {DuAEKeyFrame}	The keyframe, or null if incorrect time or not found
+ * @return {DuAEKeyframe}	The keyframe, or null if incorrect time or not found
  */
 DuAEProperty.getNearestKeyFrameAtTime = function ( prop, time ) {
     if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
@@ -191,7 +191,7 @@ DuAEProperty.getNearestKeyFrameAtTime = function ( prop, time ) {
  * @deprecated
  * @param {Property|DuAEProperty}	prop	- The property.
  * @param {float}	time	- The time of the key to retrieve.
- * @return {DuAEKeyFrame}	The keyframe, or null if incorrect time
+ * @return {DuAEKeyframe}	The keyframe, or null if incorrect time
  */
 DuAEProperty.getKeyFrameAtTime = function ( prop, time ) {
     if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
@@ -205,14 +205,14 @@ DuAEProperty.getKeyFrameAtTime = function ( prop, time ) {
 
 /**
  * Gets the property keyframes in the whole timeline or in the time range<br />
- * The DuAEKeyFrame._time will be adjusted relatively to the start of the time range instead of the startTime of the composition.
+ * The DuAEKeyframe._time will be adjusted relatively to the start of the time range instead of the startTime of the composition.
  * @static
  * @deprecated
  * @param {Property|DuAEProperty}	prop	- The property.
  * @param {boolean}	[selected=false]	- true to get only selected keyframes.
  * @param {float[]}	[timeRange]	- The time range, an array of two time values, in seconds. If not provided, will use the comp time range.<br />
  * Ignored if selected is true;
- * @return {DuAEKeyFrame[]}	The keyframes, or null of this property is of type PropertyValueType.NO_VALUE or PropertyValueType.CUSTOM_VALUE
+ * @return {DuAEKeyframe[]}	The keyframes, or null of this property is of type PropertyValueType.NO_VALUE or PropertyValueType.CUSTOM_VALUE
  */
 DuAEProperty.getKeyFrames = function ( prop, selected, timeRange ) {
     if ( prop instanceof DuAEProperty ) prop = prop.getProperty();
@@ -251,7 +251,7 @@ DuAEProperty.getKeyFrames = function ( prop, selected, timeRange ) {
 
 /**
  * Gets all animations in the group in the whole timeline or in the time range<br />
- * The first DuAEKeyFrame._time will be adjusted relatively to the start of the time range (if provided) instead of the startTime of the composition.
+ * The first DuAEKeyframe._time will be adjusted relatively to the start of the time range (if provided) instead of the startTime of the composition.
  * @static
  * @deprecated
  * @param {PropertyGroup|DuAEProperty}	prop	- The property.
@@ -366,12 +366,12 @@ DuAEProperty.firstKeyFrameTime = function ( props, selected ) {
 }
 
 /**
- * Sets a {@linkcode DuAEKeyFrame} on a property
+ * Sets a {@linkcode DuAEKeyframe} on a property
  * @static
  * @deprecated
  * @param {Property|DuAEProperty}	prop	- The property.
- * @param {DuAEKeyFrame}	key	- The DuAEKeyFrame.
- * @param {float}	[timeOffset=comp.time]	- The time offset (added to DuAEKeyFrame._time) where to add the key frame.
+ * @param {DuAEKeyframe}	key	- The DuAEKeyframe.
+ * @param {float}	[timeOffset=comp.time]	- The time offset (added to DuAEKeyframe._time) where to add the key frame.
  */
 DuAEProperty.setKey = function ( prop, key, timeOffset ) {
     if ( prop instanceof DuAEProperty ) prop = prop.getProperty();

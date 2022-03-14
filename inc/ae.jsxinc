@@ -1,25 +1,42 @@
 ﻿/**
 	* Constructs a new KeySpatialProperty
 	* @class DuAEKeySpatialProperties
-	* @classdesc Spatial properties of a {@linkcode DuAEKeyFrame}.
+	* @classdesc Spatial properties of a {@linkcode DuAEKeyframe}.
+	* @param {DuAEKeySpatialProperties} [other] Another DuAEKeySpatialProperties to create a copy.
 	* @property {float[]|null}	  [inTangent=null]     - The incoming spatial tangent
 	* @property {float[]|null}    [outTangent=null]            -  The outgoing spatial tangent
 	* @property {boolean}      [_continuous=true]         - true if the specified keyframe has spatial continuity
 	* @property {boolean}	[_autoBezier=false]			- true if the specified keyframe has temporal auto-Bezier interpolation
 	* @property {boolean}	[_roving=false]	- true if the specified keyframe is roving
 */
-function DuAEKeySpatialProperties (){
+function DuAEKeySpatialProperties ( other ){
 	this.inTangent = null;
 	this.outTangent = null;
 	this._continuous = true;
 	this._autoBezier = false;
 	this._roving = false;
+	if (typeof other !== 'undefined' && other instanceof DuAEKeySpatialProperties) {
+		this.inTangent = other.inTangent;
+		this.outTangent = other.outTangent;
+		this._continuous = other._continuous;
+		this._autoBezier = other._autoBezier;
+		this._roving = other._roving;
+	}
 }
 
 /**
-	 Constructs a new DuAEKeyFrame
-	* @class DuAEKeyFrame
+ * Clones the DuAEKeySpatialProperties and returns the new one.
+ * @return {DuAEKeySpatialProperties} The new DuAEKeySpatialProperties.
+ */
+DuAEKeySpatialProperties.prototype._clone = function() {
+	return new DuAEKeySpatialProperties( this );
+}
+
+/**
+	 Constructs a new DuAEKeyframe
+	* @class DuAEKeyframe
 	* @classdesc Properties of an After Effects Keyframe, as returned by {@linkcode DuAEProperty.keys} or {@linkcode DuAEProperty.keyAtIndex} or {@linkcode DuAEProperty.keyAtTime}.
+	* @param {DuAEKeyframe} [other] Another keyframe to create a copy.
 	* @property {float}	  _time     - The keyframe time
 	* @property {null|folat[]|float|MarkerValue|int|Shape|TextDocument}    value  -  The keyframe value
 	* @property {KeyframeInterpolationType}   _inInterpolationType  - The incoming temporal interpolation type
@@ -32,7 +49,7 @@ function DuAEKeySpatialProperties (){
 	* @property {boolean}	_autoBezier	- true if the keyframe has temporal auto-Bezier interpolation
 	* @property {int}		_index	- The index of the keyFrame. Warning: not updated when another key frame is added on the property some time before this key._time!
 */
-function DuAEKeyFrame(){
+function DuAEKeyframe( other ){
 	this._time = 0;
 	this.value = null;
 	this._inInterpolationType = KeyframeInterpolationType.LINEAR;
@@ -44,6 +61,28 @@ function DuAEKeyFrame(){
 	this._continuous = false;
 	this._autoBezier = false;
 	this._index = 0;
+	if (typeof other !== 'undefined' && other instanceof DuAEKeyframe) {
+		this._time = other._time;
+		this.value = other.value;
+		this._inInterpolationType = other._inInterpolationType;
+		this._outInterpolationType = other._outInterpolationType;
+		this._spatial = other._spatial;
+		this.spatialProperties = other.spatialProperties._clone();
+		this.inEase = other.inEase;
+		this.outEase = other.outEase;
+		this._continuous = other._continuous;
+		this._autoBezier = other._autoBezier;
+		this._index = other._index;
+	}
+}
+
+/**
+ * Clones the keyframe and returns the new one. <br />
+ * The keyframe is not added to any property, only the JS object is cloned. Use {@link DuAEProperty.setKey} to add it to a specific property.
+ * @return {DuAEKeyframe} The new keyframe.
+ */
+DuAEKeyframe.prototype._clone = function() {
+	return new DuAEKeyframe( this );
 }
 
 /**
@@ -52,7 +91,7 @@ function DuAEKeyFrame(){
 	* @classdesc Describes the animation of an After Effects property
 	* @property {string}	  [_name=""]     - The property name
 	* @property {string}    [_matchName=""]  - The property matchName
-	* @property {DuAEKeyFrame[]}   [keys=[]]  - The keyframes of the animation
+	* @property {DuAEKeyframe[]}   [keys=[]]  - The keyframes of the animation
 	* @property {null|float[]|float|MarkerValue|int|Shape|TextDocument}	[startValue=null]		- The value at the beginning of the animation
 	* @property {string}	[expression=""]		- The expression on the property, if any.
 	* @property {string}   [type="anim"]  - Read Only.
@@ -673,6 +712,18 @@ DuAE.LoopType =
 	PINGPONG: 'pingpong',
 	OFFSET: 'offset',
 	CONTINUE: 'continue'
+}
+
+/**
+ * How to align in time
+ * @enum {string}
+ * @readonly
+*/
+DuAE.TimeAlignment = 
+{
+	CENTER: 'center',
+	IN_POINT: 'in',
+	OUT_POINT: 'out'
 }
 
 /**

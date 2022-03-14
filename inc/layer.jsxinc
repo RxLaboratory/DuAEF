@@ -125,7 +125,7 @@ DuAELayer.getActiveProperty = function(layer) {
 
 /**
  * Gets all animations on the layer in the whole timeline or in the time range<br />
- * The first DuAEKeyFrame._time will be adjusted relatively to the start of the time range (if provided) instead of the startTime of the composition.
+ * The first DuAEKeyframe._time will be adjusted relatively to the start of the time range (if provided) instead of the startTime of the composition.
  * @param {Layer}	layer	- The layer.
  * @param {Boolean}	[selected=false]	- true to get only selected keyframes.
  * @param {float[]}	[timeRange]	- The time range, an array of two time values, in seconds.
@@ -156,7 +156,7 @@ DuAELayer.getAnim = function(layer, selected, timeRange) {
 
 /**
  * Gets all animations on the layers in the whole timeline or in the time range<br />
- * The first DuAEKeyFrame._time will be adjusted relatively to the start of the time range (if provided) instead of the startTime of the composition.
+ * The first DuAEKeyframe._time will be adjusted relatively to the start of the time range (if provided) instead of the startTime of the composition.
  * @param {Layer[]|LayerCollection}	layers	- The layers.
  * @param {Boolean}	[selected=false]	- true to get only selected keyframes.
  * @param {float[]}	[timeRange]	- The time range, an array of two time values, in seconds.

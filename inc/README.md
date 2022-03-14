@@ -17,8 +17,8 @@ These stables show where to find the implementation for each class & namespace o
 | `DuAEExpression` | *namespace* | [inc/expression.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/expression.jsxinc) | Expression specific objects and methods and cache system. |
 | `DuAEF` | *namespace* | [inc/core.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/core.jsxinc) | Main objects and methods. |
 | `DuAEItem` | *namespace* | [inc/item.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/item.jsxinc) | Projecct items specific objects and methods. |
-| `DuAEKeyFrame` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Properties of an After Effects Keyframe. |
-| `DuAEKeySpatialProperties` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Spatial properties of a DuAEKeyFrame. |
+| `DuAEKeyframe` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Properties of an After Effects Keyframe. |
+| `DuAEKeySpatialProperties` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Spatial properties of a DuAEKeyframe. |
 | `DuAELayer` | *namespace* | [inc/layer.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/layer.jsxinc) | Layer specific objects and methods. |
 | `DuAELayerAnimation` | *Class* | [inc/ae.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/ae.jsxinc) | Contains all DuAEPropertyGroupAnimation from an After Effects Layer. |
 | `DuAEProject` | *namespace* | [inc/project.jsxinc](https://github.com/RxLaboratory/DuESF/blob/main/inc/project.jsxinc) | Project specific objects and methods. |
