@@ -1152,7 +1152,6 @@ DuAE.scriptFolders = function( subfolder ) {
 	var supportFiles = new Folder (
 		supportFilesPath + "/Scripts/" + subfolder
 	);
-	alert(supportFiles);
 
 	if (supportFiles.exists) folders.push( supportFiles);
 
@@ -1164,8 +1163,6 @@ DuAE.scriptFolders = function( subfolder ) {
 	var appDataFiles = new Folder(
 		appDataPath + "/Adobe/After Effects/" + DuAE.version.major + "." + DuAE.version.minor + "/Scripts/" + subfolder
 	);
-
-	alert(appDataFiles);
 
 	// Try the Beta
 	if (!appDataFiles.exists) appDataFiles = new Folder(
