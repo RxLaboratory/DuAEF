@@ -1146,17 +1146,26 @@ DuAE.scriptFolders = function( subfolder ) {
 	var folders = [];
 	
 	// Get in Support files
+	var supportFilesPath;
+	if (DuSystem.mac) supportFilesPath = Folder.appPackage.parent.absoluteURI;
+	else supportFilesPath = Folder.appPackage.absoluteURI;
 	var supportFiles = new Folder (
-		Folder.appPackage.absoluteURI + "/Scripts/" + subfolder
+		supportFilesPath + "/Scripts/" + subfolder
 	);
+	alert(supportFiles);
 
 	if (supportFiles.exists) folders.push( supportFiles);
 
 	// Get in appdata
 	// Try in the main version first
+	var appDataPath;
+	if (DuSystem.mac) appDataPath = Folder.userData.parent.absoluteURI + "/Preferences";
+	else appDataPath = Folder.userData.absoluteURI;
 	var appDataFiles = new Folder(
-		Folder.userData.absoluteURI + "/Adobe/After Effects/" + DuAE.version.major + "." + DuAE.version.minor + "/Scripts/" + subfolder
+		appDataPath + "/Adobe/After Effects/" + DuAE.version.major + "." + DuAE.version.minor + "/Scripts/" + subfolder
 	);
+
+	alert(appDataFiles);
 
 	// Try the Beta
 	if (!appDataFiles.exists) appDataFiles = new Folder(
