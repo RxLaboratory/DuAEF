@@ -232,8 +232,8 @@ DuAEProperty.prototype.keyValue = function(index) {
  * @param {int|DuAEKeyframe} key The index or the keyframe.
  */
 DuAEProperty.prototype.removeKey = function(key) {
-    if (key instanceof DuAEKeyframe) key = key._index;
     if (this.isGroup()) return;
+    if (key instanceof DuAEKeyframe) key = key._index;
     var prop = this.getProperty();
     prop.removeKey(key);
 }
