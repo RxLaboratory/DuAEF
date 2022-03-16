@@ -2774,7 +2774,7 @@ DuAEProperty.prototype.setRoving = function() {
     var frameDuration = this.comp.frameDuration;
 
     this.do(function(propInfo) {
-        prop = propInfo.getProperty();
+        var prop = propInfo.getProperty();
         // checks
         if (!prop.isSpatial) return;
         if (!prop.canVaryOverTime) return;
@@ -2790,6 +2790,36 @@ DuAEProperty.prototype.setRoving = function() {
             var nV = prop.valueAtTime(t + frameDuration, true);
             if (DuMath.equals(nV, cV)) continue;
             prop.setRovingAtKey(i, true);
+        }
+    });
+}
+
+/**
+ * Snaps keyframes to the closest frames if they're in between.
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
+ * @param {int[]} [keys] An optional list of key indices to snap (could be <code>DuAEProperty.selectedKeys()</code> for example). If omitted, will snap all keyframes.
+ */
+DuAEProperty.prototype.snapKeys = function(keys) {
+    this.do(function(prop) {
+        var ks = [];
+        if (typeof keys === 'undefined') {
+            for (var i = 1, n = prop.numKeys(false); i <= n; i++ )
+                ks.push(i);
+        }
+        else ks = keys;
+
+        var frameDuration = prop.comp.frameDuration;
+        var halfFrame = frameDuration / 2.0;
+        // Snap each key
+        for (var k = 0; k < ks.length; k++) {
+            var key = prop.keyAtIndex(ks[k]);
+            var mod = key._time % frameDuration;
+            if (mod != 0 ) {
+                if (mod < halfFrame) key._time -= mod;
+                else key._time += frameDuration - mod;
+                prop.removeKey(key);
+                prop.setKey(key, 0);
+            }
         }
     });
 }
