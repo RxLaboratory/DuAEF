@@ -419,11 +419,11 @@ DuAEComp.getRelatives = function(comp, recursive) {
  * Gets all the precomposition found in the comp.
  * @param {CompItem} [comp] - The composition. The active composition if ommitted.
  * @param {bool} [recursive=false] - True to get nested compositions
- * @return {CompItem[]} The precompositions
+ * @return {DuList.<CompItem>} The precompositions
  */
 DuAEComp.getPrecomps = function(comp, recursive) {
     comp = def(comp, DuAEProject.getActiveComp());
-    if (!comp) return [];
+    if (!comp) return new DuList();
     recursive = def(recursive, true);
     var precomps = [];
     var it = new DuList(comp.layers);
