@@ -2974,7 +2974,7 @@ DuAEProperty.lock = function(properties) {
 /**
  * Gets the average speed of the animated propreties
  * @static
- * @param {Property[]|DuAEProperty[]} props - The Properties
+ * @param {Property[]|DuAEProperty[]|DuList.<DuAEProperty>|DuList.<Property>} props - The Properties
  * @param {bool}	 [preExpression=true]	- True to get the velocity from keyframes instead of the result of the exression
  * @param {bool}	 [fastMode=true]	- True to limit the number of samples used to compute the velocity and make the process faster.
  * @return {float} The average speed in unit per second
@@ -2983,11 +2983,13 @@ DuAEProperty.getAverageSpeed = function(props, preExpression, fastMode) {
     preExpression = def(preExpression, true);
     fastMode = def(fastMode, true);
 
+    props = new DuList(props);
+
     var averageSpeed = 0;
     var count = 0;
 
-    for (var i = 0; i < props.length; i++) {
-        var aeprop = new DuAEProperty(props[i]);
+    for (var i = 0; i < props.length(); i++) {
+        var aeprop = new DuAEProperty(props.at(i));
         var prop = aeprop.getProperty();
 
         if (prop.propertyType != PropertyType.PROPERTY) continue;
