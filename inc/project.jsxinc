@@ -29,7 +29,10 @@ DuAEProject.setProgressMode = function(inProgress, showProgressBar) {
         //if not already in progress, create temp comp etc
         if (!DuAEProject.progressMode) {
             // Hide layer controls
-            DuAE.toggleLayerControls();
+            // not anymore: the doc has to explain it's better to hide them
+            // but to do it automatically we need a way to get the info to not
+            // enable them if they're already hidden
+            //DuAE.toggleLayerControls();
 
             //store the current comp
             DuAEProject.activeComp = DuAEProject.getActiveComp();
@@ -38,7 +41,7 @@ DuAEProject.setProgressMode = function(inProgress, showProgressBar) {
         DuAEProject.progressMode = true;
     } else {
         // Show layer controls
-        DuAE.toggleLayerControls();
+        //DuAE.toggleLayerControls();
 
         DuAEProject.progressMode = false;
     }
