@@ -1641,3 +1641,15 @@ DuAELayer.height = function( layer ) {
 
     return h;
 }
+
+/**
+ * Stacks the layers in the timeline according to their order in the given array/DuList
+ * @param {LayerCollection|Layer[]|DuList.<Layer>} layers The layers to stack
+ */
+DuAELayer.stack = function( layers ) {
+    layers = new DuList(layers);
+    var l = layers.next();
+    while(l = layers.next()) {
+        l.moveBefore(layers.at( layers.current - 1));
+    }
+}
