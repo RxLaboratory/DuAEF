@@ -117,6 +117,8 @@ DuAEF.Audition.exportComp = function (sesxFile,comp,audioActiveOnly,sampling,bit
 
 		//get the source file
 		var sourceItem = layer.source;
+		// TODO with precomps too! For now ignore them
+		if (!sourceItem.mainSource) continue;
 		var clipFile = sourceItem.mainSource.file;
 		//check if it already exists and gets the id
 		var sourceId = -1;
