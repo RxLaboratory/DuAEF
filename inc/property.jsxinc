@@ -80,8 +80,10 @@ function DuAEProperty(property) {
     this.layer = null;
 
     // Get layer and effect
+    // And generate some kind of unique ID
     var parentProp = property;
     this.parentIndices = [];
+    var id = '';
     while (parentProp.parentProperty) {
         var isEffect = parentProp.isEffect;
         if (isEffect) {
@@ -91,6 +93,8 @@ function DuAEProperty(property) {
 
         // If not the layer, keep index
         this.parentIndices.unshift(parentProp.propertyIndex);
+        
+        id += parentProp.propertyIndex;
 
         // Traverse up the property tree
         parentProp = parentProp.parentProperty;
@@ -105,6 +109,14 @@ function DuAEProperty(property) {
      * @type {CompItem}
      */
     this.comp = this.layer.containingComp;
+
+    // Recent versions of Ae have an id attribute, use it
+    if (typeof property.id !== 'undefined') id = property.id;
+    else {
+        id += this.comp.id;
+        id = parseInt(id);
+    }
+    this.id = id;
 }
 
 /**
@@ -173,6 +185,15 @@ DuAEProperty.prototype.dimensionsSeparated = function() {
     if (this.isGroup()) return false;
     if (!this.isSeparationLeader()) return false;
     return this.getProperty().isSeparationLeader;
+}
+
+/**
+ * Reimplements the <code>Property.expression</code> attribute for convenience.
+ * @return {string} the expression.
+ */
+DuAEProperty.prototype.expression = function() {
+    if (this.isGroup()) return '';
+    return this.getProperty().expression;
 }
 
 /**

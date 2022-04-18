@@ -184,6 +184,28 @@ DuAEComp.getSelectedProps = function(filter, strict, caseSensitive) {
 }
 
 /**
+ * Gets the first selected property (which is not a group)
+ * @param {CompItem} [comp] The comnposition. The active composition by default.
+ * @return {DuAEProperty|null} The selected property.
+ */
+DuAEComp.getSelectedProperty = function(comp) {
+    comp = def(comp, DuAEProject.getActiveComp());
+    if (!comp) return null;
+
+    var props = comp.selectedProperties;
+    if (props.length == 0) return null;
+    var prop = null;
+    for (var i = 0, n = props.length; i < n; i++) {
+        var p = props[i];
+        if (p instanceof Property) {
+            prop = p;
+            break;
+        }
+    }
+    return new DuAEProperty(prop);
+}
+
+/**
  * Gets the selected layers in the current comp
  * @return {Layer[]} The selected layers
  */
