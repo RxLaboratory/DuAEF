@@ -1403,11 +1403,17 @@ DuAEExpression.Library["multPoints"].requirements = [];
  * Normalizes a list of weights so their sum equals 1.0
  * @function
  * @param {float[]} weights The weights to normalize
- * @param {float} sum The sum of the weights
+ * @param {float} [sum] The sum of the weights; provide it if it's already computed to improve performance.
  * @returns {float[]} The normalized weights
  */
 DuAEExpression.Library["normalizeWeights"] = {};
 DuAEExpression.Library["normalizeWeights"].expression = ['function normalizeWeights(weights, sum) {',
+	'if(typeof sum === \'undefined\') {',
+	'sum = 0;',
+	'for (var i = 0, n = weights.length; i < n; i++) {',
+	'sum += weights[i];',
+	'}',
+	'}',
 	'if (sum == 1 || sum == 0) return weights;',
 	'var o = 1 - sum;',
 	'var normalized = [];',
@@ -1877,7 +1883,6 @@ DuAEExpression.Library["addNoise"].requirements = [];
 /**
  * Removes the ancestors rotation from the rotation of a layer.
  * This is very useful to make a layer keep its orientation without being influenced by its parents.<br />
- * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
  * @function
  * @example
  * //in a rotation property, just include the function and use:
@@ -1894,6 +1899,7 @@ DuAEExpression.Library["addNoise"].requirements = [];
  */
 DuAEExpression.Library["dishineritRotation"] = {};
 DuAEExpression.Library["dishineritRotation"].expression = ['function dishineritRotation( l ) {',
+	'if (typeof l === \'undefined\') l = thisLayer;',
 	'var r = l.rotation.value;',
 	'while ( l.hasParent ) {',
 	'l = l.parent;',
@@ -2048,6 +2054,27 @@ DuAEExpression.Library["getLayerCompPos"].expression = ['function getLayerCompPo
 	'}'
 	].join('\n');
 DuAEExpression.Library["getLayerCompPos"].requirements = [];
+
+/**
+ * Gets the world position of a layer.<br />
+ * Note that for performance reasons with expressions, even if the parameters of the function are documented with optional/default values, you MUST provide ALL the arguments when using them.
+ * @function
+ * @param {Layer} other The other layer
+ * @param {Layer} [origin=thisLayer] The origin
+ * @param {number} [t=time] Time from when to get the position
+ * @return {number[]} The world position
+ * @requires getLayerWorldPos
+ */
+DuAEExpression.Library["getLayerDistance"] = {};
+DuAEExpression.Library["getLayerDistance"].expression = ['function getLayerDistance(other, origin, t) {',
+	'if (typeof origin === \'undefined\') origin = thisLayer;',
+	'if (typeof t === \'undefined\') t = time;',
+	'var p1 = getLayerWorldPos(t, other);',
+	'var p2 = getLayerWorldPos(t, origin);',
+	'return length(p1, p2);',
+	'}'
+	].join('\n');
+DuAEExpression.Library["getLayerDistance"].requirements = ["getLayerWorldPos"];
 
 /**
  * Gets the world position of a layer.
