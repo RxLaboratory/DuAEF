@@ -1298,32 +1298,102 @@ DuAELayer.repositionAnchorPoint = function(layer, value) {
 
     // New positions, one per keyframe
     var newPositions = [];
+    var newXPositions = [];
+    var newYPositions = [];
+    var newZPositions = [];
     // The position property
-    var positionProp = layer.transform.position;
-    // Number of keyframes
-    var nK = positionProp.numKeys;
-    if (nK > 0) {
-        for (var i = 1; i <= nK; i++) {
-            var newPos = DuAELayer.getWorldPos(layer, value, positionProp.keyTime(i));
+    if (layer.transform.position.dimensionsSeparated) {
+        var p = layer.transform.property('ADBE Position_0');
+        var nK = p.numKeys;
+        if (nK > 0) {
+            for (var i = 1; i <= nK; i++) {
+                var newPos = DuAELayer.getWorldPos(layer, value, p.keyTime(i));
+                newXPositions.push(newPos[0]);
+            }
+        } else {
+            var newPos = DuAELayer.getWorldPos(layer, value);
+            newXPositions.push(newPos[0]);
+        }
+
+        p = layer.transform.property('ADBE Position_1');
+        nK = p.numKeys;
+        if (nK > 0) {
+            for (var i = 1; i <= nK; i++) {
+                var newPos = DuAELayer.getWorldPos(layer, value, p.keyTime(i));
+                newYPositions.push(newPos[1]);
+            }
+        } else {
+            var newPos = DuAELayer.getWorldPos(layer, value);
+            newYPositions.push(newPos[1]);
+        }
+
+        p = layer.transform.property('ADBE Position_2');
+        nK = p.numKeys;
+        if (nK > 0) {
+            for (var i = 1; i <= nK; i++) {
+                var newPos = DuAELayer.getWorldPos(layer, value, p.keyTime(i));
+                newZPositions.push(newPos[2]);
+            }
+        } else {
+            var newPos = DuAELayer.getWorldPos(layer, value);
+            newZPositions.push(newPos[2]);
+        }
+    }
+    else {
+        // Number of keyframes
+        var p = layer.transform.position;
+        var nK = p.numKeys;
+        if (nK > 0) {
+            for (var i = 1; i <= nK; i++) {
+                var newPos = DuAELayer.getWorldPos(layer, value, p.keyTime(i));
+                newPositions.push(newPos);
+            }
+        } else {
+            var newPos = DuAELayer.getWorldPos(layer, value);
             newPositions.push(newPos);
         }
-    } else {
-        var newPos = DuAELayer.getWorldPos(layer, value);
-        newPositions.push(newPos);
     }
+    
 
     // Set anchor point
     layer.transform.anchorPoint.setValue(value);
 
     // Adjust position for keyframes
-    if (nK > 0) {
-        for (var i = 1; i <= nK; i++) {
-            positionProp.setValueAtKey(i, newPositions[i - 1]);
+    if (layer.transform.position.dimensionsSeparated) {
+        var p = layer.transform.property('ADBE Position_0');
+        var nK = p.numKeys;
+        if (nK > 0) {
+            for (var i = 1; i <= nK; i++)
+                p.setValueAtKey(i, newXPositions[i - 1]);
         }
-    } else {
-        positionProp.setValue(newPositions[0]);
-    }
+        else p.setValue(newXPositions[0]);
+        
+        p = layer.transform.property('ADBE Position_1');
+        nK = p.numKeys;
+        if (nK > 0) {
+            for (var i = 1; i <= nK; i++)
+                p.setValueAtKey(i, newYPositions[i - 1]);
+        }
+        else p.setValue(newYPositions[0]);
 
+        p = layer.transform.property('ADBE Position_2');
+        nK = p.numKeys;
+        if (nK > 0) {
+            for (var i = 1; i <= nK; i++)
+                p.setValueAtKey(i, newZPositions[i - 1]);
+        }
+        else if (layer.threeDLayer) p.setValue(newZPositions[0]);
+    }
+    else {
+        var p = layer.transform.position;
+        nK = p.numKeys;
+        if (nK > 0) {
+            for (var i = 1; i <= nK; i++)
+                p.setValueAtKey(i, newPositions[i - 1]);
+        }
+        else p.setValue(newPositions[0]);
+    }
+    
     // Reparent
     layer.parent = parent;
 }
