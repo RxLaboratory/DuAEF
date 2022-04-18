@@ -157,6 +157,25 @@ DuAEProperty.prototype.isSpatial = function() {
 }
 
 /**
+ * Reimplements the <code>Property.isSeparationLeader</code> attribute for convenience.
+ * @return {Bool} true if the property is a separation leader.
+ */
+DuAEProperty.prototype.isSeparationLeader = function() {
+    if (this.isGroup()) return false;
+    return this.getProperty().isSeparationLeader;
+}
+
+/**
+ * Reimplements the <code>Property.dimensionsSeparated</code> attribute for convenience.
+ * @return {Bool} true if the property is a separation leader and has its dimensions seperated.
+ */
+DuAEProperty.prototype.dimensionsSeparated = function() {
+    if (this.isGroup()) return false;
+    if (!this.isSeparationLeader()) return false;
+    return this.getProperty().isSeparationLeader;
+}
+
+/**
  * Reimplements the <code>Property.value</code> attribute for convenience.
  * @param {Bool} [preExpression = false] Set to true to get the pre-expression value.
  * @return {*} A value appropriate for the type of the property (see Property.propertyValueType), or null if the property doesn't have a value (i.e. it's a group)
@@ -1714,6 +1733,7 @@ DuAEProperty.prototype.keyOutSpatialTangent = function(key) {
 DuAEProperty.prototype.setSpatialTangentsAtKey = function(key, inTangent, outTangent) {
     if (this.isGroup()) return;
     if (!this.isSpatial()) return;
+    if (this.dimensionsSeparated()) return;
     var prop = this.getProperty();
     // Adjust dimensions
     if (prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL) {
@@ -1730,6 +1750,7 @@ DuAEProperty.prototype.setSpatialTangentsAtKey = function(key, inTangent, outTan
     }
     else return;
     if (key instanceof DuAEKeyframe) key = key._index;
+
     prop.setSpatialTangentsAtKey(key, inTangent, outTangent);
 }
 
