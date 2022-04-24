@@ -1789,6 +1789,7 @@ DuAEProperty.prototype.cleanKeyframes = function( precision ) {
     var frameDuration = this.comp.frameDuration;
 
     if (prop.propertyType == PropertyType.PROPERTY) {
+        var valueType = prop.propertyValueType;
         var numKeys = prop.numKeys;
         if (numKeys == 0) return;
         if (numKeys == 1) {
@@ -1801,9 +1802,23 @@ DuAEProperty.prototype.cleanKeyframes = function( precision ) {
             var t = prop.keyTime(i);
             var cV = prop.keyValue(i);
             var pV = prop.valueAtTime(t - frameDuration, true);
-            if (!DuMath.equals(pV, cV, precision)) continue;
+            if (valueType == PropertyValueType.SHAPE) {
+                if (!DuAEProperty.shapeValueEquals(cV, pV, precision)) continue;
+            }
+            else if (valueType == PropertyValueType.TEXT_DOCUMENT) {
+                if (!DuAEProperty.textValueEquals(cV, pV)) continue;
+            }
+            else if (!DuMath.equals(pV, cV, precision)) continue;
+
             var nV = prop.valueAtTime(t + frameDuration, true);
-            if (!DuMath.equals(nV, cV, precision)) continue;
+
+            if (valueType == PropertyValueType.SHAPE) {
+                if (!DuAEProperty.shapeValueEquals(cV, nV, precision)) continue;
+            }
+            else if (valueType == PropertyValueType.TEXT_DOCUMENT) {
+                if (!DuAEProperty.textValueEquals(cV, nV)) continue;
+            }
+            else if (!DuMath.equals(nV, cV, precision)) continue;
 
             prop.removeKey(i);
 
@@ -2569,12 +2584,9 @@ DuAEProperty.prototype.quickBakeExpressions = function(frameStep) {
         // We don't support all kind of properties yet
         var valueType = prop.propertyValueType;
         if (valueType == PropertyValueType.NO_VALUE) return;
-        if (valueType == PropertyValueType.CUSTOM_VALUE) return;
         if (valueType == PropertyValueType.MARKER) return;
         if (valueType == PropertyValueType.LAYER_INDEX) return;
         if (valueType == PropertyValueType.MASK_INDEX) return;
-        if (valueType == PropertyValueType.SHAPE) return;
-        if (valueType == PropertyValueType.TEXT_DOCUMENT) return;
         if (!propInfo.editable()) return;
         // Get the values and times
         var values = [];
@@ -2626,12 +2638,14 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
         // We don't support all kind of properties yet
         var valueType = prop.propertyValueType;
         if (valueType == PropertyValueType.NO_VALUE) return;
-        if (valueType == PropertyValueType.CUSTOM_VALUE) return;
         if (valueType == PropertyValueType.MARKER) return;
         if (valueType == PropertyValueType.LAYER_INDEX) return;
         if (valueType == PropertyValueType.MASK_INDEX) return;
-        if (valueType == PropertyValueType.SHAPE) return;
-        if (valueType == PropertyValueType.TEXT_DOCUMENT) return;
+        // Some properties can't be smart baked
+        if (valueType == PropertyValueType.SHAPE) return propInfo.quickBakeExpressions();
+        if (valueType == PropertyValueType.TEXT_DOCUMENT) return propInfo.quickBakeExpressions();
+        if (valueType == PropertyValueType.CUSTOM_VALUE) return propInfo.quickBakeExpressions();
+
         // Check if we can add keyframes on the property
         if (!propInfo.editable()) return;
         // Get the values and times
@@ -3266,4 +3280,31 @@ DuAEProperty.rename = function(prop, name) {
     prop.name = name;
     var newName = prop.name;
     app.project.autoFixExpressions(oldName, newName);
+}
+
+/**
+ * Compares two shape values
+ * @param {Shape} shape1
+ * @param {Shape} shape2
+ * @return {bool} true if they're the same
+ */
+DuAEProperty.shapeValueEquals = function( shape1, shape2, precision ) {
+    precision = def(precision, 1);
+
+    if (shape1.closed != shape2.closed) return false;
+
+    if (!DuMath.equals(shape1.vertices, shape2.vertices, precision, true)) return false;
+    if (!DuMath.equals(shape1.inTangents, shape2.inTangents, precision)) return false;
+    if (!DuMath.equals(shape1.outTangents, shape2.outTangents, precision)) return false;
+    return true;
+}
+
+/**
+ * Compares two text values
+ * @param {TextDocument} text1
+ * @param {TextDocument} text2
+ * @return {bool} true if they're the same
+ */
+DuAEProperty.textValueEquals = function( text1, text2 ) {
+    return text1.text == text2.text;
 }
