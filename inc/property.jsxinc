@@ -1386,7 +1386,7 @@ DuAEProperty.prototype.setEase = function( easeInValue, easeOutValue, velocityIn
                 if (key < prop.numKeys) {
                     var valAfter = prop.keyValue(key + 1);
                     var timeAfter = prop.keyTime(key + 1);
-                    nextSpeed = DuMath.length(val, valBefore) / (timeAfter - currentTime);
+                    nextSpeed = DuMath.length(val, valAfter) / (timeAfter - currentTime);
                 }
 
                 if (typeof prevSpeed === 'undefined' && typeof nextSpeed === 'undefined') {
@@ -1402,8 +1402,8 @@ DuAEProperty.prototype.setEase = function( easeInValue, easeOutValue, velocityIn
                 var signBefore = 1;
                 var signAfter = 1;
                 if (this.dimensions() == 1) {
-                    if (val - valBefore < 1) signBefore = -1;
-                    if (valAfter - val < 1) signAfter = -1;
+                    if (val < valBefore) signBefore = -1;
+                    if (valAfter < val) signAfter = -1;
                 }
 
                 if (velocityInValue == velocityOutValue) {
