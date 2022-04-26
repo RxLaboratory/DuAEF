@@ -5,6 +5,15 @@
 var DuAEComp = {};
 
 /**
+ * Associative array to get Comp Renderer names from their matchNames
+ */
+DuAEComp.RendererNames = {};
+DuAEComp.RendererNames['ADBE Advanced 3d'] = "Classic 3D";
+DuAEComp.RendererNames['ADBE Standard 3d'] = "???";
+DuAEComp.RendererNames['ADBE Picasso'] = "Ray-traced 3D";
+DuAEComp.RendererNames['ADBE Ernst'] = "Cinema 4D";
+
+/**
  * Converts the number of frames to the time in seconds
  * @param {int} frames The frames
  * @param {CompItem} [comp=DuAEProject.getActiveComp] The comp
@@ -447,7 +456,7 @@ DuAEComp.getPrecomps = function(comp, recursive) {
     comp = def(comp, DuAEProject.getActiveComp());
     if (!comp) return new DuList();
     recursive = def(recursive, true);
-    var precomps = [];
+    var precomps = new DuList();
     var it = new DuList(comp.layers);
     it.do(function(layer) {
         var precomp = layer.source;
@@ -456,7 +465,6 @@ DuAEComp.getPrecomps = function(comp, recursive) {
             if (recursive) precomps = precomps.concat(DuAEComp.getPrecomps(precomp));
         }
     });
-    precomps = new DuList(precomps);
     //remove duplicates
     precomps.removeDuplicates();
     return precomps;
@@ -843,4 +851,83 @@ DuAEComp.bake = function( mode, frameStep, comp ) {
             layer.remove();
         }
     }, comp, true)
+}
+
+/**
+ * Updates the composition settings
+ * @param {Object} settings The settings to update.
+ * @param {bool} [updatePrecomps=true] Set to false to update only the selected/current comp
+ * @param {CompItem[]} [comps] The compositions to update. If omitted, will update either the selected items in the project or the current composition
+ */
+DuAEComp.updateSettings = function( settings, updatePrecomps, comps ) {
+    updatePrecomps = def(updatePrecomps, true);
+    
+    if (typeof comps === 'undefined') {
+        // Active comp
+        if ((app.project.activeItem !== null) && (app.project.activeItem instanceof CompItem))
+		{
+			comps = [app.project.activeItem];
+		}
+		else // Or selection
+		{
+			comps = proj.selection;
+		}
+    }
+
+    // Keep the ones which are updated
+    var okIds = new DuList();
+
+    // Aaaand GO!
+    for (var i = 0, n = comps.length; i < n; i++)
+    {
+        var comp = comps[i];
+        // Not a comp
+        if (!(comp instanceof CompItem)) continue;
+        // Already updated
+        if (okIds.contains(comp.id)) continue;
+
+        okIds.push(comp.id);
+
+        if (updatePrecomps) {
+            // Get precomps to update them
+            var precomps = DuAEComp.getPrecomps(comp, true);
+            var precompsToUpdate = [];
+            precomps.do(function(precomp) {
+                if (okIds.contains(precomp.id)) return;
+                precompsToUpdate.push( precomp );
+                okIds.push( precomp.id );
+            });
+            DuAEComp.updateSettings( settings, false, precompsToUpdate);
+        }
+
+        if (typeof settings.width !== 'undefined') comp.width = settings.width;
+        if (typeof settings.height !== 'undefined') comp.height = settings.height;
+        if (typeof settings.pixelAspect !== 'undefined') comp.pixelAspect = settings.pixelAspect;
+        if (typeof settings.frameRate !== 'undefined') comp.frameRate = settings.frameRate;
+        if (typeof settings.duration !== 'undefined') {
+            var newDuration = currentFormatToTime( settings.duration, comp.frameRate, true );
+            // We're also going to (try to) set a new duration for all layers ending with the comp
+            if (comp.duration < newDuration) {
+                for (var l = 1, ln = comp.numLayers; l <= ln; l++) {
+                    var layer = comp.layer(l);
+                    if (layer.outPoint >= comp.duration) layer.outPoint = newDuration;
+                }
+            }
+            comp.duration = newDuration;
+        }
+        if (typeof settings.resolutionFactor !== 'undefined') comp.resolutionFactor = settings.resolutionFactor;
+        if (typeof settings.preserveNestedResolution !== 'undefined') comp.preserveNestedResolution = settings.preserveNestedResolution;
+        if (typeof settings.bgColor !== 'undefined') comp.bgColor = settings.bgColor;
+        //if (typeof settings.draft3D !== 'undefined') comp.draft3D = settings.draft3D;
+        if (typeof settings.hideShyLayers !== 'undefined') comp.hideShyLayers = settings.hideShyLayers;
+        if (typeof settings.useProxy !== 'undefined' && comp.proxySource) comp.useProxy = settings.useProxy;
+        if (typeof settings.renderer !== 'undefined') comp.renderer = settings.renderer;
+        if (typeof settings.preserveNestedFrameRate !== 'undefined') comp.preserveNestedFrameRate = settings.preserveNestedFrameRate;
+        if (typeof settings.frameBlending !== 'undefined') comp.frameBlending = settings.frameBlending;
+        if (typeof settings.motionBlur !== 'undefined') comp.motionBlur = settings.motionBlur;
+        if (typeof settings.shutterAngle !== 'undefined') comp.shutterAngle = settings.shutterAngle;
+        if (typeof settings.shutterPhase !== 'undefined') comp.shutterPhase = settings.shutterPhase;
+        if (typeof settings.motionBlurSamplesPerFrame !== 'undefined') comp.motionBlurSamplesPerFrame = settings.motionBlurSamplesPerFrame;
+        if (typeof settings.motionBlurAdaptiveSampleLimit !== 'undefined') comp.motionBlurAdaptiveSampleLimit = settings.motionBlurAdaptiveSampleLimit;
+    }
 }
