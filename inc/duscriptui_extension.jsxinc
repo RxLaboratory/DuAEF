@@ -175,6 +175,11 @@ DuScriptUI.layerSelector = function( container, helpTip )
     {
         selector.refresh();
 
+        if (e.ctrlKey) {
+            selector.setCurrentIndex(0);
+            return;
+        }
+
         selector.popup.list.minimumSize.width = selector.popup.list.maximumSize.width = selector.size.width;
         selector.popup.list.minimumSize.height = selector.popup.list.maximumSize.height = selector.size.height * 10;
 
@@ -467,6 +472,11 @@ DuScriptUI.compSelector = function( container, helpTip )
     selector.clicked = function( e )
     {
         selector.refresh();
+
+        if (e.ctrlKey) {
+            selector.setCurrentId(0);
+            return;
+        }
 
         selector.popup.list.minimumSize.width = selector.popup.list.maximumSize.width = selector.size.width;
         selector.popup.list.minimumSize.height = selector.popup.list.maximumSize.height = selector.size.height * 10;
