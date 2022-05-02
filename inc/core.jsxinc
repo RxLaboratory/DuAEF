@@ -114,7 +114,7 @@ DuAEF.file = new File( $.fileName );
  */
 DuAEF.init = function( scriptName, scriptVersion, companyName )
 {
-    DuESF.init(DuESF.HostApplication.AFTER_EFFECTS, scriptName, scriptVersion, companyName);
+    DuESF.init(scriptName, scriptVersion, companyName);
 }
 
 /**
