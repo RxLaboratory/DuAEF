@@ -525,6 +525,75 @@ DuAEExpression.Library["FuzzyVeracity"].expression = ['function FuzzyVeracity( v
 DuAEExpression.Library["FuzzyVeracity"].requirements = [];
 
 /**
+ * Animates the property using the given keyframes
+ * @function
+ * @param {Object[]} keyframes The keyframes. An object with four properties:<br/>
+ * <code>value</code> The value of the keyframe<br />
+ * <code>time</code> The time of the keyframe<br />
+ * <code>interpolation</code> (optional. Default: linear) A function taking 5 arguments to interpolate between this keyframe and the next one<br />
+ * <code>params</code> (optional.) A sixth argument passed to the interpolation function. To be used with DuAEF interpolations.<br />
+ * Note that the keyframes <strong>must be sorted</strong>. The function does not sort them, as it would have a bad impact on performance.
+ * @param {string} [loopOut='none'] One of 'none', 'cycle', 'pingpong'.
+ * @param {string} [loopIn='none'] One of 'none', 'cycle', 'pingpong'.
+ * @example
+ * var keyframes = [
+ *    {value: 0, time: 1, interpolation: linear},
+ *    {value: 180, time: 2, interpolation: gaussianInterpolation, params: -0.5}, //You need to include the gaussianInterpolation function from DuAEF
+ *    {value: 250, time: 4, interpolation: ease},
+ *    {value: 360, time: 5},
+ * ];
+ * animate(keyframes, 'cycle', 'pingpong');
+ * @return {number} the animated value.
+ */
+DuAEExpression.Library["animate"] = {};
+DuAEExpression.Library["animate"].expression = ['function animate(ks, loopOut, loopIn) {',
+	'if (ks.length == 0) return value;',
+	'if (ks.length == 1) return ks[0].value;',
+	'if (typeof loopOut === \'undefined\') loopOut = \'none\';',
+	'if (typeof loopIn === \'undefined\') loopIn = \'none\';',
+	'var startTime = ks[0].time;',
+	'var endTime = ks[ks.length-1].time;',
+	'var duration = endTime - startTime;',
+	'var ct = time;',
+	'if ( time >= endTime )',
+	'{',
+	'if ( loopOut == \'cycle\' ) ct = ((ct - startTime) % duration) + startTime;',
+	'else if ( loopOut == \'pingpong\' ) {',
+	'var d = duration * 2;',
+	'ct = (ct-startTime) % d;',
+	'if (ct > duration) ct = d - ct;',
+	'ct += startTime;',
+	'}',
+	'}',
+	'else if ( time < startTime) {',
+	'if ( loopIn == \'cycle\' ) ct = ((ct - startTime) % duration) + startTime + duration;',
+	'else if ( loopIn == \'pingpong\' ) {',
+	'var d = duration * 2;',
+	'ct += d;',
+	'ct = (ct-startTime) % d;',
+	'if (ct > duration) ct = d - ct;',
+	'ct += startTime;',
+	'}',
+	'}',
+	'for (var i = 0; i < ks.length; i++) {',
+	'var k = ks[i];',
+	'if (k.time > ct && i == 0) return k.value;',
+	'if (k.time == ct) return k.value;',
+	'if (k.time < ct) {',
+	'if (i == ks.length - 1) return k.value;',
+	'var nk = ks[i+1];',
+	'if (nk.time < ct) continue;',
+	'if (typeof k.interpolation === \'undefined\') k.interpolation = linear;',
+	'if (typeof k.params === \'undefined\') return k.interpolation(ct, k.time, nk.time, k.value, nk.value);',
+	'else return k.interpolation(ct, k.time, nk.time, k.value, nk.value, k.params);',
+	'}',
+	'}',
+	'return value;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["animate"].requirements = [];
+
+/**
  * Interpolates a value with a bezier curve.<br />
  * This method can replace <code>linear()</code> and <code>ease()</code> with a custom bézier interpolation.
  * @function
