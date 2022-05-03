@@ -473,6 +473,7 @@ DuAELayer.applyPreset = function(layer, preset, matchName) {
     if (typeof layer === 'undefined') return null;
     if (typeof preset === 'undefined') return null;
     matchName = def(matchName, '');
+    if (preset instanceof DuBinary) preset = preset.toFile();
     if (!preset.exists) throw new Error(DuScriptUI.String.MISSING_PSEUDO_EFFECT);
 
     //remove layer selection
@@ -485,8 +486,7 @@ DuAELayer.applyPreset = function(layer, preset, matchName) {
     //applying a preset gets out of progress mode
     if (DuAEProject.progressMode) DuAEProject.setProgressMode(true);
 
-    var effect = null;
-    if (matchName != '') effect = layer.property("ADBE Effect Parade")(matchName);
+    var effect = layer.property("ADBE Effect Parade")( layer.property("ADBE Effect Parade").numProperties );
 
     //restore selection
     DuAEComp.selectLayers(selection);
