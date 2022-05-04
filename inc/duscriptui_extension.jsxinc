@@ -648,6 +648,7 @@ DuScriptUI.compSelector = function( container, helpTip )
  * @method
  * @memberof DuAELayerPicker
  * @name addSelector
+ * @param {string} name The display name of the selector.
  * @return {DuAELayerSelector} The added DuAELayerSelector
  */
 
