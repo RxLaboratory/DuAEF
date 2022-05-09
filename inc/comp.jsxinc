@@ -934,7 +934,10 @@ DuAEComp.updateSettings = function( settings, updatePrecomps, comps ) {
             if (comp.duration < newDuration) {
                 for (var l = 1, ln = comp.numLayers; l <= ln; l++) {
                     var layer = comp.layer(l);
+                    var locked = layer.locked;
+                    layer.locked = false;
                     if (layer.outPoint >= comp.duration) layer.outPoint = newDuration;
+                    layer.locked = locked;
                 }
             }
             comp.duration = newDuration;
