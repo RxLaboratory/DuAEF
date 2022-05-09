@@ -873,10 +873,10 @@ DuAEComp.updateSettings = function( settings, updatePrecomps, comps ) {
 			comps = proj.selection;
 		}
     }
+    if (comps.length == 0) return;
 
     // Keep the ones which are updated
     var okIds = new DuList();
-
     // Aaaand GO!
     for (var i = 0, n = comps.length; i < n; i++)
     {
@@ -900,8 +900,32 @@ DuAEComp.updateSettings = function( settings, updatePrecomps, comps ) {
             DuAEComp.updateSettings( settings, false, precompsToUpdate);
         }
 
-        if (typeof settings.width !== 'undefined') comp.width = settings.width;
-        if (typeof settings.height !== 'undefined') comp.height = settings.height;
+        // Resize
+        var w = typeof settings.width !== 'undefined';
+        var h = typeof settings.height !== 'undefined';
+        if (w || h) {
+            settings.anchor = def(settings.anchor, DuMath.Location.CENTER);
+            // Add null
+            var z = DuAEComp.addNull(comp);
+            // Parent
+            DuAELayer.parent( comp.layers, z, true );
+            var offset = [0, 0];
+            if (w) {
+                offset[0] = settings.width - comp.width;
+                if (DuMath.isLocationHCenter( settings.anchor )) offset[0] /= 2;
+                if (DuMath.isLocationLeft( settings.anchor )) offset[0] = 0;
+                comp.width = settings.width;
+            }
+            if (h) {
+                offset[1] = settings.height - comp.height;
+                if (DuMath.isLocationVCenter( settings.anchor )) offset[1] /= 2;
+                if (DuMath.isLocationTop( settings.anchor )) offset[1] = 0;
+                comp.height = settings.height;
+            }
+            DuAELayer.translate( z, offset );
+            z.remove();
+        }
+        
         if (typeof settings.pixelAspect !== 'undefined') comp.pixelAspect = settings.pixelAspect;
         if (typeof settings.frameRate !== 'undefined') comp.frameRate = settings.frameRate;
         if (typeof settings.duration !== 'undefined') {

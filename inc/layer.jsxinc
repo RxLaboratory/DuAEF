@@ -888,7 +888,7 @@ DuAELayer.parent = function(layers, parent, unparentedOnly, insert) {
         var locked = layer.locked;
         layer.locked = false;
         if ((layer.parent == null && unparentedOnly) || !unparentedOnly) {
-            if (layer.parent != parent) layer.parent = parent;
+            if (parent == null || layer.index != parent.index) layer.parent = parent;
         }
         layer.locked = locked;
     });
@@ -1722,4 +1722,45 @@ DuAELayer.stack = function( layers ) {
     while(l = layers.next()) {
         l.moveBefore(layers.at( layers.current - 1));
     }
+}
+
+/**
+ * Sets the new coordinates of the layer to translate it by offset.
+ * @param {Layer} layer The layer to move
+ * @param {float[]} offset The value of the translation. A two or three dimensionnal array.
+ * @param {boolean} [world=false] Set to true to offset in world coordinates.
+ */
+DuAELayer.translate = function( layer, offset, world ){
+
+    var p = layer.transform.position.value;
+    p[0] += offset[0];
+    p[1] += offset[1];
+    if (offset.length == 3) {
+        if (p.length == 2) p.push( offset [2] );
+        else p[2] += offset[2];
+    }
+
+    DuAELayer.setPosition( layer, p, world );
+}
+
+/**
+ * Sets the new coordinates of the layer.
+ * @param {Layer} layer The layer to move 
+ * @param {float[]} position The new coordinates
+ * @param {boolean} [world=false] Set to true to use world coordinates.
+ */
+DuAELayer.setPosition = function( layer, position, world ) {
+    world = def(world, false);
+
+    var l = layer.locked;
+    layer.locked = false;
+
+    var p = layer.parent;
+    if (world) layer.parent = null;
+
+    var pos = new DuAEProperty( layer.transform.position );
+    pos.setValue(position);
+
+    if (world) layer.parent = p;
+    layer.locked = l;
 }

@@ -80,6 +80,26 @@ DuAEProject.getSelectedComps = function() {
 }
 
 /**
+ * Gets either the active comp or the first selected one
+ * @return {CompItem|null} The composition
+ */
+DuAEProject.getSelectedComp = function() {
+    var comp = DuAEProject.getActiveComp();
+    if (!comp) {
+        var items = app.project.selection;
+        for(var i = 0; i < items.length; i++)
+        {
+            var c = items[i];
+            if (c instanceof CompItem) {
+                comp = c;
+                break;
+            }
+        }
+    }
+    return comp;
+}
+
+/**
  * Runs a function on all comps of the project
  * @param {function} func The function, which must take a CompItem as its single argument.
  * @param {Boolean} [selectedOnly=false] Runs only on selected compositions

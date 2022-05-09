@@ -925,12 +925,30 @@ DuAEProperty.prototype.numerical = function() {
 DuAEProperty.prototype.setValue = function(value, defaultTime) {
     var prop = this.getProperty();
 
+    value = this.fixValue(value);
+
     if (prop.isSeparationLeader)
-        if (prop.dimensionsSeparated) return false;
+        if (prop.dimensionsSeparated) {
+            var group = prop.parentProperty;
+            var index = prop.propertyIndex;
+            var i = 0;
+            var ok = false;
+            // The sepearation followers should be the next properties in the group
+            while (true) {
+                var p = group.property(index++);
+                if (!p) { ok = false; break; }
+                if (!p.isSeparationFollower) break;
+                if (value.length == i) break;
+                p = new DuAEProperty(p);
+                var test = p.setValue( value [i] );
+                if (i == 0) ok = test;
+                else if (!test) ok = false;
+                i++;
+            }
+            return ok;
+        }
 
     if (!this.editable()) return false;
-
-    value = this.fixValue(value);
 
     if (prop.numKeys > 0) return this.setValueAtTime(value, defaultTime);
 
