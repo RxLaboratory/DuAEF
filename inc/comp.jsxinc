@@ -51,8 +51,12 @@ DuAEComp.timeToFrames = function(time, comp) {
 DuAEComp.replaceInExpressions = function(oldString, newString, caseSensitive, selectedLayers) {
     var comp = DuAEProject.getActiveComp();
     if (!comp) return;
+
     caseSensitive = def(caseSensitive, true);
     selectedLayers = def(selectedLayers, false);
+
+    var selectionMode = DuAE.SelectionMode.SELECTED_LAYERS;
+    if (!selectedLayers) selectionMode = DuAE.SelectionMode.ACTIVE_COMPOSITION;
 
     var re = new RegExp(DuRegExp.escape(oldString), caseSensitive ? 'g' : 'gi');
 
@@ -60,7 +64,7 @@ DuAEComp.replaceInExpressions = function(oldString, newString, caseSensitive, se
         e.changed = re.test(e.expression);
         if (e.changed) e.expression = e.expression.replace(re, newString);
         return e;
-    }, true, false, selectedLayers);
+    }, selectionMode );
 }
 
 /**
