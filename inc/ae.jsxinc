@@ -61,6 +61,7 @@ function DuAEKeyframe( other ){
 	this._continuous = false;
 	this._autoBezier = false;
 	this._index = 0;
+	this.label = 0;
 	if (typeof other !== 'undefined' && other instanceof DuAEKeyframe) {
 		this._time = other._time;
 		this.value = other.value;
@@ -73,6 +74,7 @@ function DuAEKeyframe( other ){
 		this._continuous = other._continuous;
 		this._autoBezier = other._autoBezier;
 		this._index = other._index;
+		this.label = other.label;
 	}
 }
 

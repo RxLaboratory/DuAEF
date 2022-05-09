@@ -266,6 +266,18 @@ DuAEProperty.prototype.keyValue = function(index) {
     return prop.keyValue(index);
 }
 
+/**
+ * Reimplements the <code>Property.keyValue</code> method for convenience.
+ * @param {int} index The index of the keyframe.
+ * @return {*} The value of the key.
+ */
+DuAEProperty.prototype.keyLabel = function(index) {
+    // Doesn't exist in all versions
+    if (jstype(prop.keyLabel) === 'undefined') return 0;
+    if (this.isGroup()) return 0;
+    var prop = this.getProperty();
+    return prop.keyLabel(index);
+}
 
 /**
  * Reimplements the <code>Property.removeKey</code> method for convenience.
@@ -621,6 +633,8 @@ DuAEProperty.prototype.keyAtIndex = function(keyIndex) {
     key._continuous = prop.keyTemporalContinuous(keyIndex);
     key._autoBezier = prop.keyTemporalAutoBezier(keyIndex);
     key._index = keyIndex;
+    // Doesn't exist in all versions
+    if (jstype(prop.keyLabel) === 'function') key.label = prop.keyLabel(keyIndex);
 
     return key;
 }
@@ -876,6 +890,10 @@ DuAEProperty.prototype.setKey = function(key, timeOffset) {
 
     //get the index of the created key
     var index = prop.nearestKeyIndex(time);
+
+    //set label
+    // Doesn't exist in all versions
+    if (jstype(prop.setLabelAtKey) === 'function') prop.setLabelAtKey(index, key.label);
 
     //set interpolations
     if (key._spatial && (prop.propertyValueType == PropertyValueType.ThreeD_SPATIAL || prop.propertyValueType == PropertyValueType.TwoD_SPATIAL)) {
