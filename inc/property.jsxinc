@@ -2363,7 +2363,7 @@ DuAEProperty.prototype.range = function(axis, preExpression, fastMode) {
 }
 
 /**
- * Gets the maximum velocity of the animated property.<br >
+ * Gets the maximum speed of the animated property.<br >
  * The property type must be one of: one D, two D, three D (spatial or not), Color.
  * If the property is not one of these types, returns 0.
  * @param {bool}	 [preExpression=true]	- True to get the velocity from keyframes instead of the result of the exression
@@ -2372,7 +2372,7 @@ DuAEProperty.prototype.range = function(axis, preExpression, fastMode) {
  * When true and if there are more than one keyframe, the velocity is sampled only between keyframes.
  * @return {float} The velocity.
  */
-DuAEProperty.prototype.maxVelocity = function(preExpression, fastMode) {
+DuAEProperty.prototype.maxSpeed = function(preExpression, fastMode) {
     preExpression = def(preExpression, true);
     fastMode = def(fastMode, true);
 
@@ -2405,6 +2405,118 @@ DuAEProperty.prototype.maxVelocity = function(preExpression, fastMode) {
     for (var i = startFrame; i < endFrame; i = i + step) {
         var vel = this.speedAtTime(i * comp.frameDuration, preExpression);
         if (vel > velocity) velocity = vel;
+    }
+
+    return velocity;
+}
+
+/**
+ * Gets the maximum velocity of the animated property ofr a given axis.<br >
+ * The property type must be one of: one D, two D, three D (spatial or not), Color.
+ * If the property is not one of these types, returns 0.
+ * @param {int}	 axis	- The axis
+ * @param {bool}	 [preExpression=true]	- True to get the velocity from keyframes instead of the result of the exression
+ * @param {bool}	 [fastMode=true]	- True to limit the number of samples used to compute the velocity and make the process faster.<br />
+ * The number of samples is automatically adapted from the duration of the composition.<br />
+ * When true and if there are more than one keyframe, the velocity is sampled only between keyframes.
+ * @return {float} The velocity.
+ */
+DuAEProperty.prototype.maxVelocity = function( axis, preExpression, fastMode ) {
+    preExpression = def(preExpression, true);
+    fastMode = def(fastMode, true);
+
+    var prop = this.getProperty();
+
+    var velocity = null;
+    if (!this.numerical()) return velocity;
+
+    if (prop.expression == '') preExpression = true;
+
+    var comp = this.comp;
+    var frames = comp.duration / comp.frameDuration;
+
+    var startFrame = 0;
+    var endFrame = frames;
+    var step = 1;
+    if (fastMode) {
+        if (prop.numKeys > 1) {
+            startFrame = prop.keyTime(1) / comp.frameDuration;
+            endFrame = prop.keyTime(prop.numKeys) / comp.frameDuration;
+        }
+    }
+
+    var numFrames = endFrame - startFrame;
+
+    if (numFrames > 1000 && fastMode) {
+        step = Math.floor(numFrames / 500);
+    }
+
+    for (var i = startFrame; i < endFrame; i = i + step) {
+        var vel = this.velocityAtTime(i * comp.frameDuration, preExpression);
+        if (this.dimensions() > 1) {
+            if (velocity == null) velocity = vel[axis];
+            else if (vel[axis] > velocity) velocity = vel[axis];
+        }
+        else {
+            if (velocity == null) velocity = vel;
+            else if (vel > velocity) velocity = vel;
+        }   
+    }
+
+    return velocity;
+}
+
+/**
+ * Gets the minimum velocity of the animated property ofr a given axis.<br >
+ * The property type must be one of: one D, two D, three D (spatial or not), Color.
+ * If the property is not one of these types, returns 0.
+ * @param {int}	 axis	- The axis
+ * @param {bool}	 [preExpression=true]	- True to get the velocity from keyframes instead of the result of the exression
+ * @param {bool}	 [fastMode=true]	- True to limit the number of samples used to compute the velocity and make the process faster.<br />
+ * The number of samples is automatically adapted from the duration of the composition.<br />
+ * When true and if there are more than one keyframe, the velocity is sampled only between keyframes.
+ * @return {float} The velocity.
+ */
+DuAEProperty.prototype.minVelocity = function( axis, preExpression, fastMode ) {
+    preExpression = def(preExpression, true);
+    fastMode = def(fastMode, true);
+
+    var prop = this.getProperty();
+
+    var velocity = null;
+    if (!this.numerical()) return velocity;
+
+    if (prop.expression == '') preExpression = true;
+
+    var comp = this.comp;
+    var frames = comp.duration / comp.frameDuration;
+
+    var startFrame = 0;
+    var endFrame = frames;
+    var step = 1;
+    if (fastMode) {
+        if (prop.numKeys > 1) {
+            startFrame = prop.keyTime(1) / comp.frameDuration;
+            endFrame = prop.keyTime(prop.numKeys) / comp.frameDuration;
+        }
+    }
+
+    var numFrames = endFrame - startFrame;
+
+    if (numFrames > 1000 && fastMode) {
+        step = Math.floor(numFrames / 500);
+    }
+
+    for (var i = startFrame; i < endFrame; i = i + step) {
+        var vel = this.velocityAtTime(i * comp.frameDuration, preExpression);
+        if (this.dimensions() > 1) {
+            if (velocity == null) velocity = vel[axis];
+            else if (vel[axis] < velocity) velocity = vel[axis];
+        }
+        else {
+            if (velocity == null) velocity = vel;
+            else if (vel < velocity) velocity = vel;
+        }   
     }
 
     return velocity;

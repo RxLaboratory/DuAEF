@@ -330,7 +330,8 @@ DuAE.Axis =
 DuAE.Type =
 {
 	VALUE: 1,
-	VELOCITY: 2
+	SPEED: 2,
+	VELOCITY: 3
 }
 
 /**
