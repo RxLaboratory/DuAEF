@@ -6,7 +6,7 @@
  * @return {Layer}	The layer
  */
 DuAEProperty.getLayer = function ( prop ) {
-    if ( typeof prop === 'undefined' )
+    if ( !isdef( prop ) )
     {
         DuDebug.throwUndefinedError( 'prop', 'DuAEProperty.getLayer( prop )');
         return;
@@ -570,7 +570,7 @@ DuAEProperty.setValue = function ( prop, value, defaultTime ) {
 
     if ( !editable ) return false;
 
-    if (prop.numKeys > 0 && typeof defaultTime !== 'undefined') return DuAEProperty.setValueAtTime(prop, value, defaultTime);
+    if (prop.numKeys > 0 && isdef( defaultTime )) return DuAEProperty.setValueAtTime(prop, value, defaultTime);
     else if (prop.numKeys > 0) return false;
 
     //check dimensions of the property
@@ -622,7 +622,7 @@ DuAEProperty.setValueAtTime = function ( prop, value, time ) {
     dimensions = propInfo.dimensions;
     editable = propInfo.editable;
 
-    if ( typeof time === 'undefined' ) time = propInfo.comp.time;
+    if ( !isdef( time ) ) time = propInfo.comp.time;
 
     if ( !prop.canVaryOverTime ) return false;
     if ( prop.isSeparationLeader )
@@ -1204,7 +1204,7 @@ DuAEProperty.pickWhip = function ( childProp, parentProp, useThisComp ) {
     if (childProp instanceof DuAEProperty) childProp = childProp.getProperty();
     if (parentProp instanceof DuAEProperty) parentProp = parentProp.getProperty();
     if ( !childProp.canSetExpression ) return;
-    if ( typeof useThisComp === 'undefined' ) {
+    if ( !isdef( useThisComp ) ) {
         var parentComp = DuAEProperty.getComp( parentProp );
         var childComp = DuAEProperty.getComp( childProp );
         if ( parentComp.id == childComp.id ) useThisComp = true;
@@ -1230,9 +1230,9 @@ DuAEProperty.linkProperties = function ( childProp, parentProp, useThisComp, tim
     if ( parentProp.name.toLowerCase() == 'data' ) return;
 
     if ( childProp.propertyType == PropertyType.PROPERTY && !childProp.elided && childProp.propertyValueType != PropertyValueType.NO_VALUE ) {
-        if ( typeof timeLayer === 'undefined' ) timeLayer = null;
+        if ( !isdef( timeLayer ) ) timeLayer = null;
 
-        if ( typeof useThisComp === 'undefined' ) {
+        if ( !isdef( useThisComp ) ) {
             var parentComp = DuAEProperty.getComp( parentProp );
             var childComp = DuAEProperty.getComp( childProp );
 
@@ -1477,7 +1477,7 @@ DuAEProperty.getAnimatedProps = function ( prop, filter, strict, caseSensitive )
 
     if ( prop.propertyType == PropertyType.PROPERTY && prop.matchName != 'ADBE Marker') {
         if ( DuAEProperty.isAnimated( prop ) ) {
-            if ( typeof filter === 'undefined' ) {
+            if ( !isdef( filter ) ) {
                 props.push( prop );
             } else {
                 var name = prop.name;

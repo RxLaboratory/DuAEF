@@ -29,7 +29,7 @@ DuAELayer.newUniqueEffectName = function(newName, layer, increment) {
         DuDebug.throwUndefinedError('layer', 'DuAELayer.newUniqueEffectName');
         return;
     }
-    if (typeof newName === 'undefined') {
+    if (!isdef( newName )) {
         DuDebug.throwUndefinedError('newName', 'DuAELayer.newUniqueEffectName');
         return;
     }
@@ -76,7 +76,7 @@ DuAELayer.getSelectedProps = function(layer, filter, strict, caseSensitive) {
     if (!caseSensitive && typeof filter === "string") filter = filter.toLowerCase();
 
     var selectedProps = layer.selectedProperties;
-    if (typeof filter === 'undefined') {
+    if (!isdef( filter )) {
         props = props.concat(selectedProps);
     } else {
         for (var j = 0, numP = selectedProps.length; j < numP; j++) {
@@ -402,7 +402,7 @@ DuAELayer.getRelation = function(layer1, layer2) {
  */
 DuAELayer.getDistance = function(layer1, layer2) {
 
-    if (typeof layer1 === 'undefined') {
+    if (!isdef( layer1 )) {
         var layers = DuAEComp.getSelectedLayers();
         if (layers.length < 2) return -1;
         layer1 = layers[0];
@@ -453,7 +453,7 @@ DuAELayer.getWorldPos = function(layer, point, time) {
     }
 
     var matrix = DuAELayer.getTransformMatrix(layer, time);
-    if (typeof point === 'undefined') {
+    if (!isdef( point )) {
         if (layer.transform.anchorPoint) point = layer.transform.anchorPoint.valueAtTime(time, false);
     }
 
@@ -470,8 +470,8 @@ DuAELayer.getWorldPos = function(layer, point, time) {
  * @return {PropertyGroup|null} The effect corresponding to matchName or null if anything went wrong
  */
 DuAELayer.applyPreset = function(layer, preset, matchName) {
-    if (typeof layer === 'undefined') return null;
-    if (typeof preset === 'undefined') return null;
+    if (!isdef( layer )) return null;
+    if (!isdef( preset )) return null;
     matchName = def(matchName, '');
     if (preset instanceof DuBinary) preset = preset.toFile();
     if (!preset.exists) throw new Error(DuScriptUI.String.MISSING_PSEUDO_EFFECT);
@@ -877,7 +877,7 @@ DuAELayer.parent = function(layers, parent, unparentedOnly, insert) {
     insert = def(insert, false);
     layers = new DuList(layers);
 
-    if (typeof parent === 'undefined') {
+    if (!isdef( parent )) {
         if (layers.length() <= 1) return;
         parent = layers.pop();
     }
@@ -1138,7 +1138,7 @@ DuAELayer.moveLayerToProperty = function(layer, prop) {
  * @param {boolean} [preExpression=false] - Whether to check for the opacity post or pre-expression value
  */
 DuAELayer.autoDuration = function(layer, preExpression) {
-    if (typeof preExpression === 'undefined') preExpression = false;
+    if (!isdef( preExpression )) preExpression = false;
 
     var comp = layer.containingComp;
 
@@ -1475,7 +1475,7 @@ DuAELayer.getCreateLayerEffect = function (layer, targetLayer, effectName) {
         if (fx(1).value == targetLayer.index) return fx;
     }
     var fx = sourceEffects.addProperty('ADBE Layer Control');
-    if (typeof effectName !== 'undefined') fx.name = DuAELayer.newUniqueEffectName(effectName, layer);
+    if (isdef( effectName )) fx.name = DuAELayer.newUniqueEffectName(effectName, layer);
     fx(1).setValue(targetLayer.index);
     return fx;
 }
@@ -1488,7 +1488,7 @@ DuAELayer.getCreateLayerEffect = function (layer, targetLayer, effectName) {
 DuAELayer.createLocator = function( layerOrComp ) {
     var layer = null;
     var comp = null;
-    if (typeof layerOrComp === 'undefined') comp = DuAEProject.getActiveComp();
+    if (!isdef( layerOrComp )) comp = DuAEProject.getActiveComp();
     else if (layerOrComp instanceof CompItem) comp = layerOrComp;
     else {
         layer = layerOrComp;

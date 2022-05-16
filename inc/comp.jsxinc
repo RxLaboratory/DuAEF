@@ -178,7 +178,7 @@ DuAEComp.getSelectedProps = function(filter, strict, caseSensitive) {
     if (!comp) return props;
 
     //if no filter, get all using AE native API
-    if (typeof filter === 'undefined') {
+    if (!isdef( filter )) {
         var layers = comp.selectedLayers;
         var itLayers = new DuList(layers);
         itLayers.do(function(layer) {
@@ -264,7 +264,7 @@ DuAEComp.doLayers = function(method, comp, reverse) {
  */
 DuAEComp.getAnimatedProps = function(filter, strict, caseSensitive, selectedLayersOnly, comp) {
     var props = [];
-    if (typeof comp === 'undefined') comp = DuAEProject.getActiveComp();
+    if (!isdef( comp )) comp = DuAEProject.getActiveComp();
     if (!comp) return props;
 
     selectedLayersOnly = def(selectedLayersOnly, false);
@@ -302,7 +302,7 @@ DuAEComp.unselectProperties = function() {
  * A custom attribute, Layer.props is added on each layer object which is an array of all previously selected properties as DuAEProperty objects
  */
 DuAEComp.unselectLayers = function(comp) {
-    if (typeof comp === 'undefined') comp = DuAEProject.getActiveComp();
+    if (!isdef( comp )) comp = DuAEProject.getActiveComp();
     if (!comp) return [];
 
     var layers = [];
@@ -866,7 +866,7 @@ DuAEComp.bake = function( mode, frameStep, comp ) {
 DuAEComp.updateSettings = function( settings, updatePrecomps, comps ) {
     updatePrecomps = def(updatePrecomps, true);
     
-    if (typeof comps === 'undefined') {
+    if (!isdef( comps )) {
         // Active comp
         if ((app.project.activeItem !== null) && (app.project.activeItem instanceof CompItem))
 		{

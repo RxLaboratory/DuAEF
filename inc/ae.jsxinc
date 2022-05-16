@@ -15,7 +15,7 @@ function DuAEKeySpatialProperties ( other ){
 	this._continuous = true;
 	this._autoBezier = false;
 	this._roving = false;
-	if (typeof other !== 'undefined' && other instanceof DuAEKeySpatialProperties) {
+	if (isdef( other ) && other instanceof DuAEKeySpatialProperties) {
 		this.inTangent = other.inTangent;
 		this.outTangent = other.outTangent;
 		this._continuous = other._continuous;
@@ -62,7 +62,7 @@ function DuAEKeyframe( other ){
 	this._autoBezier = false;
 	this._index = 0;
 	this.label = 0;
-	if (typeof other !== 'undefined' && other instanceof DuAEKeyframe) {
+	if (isdef( other ) && other instanceof DuAEKeyframe) {
 		this._time = other._time;
 		this.value = other.value;
 		this._inInterpolationType = other._inInterpolationType;
@@ -797,7 +797,7 @@ DuAE.getCompactExpression = function( matchName, name, prop )
 	name = def(name, '');
 	var translatedName = DuAE.CompactExpression[ matchName ];
 
-	if ( typeof translatedName !== 'undefined' )
+	if ( isdef( translatedName ) )
 		return eval( translatedName );
 	else if (name != '')
 		return ( "(" + name + ")" );

@@ -112,7 +112,7 @@ DuAETag.set = function( layer, tagName, tag )
     // Otherwise just set comment
     else 
     {
-        if (typeof tagName !== 'undefined') tag.comment = tagName;
+        if (isdef( tagName )) tag.comment = tagName;
     }
     
     var tagParams = tag.getParameters();
@@ -251,7 +251,7 @@ DuAETag.getValue = function( layer, key, type, tag )
     if (!params) return null;
 
     var val = params[ key ];
-    if (typeof val === 'undefined') return null;
+    if (!isdef( val )) return null;
     if (type == DuAETag.Type.STRING) return val;
     if (type == DuAETag.Type.BOOL)
     {

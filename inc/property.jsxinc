@@ -21,7 +21,7 @@
  */
 function DuAEProperty(property) {
     if (property instanceof DuAEProperty) return property;
-    if (typeof property === 'undefined') {
+    if (!isdef( property )) {
         DuDebug.throwTypeError(property, "property", "Property", "DuAEProperty(property)");
         return;
     }
@@ -1376,10 +1376,10 @@ DuAEProperty.prototype.setKeyInterpolation = function(key, typeIn, typeOut, ease
 DuAEProperty.prototype.setEase = function( easeInValue, easeOutValue, velocityInValue, velocityOutValue, velocityAsPercent ) {
     if (this.isGroup()) return;
 
-    if (isNaN(easeInValue) && typeof easeInValue !== 'undefined') easeInValue = 33;
-    if (isNaN(easeOutValue) && typeof easeOutValue !== 'undefined') easeOutValue = 33;
-    if (isNaN(velocityInValue) && typeof velocityInValue !== 'undefined') velocityInValue = 0;
-    if (isNaN(velocityOutValue) && typeof velocityOutValue !== 'undefined') velocityOutValue = 0;
+    if (isNaN(easeInValue) && isdef( easeInValue )) easeInValue = 33;
+    if (isNaN(easeOutValue) && isdef( easeOutValue )) easeOutValue = 33;
+    if (isNaN(velocityInValue) && isdef( velocityInValue )) velocityInValue = 0;
+    if (isNaN(velocityOutValue) && isdef( velocityOutValue )) velocityOutValue = 0;
 
     var comp = this.comp;
     var prop = this.getProperty();
@@ -1392,14 +1392,14 @@ DuAEProperty.prototype.setEase = function( easeInValue, easeOutValue, velocityIn
         for (var k = 0, numK = prop.selectedKeys.length; k < numK; k++) {
             var key = prop.selectedKeys[k];
 
-            if (typeof easeInValue !== 'undefined') {
-                if (typeof velocityInValue === 'undefined' && prop.keyInInterpolationType(key) == KeyframeInterpolationType.LINEAR) {
+            if (isdef( easeInValue )) {
+                if (!isdef( velocityInValue ) && prop.keyInInterpolationType(key) == KeyframeInterpolationType.LINEAR) {
                     vInValue = 0;
                 }
             }
 
-            if (typeof easeOutValue !== 'undefined') {
-                if (typeof velocityOutValue === 'undefined' && prop.keyOutInterpolationType(key) == KeyframeInterpolationType.LINEAR) {
+            if (isdef( easeOutValue )) {
+                if (!isdef( velocityOutValue ) && prop.keyOutInterpolationType(key) == KeyframeInterpolationType.LINEAR) {
                     vOutValue = 0;
                 }
             }
@@ -1425,12 +1425,12 @@ DuAEProperty.prototype.setEase = function( easeInValue, easeOutValue, velocityIn
                     nextSpeed = DuMath.length(val, valAfter) / (timeAfter - currentTime);
                 }
 
-                if (typeof prevSpeed === 'undefined' && typeof nextSpeed === 'undefined') {
+                if (!isdef( prevSpeed ) && !isdef( nextSpeed )) {
                     prevSpeed = 0;
                     nextSpeed = 0;
-                } else if (typeof prevSpeed === 'undefined') {
+                } else if (!isdef( prevSpeed )) {
                     prevSpeed = nextSpeed;
-                } else if (typeof nextSpeed === 'undefined') {
+                } else if (!isdef( nextSpeed )) {
                     nextSpeed = prevSpeed;
                 }
 
@@ -1483,10 +1483,10 @@ DuAEProperty.prototype.setEase = function( easeInValue, easeOutValue, velocityIn
             var inType = KeyframeInterpolationType.BEZIER;
             var outType = KeyframeInterpolationType.BEZIER;
 
-            if (typeof easeInValue === 'undefined' && typeof velocityInValue === 'undefined') {
+            if (!isdef( easeInValue ) && !isdef( velocityInValue )) {
                 inType = prop.keyInInterpolationType(key);
             }
-            if (typeof easeOutValue === 'undefined' && typeof velocityOutValue === 'undefined') {
+            if (!isdef( easeOutValue ) && !isdef( velocityOutValue )) {
                 outType = prop.keyOutInterpolationType(key);
             }
 
@@ -1995,7 +1995,7 @@ DuAEProperty.prototype.pickWhip = function(parentProp, useThisComp) {
 
     if (!this.riggable()) return;
 
-    if (typeof useThisComp === 'undefined') {
+    if (!isdef( useThisComp )) {
         var parentComp = parent.comp;
         var childComp = this.comp;
         if (parentComp.id == childComp.id) useThisComp = true;
@@ -2029,7 +2029,7 @@ DuAEProperty.prototype.linkProperties = function(parentProp, useThisComp, timeLa
 
         timeLayer = def(timeLayer, null);
 
-        if (typeof useThisComp === 'undefined') {
+        if (!isdef( useThisComp )) {
             var parentComp = parent.comp;
             var childComp = this.comp;
             useThisComp = parentComp.id == childComp.id;
@@ -2272,7 +2272,7 @@ DuAEProperty.prototype.getAnimatedProps = function(filter, strict, caseSensitive
 
     if (prop.propertyType == PropertyType.PROPERTY && prop.matchName != 'ADBE Marker') {
         if (this.animated()) {
-            if (typeof filter === 'undefined') {
+            if (!isdef( filter )) {
                 props.push(prop);
             } else {
                 var name = prop.name;
@@ -3006,7 +3006,7 @@ DuAEProperty.prototype.setRoving = function() {
 DuAEProperty.prototype.snapKeys = function(keys) {
     this.do(function(prop) {
         var ks = [];
-        if (typeof keys === 'undefined') {
+        if (!isdef( keys )) {
             for (var i = 1, n = prop.numKeys(false); i <= n; i++ )
                 ks.push(i);
         }
