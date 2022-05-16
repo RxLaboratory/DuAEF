@@ -2,6 +2,7 @@
 /**
  * Puppet tool methods
  * @namespace
+ * @category DuAEF
  */
 var DuAEPuppet = {};
 

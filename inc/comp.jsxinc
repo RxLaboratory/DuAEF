@@ -1,6 +1,7 @@
 ﻿/**
  * After Effects composition methods
  * @namespace
+ * @category DuAEF
  */
 var DuAEComp = {};
 

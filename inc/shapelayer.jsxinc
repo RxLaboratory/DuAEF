@@ -1,6 +1,7 @@
 /**
  * Shape Layer methods
  * @namespace
+ * @category DuAEF
  */
 var DuAEShapeLayer = {};
 

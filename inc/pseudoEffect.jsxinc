@@ -4,6 +4,7 @@
 	* @classdesc Describes a pseudo effect
 	* @param {DuBinary} binaryFile - The ffx file encoded as a {@link DuBinary}.<br />
 	* Note that the pseudo effect's matchName <strong>must start with <code>"Pseudo/"</code></strong>.
+	* @category DuAEF
     */
 function DuAEPseudoEffect( binaryFile )
 {

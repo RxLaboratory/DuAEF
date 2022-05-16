@@ -1,6 +1,7 @@
 /**
  * After Effects item methods
  * @namespace
+ * @category DuAEF
  */
 var DuAEItem = {};
 

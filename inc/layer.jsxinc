@@ -1,6 +1,7 @@
 ﻿/**
  * After Effects layer methods
  * @namespace
+ * @category DuAEF
  */
 var DuAELayer = {};
 

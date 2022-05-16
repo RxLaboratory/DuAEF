@@ -4,6 +4,7 @@
  * These markers are used by DuAEF (and Duik, DuGR, ...) to recognise and manipulate the layers, and to store hidden data.<br />
  * They're also used assign the layer to groups, which can be used by other scripts, especially DuGR.
  * @namespace
+ * @category DuAEF
  */
 var DuAETag = {};
 

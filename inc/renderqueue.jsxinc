@@ -1,6 +1,7 @@
 /**
  * Render Queue methods
  * @namespace
+ * @category DuAEF
  */
 var DuAERenderQueue = {};
 

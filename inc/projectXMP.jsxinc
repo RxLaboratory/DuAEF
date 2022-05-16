@@ -1,6 +1,7 @@
 /**
  * Manages XMP Metadata of the project.
  * @namespace
+ * @category DuAEF
  */
 var DuAEProjectXMP = {};
 

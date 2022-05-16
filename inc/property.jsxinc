@@ -18,6 +18,7 @@
  *   propInfo = new DuAEProperty(prop);
  *   prop = propInfo.getProperty();
  * }
+ * @category DuAEF
  */
 function DuAEProperty(property) {
     if (property instanceof DuAEProperty) return property;

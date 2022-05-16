@@ -79,6 +79,7 @@ DuScriptUI.setupScript = function( callback, ui, scriptName, reInit, reInitMetho
  * @property {Selector~onChange} onChange  - The function to execute when the index changes.<br />
  * You can set your own function here, which must take no argument.<br />
  * The method is called after the index has changed.
+ * @category DuScriptUI
  */
 
 /**
@@ -357,6 +358,7 @@ DuScriptUI.layerSelector = function( container, helpTip )
  * The default function will get all the comps in the project,<br />
  * You can set your own function here, which must take no argument.<br />
  * The function must return an array of CompItem.
+ * @category DuScriptUI
  */
 
 /**
@@ -634,6 +636,7 @@ DuScriptUI.compSelector = function( container, helpTip )
  * The picker inherits the Group object from ScriptUI and has all of its properties and methods.
  * @property {DuAELayerSelector[]} selectors  - The layer selectors
  * @property {string[]} inputs - The labels texts
+ * @category DuScriptUI
  */
 
 /**
@@ -722,6 +725,7 @@ DuScriptUI.layerPicker = function( container )
  * The picker inherits the Group object from ScriptUI and has all of its properties and methods.
  * @property {DuAELayerPicker} layerPicker The layer picker inside the dialog.
  * @property {bool} accepted This property is true if the user has clicked the OK button, false otherwise.
+ * @category DuScriptUI
  */
 
 /**

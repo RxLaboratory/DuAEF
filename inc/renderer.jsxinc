@@ -4,6 +4,7 @@
  * @classdesc A class used to easily manage After Effects Renderer/RenderQueue
  * @param {string} [defaultOutputTemplate] The default output module template name to use when adding comp to the queue. Empty string to let default AE OM defaultOutputTemplate.
  * @param {PostRenderAction} [defaultPostRenderAction=PostRenderAction.NONE] The default PostRenderAction.
+ * @category DuAEF
  */
 function DuAERenderer( defaultOutputTemplate, defaultPostRenderAction ) {
     /**

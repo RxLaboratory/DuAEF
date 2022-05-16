@@ -1,6 +1,7 @@
 /**
  * After Effects expression tools
  * @namespace
+ * @category DuAEF
  */
 var DuAEExpression = {};
 
@@ -138,6 +139,7 @@ DuAEExpression.scriptifyExpression = function(prop, varName) {
  * These methods take the name (listed here) of the function/class as arguments.
  * @namespace
  * @memberof DuAEExpression
+ * @category DuAEF
  */
 DuAEExpression.Library = {};
 

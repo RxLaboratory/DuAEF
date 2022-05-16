@@ -8,6 +8,7 @@
 	* @property {boolean}      [_continuous=true]         - true if the specified keyframe has spatial continuity
 	* @property {boolean}	[_autoBezier=false]			- true if the specified keyframe has temporal auto-Bezier interpolation
 	* @property {boolean}	[_roving=false]	- true if the specified keyframe is roving
+	* @category DuAEF
 */
 function DuAEKeySpatialProperties ( other ){
 	this.inTangent = null;
@@ -48,6 +49,7 @@ DuAEKeySpatialProperties.prototype._clone = function() {
 	* @property {boolean}	_continuous	- true if the keyframe has temporal continuity
 	* @property {boolean}	_autoBezier	- true if the keyframe has temporal auto-Bezier interpolation
 	* @property {int}		_index	- The index of the keyFrame. Warning: not updated when another key frame is added on the property some time before this key._time!
+	* @category DuAEF
 */
 function DuAEKeyframe( other ){
 	this._time = 0;
@@ -99,6 +101,7 @@ DuAEKeyframe.prototype._clone = function() {
 	* @property {string}   [type="anim"]  - Read Only.
 	* @property {float}   startTime  - Read Only. The starting time of the animation.
 	* @property {float}   endTime  - Read Only. The ending time of the animation.
+	* @category DuAEF
 */
 function DuAEPropertyAnimation()
 {
@@ -123,6 +126,7 @@ function DuAEPropertyAnimation()
 	* @property {string}   [type="group"]  - Read Only.
 	* @property {float}   startTime  - Read Only. The starting time of the animation.
 	* @property {float}   endTime  - Read Only. The ending time of the animation.
+	* @category DuAEF
 */
 function DuAEPropertyGroupAnimation()
 {
@@ -145,6 +149,7 @@ function DuAEPropertyGroupAnimation()
 	* @property {string}   [type="layer"]  - Read Only.
 	* @property {float}   startTime  - Read Only. The starting time of the animation.
 	* @property {float}   endTime  - Read Only. The ending time of the animation.
+	* @category DuAEF
 */
 function DuAELayerAnimation()
 {
@@ -164,6 +169,7 @@ function DuAELayerAnimation()
 	* This class is very similar to {@link DuAEProperty} except it is lighter and faster, to improve the performance of the expression cache.
 	* @param {PropertyBase|DuAEPropertyExpression|DuAEProperty} property - The property. If a DuAEPropertyExpression is provided, the constructor returns it (it does not make a copy).<br />
 	* This makes it easy to avoid type checking, as you can always pass any property or DuAEPropertyExpression to the constructor to be sure to handle a DuAEPropertyExpression, without any impact on performance.
+	* @category DuAEF
 */
 function DuAEPropertyExpression(property)
 {
@@ -300,6 +306,7 @@ DuAEPropertyExpression.prototype.apply = function()
 /**
  * After Effects general tools
  * @namespace
+ * @category DuAEF
 */
 var DuAE = {};
 

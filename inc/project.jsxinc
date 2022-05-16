@@ -1,6 +1,7 @@
 /**
  * After Effects project methods
  * @namespace
+ * @category DuAEF
  */
 var DuAEProject = {};
 

@@ -79,6 +79,7 @@
  *<br />
  * You should have received a copy of the GNU General Public License<br />
  * along with DuAEF. If not, see {@link http://www.gnu.org/licenses/}.
+ * @category DuAEF
  */
 var DuAEF = {};
 /**
