@@ -90,8 +90,10 @@ DuAEExpression.doInExpresssions = function(func, selectionMode, updateCache, app
 
 /**
  * Applies all the expressions stored in the cache to the actual properties in After Effects, if and only if they've been modified.
+ * @param {DuAEPropertyExpression[]} [cache] The cache to apply, if different from the automatic DuAEF Cache
  */
-DuAEExpression.applyCache = function() {
+DuAEExpression.applyCache = function( cache ) {
+    cache = def(cache, DuAEExpression.cache);
     for (var i = 0, num = DuAEExpression.cache.length; i < num; i++) {
         DuAEExpression.cache[i].apply();
     }
