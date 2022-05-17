@@ -24,7 +24,7 @@
     It is also available in DuAEF, along with some useful functions to help you include requirements when adding a function to your expressions.
 */
 
-if (!isdef( DuAEExpression )) DuAEExpression = {};
+if (typeof DuAEExpression === "undefined") DuAEExpression = {};
 
 /**
 * Expression Library<br />
@@ -63,10 +63,10 @@ DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, val
 	'min = valueNot;',
 	'max = valueNot + (valueIS - valueNot) * 2;',
 	'}',
-	'if (!isdef( shape )) shape = "linear";',
-	'if (!isdef( shapeAbove )) shapeAbove = shape;',
-	'if (!isdef( plateauMin )) plateauMin = mean([min, max]);',
-	'if (!isdef( plateauMax )) plateauMax = mean([min, max]);',
+	'if (typeof shape === "undefined") shape = "linear";',
+	'if (typeof shapeAbove === "undefined") shapeAbove = shape;',
+	'if (typeof plateauMin === "undefined") plateauMin = mean([min, max]);',
+	'if (typeof plateauMax === "undefined") plateauMax = mean([min, max]);',
 	'this.min = min;',
 	'this.max = max;',
 	'this.shapeIn = shape;',
@@ -149,7 +149,7 @@ DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, val
 	'},',
 	'getValues: function ( veracity )',
 	'{',
-	'if (!isdef( veracity )) veracity = 0.5;',
+	'if (typeof veracity === "undefined") veracity = 0.5;',
 	'if (veracity instanceof FuzzyVeracity) veracity = veracity.veracity;',
 	'var defaultValue = mean( [this.plateauMin, this.plateauMax] );',
 	'if ( this.shapeIn === "constant" && this.shapeOut === "constant" ) return [ this.min, this.plateauMin, defaultValue, this.plateauMax, this.max];',
@@ -216,7 +216,7 @@ DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, val
 	'{',
 	'quantifier = getQuantifier(quantifier);',
 	'var v;',
-	'if (!isdef( veracity )) v = quantifier();',
+	'if (typeof veracity === "undefined") v = quantifier();',
 	'else if (veracity instanceof FuzzyVeracity) v = veracity.veracity;',
 	'else v = veracity;',
 	'v = quantifier(v, true).veracity;',
@@ -225,8 +225,8 @@ DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, val
 	'};',
 	'function FuzzyValue( val )',
 	'{',
-	'if (!isdef( unit )) unit = "";',
-	'if (!isdef( val )) val = 0;',
+	'if (typeof unit === "undefined") unit = "";',
+	'if (typeof val === "undefined") val = 0;',
 	'this.val = val;',
 	'this.sets = [];',
 	'this.report = [];',
@@ -246,7 +246,7 @@ DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, val
 	'},',
 	'SET: function ( fuzzyset,  quantifier, v )',
 	'{',
-	'if (!isdef( v )) v = new FuzzyVeracity(1);',
+	'if (typeof v === "undefined") v = new FuzzyVeracity(1);',
 	'quantifier = getQuantifier(quantifier);',
 	'this.numRules++;',
 	'v.ruleNum = this.numRules;',
@@ -268,7 +268,7 @@ DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, val
 	'},',
 	'crispify: function ( clearSets )',
 	'{',
-	'if (!isdef( clearSets )) clearSets = true;',
+	'if (typeof clearSets === "undefined") clearSets = true;',
 	'if (this.sets.length == 0) return this.val;',
 	'var crisp = 0;',
 	'this.report = [];',
@@ -321,7 +321,7 @@ DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, val
 	'};',
 	'function FuzzyVeracity( veracity )',
 	'{',
-	'if (!isdef( above )) above = false;',
+	'if (typeof above === "undefined") above = false;',
 	'this.veracity = veracity;',
 	'}',
 	'FuzzyVeracity.prototype = {',
@@ -441,10 +441,10 @@ DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, val
 	'};',
 	'function getQuantifier( name )',
 	'{',
-	'if (!isdef( name )) name = "moderately";',
+	'if (typeof name === "undefined") name = "moderately";',
 	'if (name == "not" || name == "less") {',
 	'function qObj (v, inverse) {',
-	'if (!isdef( v )) return 0;',
+	'if (typeof v === "undefined") return 0;',
 	'var p = inverse ? 0 : 1;',
 	'return new FuzzyVeracity( p );',
 	'}',
@@ -456,7 +456,7 @@ DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, val
 	'if (name == "very") return createQuantifier( 2 );',
 	'if (name == "extremely") return createQuantifier( 3 );',
 	'function qObj (v, inverse) {',
-	'if (!isdef( v )) return 1;',
+	'if (typeof v === "undefined") return 1;',
 	'var p = inverse ? 1 : 0;',
 	'return new FuzzyVeracity( p );',
 	'}',
@@ -465,7 +465,7 @@ DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, val
 	'function createQuantifier( q )',
 	'{',
 	'function qObj (v, inverse) {',
-	'if (!isdef( v )) return Math.pow( 0.5, 1/q);',
+	'if (typeof v === "undefined") return Math.pow( 0.5, 1/q);',
 	'var p = inverse ? 1/q : q;',
 	'return new FuzzyVeracity( Math.pow(v, p) );',
 	'}',
@@ -1387,6 +1387,29 @@ DuAEExpression.Library["cbrt"].expression = ['if (typeof Math.cbrt === \'undefin
 DuAEExpression.Library["cbrt"].requirements = [];
 
 /**
+    * Gets the distance of a point to a line
+    * @function
+    * @name distanceToLine
+    * @param {float[]} point The point [x,y]
+    * @param {float[][]} line The line [ A , B ] where A and B are two points
+    * @return {float} The distance
+    */
+DuAEExpression.Library["distanceToLine"] = {};
+DuAEExpression.Library["distanceToLine"].expression = ['function distanceToLine( point, line ) {',
+	'var b = line[0];',
+	'var c = line [1];',
+	'var a = point;',
+	'var line = Math.pow( length( b, c ), 2 );',
+	'if ( line === 0 ) return Math.pow( length( a, b ), 2 );',
+	'var d = ( ( a[ 0 ] - b[ 0 ] ) * ( c[ 0 ] - b[ 0 ] ) + ( a[ 1 ] - b[ 1 ] ) * ( c[ 1 ] - b[ 1 ] ) ) / line;',
+	'd = Math.max( 0, Math.min( 1, d ) );',
+	'var distance = Math.pow( length( a, [ b[ 0 ] + d * ( c[ 0 ] - b[ 0 ] ), b[ 1 ] + d * ( c[ 1 ] - b[ 1 ] ) ] ), 2 );',
+	'return Math.sqrt( distance );',
+	'};'
+	].join('\n');
+DuAEExpression.Library["distanceToLine"].requirements = [];
+
+/**
     * The gaussian function
     * @function
     * @param {Number} value The variable
@@ -1623,6 +1646,7 @@ DuAEExpression.Library["subPoints"].requirements = [];
  * Adds two paths together.<br />
  * The paths must be objects with three array attributes: points, inTangents, outTangents
  * @function
+ * @name addPath
  * @param {Object} path1 First path
  * @param {Object} path2 Second path
  * @param {float} path2weight A weight to multiply the second path values
@@ -1642,6 +1666,42 @@ DuAEExpression.Library["addPath"].expression = ['function addPath(path1, path2, 
 	'}'
 	].join('\n');
 DuAEExpression.Library["addPath"].requirements = ["addPoints"];
+
+/**
+ * Checks if a point is inside a given polygon.
+ * @function
+ * @name inside
+ * @param {float[]} point A 2D point [x, y]
+ * @param {float[][]} points The vertices of the polygon
+ * @returns {object} An object with two properties:  
+ * - `inside (bool)` is true if the point is inside the polygon
+ * - `closestVertex` is the index of the closest vertex of the polygon
+ */
+DuAEExpression.Library["inside"] = {};
+DuAEExpression.Library["inside"].expression = ['function inside( point, points ) {',
+	'var x = point[ 0 ],',
+	'y = point[ 1 ];',
+	'var result = 0;',
+	'var inside = false;',
+	'for ( var i = 0, j = points.length - 1; i < points.length; j = i++ ) {',
+	'var xi = points[ i ][ 0 ],',
+	'yi = points[ i ][ 1 ];',
+	'var xj = points[ j ][ 0 ],',
+	'yj = points[ j ][ 1 ];',
+	'var intersect = ( ( yi > y ) != ( yj > y ) ) &&',
+	'( x <',
+	'( xj - xi ) * ( y - yi ) / ( yj - yi ) + xi );',
+	'if ( intersect ) inside = !inside;',
+	'var t1 = length( points[ i ], point );',
+	'var t2 = length( points[ result ], point );',
+	'if ( t1 < t2 ) {',
+	'result = i;',
+	'}',
+	'}',
+	'return { inside: inside, closestVertex: result };',
+	'};'
+	].join('\n');
+DuAEExpression.Library["inside"].requirements = [];
 
 /**
  * Multiplies a path with a scalar.<br />
@@ -2601,6 +2661,42 @@ DuAEExpression.Library["Matrix"].expression = ['function Matrix() {',
 	'};'
 	].join('\n');
 DuAEExpression.Library["Matrix"].requirements = [];
+
+/**
+ * Transform the points from layer to world coordinates
+ * @function
+ * @param {float[][]} points The points
+ * @param {Layer} layer The layer
+ * @return {float[][]} The points in world coordinates
+ */
+DuAEExpression.Library["pointsToWorld"] = {};
+DuAEExpression.Library["pointsToWorld"].expression = ['function pointsToWorld( points, layer ) {',
+	'for (var i = 0; i < points.length; i++) {',
+	'points[i] = layer.toWorld(points[i]);',
+	'}',
+	'return points;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["pointsToWorld"].requirements = [];
+
+/**
+ * Gets the points of the shape path in layer coordinates (applies the group transform)
+ * @function
+ * @param {Property} prop The property from which to get the path
+ * @return {float[][]} The points in layer coordinates
+ * @requires getGroupTransformMatrix
+ */
+DuAEExpression.Library["shapePointsToLayer"] = {};
+DuAEExpression.Library["shapePointsToLayer"].expression = ['function shapePointsToLayer( prop ) {',
+	'var points = prop.points();',
+	'var matrix = getGroupTransformMatrix( prop );',
+	'for (var i = 0; i < points.length; i++) {',
+	'points[i] = matrix.applyToPoint( points[i] );',
+	'}',
+	'return points;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["shapePointsToLayer"].requirements = ["getGroupTransformMatrix"];
 
 /**
  * Translates a point with a layer, as if it was parented to it.<br />
