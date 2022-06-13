@@ -48,7 +48,7 @@ if (typeof DuAEExpression.Library === "undefined") DuAEExpression.Library = [];
   * @requires inverseLogistic
   * @requires logistic
   * @requires mean
-  * @memberof ExpressionLibrary
+  * @category ExpressionLibrary
 */
 DuAEExpression.Library["FuzzyLogic"] = {};
 DuAEExpression.Library["FuzzyLogic"].expression = ['function FuzzySet( name, valueNot, valueIS, shape, shapeAbove, plateauMin, plateauMax)',
@@ -486,7 +486,7 @@ DuAEExpression.Library["FuzzyLogic"].requirements = ["gaussian","inverseGaussian
  * @copyright 2020-2022 Nicolas Dufresne and contributors
  * @param {Number} v The original veracity, must be in the range [0.0, 1.0]
  * @param {Number} [f=1] A factor to adjust the <i>importance</i> of the veracity, when compared to others.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["FuzzyVeracity"] = {};
 DuAEExpression.Library["FuzzyVeracity"].expression = ['function FuzzyVeracity( v, f )',
@@ -548,7 +548,7 @@ DuAEExpression.Library["FuzzyVeracity"].requirements = [];
  * ];
  * animate(keyframes, 'cycle', 'pingpong');
  * @return {number} the animated value.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["animate"] = {};
 DuAEExpression.Library["animate"].expression = ['function animate(ks, loopOut, loopIn, ct) {',
@@ -610,7 +610,7 @@ DuAEExpression.Library["animate"].requirements = [];
  * @param {number[]} [bezierPoints=[0.33,0.0,0.66,1.0]] an Array of 4 coordinates wihtin the [0.0, 1.0] range which describes the Bézier interpolation. The default mimics the native ease() function<br />
  * [ outTangentX, outTangentY, inTangentX, inTangentY ]
  * @return {number} the value.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["bezierInterpolation"] = {};
 DuAEExpression.Library["bezierInterpolation"].expression = ['function bezierInterpolation(t, tMin, tMax, value1, value2, bezierPoints) {',
@@ -658,7 +658,7 @@ DuAEExpression.Library["bezierInterpolation"].requirements = [];
  * @param {number} [rate=1] The raising speed in the range [0, inf].
  * @return {number} the value.
  * @requires linearExtrapolation
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["expInterpolation"] = {};
 DuAEExpression.Library["expInterpolation"].expression = ['function expInterpolation(t, tMin, tMax, vMin, vMax, rate)',
@@ -690,7 +690,7 @@ DuAEExpression.Library["expInterpolation"].requirements = ["linearExtrapolation"
  * @param {number} [value2=1] The maximum value of the interpolated result
  * @param {number} [rate=0] The raising speed in the range [-1.0, 1.0].
  * @return {number} the value.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["gaussianInterpolation"] = {};
 DuAEExpression.Library["gaussianInterpolation"].expression = ['function gaussianInterpolation( t, tMin, tMax, value1, value2, rate )',
@@ -729,7 +729,7 @@ DuAEExpression.Library["gaussianInterpolation"].requirements = [];
  * @function
  * @param {number} rate The raising speed in the range [-1.0, 1.0].
  * @return {number} the value.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["gaussianRateToBezierPoints"] = {};
 DuAEExpression.Library["gaussianRateToBezierPoints"].expression = ['function gaussianRateToBezierPoints(rate) {',
@@ -753,7 +753,7 @@ DuAEExpression.Library["gaussianRateToBezierPoints"].requirements = [];
  * cf. {@link http://www.motionscript.com/articles/speed-control.html} for more explanation.
  * @function
  * @param {Property} [prop=thisProperty] The property with the keyframes.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["integrateLinearKeys"] = {};
 DuAEExpression.Library["integrateLinearKeys"].expression = ['function integrateLinearKeys( prop ) {',
@@ -781,7 +781,7 @@ DuAEExpression.Library["integrateLinearKeys"].requirements = [];
  * @param {number|number[]|null} [min] The minimum value
  * @param {number|number[]|null} [max] The maximum value
  * @param {number} [softness=0] The softness, a value corresponding value, from which the interpolation begins to slow down
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["limit"] = {};
 DuAEExpression.Library["limit"].expression = ['function limit(val, min, max, softness) {',
@@ -844,7 +844,7 @@ DuAEExpression.Library["limit"].requirements = [];
  * @param {number} [value1=0] The minimum value of the interpolated result
  * @param {number} [value2=1] The maximum value of the interpolated result
  * @return {number} the value.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["linearExtrapolation"] = {};
 DuAEExpression.Library["linearExtrapolation"].expression = ['function linearExtrapolation( t, tMin, tMax, value1, value2 )',
@@ -868,7 +868,7 @@ DuAEExpression.Library["linearExtrapolation"].requirements = [];
  * @param {number} [rate=1] The raising speed in the range [0, inf].
  * @return {number} the value.
  * @requires linearExtrapolation
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["logInterpolation"] = {};
 DuAEExpression.Library["logInterpolation"].expression = ['function logInterpolation(t, tMin, tMax, vMin, vMax, rate)',
@@ -903,7 +903,7 @@ DuAEExpression.Library["logInterpolation"].requirements = ["linearExtrapolation"
  * @return {number} the value.s
  * @requires logistic
  * @requires linearExtrapolation
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["logisticInterpolation"] = {};
 DuAEExpression.Library["logisticInterpolation"].expression = ['function logisticInterpolation( t, tMin, tMax, value1, value2, rate, tMid )',
@@ -929,7 +929,7 @@ DuAEExpression.Library["logisticInterpolation"].requirements = ["logistic","line
  * @param {number} [t=time] Time at which to get the key
  * @param {Property} [prop=thisProperty] The property from which to get the key
  * @return {Key|null} The key, or null if there's no key before.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["getNextKey"] = {};
 DuAEExpression.Library["getNextKey"].expression = ['function getNextKey(t, prop) {',
@@ -952,7 +952,7 @@ DuAEExpression.Library["getNextKey"].requirements = [];
  * @return {Key|null} The key, or null if there's no key before.
  * @requires isStill
  * @requires getNextKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["getNextStopKey"] = {};
 DuAEExpression.Library["getNextStopKey"].expression = ['function getNextStopKey(t, prop) {',
@@ -976,7 +976,7 @@ DuAEExpression.Library["getNextStopKey"].requirements = ["isStill","getNextKey"]
  * @param {number} [t=time] Time at which to get the key
  * @param {Property} [prop=thisProperty] The property from which to get the key
  * @return {Key|null} The key, or null if there's no key before.
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["getPrevKey"] = {};
 DuAEExpression.Library["getPrevKey"].expression = ['function getPrevKey(t, prop) {',
@@ -999,7 +999,7 @@ DuAEExpression.Library["getPrevKey"].requirements = [];
  * @return {Key|null} The key, or null if there's no key before.
  * @requires isStill
  * @requires getPrevKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["getPrevStartKey"] = {};
 DuAEExpression.Library["getPrevStartKey"].expression = ['function getPrevStartKey(t, prop) {',
@@ -1021,7 +1021,7 @@ DuAEExpression.Library["getPrevStartKey"].requirements = ["isStill","getPrevKey"
  * Checks if current time is after the time of the last key in the property
  * @function
  * @return {boolean} true if time is > lastkey.time
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["isAfterLastKey"] = {};
 DuAEExpression.Library["isAfterLastKey"].expression = ['function isAfterLastKey() {',
@@ -1038,7 +1038,7 @@ DuAEExpression.Library["isAfterLastKey"].requirements = [];
  * @param {Keyframe} k The key to check
  * @param {int} axis The axis to check for multi-dimensionnal properties
  * @return {boolean} true if the key is a maximum or minimum
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["isKeyTop"] = {};
 DuAEExpression.Library["isKeyTop"].expression = ['function isKeyTop(k, axis) {',
@@ -1064,7 +1064,7 @@ DuAEExpression.Library["isKeyTop"].requirements = [];
  * @function
  * @requires getPrevKey
  * @requires bezierInterpolation
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["bounce"] = {};
 DuAEExpression.Library["bounce"].expression = ['function bounce(t, elasticity, damping, vAtTime) {',
@@ -1128,7 +1128,7 @@ DuAEExpression.Library["bounce"].requirements = ["getPrevKey","bezierInterpolati
  * @returns {float|float[]} The new value
  * @function
  * @requires getNextKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["continueIn"] = {};
 DuAEExpression.Library["continueIn"].expression = ['function continueIn(t, damping) {',
@@ -1150,7 +1150,7 @@ DuAEExpression.Library["continueIn"].requirements = ["getNextKey"];
  * @returns {float|float[]} The new value
  * @function
  * @requires getNextKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["continueOut"] = {};
 DuAEExpression.Library["continueOut"].expression = ['function continueOut(t, damping) {',
@@ -1175,7 +1175,7 @@ DuAEExpression.Library["continueOut"].requirements = ["getNextKey"];
  * @returns {float|float[]} The new value
  * @function
  * @requires getNextKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["cycleIn"] = {};
 DuAEExpression.Library["cycleIn"].expression = ['function cycleIn(t, nK, o, vAtTime, damping) {',
@@ -1216,7 +1216,7 @@ DuAEExpression.Library["cycleIn"].requirements = ["getNextKey"];
  * @returns {float|float[]} The new value
  * @function
  * @requires getPrevKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["cycleOut"] = {};
 DuAEExpression.Library["cycleOut"].expression = ['function cycleOut(t, nK, o, vAtTime, damping) {',
@@ -1256,7 +1256,7 @@ DuAEExpression.Library["cycleOut"].requirements = ["getPrevKey"];
  * @returns {float|float[]} The new value
  * @function
  * @requires getPrevKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["overshoot"] = {};
 DuAEExpression.Library["overshoot"].expression = ['function overShoot(t, elasticity, damping, vAtTime) {',
@@ -1293,7 +1293,7 @@ DuAEExpression.Library["overshoot"].requirements = ["getPrevKey"];
  * @returns {float} The new value
  * @function
  * @requires getNextKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["pingPongIn"] = {};
 DuAEExpression.Library["pingPongIn"].expression = ['function pingPongIn(t, nK, vAtTime, damping) {',
@@ -1335,7 +1335,7 @@ DuAEExpression.Library["pingPongIn"].requirements = ["getNextKey"];
  * @returns {float} The new value
  * @function
  * @requires getPrevKey
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["pingPongOut"] = {};
 DuAEExpression.Library["pingPongOut"].expression = ['function pingPongOut(t, nK, vAtTime, damping) {',
@@ -1374,7 +1374,7 @@ DuAEExpression.Library["pingPongOut"].requirements = ["getPrevKey"];
  * @param {float[][]} p2 The other list of points
  * @param {float} w A weight to multiply the values of p2
  * @returns {float[][]} The added points
- * @memberof ExpressionLibrary
+ * @category ExpressionLibrary
  */
 DuAEExpression.Library["addPoints"] = {};
 DuAEExpression.Library["addPoints"].expression = ['function addPoints(p1, p2, w) {',
@@ -1403,7 +1403,7 @@ DuAEExpression.Library["addPoints"].requirements = [];
     * @name Math.cbrt
     * @param {Number} x The value
     * @return {Number} The cubic root
-    * @memberof ExpressionLibrary
+    * @category ExpressionLibrary
     */
 DuAEExpression.Library["cbrt"] = {};
 DuAEExpression.Library["cbrt"].expression = ['if (typeof Math.cbrt === \'undefined\') {',
@@ -1422,7 +1422,7 @@ DuAEExpression.Library["cbrt"].requirements = [];
     * @param {float[]} point The point [x,y]
     * @param {float[][]} line The line [ A , B ] where A and B are two points
     * @return {float} The distance
-    * @memberof ExpressionLibrary
+    * @category ExpressionLibrary
     */
 DuAEExpression.Library["distanceToLine"] = {};
 DuAEExpression.Library["distanceToLine"].expression = ['function distanceToLine( point, line ) {',
@@ -1448,7 +1448,7 @@ DuAEExpression.Library["distanceToLine"].requirements = [];
     * @param {Number} [center=0] The center of the peak
     * @param {Number} [fwhm=1] The full width at half maximum of the curve
     * @return {Number} The result
-    * @memberof ExpressionLibrary
+    * @category ExpressionLibrary
     */
 DuAEExpression.Library["gaussian"] = {};
 DuAEExpression.Library["gaussian"].expression = ['function gaussian( value, min, max, center, fwhm)',
@@ -1477,7 +1477,7 @@ DuAEExpression.Library["gaussian"].requirements = [];
     * @param {Number} [center=0] The center of the peak of the corresponding gaussian function
     * @param {Number} [fwhm=1] The full width at half maximum of the curve of the corresponding gaussian function
     * @return {Number[]} The two possible results, the lower is the first in the list. If both are the same, it is the maximum
-    * @memberof ExpressionLibrary
+    * @category ExpressionLibrary
     */
 DuAEExpression.Library["inverseGaussian"] = {};
 DuAEExpression.Library["inverseGaussian"].expression = ['function inverseGaussian ( v, min, max, center, fwhm)',
@@ -1507,7 +1507,7 @@ DuAEExpression.Library["inverseGaussian"].requirements = [];
     * @param {Number} [max=1] The maximum return value of the original logistic function
     * @param {Number} [rate=1] The logistic growth rate or steepness of the original logistic function
     * @return {Number} The result
-    * @memberof ExpressionLibrary
+    * @category ExpressionLibrary
     */
 DuAEExpression.Library["inverseLogistic"] = {};
 DuAEExpression.Library["inverseLogistic"].expression = ['function inverseLogistic ( v, midValue, min, max, rate)',
@@ -1527,7 +1527,7 @@ DuAEExpression.Library["inverseLogistic"].requirements = [];
     * @function
     * @param {Number|Number[]} x The value(s)
     * @return {Boolean} true if all values are 0.
-    * @memberof ExpressionLibrary
+    * @category ExpressionLibrary
     */
 DuAEExpression.Library["isZero"] = {};
 DuAEExpression.Library["isZero"].expression = ['function isZero(a)',
