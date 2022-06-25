@@ -1,5 +1,7 @@
 {
-    "plugins": [],
+    "plugins": [
+        "node_modules/better-docs/category"
+    ],
     "recurseDepth": 1,
     "source": {
 		"include": [ "output/DuAEF.jsxinc" ],
@@ -14,9 +16,30 @@
     "templates": {
         "cleverLinks": true,
         "monospaceLinks": false,
-        "copyright"             : "Copyright (c) 2017-2021 Nicolas Dufresne and contributors",
+        "copyright"             : "Copyright (c) 2017-2022 Nicolas Dufresne and contributors",
         "includeDate"           : true,
-        "search"                : "true"
+        "search"                : "true",
+        "better-docs": {
+            "name": "DuAEF API Reference",
+            "logo": "",
+            "title": "",
+            "css": "jsdoc.css",
+            "hideGenerator": false,
+            "navLinks": [
+                {
+                    "label": "Website",
+                    "href": "https://rxlaboratory.org"
+                },
+                {
+                    "label": "Source code",
+                    "href": "https://github.com/RxLaboratory/DuAEF"
+                },
+                {
+                    "label": "Donate",
+                    "href": "http://donate.rxlab.info"
+                }
+            ]
+        }
     },
     "meta": {
         "title": "DuAEF",
@@ -24,7 +47,7 @@
         "keyword": "ExtendScript, Adobe, After Effects"
     },
 	"opts": {
-        "template": "node_modules/jaguarjs-jsdoc",
+        "template": "node_modules/better-docs",
 		"recurse": false,
         "destination": "../../docs"
     }
