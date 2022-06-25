@@ -985,19 +985,26 @@ DuAEProperty.prototype.setValue = function(value, defaultTime) {
  * @param {KeyframeInterpolationType|string} [typeIn=KeyframeInterpolationType.LINEAR] - The in interpolation type (see AE API) or the string "roving" or "continuous"
  * @param {KeyframeInterpolationType|string} [typeOut=typeIn] - The out interpolation type (see AE API)
  * @param {float} [time] - If omitted, the current comp time
+ * @param {int[]|int} [easeInValue=33] - The in interpolation ease value (used if typeIn is KeyframeInterpolationType.BEZIER)
+ * @param {int[]|int} [easeOutValue=easeInValue] - The out interpolation ease value (used if typeOut is KeyframeInterpolationType.BEZIER)
  */
-DuAEProperty.prototype.addKey = function( typeIn, typeOut, time ) {
+DuAEProperty.prototype.addKey = function( typeIn, typeOut, time, easeInValue, easeOutValue ) {
     if (this.isGroup()) return;
 
     typeIn = def(typeIn, KeyframeInterpolationType.LINEAR);
     typeOut = def(typeOut, typeIn);
     time = def(time, this.comp.time);
 
+    easeInValue = def(easeInValue, 33);
+    if (isNaN(easeInValue)) easeInValue = 33;
+    easeOutValue = def(easeOutValue, easeInValue);
+    if (isNaN(easeOutValue)) easeOutValue = 33;
+
     // Set value to create key
     this.setValueAtTime( this.valueAtTime(time, true), time);
     var prop = this.getProperty();
     var keyIndex = prop.nearestKeyIndex(time);
-    this.setKeyInterpolation(keyIndex, typeIn, typeOut);
+    this.setKeyInterpolation(keyIndex, typeIn, typeOut, easeInValue, easeOutValue);
 }
 
 /**
