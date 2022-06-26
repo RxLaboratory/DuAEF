@@ -1,0 +1,1798 @@
+{
+    "DuAEF": [
+        {
+            "languageId": "ru",
+            "languageName": "русский",
+            "version": "1.0"
+        },
+        {
+            "translations": [
+                {
+                    "comment": "",
+                    "context": "ABOVE",
+                    "contextId": 0,
+                    "source": "Above",
+                    "translation": "Above"
+                },
+                {
+                    "comment": "",
+                    "context": "ABOVE_SHORT",
+                    "contextId": 0,
+                    "source": "Ab",
+                    "translation": "Ab"
+                },
+                {
+                    "comment": "",
+                    "context": "ADD_ITEM_OR_CAT",
+                    "contextId": 0,
+                    "source": "Add new item or category",
+                    "translation": "Add new item or category"
+                },
+                {
+                    "comment": "",
+                    "context": "AE_BLUE",
+                    "contextId": 0,
+                    "source": "After Effects Blue",
+                    "translation": "After Effects Blue"
+                },
+                {
+                    "comment": "",
+                    "context": "AE_BLUE_TIP",
+                    "contextId": 0,
+                    "source": "The After Effects highlighting blue",
+                    "translation": "The After Effects highlighting blue"
+                },
+                {
+                    "comment": "",
+                    "context": "AE_ORANGE",
+                    "contextId": 0,
+                    "source": "After Effects Orange (CS6)",
+                    "translation": "After Effects Orange (CS6)"
+                },
+                {
+                    "comment": "",
+                    "context": "AE_ORANGE_TIP",
+                    "contextId": 0,
+                    "source": "The After Effects highlighting orange from good ol'CS6",
+                    "translation": "The After Effects highlighting orange from good ol'CS6"
+                },
+                {
+                    "comment": "",
+                    "context": "APPLY",
+                    "contextId": 0,
+                    "source": "Apply",
+                    "translation": "Apply"
+                },
+                {
+                    "comment": "",
+                    "context": "APPLY_ALL",
+                    "contextId": 0,
+                    "source": "Apply all",
+                    "translation": "Apply all"
+                },
+                {
+                    "comment": "",
+                    "context": "APPLY_SETTINGS",
+                    "contextId": 0,
+                    "source": "Apply changes to the settings.",
+                    "translation": "Apply changes to the settings."
+                },
+                {
+                    "comment": "",
+                    "context": "APPLY_SETTINGS_ALERT",
+                    "contextId": 0,
+                    "source": "You may need to restart the script for all changes to take effect.",
+                    "translation": "You may need to restart the script for all changes to take effect."
+                },
+                {
+                    "comment": "",
+                    "context": "ARM",
+                    "contextId": 0,
+                    "source": "Arm",
+                    "translation": "Arm"
+                },
+                {
+                    "comment": "",
+                    "context": "ARTHROPOD",
+                    "contextId": 0,
+                    "source": "Arthropod",
+                    "translation": "Arthropod"
+                },
+                {
+                    "comment": "",
+                    "context": "AUDIO",
+                    "contextId": 0,
+                    "source": "Audio",
+                    "translation": "Audio"
+                },
+                {
+                    "comment": "",
+                    "context": "AXIS",
+                    "contextId": 0,
+                    "source": "Axis",
+                    "translation": "Axis"
+                },
+                {
+                    "comment": "",
+                    "context": "BACK_PREVIOUS",
+                    "contextId": 0,
+                    "source": "Back",
+                    "translation": "Back"
+                },
+                {
+                    "comment": "",
+                    "context": "BACK_LOCATION",
+                    "contextId": 0,
+                    "source": "Back",
+                    "translation": "Back"
+                },
+                {
+                    "comment": "",
+                    "context": "BACK_LOCATION_SHORT",
+                    "contextId": 0,
+                    "source": "Bk",
+                    "translation": "Bk"
+                },
+                {
+                    "comment": "",
+                    "context": "BIRD",
+                    "contextId": 0,
+                    "source": "Bird",
+                    "translation": "Bird"
+                },
+                {
+                    "comment": "",
+                    "context": "BODY",
+                    "contextId": 0,
+                    "source": "Body",
+                    "translation": "Body"
+                },
+                {
+                    "comment": "",
+                    "context": "BONE",
+                    "contextId": 0,
+                    "source": "Bone",
+                    "translation": "Bone"
+                },
+                {
+                    "comment": "",
+                    "context": "BUG_REPORT",
+                    "contextId": 0,
+                    "source": "Bug report",
+                    "translation": "Bug report"
+                },
+                {
+                    "comment": "",
+                    "context": "BUG_REPORT_TIP",
+                    "contextId": 0,
+                    "source": "Bug report\nFeature request\n\nTell us what's wrong or request a new feature.",
+                    "translation": "Bug report\nFeature request\n\nTell us what's wrong or request a new feature."
+                },
+                {
+                    "comment": "",
+                    "context": "CAM",
+                    "contextId": 0,
+                    "source": "Cam",
+                    "translation": "Cam"
+                },
+                {
+                    "comment": "",
+                    "context": "CAMERA",
+                    "contextId": 0,
+                    "source": "Camera",
+                    "translation": "Camera"
+                },
+                {
+                    "comment": "",
+                    "context": "CANCEL",
+                    "contextId": 0,
+                    "source": "Cancel",
+                    "translation": "Cancel"
+                },
+                {
+                    "comment": "",
+                    "context": "CALF",
+                    "contextId": 0,
+                    "source": "Calf",
+                    "translation": "Calf"
+                },
+                {
+                    "comment": "",
+                    "context": "CATEGORY",
+                    "contextId": 0,
+                    "source": "Category",
+                    "translation": "Category"
+                },
+                {
+                    "comment": "",
+                    "context": "CHARACTER",
+                    "contextId": 0,
+                    "source": "Character",
+                    "translation": "Character"
+                },
+                {
+                    "comment": "",
+                    "context": "CHANNEL",
+                    "contextId": 0,
+                    "source": "Channel",
+                    "translation": "Channel"
+                },
+                {
+                    "comment": "",
+                    "context": "CHECK_UPDATE",
+                    "contextId": 0,
+                    "source": "Check for updates",
+                    "translation": "Check for updates"
+                },
+                {
+                    "comment": "",
+                    "context": "CIRCLE",
+                    "contextId": 0,
+                    "source": "Circle",
+                    "translation": "Circle"
+                },
+                {
+                    "comment": "",
+                    "context": "CLAWS",
+                    "contextId": 0,
+                    "source": "Claws",
+                    "translation": "Claws"
+                },
+                {
+                    "comment": "",
+                    "context": "CLEAR_LIB_TIP",
+                    "contextId": 0,
+                    "source": "Clears the current search and category",
+                    "translation": "Clears the current search and category"
+                },
+                {
+                    "comment": "",
+                    "context": "CLOSE",
+                    "contextId": 0,
+                    "source": "Close",
+                    "translation": "Close"
+                },
+                {
+                    "comment": "",
+                    "context": "COLOR",
+                    "contextId": 0,
+                    "source": "Color",
+                    "translation": "Color"
+                },
+                {
+                    "comment": "",
+                    "context": "COLOR_HIGHLIGHT_TIP",
+                    "contextId": 0,
+                    "source": "Set the highlight color.",
+                    "translation": "Set the highlight color."
+                },
+                {
+                    "comment": "",
+                    "context": "COPY",
+                    "contextId": 0,
+                    "source": "Copy",
+                    "translation": "Copy"
+                },
+                {
+                    "comment": "",
+                    "context": "CREATE",
+                    "contextId": 0,
+                    "source": "Create",
+                    "translation": "Create"
+                },
+                {
+                    "comment": "",
+                    "context": "CUSTOM",
+                    "contextId": 0,
+                    "source": "Custom",
+                    "translation": "Custom"
+                },
+                {
+                    "comment": "",
+                    "context": "CUSTOM_COLOR_TIP",
+                    "contextId": 0,
+                    "source": "Select a custom color.",
+                    "translation": "Select a custom color."
+                },
+                {
+                    "comment": "",
+                    "context": "CLOSE_SETTINGS",
+                    "contextId": 0,
+                    "source": "Close settings",
+                    "translation": "Close settings"
+                },
+                {
+                    "comment": "",
+                    "context": "DEFAULT",
+                    "contextId": 0,
+                    "source": "Default",
+                    "translation": "Default"
+                },
+                {
+                    "comment": "",
+                    "context": "DEV_MODE",
+                    "contextId": 0,
+                    "source": "Dev and Debug mode",
+                    "translation": "Dev and Debug mode"
+                },
+                {
+                    "comment": "",
+                    "context": "DEV_MODE_TIP",
+                    "contextId": 0,
+                    "source": "Use at your own risk!",
+                    "translation": "Use at your own risk!"
+                },
+                {
+                    "comment": "",
+                    "context": "DIGITIGRADE",
+                    "contextId": 0,
+                    "source": "Digitigrade",
+                    "translation": "Digitigrade"
+                },
+                {
+                    "comment": "",
+                    "context": "EAR",
+                    "contextId": 0,
+                    "source": "Ear",
+                    "translation": "Ear"
+                },
+                {
+                    "comment": "",
+                    "context": "EDIT",
+                    "contextId": 0,
+                    "source": "Edit",
+                    "translation": "Edit"
+                },
+                {
+                    "comment": "",
+                    "context": "EDIT_ITEM_OR_CAT",
+                    "contextId": 0,
+                    "source": "Edit selected item or category",
+                    "translation": "Edit selected item or category"
+                },
+                {
+                    "comment": "",
+                    "context": "EDIT_SETTINGS",
+                    "contextId": 0,
+                    "source": "Edit settings",
+                    "translation": "Edit settings"
+                },
+                {
+                    "comment": "",
+                    "context": "EFFECTS",
+                    "contextId": 0,
+                    "source": "Effects",
+                    "translation": "Effects"
+                },
+                {
+                    "comment": "",
+                    "context": "EXPERT",
+                    "contextId": 0,
+                    "source": "Expert",
+                    "translation": "Expert"
+                },
+                {
+                    "comment": "",
+                    "context": "EXPERT_UI_TIP",
+                    "contextId": 0,
+                    "source": "The smallest UI, for expert users.",
+                    "translation": "The smallest UI, for expert users."
+                },
+                {
+                    "comment": "",
+                    "context": "EXPORT_TRANSLATION",
+                    "contextId": 0,
+                    "source": "Export translation file",
+                    "translation": "Export translation file"
+                },
+                {
+                    "comment": "",
+                    "context": "EXPORT_TRANSLATION_TIP",
+                    "contextId": 0,
+                    "source": "Export a translation file to be edited with DuTranslator.",
+                    "translation": "Export a translation file to be edited with DuTranslator."
+                },
+                {
+                    "comment": "",
+                    "context": "EYE",
+                    "contextId": 0,
+                    "source": "Eye",
+                    "translation": "Eye"
+                },
+                {
+                    "comment": "",
+                    "context": "EYES",
+                    "contextId": 0,
+                    "source": "Eyes",
+                    "translation": "Eyes"
+                },
+                {
+                    "comment": "",
+                    "context": "EYEBROW",
+                    "contextId": 0,
+                    "source": "Eye",
+                    "translation": "Eye"
+                },
+                {
+                    "comment": "",
+                    "context": "FEATHER",
+                    "contextId": 0,
+                    "source": "Feather",
+                    "translation": "Feather"
+                },
+                {
+                    "comment": "",
+                    "context": "FEATHERS",
+                    "contextId": 0,
+                    "source": "Feathers",
+                    "translation": "Feathers"
+                },
+                {
+                    "comment": "",
+                    "context": "FEATURE_REQUEST",
+                    "contextId": 0,
+                    "source": "Feature request",
+                    "translation": "Feature request"
+                },
+                {
+                    "comment": "",
+                    "context": "FEATURE_REQUEST_TIP",
+                    "contextId": 0,
+                    "source": "Feature request\nRequest something new.",
+                    "translation": "Feature request\nRequest something new."
+                },
+                {
+                    "comment": "",
+                    "context": "FILE",
+                    "contextId": 0,
+                    "source": "File",
+                    "translation": "File"
+                },
+                {
+                    "comment": "",
+                    "context": "FIN",
+                    "contextId": 0,
+                    "source": "Fin",
+                    "translation": "Fin"
+                },
+                {
+                    "comment": "",
+                    "context": "FINGERS",
+                    "contextId": 0,
+                    "source": "Fingers",
+                    "translation": "Fingers"
+                },
+                {
+                    "comment": "",
+                    "context": "FISH",
+                    "contextId": 0,
+                    "source": "Fish",
+                    "translation": "Fish"
+                },
+                {
+                    "comment": "",
+                    "context": "FISHBONE",
+                    "contextId": 0,
+                    "source": "Fishbone",
+                    "translation": "Fishbone"
+                },
+                {
+                    "comment": "",
+                    "context": "FISHBONES",
+                    "contextId": 0,
+                    "source": "Fishbones",
+                    "translation": "Fishbones"
+                },
+                {
+                    "comment": "",
+                    "context": "FISH_SPINE",
+                    "contextId": 0,
+                    "source": "Fish spine",
+                    "translation": "Fish spine"
+                },
+                {
+                    "comment": "",
+                    "context": "FOOT",
+                    "contextId": 0,
+                    "source": "Foot",
+                    "translation": "Foot"
+                },
+                {
+                    "comment": "",
+                    "context": "FOREARM",
+                    "contextId": 0,
+                    "source": "Forearm",
+                    "translation": "Forearm"
+                },
+                {
+                    "comment": "",
+                    "context": "FRAME",
+                    "contextId": 0,
+                    "source": "Frame",
+                    "translation": "Frame"
+                },
+                {
+                    "comment": "",
+                    "context": "FRAMES",
+                    "contextId": 0,
+                    "source": "Frames",
+                    "translation": "Frames"
+                },
+                {
+                    "comment": "",
+                    "context": "FRONT",
+                    "contextId": 0,
+                    "source": "Front",
+                    "translation": "Front"
+                },
+                {
+                    "comment": "",
+                    "context": "FRONT_LEG",
+                    "contextId": 0,
+                    "source": "Front leg",
+                    "translation": "Front leg"
+                },
+                {
+                    "comment": "",
+                    "context": "FRONT_SHORT",
+                    "contextId": 0,
+                    "source": "Fr",
+                    "translation": "Fr"
+                },
+                {
+                    "comment": "",
+                    "context": "FUNDING_BAR_TIP",
+                    "contextId": 0,
+                    "source": "Thank you for your donations!",
+                    "translation": "Thank you for your donations!"
+                },
+                {
+                    "comment": "",
+                    "context": "FUNDING_BAR_TIP_DETAILS",
+                    "contextId": 0,
+                    "source": "This month, the {#} fund is ${#}.\nThat's {#}% of our monthly goal ( ${#} )\n\nClick on this button to join the development fund!",
+                    "translation": "This month, the {#} fund is ${#}.\nThat's {#}% of our monthly goal ( ${#} )\n\nClick on this button to join the development fund!"
+                },
+                {
+                    "comment": "",
+                    "context": "GROUPS",
+                    "contextId": 0,
+                    "source": "Groups",
+                    "translation": "Groups"
+                },
+                {
+                    "comment": "",
+                    "context": "HAIR",
+                    "contextId": 0,
+                    "source": "Hair",
+                    "translation": "Hair"
+                },
+                {
+                    "comment": "",
+                    "context": "HAND",
+                    "contextId": 0,
+                    "source": "Hand",
+                    "translation": "Hand"
+                },
+                {
+                    "comment": "",
+                    "context": "HEAD",
+                    "contextId": 0,
+                    "source": "Head",
+                    "translation": "Head"
+                },
+                {
+                    "comment": "",
+                    "context": "HEEL",
+                    "contextId": 0,
+                    "source": "Heel",
+                    "translation": "Heel"
+                },
+                {
+                    "comment": "",
+                    "context": "HELP",
+                    "contextId": 0,
+                    "source": "Help",
+                    "translation": "Help"
+                },
+                {
+                    "comment": "",
+                    "context": "HELP_TIP",
+                    "contextId": 0,
+                    "source": "Get help.",
+                    "translation": "Get help."
+                },
+                {
+                    "comment": "",
+                    "context": "HIPS",
+                    "contextId": 0,
+                    "source": "Hips",
+                    "translation": "Hips"
+                },
+                {
+                    "comment": "",
+                    "context": "HOMINOID",
+                    "contextId": 0,
+                    "source": "Hominoid",
+                    "translation": "Hominoid"
+                },
+                {
+                    "comment": "",
+                    "context": "HOOF",
+                    "contextId": 0,
+                    "source": "Hoof",
+                    "translation": "Hoof"
+                },
+                {
+                    "comment": "",
+                    "context": "INVERT",
+                    "contextId": 0,
+                    "source": "Invert",
+                    "translation": "Invert"
+                },
+                {
+                    "comment": "",
+                    "context": "INVERTED",
+                    "contextId": 0,
+                    "source": "Inverted",
+                    "translation": "Inverted"
+                },
+                {
+                    "comment": "",
+                    "context": "ISOLATE",
+                    "contextId": 0,
+                    "source": "Isolate",
+                    "translation": "Isolate"
+                },
+                {
+                    "comment": "",
+                    "context": "ITEM",
+                    "contextId": 0,
+                    "source": "Item",
+                    "translation": "Item"
+                },
+                {
+                    "comment": "",
+                    "context": "LANGUAGE_TIP",
+                    "contextId": 0,
+                    "source": "Set the language of the interface.",
+                    "translation": "Set the language of the interface."
+                },
+                {
+                    "comment": "",
+                    "context": "LAYER",
+                    "contextId": 0,
+                    "source": "Layer",
+                    "translation": "Layer"
+                },
+                {
+                    "comment": "",
+                    "context": "LAYERS",
+                    "contextId": 0,
+                    "source": "Layers",
+                    "translation": "Layers"
+                },
+                {
+                    "comment": "",
+                    "context": "LEFT",
+                    "contextId": 0,
+                    "source": "Left",
+                    "translation": "Left"
+                },
+                {
+                    "comment": "",
+                    "context": "LEFT_SHORT",
+                    "contextId": 0,
+                    "source": "L",
+                    "translation": "L"
+                },
+                {
+                    "comment": "",
+                    "context": "LEG",
+                    "contextId": 0,
+                    "source": "Leg",
+                    "translation": "Leg"
+                },
+                {
+                    "comment": "",
+                    "context": "LIMB",
+                    "contextId": 0,
+                    "source": "Limb",
+                    "translation": "Limb"
+                },
+                {
+                    "comment": "",
+                    "context": "LOCATION",
+                    "contextId": 0,
+                    "source": "Location",
+                    "translation": "Location"
+                },
+                {
+                    "comment": "",
+                    "context": "LOCATION_SHORT",
+                    "contextId": 0,
+                    "source": "Loc",
+                    "translation": "Loc"
+                },
+                {
+                    "comment": "",
+                    "context": "MAGIC",
+                    "contextId": 0,
+                    "source": "Magic is happening",
+                    "translation": "Magic is happening"
+                },
+                {
+                    "comment": "",
+                    "context": "MAIN",
+                    "contextId": 0,
+                    "source": "Main",
+                    "translation": "Main"
+                },
+                {
+                    "comment": "",
+                    "context": "MASKS",
+                    "contextId": 0,
+                    "source": "Masks",
+                    "translation": "Masks"
+                },
+                {
+                    "comment": "",
+                    "context": "MAXIMUM",
+                    "contextId": 0,
+                    "source": "Maximum",
+                    "translation": "Maximum"
+                },
+                {
+                    "comment": "",
+                    "context": "MIDDLE",
+                    "contextId": 0,
+                    "source": "Middle",
+                    "translation": "Middle"
+                },
+                {
+                    "comment": "",
+                    "context": "MIDDLE_SHORT",
+                    "contextId": 0,
+                    "source": "Md",
+                    "translation": "Md"
+                },
+                {
+                    "comment": "",
+                    "context": "MINIMUM",
+                    "contextId": 0,
+                    "source": "Minimum",
+                    "translation": "Minimum"
+                },
+                {
+                    "comment": "",
+                    "context": "MORE_OPTIONS_TIP",
+                    "contextId": 0,
+                    "source": "[Shift]: More options...",
+                    "translation": "[Shift]: More options..."
+                },
+                {
+                    "comment": "",
+                    "context": "MOUTH",
+                    "contextId": 0,
+                    "source": "Mouth",
+                    "translation": "Mouth"
+                },
+                {
+                    "comment": "",
+                    "context": "NAME",
+                    "contextId": 0,
+                    "source": "Name",
+                    "translation": "Name"
+                },
+                {
+                    "comment": "",
+                    "context": "NECK",
+                    "contextId": 0,
+                    "source": "Neck",
+                    "translation": "Neck"
+                },
+                {
+                    "comment": "",
+                    "context": "NEXT",
+                    "contextId": 0,
+                    "source": "Next",
+                    "translation": "Next"
+                },
+                {
+                    "comment": "",
+                    "context": "NONE",
+                    "contextId": 0,
+                    "source": "None",
+                    "translation": "None"
+                },
+                {
+                    "comment": "",
+                    "context": "NORMAL_MODE",
+                    "contextId": 0,
+                    "source": "Normal mode",
+                    "translation": "Normal mode"
+                },
+                {
+                    "comment": "",
+                    "context": "NOSE",
+                    "contextId": 0,
+                    "source": "Nose",
+                    "translation": "Nose"
+                },
+                {
+                    "comment": "",
+                    "context": "NULL_OBJECT",
+                    "contextId": 0,
+                    "source": "Null",
+                    "translation": "Null"
+                },
+                {
+                    "comment": "",
+                    "context": "OK",
+                    "contextId": 0,
+                    "source": "OK",
+                    "translation": "OK"
+                },
+                {
+                    "comment": "",
+                    "context": "OPACITY",
+                    "contextId": 0,
+                    "source": "Opacity",
+                    "translation": "Opacity"
+                },
+                {
+                    "comment": "",
+                    "context": "OPEN",
+                    "contextId": 0,
+                    "source": "Open",
+                    "translation": "Open"
+                },
+                {
+                    "comment": "",
+                    "context": "OPEN_FOLDER",
+                    "contextId": 0,
+                    "source": "Open folder",
+                    "translation": "Open folder"
+                },
+                {
+                    "comment": "",
+                    "context": "ORIGINAL",
+                    "contextId": 0,
+                    "source": "Original",
+                    "translation": "Original"
+                },
+                {
+                    "comment": "",
+                    "context": "PATH",
+                    "contextId": 0,
+                    "source": "Path",
+                    "translation": "Path"
+                },
+                {
+                    "comment": "",
+                    "context": "PAW",
+                    "contextId": 0,
+                    "source": "Paw",
+                    "translation": "Paw"
+                },
+                {
+                    "comment": "",
+                    "context": "PENIS",
+                    "contextId": 0,
+                    "source": "Penis",
+                    "translation": "Penis"
+                },
+                {
+                    "comment": "",
+                    "context": "PINCER",
+                    "contextId": 0,
+                    "source": "Pincer",
+                    "translation": "Pincer"
+                },
+                {
+                    "comment": "",
+                    "context": "PIN_TIP",
+                    "contextId": 0,
+                    "source": "Keeps this panel open",
+                    "translation": "Keeps this panel open"
+                },
+                {
+                    "comment": "",
+                    "context": "PLANTIGRADE",
+                    "contextId": 0,
+                    "source": "Plantigrade",
+                    "translation": "Plantigrade"
+                },
+                {
+                    "comment": "",
+                    "context": "PREVIOUS",
+                    "contextId": 0,
+                    "source": "Previous",
+                    "translation": "Previous"
+                },
+                {
+                    "comment": "",
+                    "context": "POLYGON",
+                    "contextId": 0,
+                    "source": "Polygon",
+                    "translation": "Polygon"
+                },
+                {
+                    "comment": "",
+                    "context": "POSITION",
+                    "contextId": 0,
+                    "source": "Position",
+                    "translation": "Position"
+                },
+                {
+                    "comment": "",
+                    "context": "PROPERTIES",
+                    "contextId": 0,
+                    "source": "Properties",
+                    "translation": "Properties"
+                },
+                {
+                    "comment": "",
+                    "context": "RANDOM_TIP",
+                    "contextId": 0,
+                    "source": "Set a random value.",
+                    "translation": "Set a random value."
+                },
+                {
+                    "comment": "",
+                    "context": "RECTANGLE",
+                    "contextId": 0,
+                    "source": "Rectangle",
+                    "translation": "Rectangle"
+                },
+                {
+                    "comment": "",
+                    "context": "REFRESH_LIB",
+                    "contextId": 0,
+                    "source": "Refresh library",
+                    "translation": "Refresh library"
+                },
+                {
+                    "comment": "",
+                    "context": "REMOVE",
+                    "contextId": 0,
+                    "source": "Remove",
+                    "translation": "Remove"
+                },
+                {
+                    "comment": "",
+                    "context": "REMOVE_ITEM_OR_CAT",
+                    "contextId": 0,
+                    "source": "Remove selected item or category",
+                    "translation": "Remove selected item or category"
+                },
+                {
+                    "comment": "",
+                    "context": "RESET_SETTINGS",
+                    "contextId": 0,
+                    "source": "Reset the settings to their default values.",
+                    "translation": "Reset the settings to their default values."
+                },
+                {
+                    "comment": "",
+                    "context": "RIGHT",
+                    "contextId": 0,
+                    "source": "Right",
+                    "translation": "Right"
+                },
+                {
+                    "comment": "",
+                    "context": "RIGHT_SHORT",
+                    "contextId": 0,
+                    "source": "R",
+                    "translation": "R"
+                },
+                {
+                    "comment": "",
+                    "context": "ROOKIE",
+                    "contextId": 0,
+                    "source": "Rookie",
+                    "translation": "Rookie"
+                },
+                {
+                    "comment": "",
+                    "context": "ROOKIE_UI_TIP",
+                    "contextId": 0,
+                    "source": "The easiest-to-use mode, but also the biggest UI.",
+                    "translation": "The easiest-to-use mode, but also the biggest UI."
+                },
+                {
+                    "comment": "",
+                    "context": "ROTATION",
+                    "contextId": 0,
+                    "source": "Rotation",
+                    "translation": "Rotation"
+                },
+                {
+                    "comment": "",
+                    "context": "ROUNDED_RECTANGLE",
+                    "contextId": 0,
+                    "source": "Rounded rectangle",
+                    "translation": "Rounded rectangle"
+                },
+                {
+                    "comment": "",
+                    "context": "RUN_EXECUTE",
+                    "contextId": 0,
+                    "source": "Run",
+                    "translation": "Run"
+                },
+                {
+                    "comment": "",
+                    "context": "RX_PURPLE",
+                    "contextId": 0,
+                    "source": "RxLab Purple",
+                    "translation": "RxLab Purple"
+                },
+                {
+                    "comment": "",
+                    "context": "RX_PURPLE_TIP",
+                    "contextId": 0,
+                    "source": "The RxLaboratory Purple",
+                    "translation": "The RxLaboratory Purple"
+                },
+                {
+                    "comment": "",
+                    "context": "RX_RED",
+                    "contextId": 0,
+                    "source": "Rainbox Red",
+                    "translation": "Rainbox Red"
+                },
+                {
+                    "comment": "",
+                    "context": "RX_RED_TIP",
+                    "contextId": 0,
+                    "source": "The Rainbox Productions Red",
+                    "translation": "The Rainbox Productions Red"
+                },
+                {
+                    "comment": "",
+                    "context": "SAVE_AS",
+                    "contextId": 0,
+                    "source": "Save as",
+                    "translation": "Save as"
+                },
+                {
+                    "comment": "",
+                    "context": "SCALE",
+                    "contextId": 0,
+                    "source": "Scale",
+                    "translation": "Scale"
+                },
+                {
+                    "comment": "",
+                    "context": "SCRIPTING",
+                    "contextId": 0,
+                    "source": "Scripting",
+                    "translation": "Scripting"
+                },
+                {
+                    "comment": "",
+                    "context": "SELECT_LAYERS",
+                    "contextId": 0,
+                    "source": "Select layers",
+                    "translation": "Select layers"
+                },
+                {
+                    "comment": "",
+                    "context": "SELECT_GROUPS",
+                    "contextId": 0,
+                    "source": "Select groups",
+                    "translation": "Select groups"
+                },
+                {
+                    "comment": "",
+                    "context": "SET_QUALITY",
+                    "contextId": 0,
+                    "source": "Set quality",
+                    "translation": "Set quality"
+                },
+                {
+                    "comment": "",
+                    "context": "SETTINGS",
+                    "contextId": 0,
+                    "source": "Settings",
+                    "translation": "Settings"
+                },
+                {
+                    "comment": "",
+                    "context": "SETTINGS_FILE",
+                    "contextId": 0,
+                    "source": "Settings file",
+                    "translation": "Settings file"
+                },
+                {
+                    "comment": "",
+                    "context": "SETTINGS_FILE_TIP",
+                    "contextId": 0,
+                    "source": "Set the location of the settings file.",
+                    "translation": "Set the location of the settings file."
+                },
+                {
+                    "comment": "",
+                    "context": "SHOULDER",
+                    "contextId": 0,
+                    "source": "Shoulder",
+                    "translation": "Shoulder"
+                },
+                {
+                    "comment": "",
+                    "context": "SHOULDERS",
+                    "contextId": 0,
+                    "source": "Shoulders",
+                    "translation": "Shoulders"
+                },
+                {
+                    "comment": "",
+                    "context": "SHOULDERS_AND_NECK",
+                    "contextId": 0,
+                    "source": "Shoulders & neck",
+                    "translation": "Shoulders & neck"
+                },
+                {
+                    "comment": "",
+                    "context": "SIDE",
+                    "contextId": 0,
+                    "source": "Side",
+                    "translation": "Side"
+                },
+                {
+                    "comment": "",
+                    "context": "SIZE",
+                    "contextId": 0,
+                    "source": "Size",
+                    "translation": "Size"
+                },
+                {
+                    "comment": "",
+                    "context": "SNAKE",
+                    "contextId": 0,
+                    "source": "Snake",
+                    "translation": "Snake"
+                },
+                {
+                    "comment": "",
+                    "context": "SPINE",
+                    "contextId": 0,
+                    "source": "Spine",
+                    "translation": "Spine"
+                },
+                {
+                    "comment": "",
+                    "context": "STANDARD",
+                    "contextId": 0,
+                    "source": "Standard",
+                    "translation": "Standard"
+                },
+                {
+                    "comment": "",
+                    "context": "STANDARD_UI_TIP",
+                    "contextId": 0,
+                    "source": "The standard not-too-big UI.",
+                    "translation": "The standard not-too-big UI."
+                },
+                {
+                    "comment": "",
+                    "context": "START_TYPING_CMD",
+                    "contextId": 0,
+                    "source": "Start typing something...",
+                    "translation": "Start typing something..."
+                },
+                {
+                    "comment": "",
+                    "context": "TAIL",
+                    "contextId": 0,
+                    "source": "Tail",
+                    "translation": "Tail"
+                },
+                {
+                    "comment": "",
+                    "context": "TAIL_SHORT",
+                    "contextId": 0,
+                    "source": "Tl",
+                    "translation": "Tl"
+                },
+                {
+                    "comment": "",
+                    "context": "TARGET",
+                    "contextId": 0,
+                    "source": "Target",
+                    "translation": "Target"
+                },
+                {
+                    "comment": "",
+                    "context": "TEXT",
+                    "contextId": 0,
+                    "source": "Text",
+                    "translation": "Text"
+                },
+                {
+                    "comment": "",
+                    "context": "TEXTURE",
+                    "contextId": 0,
+                    "source": "Texture",
+                    "translation": "Texture"
+                },
+                {
+                    "comment": "",
+                    "context": "THIGH",
+                    "contextId": 0,
+                    "source": "Thigh",
+                    "translation": "Thigh"
+                },
+                {
+                    "comment": "",
+                    "context": "TIMELINE",
+                    "contextId": 0,
+                    "source": "Timeline",
+                    "translation": "Timeline"
+                },
+                {
+                    "comment": "",
+                    "context": "TIP_BONE",
+                    "contextId": 0,
+                    "source": "Tip",
+                    "translation": "Tip"
+                },
+                {
+                    "comment": "",
+                    "context": "TRANSFORM",
+                    "contextId": 0,
+                    "source": "Transform",
+                    "translation": "Transform"
+                },
+                {
+                    "comment": "",
+                    "context": "TOES",
+                    "contextId": 0,
+                    "source": "Toes",
+                    "translation": "Toes"
+                },
+                {
+                    "comment": "",
+                    "context": "TORSO",
+                    "contextId": 0,
+                    "source": "Torso",
+                    "translation": "Torso"
+                },
+                {
+                    "comment": "",
+                    "context": "TYPE",
+                    "contextId": 0,
+                    "source": "Type",
+                    "translation": "Type"
+                },
+                {
+                    "comment": "",
+                    "context": "UI_MODE_TIP",
+                    "contextId": 0,
+                    "source": "Select the UI mode.",
+                    "translation": "Select the UI mode."
+                },
+                {
+                    "comment": "",
+                    "context": "UNDER",
+                    "contextId": 0,
+                    "source": "Under",
+                    "translation": "Under"
+                },
+                {
+                    "comment": "",
+                    "context": "UNDER_SHORT",
+                    "contextId": 0,
+                    "source": "Un",
+                    "translation": "Un"
+                },
+                {
+                    "comment": "",
+                    "context": "UNGULATE",
+                    "contextId": 0,
+                    "source": "Ungulate",
+                    "translation": "Ungulate"
+                },
+                {
+                    "comment": "",
+                    "context": "VERTEBRAE",
+                    "contextId": 0,
+                    "source": "Vertebrae",
+                    "translation": "Vertebrae"
+                },
+                {
+                    "comment": "",
+                    "context": "VULVA",
+                    "contextId": 0,
+                    "source": "Vulva",
+                    "translation": "Vulva"
+                },
+                {
+                    "comment": "",
+                    "context": "WING",
+                    "contextId": 0,
+                    "source": "Wing",
+                    "translation": "Wing"
+                },
+                {
+                    "comment": "",
+                    "context": "WORKING",
+                    "contextId": 0,
+                    "source": "Working...",
+                    "translation": "Working..."
+                },
+                {
+                    "comment": "",
+                    "context": "X_POSITION",
+                    "contextId": 0,
+                    "source": "X Position",
+                    "translation": "X Position"
+                },
+                {
+                    "comment": "",
+                    "context": "Y_POSITION",
+                    "contextId": 0,
+                    "source": "Y Position",
+                    "translation": "Y Position"
+                },
+                {
+                    "comment": "",
+                    "context": "CTRL_KEY",
+                    "contextId": 0,
+                    "source": "Ctrl",
+                    "translation": "Ctrl"
+                },
+                {
+                    "comment": "",
+                    "context": "SHIFT_KEY",
+                    "contextId": 0,
+                    "source": "Shift",
+                    "translation": "Shift"
+                },
+                {
+                    "comment": "",
+                    "context": "ALT_KEY",
+                    "contextId": 0,
+                    "source": "Alt",
+                    "translation": "Alt"
+                },
+                {
+                    "comment": "",
+                    "context": "CTRL_KEY_TIP",
+                    "contextId": 0,
+                    "source": "[Ctrl]",
+                    "translation": "[Ctrl]"
+                },
+                {
+                    "comment": "",
+                    "context": "SHIFT_KEY_TIP",
+                    "contextId": 0,
+                    "source": "[Shift]",
+                    "translation": "[Shift]"
+                },
+                {
+                    "comment": "",
+                    "context": "ALT_KEY_TIP",
+                    "contextId": 0,
+                    "source": "[Alt]",
+                    "translation": "[Alt]"
+                },
+                {
+                    "comment": "",
+                    "context": "ACTIVE_COMPOSITION",
+                    "contextId": 0,
+                    "source": "Active composition",
+                    "translation": "Active composition"
+                },
+                {
+                    "comment": "",
+                    "context": "ADJUSTMENT_LAYER",
+                    "contextId": 0,
+                    "source": "Adjustment layer",
+                    "translation": "Adjustment layer"
+                },
+                {
+                    "comment": "",
+                    "context": "ALL_COMPOSITIONS",
+                    "contextId": 0,
+                    "source": "All Compositions",
+                    "translation": "All Compositions"
+                },
+                {
+                    "comment": "",
+                    "context": "BEST_QUALITY",
+                    "contextId": 0,
+                    "source": "Use best quality",
+                    "translation": "Use best quality"
+                },
+                {
+                    "comment": "",
+                    "context": "CLIP",
+                    "contextId": 0,
+                    "source": "Clip",
+                    "translation": "Clip"
+                },
+                {
+                    "comment": "",
+                    "context": "COMPOSITION_SHORT",
+                    "contextId": 0,
+                    "source": "Comp",
+                    "translation": "Comp"
+                },
+                {
+                    "comment": "",
+                    "context": "COMPOSITION",
+                    "contextId": 0,
+                    "source": "Composition",
+                    "translation": "Composition"
+                },
+                {
+                    "comment": "",
+                    "context": "CONTINUOUS_RASTERIZATION",
+                    "contextId": 0,
+                    "source": "Collapse transformation / Continuous rasterization",
+                    "translation": "Collapse transformation / Continuous rasterization"
+                },
+                {
+                    "comment": "",
+                    "context": "CREATE_NULL_TIP",
+                    "contextId": 0,
+                    "source": "Create a null object.",
+                    "translation": "Create a null object."
+                },
+                {
+                    "comment": "",
+                    "context": "CREATE_ADJUSTMENT_TIP",
+                    "contextId": 0,
+                    "source": "Create an adjustment layer.",
+                    "translation": "Create an adjustment layer."
+                },
+                {
+                    "comment": "",
+                    "context": "CREATE_SHAPE_TIP",
+                    "contextId": 0,
+                    "source": "Create a shape layer.",
+                    "translation": "Create a shape layer."
+                },
+                {
+                    "comment": "",
+                    "context": "CREATE_SOLID",
+                    "contextId": 0,
+                    "source": "Create a solid layer.",
+                    "translation": "Create a solid layer."
+                },
+                {
+                    "comment": "",
+                    "context": "CURRENT_TIME",
+                    "contextId": 0,
+                    "source": "Current time",
+                    "translation": "Current time"
+                },
+                {
+                    "comment": "",
+                    "context": "DRAFT_MODE",
+                    "contextId": 0,
+                    "source": "Use draft mode",
+                    "translation": "Use draft mode"
+                },
+                {
+                    "comment": "",
+                    "context": "EDIT_MODE",
+                    "contextId": 0,
+                    "source": "Edit mode",
+                    "translation": "Edit mode"
+                },
+                {
+                    "comment": "",
+                    "context": "GROUP_NAME",
+                    "contextId": 0,
+                    "source": "Group name",
+                    "translation": "Group name"
+                },
+                {
+                    "comment": "",
+                    "context": "GUIDE_LAYERS",
+                    "contextId": 0,
+                    "source": "Guide layers",
+                    "translation": "Guide layers"
+                },
+                {
+                    "comment": "",
+                    "context": "IN_TIME",
+                    "contextId": 0,
+                    "source": "In",
+                    "translation": "In"
+                },
+                {
+                    "comment": "",
+                    "context": "INVALID_PSEUDO_EFFECT",
+                    "contextId": 0,
+                    "source": "Invalid pseudo effect file or match name.",
+                    "translation": "Invalid pseudo effect file or match name."
+                },
+                {
+                    "comment": "",
+                    "context": "LOCK_LAYERS",
+                    "contextId": 0,
+                    "source": "Lock layers",
+                    "translation": "Lock layers"
+                },
+                {
+                    "comment": "",
+                    "context": "LOCK_PROPERTIES",
+                    "contextId": 0,
+                    "source": "Lock properties",
+                    "translation": "Lock properties"
+                },
+                {
+                    "comment": "",
+                    "context": "MAIN_NAME",
+                    "contextId": 0,
+                    "source": "Main name",
+                    "translation": "Main name"
+                },
+                {
+                    "comment": "",
+                    "context": "MISSING_PSEUDO_EFFECT",
+                    "contextId": 0,
+                    "source": "The pseudo effect file does not exist.",
+                    "translation": "The pseudo effect file does not exist."
+                },
+                {
+                    "comment": "",
+                    "context": "NEW_VERSION_TITLE",
+                    "contextId": 0,
+                    "source": "New version available",
+                    "translation": "New version available"
+                },
+                {
+                    "comment": "",
+                    "context": "NULL_LAYER",
+                    "contextId": 0,
+                    "source": "Null",
+                    "translation": "Null"
+                },
+                {
+                    "comment": "",
+                    "context": "OPEN_PREFS",
+                    "contextId": 0,
+                    "source": "Open preferences",
+                    "translation": "Open preferences"
+                },
+                {
+                    "comment": "",
+                    "context": "OUT_TIME",
+                    "contextId": 0,
+                    "source": "Out",
+                    "translation": "Out"
+                },
+                {
+                    "comment": "",
+                    "context": "PROJECT",
+                    "contextId": 0,
+                    "source": "Project",
+                    "translation": "Project"
+                },
+                {
+                    "comment": "",
+                    "context": "PROPERTY",
+                    "contextId": 0,
+                    "source": "Property",
+                    "translation": "Property"
+                },
+                {
+                    "comment": "",
+                    "context": "RANGE",
+                    "contextId": 0,
+                    "source": "Range",
+                    "translation": "Range"
+                },
+                {
+                    "comment": "",
+                    "context": "RENDER",
+                    "contextId": 0,
+                    "source": "Render",
+                    "translation": "Render"
+                },
+                {
+                    "comment": "",
+                    "context": "SECONDARY_NAME",
+                    "contextId": 0,
+                    "source": "Secondary name",
+                    "translation": "Secondary name"
+                },
+                {
+                    "comment": "",
+                    "context": "SELECTED_COMPOSITIONS",
+                    "contextId": 0,
+                    "source": "Selected compositions",
+                    "translation": "Selected compositions"
+                },
+                {
+                    "comment": "",
+                    "context": "SELECTED_PROPERTIES",
+                    "contextId": 0,
+                    "source": "Selected properties",
+                    "translation": "Selected properties"
+                },
+                {
+                    "comment": "",
+                    "context": "SET_FRAME_BLENDING",
+                    "contextId": 0,
+                    "source": "Set frame blending mode",
+                    "translation": "Set frame blending mode"
+                },
+                {
+                    "comment": "",
+                    "context": "SHAPE_LAYER",
+                    "contextId": 0,
+                    "source": "Shape",
+                    "translation": "Shape"
+                },
+                {
+                    "comment": "",
+                    "context": "SHOW_HIDE_LAYERS_TIP",
+                    "contextId": 0,
+                    "source": "Show/Hide layers",
+                    "translation": "Show/Hide layers"
+                },
+                {
+                    "comment": "",
+                    "context": "SHY_LAYERS",
+                    "contextId": 0,
+                    "source": "Shy layers",
+                    "translation": "Shy layers"
+                },
+                {
+                    "comment": "",
+                    "context": "SOLID_LAYER",
+                    "contextId": 0,
+                    "source": "Solid",
+                    "translation": "Solid"
+                },
+                {
+                    "comment": "",
+                    "context": "SOLO_LAYERS",
+                    "contextId": 0,
+                    "source": "Toggle solo mode",
+                    "translation": "Toggle solo mode"
+                },
+                {
+                    "comment": "",
+                    "context": "STAR",
+                    "contextId": 0,
+                    "source": "Star",
+                    "translation": "Star"
+                },
+                {
+                    "comment": "",
+                    "context": "TIME",
+                    "contextId": 0,
+                    "source": "Time",
+                    "translation": "Time"
+                },
+                {
+                    "comment": "",
+                    "context": "TOGGLE_3D_LAYER",
+                    "contextId": 0,
+                    "source": "Toggle 3D layer mode",
+                    "translation": "Toggle 3D layer mode"
+                },
+                {
+                    "comment": "",
+                    "context": "TOGGLE_ADJUSTMENT_LAYER",
+                    "contextId": 0,
+                    "source": "Toggle adjustment layer mode",
+                    "translation": "Toggle adjustment layer mode"
+                },
+                {
+                    "comment": "",
+                    "context": "TOGGLE_AUDIO",
+                    "contextId": 0,
+                    "source": "Toggle audio",
+                    "translation": "Toggle audio"
+                },
+                {
+                    "comment": "",
+                    "context": "TOGGLE_EFFECTS",
+                    "contextId": 0,
+                    "source": "Toggle effects",
+                    "translation": "Toggle effects"
+                },
+                {
+                    "comment": "",
+                    "context": "TOGGLE_MOTION_BLUR",
+                    "contextId": 0,
+                    "source": "Toggle motion blur",
+                    "translation": "Toggle motion blur"
+                },
+                {
+                    "comment": "",
+                    "context": "",
+                    "contextId": 0,
+                    "source": "January",
+                    "translation": "January"
+                },
+                {
+                    "comment": "",
+                    "context": "",
+                    "contextId": 0,
+                    "source": "February",
+                    "translation": "February"
+                },
+                {
+                    "comment": "",
+                    "context": "",
+                    "contextId": 0,
+                    "source": "March",
+                    "translation": "March"
+                },
+                {
+                    "comment": "",
+                    "context": "",
+                    "contextId": 0,
+                    "source": "April",
+                    "translation": "April"
+                },
+                {
+                    "comment": "",
+                    "context": "",
+                    "contextId": 0,
+                    "source": "May",
+                    "translation": "May"
+                },
+                {
+                    "comment": "",
+                    "context": "",
+                    "contextId": 0,
+                    "source": "June",
+                    "translation": "June"
+                },
+                {
+                    "comment": "",
+                    "context": "",
+                    "contextId": 0,
+                    "source": "July",
+                    "translation": "July"
+                },
+                {
+                    "comment": "",
+                    "context": "",
+                    "contextId": 0,
+                    "source": "August",
+                    "translation": "August"
+                },
+                {
+                    "comment": "",
+                    "context": "",
+                    "contextId": 0,
+                    "source": "September",
+                    "translation": "September"
+                },
+                {
+                    "comment": "",
+                    "context": "",
+                    "contextId": 0,
+                    "source": "October",
+                    "translation": "October"
+                },
+                {
+                    "comment": "",
+                    "context": "",
+                    "contextId": 0,
+                    "source": "November",
+                    "translation": "November"
+                },
+                {
+                    "comment": "",
+                    "context": "",
+                    "contextId": 0,
+                    "source": "December",
+                    "translation": "December"
+                }
+            ]
+        }
+    ]
+}
