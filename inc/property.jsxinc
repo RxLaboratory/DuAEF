@@ -728,6 +728,7 @@ DuAEProperty.prototype.animation = function(selected, timeRange) {
 
     if (prop.propertyType === PropertyType.PROPERTY) {
         if (prop.propertyValueType == PropertyValueType.NO_VALUE) return null;
+        if (prop.propertyValueType == PropertyValueType.CUSTOM_VALUE) return null;
         if (prop.elided) return null;
         if (!prop.canVaryOverTime) return null;
         var anim = new DuAEPropertyAnimation();
