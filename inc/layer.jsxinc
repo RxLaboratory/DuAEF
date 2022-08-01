@@ -704,7 +704,8 @@ DuAELayer.toggleEditMode = function(layer) {
 
     var comp = layer.containingComp;
 
-    var editName = tr(DuAETag.Name.EDIT_MODE);
+    // TRANSLATORS: must be relatively short
+    var editName = i18n._p("in layer name", "Edit mode");
 
     if (setEditMode) {
 

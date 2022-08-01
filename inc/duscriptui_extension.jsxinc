@@ -113,7 +113,6 @@ DuScriptUI.setupScript = function( callback, ui, scriptName, reInit, reInitMetho
 DuScriptUI.layerSelector = function( container, helpTip )
 {
     helpTip = def(helpTip, '');
-    helpTip = tr(helpTip);
 
     //create main group
     var selector = container.add( 'group' );
@@ -159,7 +158,7 @@ DuScriptUI.layerSelector = function( container, helpTip )
     } );
     selector.popup.margins = 2;
     selector.popup.spacing = 0;
-    selector.popup.closeButton = DuScriptUI.button( selector.popup, tr(DuScriptUI.String.CANCEL) );
+    selector.popup.closeButton = DuScriptUI.button( selector.popup, i18n._("Cancel") );
     selector.popup.closeButton.onClick = selector.popup.onDeactivate = function()
     {
         selector.popup.hide();
@@ -201,7 +200,7 @@ DuScriptUI.layerSelector = function( container, helpTip )
     selector.pickButton = selector.pickGroup.add( 'image', undefined, w12_eye_dropper.binAsString );
     selector.pickButton.alignment = [ 'center', 'center' ];
 
-    selector.popup.list.add( 'item', tr( DuScriptUI.String.NONE ) );
+    selector.popup.list.add( 'item', i18n._p( "Select", "None" ) );
     selector.popup.list.selection = 0;
 
     selector.refresh = function()
@@ -221,7 +220,7 @@ DuScriptUI.layerSelector = function( container, helpTip )
 
         var prevIndex = selector.index;
         selector.popup.list.removeAll();
-        selector.popup.list.add( 'item', tr(DuScriptUI.String.NONE) );
+        selector.popup.list.add( 'item', i18n._p( "Select", "None" ) );
         var it = new DuList( layers );
         it.do( function( layer )
         {
@@ -262,7 +261,7 @@ DuScriptUI.layerSelector = function( container, helpTip )
         if (!found)
         {
             selector.popup.list.selection = 0;
-            selector.label.text = tr( DuScriptUI.String.NONE );
+            selector.label.text = i18n._p( "Select", "None" );
         }
 
         selector.index = index;
@@ -412,7 +411,6 @@ DuScriptUI.layerSelector = function( container, helpTip )
 DuScriptUI.compSelector = function( container, helpTip )
 {
     helpTip = def(helpTip, '');
-    helpTip = tr(helpTip);
 
     //create main group
     var selector = container.add( 'group' );
@@ -458,7 +456,7 @@ DuScriptUI.compSelector = function( container, helpTip )
     } );
     selector.popup.margins = 2;
     selector.popup.spacing = 0;
-    selector.popup.closeButton = DuScriptUI.button( selector.popup, tr(DuScriptUI.String.CANCEL) );
+    selector.popup.closeButton = DuScriptUI.button( selector.popup, i18n._( "Cancel" ) );
     selector.popup.closeButton.onClick = selector.popup.onDeactivate = function()
     {
         selector.popup.hide();
@@ -500,7 +498,7 @@ DuScriptUI.compSelector = function( container, helpTip )
     selector.pickButton = selector.pickGroup.add( 'image', undefined, w12_eye_dropper.binAsString );
     selector.pickButton.alignment = [ 'center', 'center' ];
 
-    var itemNone = selector.popup.list.add( 'item', tr( DuScriptUI.String.NONE ) );
+    var itemNone = selector.popup.list.add( 'item', i18n._p( "Select", "None" ) );
     itemNone.id = 0;
     selector.popup.list.selection = 0;
 
@@ -511,7 +509,7 @@ DuScriptUI.compSelector = function( container, helpTip )
 
         var prevId = selector.id;
         selector.popup.list.removeAll();
-        var itemNone = selector.popup.list.add( 'item', tr( DuScriptUI.String.NONE ) );
+        var itemNone = selector.popup.list.add( 'item', i18n._p( "Select", "None" ) );
         itemNone.id = 0;
         var it = new DuList( comps );
         it.do( function( comp )
@@ -558,7 +556,7 @@ DuScriptUI.compSelector = function( container, helpTip )
         if (!found)
         {
             selector.popup.list.selection = 0;
-            selector.label.text = tr( DuScriptUI.String.NONE );
+            selector.label.text = i18n._p( "Select", "None" );
         }
 
         selector.id = id;
@@ -662,7 +660,7 @@ DuScriptUI.compSelector = function( container, helpTip )
  */
 DuScriptUI.layerPicker = function( container )
 {
-    var name = tr(DuScriptUI.String.SELECT_LAYERS);
+    var name = i18n._( "Select layers" );
 
     var layerPicker = container.add( 'group' );
     layerPicker.orientation = 'row';
@@ -699,8 +697,6 @@ DuScriptUI.layerPicker = function( container )
 
     layerPicker.addSelector = function( inputLabel )
     {
-        inputLabel = tr( inputLabel );
-
         var l = layerPicker.labelsGroup.add( 'statictext', undefined, inputLabel );
 
         var sel = DuScriptUI.layerSelector( layerPicker.selectorsGroup );

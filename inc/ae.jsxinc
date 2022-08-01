@@ -1013,8 +1013,6 @@ DuAE.beginUndoGroup = function ( groupName, autoClose ) {
     groupName = def( groupName, "" );
     autoClose = def( autoClose, true );
 
-    groupName = tr( groupName );
-
     if ( DuAE.openedUndoGroup ) {
         if ( autoClose && DuAE.undoGroupName != groupName ) DuAE.endUndoGroup();
         else return;
@@ -1033,7 +1031,6 @@ DuAE.beginUndoGroup = function ( groupName, autoClose ) {
  */
 DuAE.endUndoGroup = function (groupName) {
     groupName = def(groupName, "");
-	groupName = tr( groupName );
     if (groupName != "" && DuAE.undoGroupName != groupName) return;
     app.endUndoGroup();
     DuAE.openedUndoGroup = false;

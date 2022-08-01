@@ -464,7 +464,7 @@ DuAEProject.getFolderItem = function(folderName) {
     folderName = def(folderName, "");
     if (folderName == "") return app.project.rootFolder;
     if (DuString.trim(folderName) == "") return app.project.rootFolder;
-    if (folderName.toLowerCase() == tr("Project Root").toLowerCase()) return app.project.rootFolder;
+    if (folderName.toLowerCase() == i18n._("Project Root").toLowerCase()) return app.project.rootFolder;
 
     for (var i = 1, n = app.project.numItems; i <= n; i++) {
         var item = app.project.item(i);
