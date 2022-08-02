@@ -475,7 +475,7 @@ DuAELayer.applyPreset = function(layer, preset, matchName) {
     if (!isdef( preset )) return null;
     matchName = def(matchName, '');
     if (preset instanceof DuBinary) preset = preset.toFile();
-    if (!preset.exists) throw new Error(DuScriptUI.String.MISSING_PSEUDO_EFFECT);
+    if (!preset.exists) throw new Error( i18n._("The pseudo effect file does not exist."));
 
     //remove layer selection
     var comp = layer.containingComp;
@@ -509,7 +509,7 @@ DuAELayer.addPseudoEffect = function(layer, preset, matchName, name) {
         return null;
     }
     if (!preset.exists) {
-        DuDebug.throwError(DuScriptUI.String.MISSING_PSEUDO_EFFECT, 'DuAELayer.addPseudoEffect( layer, preset, matchName, name)');
+        DuDebug.throwError( i18n._("The pseudo effect file does not exist."), 'DuAELayer.addPseudoEffect( layer, preset, matchName, name)');
         return null;
     }
     if (layer == undefined) return null;
@@ -535,7 +535,7 @@ DuAELayer.addPseudoEffect = function(layer, preset, matchName, name) {
     }
 
     if (!effects.canAddProperty(matchName)) {
-        DuDebug.throwError(DuScriptUI.String.INVALID_PSEUDO_EFFECT, 'DuAELayer.addPseudoEffect( layer, preset, matchName, name)');
+        DuDebug.throwError( i18n._("Invalid pseudo effect file or match name."), 'DuAELayer.addPseudoEffect( layer, preset, matchName, name)');
         return null;
     }
 
@@ -1503,11 +1503,11 @@ DuAELayer.createLocator = function( layerOrComp ) {
     loc.moveToEnd();
     var name = 'LOC';
     if (layer) Duik.Layer.copyAttributes(loc, layer, Duik.Layer.Type.LOCATOR);
-    else Duik.Layer.setAttributes(loc, Duik.Layer.Type.LOCATOR, DuScriptUI.String.LOCATOR);
+    else Duik.Layer.setAttributes(loc, Duik.Layer.Type.LOCATOR, i18n._("Locator"));
 
     //add layer control
     var layerfx = loc.property('ADBE Effect Parade').addProperty('ADBE Layer Control');
-    layerfx.name = DuScriptUI.String.LOCATOR;
+    layerfx.name = i18n._("Locator");
     if (layer) layerfx(1).setValue(layer.index);
 
     //add expressions

@@ -47,6 +47,7 @@ DuScriptUI.String.TOGGLE_ADJUSTMENT_LAYER = "Toggle adjustment layer mode";
 DuScriptUI.String.TOGGLE_AUDIO = "Toggle audio";
 DuScriptUI.String.TOGGLE_EFFECTS = "Toggle effects";
 DuScriptUI.String.TOGGLE_MOTION_BLUR = "Toggle motion blur";
+DuScriptUI.String.LOCATOR = "Locator";
 
 /**
  * Runs the installation wizard for the script (asks for files and network access, asks the language...).

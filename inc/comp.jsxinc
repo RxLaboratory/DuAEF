@@ -586,7 +586,7 @@ DuAEComp.addNull = function(comp, size, layer) {
 
     var nullLayer = comp.layers.addShape();
     nullLayer.guideLayer = true;
-    nullLayer.name = DuScriptUI.String.NULL_LAYER;
+    nullLayer.name = i18n._("Null");
     nullLayer.label = 1;
 
     var anchorGroup = nullLayer("ADBE Root Vectors Group").addProperty("ADBE Vector Group");
@@ -635,7 +635,7 @@ DuAEComp.addAdjustmentLayer = function(comp) {
     if (!comp) return;
 
     var layer = comp.layers.addShape();
-    layer.name = DuScriptUI.String.ADJUSTMENT_LAYER;
+    layer.name = i18n._("Adjustment layer");
     layer.adjustmentLayer = true;
     layer.label = 5;
 
@@ -664,7 +664,7 @@ DuAEComp.addSolid = function(color, comp) {
     if (!(color instanceof DuColor)) color = new DuColor(color);
 
     var layer = comp.layers.addShape();
-    layer.name = DuScriptUI.String.SOLID_LAYER;
+    layer.name = i18n._("Solid");
     layer.label = 1;
 
     var solidGroup = layer("ADBE Root Vectors Group").addProperty("ADBE Vector Group");
@@ -693,7 +693,7 @@ DuAEComp.addShape = function(shape, color, comp) {
     color = def(color, DuColor.Color.RAINBOX_RED);
 
     var layer = comp.layers.addShape();
-    layer.name = DuScriptUI.String.SHAPE_LAYER;
+    layer.name = i18n._("Shape");
 
     if (shape == DuAEShapeLayer.Primitive.NONE) return layer;
 
@@ -703,30 +703,30 @@ DuAEComp.addShape = function(shape, color, comp) {
     var size = comp.height / 3;
 
     if (shape == DuAEShapeLayer.Primitive.SQUARE) {
-        solidGroup.name = DuScriptUI.String.RECTANGLE;
-        layer.name = DuScriptUI.String.RECTANGLE;
+        solidGroup.name = i18n._("Rectangle");
+        layer.name = i18n._("Rectangle");
         var solid = solidContent.addProperty("ADBE Vector Shape - Rect");
         solid('ADBE Vector Rect Size').setValue([size, size]);
     } else if (shape == DuAEShapeLayer.Primitive.ROUNDED_SQUARE) {
-        solidGroup.name = DuScriptUI.String.ROUNDED_RECTANGLE;
-        layer.name = DuScriptUI.String.ROUNDED_RECTANGLE;
+        solidGroup.name = i18n._("Rounded rectangle");
+        layer.name = i18n._("Rounded rectangle");
         var solid = solidContent.addProperty("ADBE Vector Shape - Rect");
         solid('ADBE Vector Rect Size').setValue([size, size]);
         solid('ADBE Vector Rect Roundness').setValue(size / 10);
     } else if (shape == DuAEShapeLayer.Primitive.CIRCLE) {
-        solidGroup.name = DuScriptUI.String.CIRCLE;
-        layer.name = DuScriptUI.String.CIRCLE;
+        solidGroup.name = i18n._("Circle");
+        layer.name = i18n._("Circle");
         var solid = solidContent.addProperty("ADBE Vector Shape - Ellipse");
         solid('ADBE Vector Ellipse Size').setValue([size, size]);
     } else if (shape == DuAEShapeLayer.Primitive.POLYGON) {
-        solidGroup.name = DuScriptUI.String.POLYGON;
-        layer.name = DuScriptUI.String.POLYGON;
+        solidGroup.name = i18n._("Polygon");
+        layer.name = i18n._("Polygon");
         var solid = solidContent.addProperty("ADBE Vector Shape - Star");
         solid('ADBE Vector Star Type').setValue(2);
         solid('ADBE Vector Star Outer Radius').setValue(size);
     } else if (shape == DuAEShapeLayer.Primitive.STAR) {
-        solidGroup.name = DuScriptUI.String.STAR;
-        layer.name = DuScriptUI.String.STAR;
+        solidGroup.name = i18n._("Star");
+        layer.name = i18n._("Star");
         var solid = solidContent.addProperty("ADBE Vector Shape - Star");
         solid('ADBE Vector Star Inner Radius').setValue(size * .385);
         solid('ADBE Vector Star Outer Radius').setValue(size);
