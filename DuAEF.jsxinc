@@ -18,5 +18,3 @@
 #include "inc/renderqueue.jsxinc"
 #include "inc/shapelayer.jsxinc"
 #include "inc/pseudoEffect.jsxinc"//*/
-
-//#include "inc/property_deprecated.jsxinc"
