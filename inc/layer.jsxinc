@@ -1766,3 +1766,23 @@ DuAELayer.setPosition = function( layer, position, world ) {
     if (world) layer.parent = p;
     layer.locked = l;
 }
+
+/**
+ * Checks if the layer has some keyframes
+ * @param {Layer} layer The layer
+ * @return {Boolean}
+ */
+DuAELayer.hasKeys = function (layer) {
+    var p = new DuAEProperty(layer);
+    return p.hasKeys();
+}
+
+/**
+ * Checks if the layer has some expressions
+ * @param {Layer} layer The layer
+ * @return {Boolean}
+ */
+DuAELayer.hasExpressions = function (layer) {
+    var p = new DuAEProperty(layer);
+    return p.hasExpressions();
+}
