@@ -1786,3 +1786,12 @@ DuAELayer.hasExpressions = function (layer) {
     var p = new DuAEProperty(layer);
     return p.hasExpressions();
 }
+
+/**
+ * Checks if the layer has some masks
+ * @param {Layer} layer The layer
+ * @return {Boolean}
+ */
+DuAELayer.hasMask = function (layer) {
+    return layer.property("ADBE Mask Parade").numProperties > 0;
+}
