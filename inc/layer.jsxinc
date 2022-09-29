@@ -1876,5 +1876,5 @@ DuAELayer.hasMask = function (layer) {
 DuAELayer.isNull = function( layer ) {
     if (layer.nullLayer) return true;
 
-    
+    return DuAELayer.isType( layer, DuAELayer.Type.NULL );
 }
