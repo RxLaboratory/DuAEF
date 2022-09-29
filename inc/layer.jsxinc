@@ -71,7 +71,7 @@ DuAELayer.setType = function(type, layers) {
             layer.guideLayer = true;
         }
         else if (type == DuAELayer.Type.ADJUSTMENT) {
-            layer.label = 12;
+            layer.label = 5;
         }
     }
 }
@@ -1284,6 +1284,8 @@ DuAELayer.expressionLink = function(layer, useThisComp) {
 DuAELayer.isSolid = function(layer) {
     if (layer.nullLayer) return false;
 
+    if (DuAELayer.isType(layer, DuAELayer.Type.SOLID)) return true;
+
     if (!(layer instanceof AVLayer)) return false;
 
     if (!(layer.source instanceof FootageItem)) return false;
@@ -1877,4 +1879,10 @@ DuAELayer.isNull = function( layer ) {
     if (layer.nullLayer) return true;
 
     return DuAELayer.isType( layer, DuAELayer.Type.NULL );
+}
+
+DuAELayer.isAdjustment = function ( layer ) {
+    if (layer.adjustmentLayer) return true;
+
+    return DuAELayer.isType( layer, DuAELayer.Type.ADJUSTMENT );
 }
