@@ -96,7 +96,7 @@ DuAETag.getTagTime = function( layer )
  * @return {MarkerValue} The marker (tag), with an extra property <code>keyIndex</code> which is the index of the corresponding keyframe.
  */
 DuAETag.set = function( layer, tagName, tag )
-{   
+{
     var markerProp = layer.property( 'ADBE Marker' );
 
     tag = def( tag, DuAETag.get( layer ) );
