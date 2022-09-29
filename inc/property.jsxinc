@@ -411,6 +411,7 @@ DuAEProperty.prototype.numKeys = function (recursive) {
 DuAEProperty.prototype.hasKeys = function (recursive) {
     recursive = def(recursive, true);
     if (!recursive && this.isGroup()) return false;
+    if (this.matchName == "ADBE Marker") return false;
 
     var prop = this.getProperty();
 
