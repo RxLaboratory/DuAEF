@@ -404,6 +404,53 @@ DuAEProperty.prototype.numKeys = function (recursive) {
 }
 
 /**
+ * Checks if this property has some keyframes
+ * @param {Boolean} [recursive=true] If true and this is a group, checks all contained properties
+ * @return {Boolean}
+ */
+DuAEProperty.prototype.hasKeys = function (recursive) {
+    recursive = def(recursive, true);
+    if (!recursive && this.isGroup()) return false;
+    if (this.matchName == "ADBE Marker") return false;
+
+    var prop = this.getProperty();
+
+    if (prop.propertyType == PropertyType.PROPERTY) {
+        if (prop.numKeys > 0) return true;
+    }
+    else {
+        for (var p = 1, num = this.numProperties(); p <= num; p++) {
+            if (this.prop(p).hasKeys()) return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Checks if this property has some expressions
+ * @param {Boolean} [recursive=true] If true and this is a group, checks all contained properties
+ * @return {Boolean}
+ */
+DuAEProperty.prototype.hasExpressions = function (recursive) {
+    recursive = def(recursive, true);
+    if (!recursive && this.isGroup()) return false;
+
+    var prop = this.getProperty();
+
+    if (prop.propertyType == PropertyType.PROPERTY) {
+        if (prop.expression != "") return true;
+    }
+    else {
+        for (var p = 1, num = this.numProperties(); p <= num; p++) {
+            if (this.prop(p).hasExpressions()) return true;
+        }
+    }
+
+    return false;
+}
+
+/**
  * Reimplements the <code>PropertyGroup.numProperties</code> attribute.<br />
  * Use this to be sure to get the right number of props, in case some have been added or removed after the creation of the DuAEProperty object.
  * @return {int} The number of sub-properties.

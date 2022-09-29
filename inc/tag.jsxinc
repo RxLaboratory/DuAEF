@@ -21,7 +21,12 @@ DuAETag.Key = {
     /**
      * A list of groups this layer belongs to.
      */
-    GROUPS: "groups"
+    GROUPS: "groups",
+    /**
+     * A Custom layer type
+     * Historically from duik
+     */
+    LAYER_TYPE: "duik.type"
 }
 
 /**

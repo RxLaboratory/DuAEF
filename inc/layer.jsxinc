@@ -5,6 +5,77 @@
  */
 var DuAELayer = {};
 
+DuAELayer.Type = {
+    NONE: '-',
+    NULL: 'Null',
+    SOLID: 'Solid',
+    ADJUSTMENT: 'Adjustment'
+}
+
+/**
+ * Checks if a string is one of the prefixes used to identify layer types in their names
+ * @param {string} prefix The string to check
+ * @return {bool} True if the string is one of the predefined prefixes.
+ */
+DuAELayer.isTypePrefix = function( prefix ) {
+    for (i in DuAELayer.Type) {
+        if (prefix == DuAELayer.Type[i]) return true;
+    }
+    return false;
+}
+
+/**
+ * Checks if the layer is one of the types created by duaef.
+ * @param {Layer} layer - The layer to check
+ * @param {Duik.Layer.Type} layerType - The type of layer
+ * @return {Boolean}
+ */
+DuAELayer.isType = function(layer, layerType) {
+    return DuAELayer.type(layer) == layerType;
+}
+
+/**
+ * Gets the type of the layer
+ * @param {Layer} [layer] The layer. If omitted, will check the first selected bone of the current comp
+ * @returns {Duik.Layer.Type} The type
+ */
+DuAELayer.type = function(layer) {
+    layer = def(layer, DuAEComp.getActiveLayer());
+    if (!layer) return DuAELayer.Type.NONE;
+    var type = DuAETag.getValue(layer, DuAETag.Key.LAYER_TYPE, DuAETag.Type.STRING);
+    if (type == null) return DuAELayer.Type.NONE;
+    return type;
+}
+
+/**
+ * Sets the type of the layer
+ * @param {Duik.Layer.Type} type The type
+ * @param {Layer[]|LayerCollection|DuList.<Layer>|Layer} [layers=DuAEComp.getSelectedLayers()] The layer. If omitted, will use all selected layers in the comp
+ */
+DuAELayer.setType = function(type, layers) {
+    layers = def(layers, DuAEComp.getSelectedLayers());
+    layers = new DuList(layers);
+    if (layers.length() == 0) return;
+
+    for (var i = 0, n = layers.length(); i < n; i++) {
+        var layer = layers.at(i);
+        
+        DuAETag.setValue(layer, DuAETag.Key.LAYER_TYPE, type);
+
+        // Reset
+        layer.guideLayer = false;
+        layer.label = 8;
+        layer.quality = LayerQuality.BEST;
+
+        if (type == DuAELayer.Type.NULL) {
+            layer.guideLayer = true;
+        }
+        else if (type == DuAELayer.Type.ADJUSTMENT) {
+            layer.label = 12;
+        }
+    }
+}
+
 /**
  * Runs a function on all the layers
  * @param {function} method - The function to run on the layers, which takes a layer as its only argument.
@@ -1765,4 +1836,45 @@ DuAELayer.setPosition = function( layer, position, world ) {
 
     if (world) layer.parent = p;
     layer.locked = l;
+}
+
+/**
+ * Checks if the layer has some keyframes
+ * @param {Layer} layer The layer
+ * @return {Boolean}
+ */
+DuAELayer.hasKeys = function (layer) {
+    var p = new DuAEProperty(layer);
+    return p.hasKeys();
+}
+
+/**
+ * Checks if the layer has some expressions
+ * @param {Layer} layer The layer
+ * @return {Boolean}
+ */
+DuAELayer.hasExpressions = function (layer) {
+    var p = new DuAEProperty(layer);
+    return p.hasExpressions();
+}
+
+/**
+ * Checks if the layer has some masks
+ * @param {Layer} layer The layer
+ * @return {Boolean}
+ */
+DuAELayer.hasMask = function (layer) {
+    return layer.property("ADBE Mask Parade").numProperties > 0;
+}
+
+/**
+ * Checks if this is a null layer, either a true AE Null layer,
+ * or a "Shape as Null" as created by DuAEF with {@link DuAEComp.addNull}.
+ * @param {Layer} layer The layer to test
+ * @return {bool}
+ */
+DuAELayer.isNull = function( layer ) {
+    if (layer.nullLayer) return true;
+
+    return DuAELayer.isType( layer, DuAELayer.Type.NULL );
 }

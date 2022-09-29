@@ -622,6 +622,8 @@ DuAEComp.addNull = function(comp, size, layer) {
         nullLayer.name = "Null " + layer.name;
     }
 
+    DuAELayer.setType(DuAELayer.Type.NULL, nullLayer);
+
     return nullLayer;
 }
 
@@ -646,6 +648,8 @@ DuAEComp.addAdjustmentLayer = function(comp) {
     solid('ADBE Vector Rect Size').setValue([comp.width, comp.height]);
     var fill = solidContent.addProperty("ADBE Vector Graphic - Fill");
     fill("ADBE Vector Fill Color").setValue([1, 1, 1, 1]);
+
+    DuAELayer.setType(DuAELayer.Type.ADJUSTMENT, layer);
 
     return layer;
 }
@@ -674,6 +678,8 @@ DuAEComp.addSolid = function(color, comp) {
     solid('ADBE Vector Rect Size').setValue([comp.width, comp.height]);
     var fill = solidContent.addProperty("ADBE Vector Graphic - Fill");
     fill("ADBE Vector Fill Color").setValue(color.floatRGBA());
+
+    DuAELayer.setType(DuAELayer.Type.SOLID, layer);
 
     return layer;
 }
