@@ -562,7 +562,9 @@ DuAELayer.applyPreset = function(layer, preset, matchName) {
     //applying a preset gets out of progress mode
     //if (DuAEProject.progressMode) DuAEProject.setProgressMode(true);
 
-    var effect = layer.property("ADBE Effect Parade")( layer.property("ADBE Effect Parade").numProperties );
+    var effect = null;
+    if (layer.property("ADBE Effect Parade").numProperties > 0)
+        effect = layer.property("ADBE Effect Parade")( layer.property("ADBE Effect Parade").numProperties );
 
     //restore selection
     DuAEComp.selectLayers(selection);
