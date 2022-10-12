@@ -543,7 +543,7 @@ DuAELayer.getWorldPos = function(layer, point, time) {
  * @param {Layer} layer - The layer
  * @param {File} preset - The preset file
  * @param {string} matchName - The pseudo Effect matchName
- * @return {PropertyGroup|null} The effect corresponding to matchName or null if anything went wrong
+ * @return {PropertyGroup|null} The effect corresponding matchName or null if anything went wrong
  */
 DuAELayer.applyPreset = function(layer, preset, matchName) {
     if (!isdef( layer )) return null;
@@ -560,7 +560,7 @@ DuAELayer.applyPreset = function(layer, preset, matchName) {
     layer.applyPreset(preset);
 
     //applying a preset gets out of progress mode
-    if (DuAEProject.progressMode) DuAEProject.setProgressMode(true);
+    //if (DuAEProject.progressMode) DuAEProject.setProgressMode(true);
 
     var effect = layer.property("ADBE Effect Parade")( layer.property("ADBE Effect Parade").numProperties );
 
