@@ -546,17 +546,19 @@ DuAELayer.getWorldPos = function(layer, point, time) {
  * @return {PropertyGroup|null} The effect corresponding matchName or null if anything went wrong
  */
 DuAELayer.applyPreset = function(layer, preset, matchName) {
-    if (!isdef( layer )) return null;
-    if (!isdef( preset )) return null;
+
+    if (!isdef( layer )) { DuDebug.throwUndefinedError('layer', 'DuAELayer.applyPreset'); return null; }
+    if (!isdef( preset )) { DuDebug.throwUndefinedError('preset', 'DuAELayer.applyPreset'); return null; }
     matchName = def(matchName, '');
     if (preset instanceof DuBinary) preset = preset.toFile();
+    if (!(preset instanceof File)) preset = new File(preset);
     if (!preset.exists) throw new Error( i18n._("The pseudo effect file does not exist."));
 
     //remove layer selection
     var comp = layer.containingComp;
     var selection = DuAEComp.unselectLayers(comp);
-
     layer.selected = true;
+
     layer.applyPreset(preset);
 
     //applying a preset gets out of progress mode
