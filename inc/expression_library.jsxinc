@@ -2551,6 +2551,24 @@ DuAEExpression.Library["getScale"].expression = ['function getScale( l ) {',
 DuAEExpression.Library["getScale"].requirements = [];
 
 /**
+ * Checks if the layer has been flipped (scale sign is not the same on both axis).
+ * @function
+ * @param {Layer} [l=thisLayer] The layer
+ * @return {bool} Whether the layer is flipped
+ * @category ExpressionLibrary
+ * @requires sign
+ */
+DuAEExpression.Library["isLayerFlipped"] = {};
+DuAEExpression.Library["isLayerFlipped"].expression = ['function isLayerFlipped( l ) {',
+	'if (typeof l === "undefined") l = thisLayer;',
+	'var signX = Math.sign( l.scale.value[0] );',
+	'var signY = Math.sign( l.scale.value[1] );',
+	'return signX != signY;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["isLayerFlipped"].requirements = ["sign"];
+
+/**
   * 2D transformation matrix object initialized with identity matrix. See the source code for more documentation.
   * @class
   * @classdesc 2D Transformation Matrix. Simplified for use in After Effects Expressions by Nicolas "Duduf" Dufresne
