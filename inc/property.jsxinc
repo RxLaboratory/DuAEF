@@ -798,7 +798,7 @@ DuAEProperty.prototype.animation = function(selected, timeRange) {
             anim.endTime = 0;
         }
         anim.dimensions = this.dimensions();
-        if (prop.canSetExpression) anim.expression = prop.expression;
+        if (prop.canSetExpression && prop.expressionEnabled) anim.expression = prop.expression;
         return anim;
     } else if (prop.numProperties > 0) {
         var groupAnim = new DuAEPropertyGroupAnimation();
@@ -2988,6 +2988,7 @@ DuAEProperty.prototype.bakeExpressions = function(mode, frameStep) {
     frameStep = def(frameStep, 1.0);
     if (mode == DuAEExpression.BakeAlgorithm.SMART) this.smartBakeExpressions(frameStep);
     else this.quickBakeExpressions(frameStep);
+
 }
 
 /**
