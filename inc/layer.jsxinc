@@ -348,7 +348,7 @@ DuAELayer.setAnims = function(layers, anims, time, ignoreName, setExpression, on
         var it = new DuList(layers);
         var ok = false;
         while (layer = it.next()) {
-            if (layer.name == anim._name && layer.index == anim._index) {
+            if (layer.name.toLowerCase() == anim._name.toLowerCase() && layer.index == anim._index) {
                 DuAELayer.setAnim(layer, anim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, false);
                 ok = true;
                 break;
