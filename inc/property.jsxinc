@@ -1202,9 +1202,10 @@ DuAEProperty.prototype.setAnim = function(anim, time, setExpression, replace, of
  * Can be the matchName of a propertyGroup to set all the subproperties.<br />
  * Ignored if the list is empty.
  * @param {boolean}	[offset=false]	- true to offset the current value, instead of replacing it
+ * @param {Boolean} [offsetTransform=false] - When set to true, the transform (position, rotation) values will be offset to 0 before applying the animation.
  * @return {boolean} true if the anim was actually set.
  */
-DuAEProperty.prototype.setAnimation = function(anim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, set) {
+DuAEProperty.prototype.setAnimation = function(anim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, set, offsetTransform) {
     var prop = this.getProperty();
 
     time = def(time, this.comp.time);
@@ -1215,6 +1216,7 @@ DuAEProperty.prototype.setAnimation = function(anim, time, ignoreName, setExpres
     whiteList = def(whiteList, []);
     offset = def(offset, false);
     set = def(set, false);
+    offsetTransform = def(offsetTransform, false);
 
     if (whiteList.length == 0) set = true;
 
@@ -1234,7 +1236,18 @@ DuAEProperty.prototype.setAnimation = function(anim, time, ignoreName, setExpres
                 if (onlyKeyframes && anim.keys.length == 0) okToSet = false;
             }
 
-            if (okToSet) return this.setAnim(anim, time, setExpression, replace, offset);
+            if (okToSet)
+            {
+                if (offsetTransform && (anim._matchName == 'ADBE Position' || anim._matchName == 'ADBE Rotate Z'))
+                {
+                    var offset = anim.startValue;
+                    for (var i = 0, ni = anim.keys.length; i < ni; i++)
+                    {
+                        anim.keys[i].value -= offset;
+                    }
+                }
+                return this.setAnim(anim, time, setExpression, replace, offset);
+            }
         }
     } else {
         for (var i = 0; i < anim.anims.length; i++) {
@@ -1248,7 +1261,7 @@ DuAEProperty.prototype.setAnimation = function(anim, time, ignoreName, setExpres
                     if (ignoreName) okToSet = true;
                 }
                 if (okToSet) {
-                    ok = subProp.setAnimation(propAnim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, set);
+                    ok = subProp.setAnimation(propAnim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, set, offsetTransform);
                     break;
                 }
             }

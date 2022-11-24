@@ -260,17 +260,22 @@ DuAELayer.getAnims = function(layers, selected, timeRange) {
  * Can be the matchName of a propertyGroup to set all the subproperties.
  * @param {Boolean}	[offset=false]	- true to offset the current value, instead of replacing it
  * @param {Boolean}	[reverse=false]	- true to reverse the keyframes (in time)
+ * @param {Boolean} [dontMoveAncestors=false] - When set to true, the transform (position, rotation) values for ancestor layers (the ones without parent) will be offset to 0 before applying the animation.
  * @return {Boolean} true if the anim was actually set.
  */
-DuAELayer.setAnim = function(layer, anim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse) {
+DuAELayer.setAnim = function(layer, anim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse, dontMoveAncestors) {
     time = def(time, layer.containingComp.time);
     ignoreName = def(ignoreName, false);
     setExpression = def(setExpression, false);
     onlyKeyframes = def(onlyKeyframes, false);
     replace = def(replace, false);
     offset = def(offset, false);
+    dontMoveAncestors = def(dontMoveAncestors, false);
 
     if (reverse) DuAELayer.reverseAnims(anim);
+
+    var offsetTransform = false;
+    if (dontMoveAncestors && layer.parent == null) offsetTransform = true;
 
     for (var i = 0; i < anim.anims.length; i++) {
         var subAnim = anim.anims[i];
@@ -279,7 +284,7 @@ DuAELayer.setAnim = function(layer, anim, time, ignoreName, setExpression, onlyK
             if (subProp == null) continue;
             if (subProp.matchName == subAnim._matchName && subProp.matchName != 'ADBE Marker') {
                 subProp = new DuAEProperty(subProp);
-                var ok = subProp.setAnimation(subAnim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse);
+                var ok = subProp.setAnimation(subAnim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse, offsetTransform);
                 if (ok) break;
             }
         }
@@ -334,9 +339,12 @@ DuAELayer.setAllAnims = function(layers, anims, time, ignoreName, setExpression,
  * @param {Boolean}	[offset=false]	- true to offset the current value, instead of replacing it
  * @param {Boolean}	[reverse=false]	- true to reverse the keyframes (in time)<br />
  * Note: the remaining animations which are returned will already be reversed, do not set this to true again if you plan to set them later.
+ * @param {Boolean} [dontMoveAncestors=false] - When set to true, the transform (position, rotation) values for ancestor layers (the ones without parent) will be offset to 0 before applying the animation.
  * @return {DuAELayerAnimation[]} The animations which were not set (no corresponding layers)
  */
-DuAELayer.setAnims = function(layers, anims, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse) {
+DuAELayer.setAnims = function(layers, anims, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, reverse, dontMoveAncestors) {
+    dontMoveAncestors = def(dontMoveAncestors, false);
+
     //clone the array
     var remaining = anims.slice();
 
@@ -349,7 +357,7 @@ DuAELayer.setAnims = function(layers, anims, time, ignoreName, setExpression, on
         var ok = false;
         while (layer = it.next()) {
             if (layer.name.toLowerCase() == anim._name.toLowerCase() && layer.index == anim._index) {
-                DuAELayer.setAnim(layer, anim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, false);
+                DuAELayer.setAnim(layer, anim, time, ignoreName, setExpression, onlyKeyframes, replace, whiteList, offset, false, dontMoveAncestors);
                 ok = true;
                 break;
             }
