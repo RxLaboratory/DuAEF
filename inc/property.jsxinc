@@ -1988,6 +1988,7 @@ DuAEProperty.prototype.velocityAtTime = function(time, preExpression) {
 }
 
 /**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
  * Sets an expression to a property.<br />
  * With the ability to keep the initial value.
  * @param {string} expr - The expression
@@ -1996,15 +1997,15 @@ DuAEProperty.prototype.velocityAtTime = function(time, preExpression) {
 DuAEProperty.prototype.setExpression = function(expr, keepValue) {
     keepValue = def(keepValue, true);
 
-    var prop = this.getProperty();
+    this.do(function(duaeProp) {
+        prop = duaeProp.getProperty();
 
-    if (prop.propertyType == PropertyType.PROPERTY) {
-        if (!this.riggable()) return;
-        var comp = this.comp;
+        if (!duaeProp.riggable()) return;
+        var comp = duaeProp.comp;
         var originalValue = prop.valueAtTime(comp.time, false);
 
         //remove current expression
-        if (keepValue) this.removeExpression();
+        if (keepValue) duaeProp.removeExpression();
         else try {
             prop.expression = ""
         } catch (e) {
@@ -2019,13 +2020,8 @@ DuAEProperty.prototype.setExpression = function(expr, keepValue) {
         }
 
         //restore value
-        if (this.editable() && keepValue && this.dimensions() > 0) this.setValue(2 * originalValue - prop.valueAtTime(comp.time, false));
-    } else {
-        for (var i = 1, n = prop.numProperties; i < n; i++) {
-            p = new DuAEProperty(prop.property(i));
-            p.setExpression(expr, keepValue);
-        }
-    }
+        if (duaeProp.editable() && keepValue && duaeProp.dimensions() > 0) duaeProp.setValue(2 * originalValue - prop.valueAtTime(comp.time, false));
+    });
 }
 
 /**
