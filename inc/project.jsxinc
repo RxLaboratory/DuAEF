@@ -8,6 +8,7 @@ var DuAEProject = {};
 //undocumented flags
 DuAEProject.progressMode = false;
 DuAEProject.activeComp = null;
+DuAEProject.progressComp = null;
 
 /**
  * Sets the project in "waiting mode" to speed up things.
@@ -18,13 +19,16 @@ DuAEProject.setProgressMode = function(inProgress, showProgressBar) {
     inProgress = def(inProgress, true);
     showProgressBar = def(showProgressBar, true);
 
+    // Hide or show the progress bar
     if (showProgressBar && inProgress) {
         DuScriptUI.progressBar.reset();
         DuScriptUI.progressBar.show();
-    } else if (showProgressBar) DuScriptUI.progressBar.hide();
+    } else if (showProgressBar) DuScriptUI.progressBar.close();
 
+    // No change
     if (!inProgress && !DuAEProject.progressMode) return;
 
+    // Set progress mode
     if (inProgress) {
 
         //if not already in progress, create temp comp etc
@@ -37,6 +41,20 @@ DuAEProject.setProgressMode = function(inProgress, showProgressBar) {
 
             //store the current comp
             DuAEProject.activeComp = DuAEProject.getActiveComp();
+
+            // Create a temp comp
+            DuAEProject.progressComp = app.project.items.addComp(i18n._("Magic is happening..."), 100, 100, 1, 1, 24);
+            var viewer = DuAEProject.progressComp.openInViewer();
+            if (viewer) {
+                viewer.setActive();
+                viewer.maximized = true;
+                DuAE.toggleLayerControls();
+
+                // Add an icon!
+                var shape = DuAEProject.progressComp.layers.addShape();
+                DuAELayer.applyPreset(shape, preset_magic.toFile());
+                shape.selected = false;
+            }
         }
 
         DuAEProject.progressMode = true;
@@ -45,6 +63,16 @@ DuAEProject.setProgressMode = function(inProgress, showProgressBar) {
         //DuAE.toggleLayerControls();
 
         DuAEProject.progressMode = false;
+
+        if (DuAEProject.progressComp) {
+            DuAEProject.progressComp.remove();
+            DuAEProject.progressComp = null;
+        }
+
+        if (DuAEProject.activeComp) {
+            var viewer = DuAEProject.activeComp.openInViewer();
+            viewer.setActive();
+        }
     }
 }
 
@@ -540,4 +568,15 @@ DuAEProject.bakeCompositions = function(mode, frameStep) {
     DuAEProject.doComps(function(comp) {
         DuAEComp.bake(mode, frameStep, comp);
     });
+}
+
+/**
+ * Checks if the project contains at least one composition.
+ * @return {bool}
+ */
+DuAEProject.containsComp = function() {
+    for (var i = 1, ni = app.project.items.length; i < ni; i++) {
+        if (app.project.item(i) instanceof CompItem) return true;
+    }
+    return false;
 }
