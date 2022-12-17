@@ -54,6 +54,7 @@ function DuAEProperty(property) {
      * @type {int}
      */
     this.index = property.propertyIndex;
+    this.propertyIndex = property.propertyIndex;
     /**
      * Is this an effect? same as DuAEProperty.getProperty().isEffect
      * @memberof DuAEProperty.prototype
