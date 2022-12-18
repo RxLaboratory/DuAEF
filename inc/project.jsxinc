@@ -16,12 +16,14 @@ DuAEProject.progressRestoreLayerControls = false;
  * @param {Boolean} [inProgress=true] - True to set progress mode, false to stop it.
  * @param {Boolean} [showProgressBar=true] - Will show a nice progress bar if true
  * @param {Boolean} [askToHideLayerControls=false] - Will prompt the user to hide layer controls to improve performance.
+ * @param {int[]} [eventCoordinates] - Provide the screen coordinates to center the progress bar and dialogs on the corresponding screen.
  * @return {Boolean} false if the user cancelled the process, true otherwise
  */
-DuAEProject.setProgressMode = function(inProgress, showProgressBar, askToHideLayerControls) {
+DuAEProject.setProgressMode = function(inProgress, showProgressBar, askToHideLayerControls, eventCoordinates) {
     inProgress = def(inProgress, true);
     showProgressBar = def(showProgressBar, true);
     askToHideLayerControls = def(askToHideLayerControls, false);
+    eventCoordinates = def(eventCoordinates, null);
 
     // No change
     if (!inProgress && !DuAEProject.progressMode) return;
@@ -64,7 +66,13 @@ DuAEProject.setProgressMode = function(inProgress, showProgressBar, askToHideLay
                 });
                 hideButton.onClick = function() { dialog.result = 1; dialog.close(); };
 
-                DuScriptUI.showUI( dialog );
+                // Center and show
+                DuScriptUI.layout( dialog );
+                if (eventCoordinates) {
+                    location = DuScriptUI.centerInScreen( eventCoordinates, dialog.frameSize );
+                    dialog.location = location;
+                }
+                dialog.show();
 
                 if (dialog.result == 0) return false;
 
@@ -99,7 +107,7 @@ DuAEProject.setProgressMode = function(inProgress, showProgressBar, askToHideLay
 
         if (showProgressBar) {
             DuScriptUI.progressBar.reset();
-            DuScriptUI.progressBar.show();
+            DuScriptUI.progressBar.show( '', eventCoordinates );
         }
 
         DuAEProject.progressMode = true;
