@@ -54,15 +54,18 @@ DuAEProject.setProgressMode = function(inProgress, showProgressBar, askToHideLay
                 ), { 'multiline': true });
                 var validButtons = DuScriptUI.group(dialog, 'row');
                 var cancelButton = DuScriptUI.button(validButtons, {
-                    'text': i18n._("Cancel")
+                    'text': i18n._("Cancel"),
+                    'image': DuScriptUI.Icon.CLOSE
                 });
                 cancelButton.onClick = function() { dialog.result = 0; dialog.close(); };
                 var ignoreButton = DuScriptUI.button(validButtons, {
-                    'text': i18n._("Ignore")
+                    'text': i18n._("Ignore"),
+                    'image': DuScriptUI.Icon.NEXT
                 });
                 ignoreButton.onClick = function() { dialog.result = 2; dialog.close(); };
                 var hideButton = DuScriptUI.button(validButtons, {
-                    'text': i18n._("Hide layer controls")
+                    'text': i18n._("Hide layer controls"),
+                    'image': DuScriptUI.Icon.CHECK
                 });
                 hideButton.onClick = function() { dialog.result = 1; dialog.close(); };
 
