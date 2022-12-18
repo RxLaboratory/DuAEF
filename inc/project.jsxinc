@@ -9,21 +9,19 @@ var DuAEProject = {};
 DuAEProject.progressMode = false;
 DuAEProject.activeComp = null;
 DuAEProject.progressComp = null;
+DuAEProject.progressRestoreLayerControls = false;
 
 /**
  * Sets the project in "waiting mode" to speed up things.
  * @param {Boolean} [inProgress=true] - True to set progress mode, false to stop it.
  * @param {Boolean} [showProgressBar=true] - Will show a nice progress bar if true
+ * @param {Boolean} [askToHideLayerControls=false] - Will prompt the user to hide layer controls to improve performance.
+ * @return {Boolean} false if the user cancelled the process, true otherwise
  */
-DuAEProject.setProgressMode = function(inProgress, showProgressBar) {
+DuAEProject.setProgressMode = function(inProgress, showProgressBar, askToHideLayerControls) {
     inProgress = def(inProgress, true);
     showProgressBar = def(showProgressBar, true);
-
-    // Hide or show the progress bar
-    if (showProgressBar && inProgress) {
-        DuScriptUI.progressBar.reset();
-        DuScriptUI.progressBar.show();
-    } else if (showProgressBar) DuScriptUI.progressBar.close();
+    askToHideLayerControls = def(askToHideLayerControls, false);
 
     // No change
     if (!inProgress && !DuAEProject.progressMode) return;
@@ -39,8 +37,47 @@ DuAEProject.setProgressMode = function(inProgress, showProgressBar) {
             // enable them if they're already hidden
             //DuAE.toggleLayerControls();
 
-            //store the current comp
+            // store the current comp
             DuAEProject.activeComp = DuAEProject.getActiveComp();
+
+            if (askToHideLayerControls) {
+
+                // Ask to hide layer controls
+                var dialog = DuScriptUI.popUp("Hide layer controls", undefined, true);
+                dialog.result = 0;
+                dialog.content.add('statictext', undefined, i18n._(
+                    "You're starting a process which can take some time.\n" +
+                    "Hiding layer controls will improve performance a lot. Do you want to toggle layer controls now?\n\n" + 
+                    "If layer controls are already hidden, you can ignore this."
+                ), { 'multiline': true });
+                var validButtons = DuScriptUI.group(dialog, 'row');
+                var cancelButton = DuScriptUI.button(validButtons, {
+                    'text': i18n._("Cancel")
+                });
+                cancelButton.onClick = function() { dialog.result = 0; dialog.close(); };
+                var ignoreButton = DuScriptUI.button(validButtons, {
+                    'text': i18n._("Ignore")
+                });
+                ignoreButton.onClick = function() { dialog.result = 2; dialog.close(); };
+                var hideButton = DuScriptUI.button(validButtons, {
+                    'text': i18n._("Hide layer controls")
+                });
+                hideButton.onClick = function() { dialog.result = 1; dialog.close(); };
+
+                DuScriptUI.showUI( dialog );
+
+                if (dialog.result == 0) return false;
+
+                if (dialog.result == 1) {
+                    DuAE.toggleLayerControls();
+                    DuAEProject.progressRestoreLayerControls = true;
+                }
+                else {
+                    DuAEProject.progressRestoreLayerControls = false;
+                }
+                
+                delete dialog;
+            }
 
             // Create a temp comp
 
@@ -60,6 +97,11 @@ DuAEProject.setProgressMode = function(inProgress, showProgressBar) {
             }*/
         }
 
+        if (showProgressBar) {
+            DuScriptUI.progressBar.reset();
+            DuScriptUI.progressBar.show();
+        }
+
         DuAEProject.progressMode = true;
     } else {
         // Show layer controls
@@ -76,7 +118,14 @@ DuAEProject.setProgressMode = function(inProgress, showProgressBar) {
             var viewer = DuAEProject.activeComp.openInViewer();
             viewer.setActive();
         }
+
+        if (DuAEProject.progressRestoreLayerControls) DuAE.toggleLayerControls();
+        DuAEProject.progressRestoreLayerControls = false;
+
+        if (showProgressBar) DuScriptUI.progressBar.close();
     }
+
+    return true;
 }
 
 /**
