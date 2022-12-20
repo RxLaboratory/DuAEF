@@ -528,6 +528,16 @@ DuAELayer.getMaxDistance = function(layers) {
 DuAELayer.getWorldPos = function(layer, point, time) {
     time = def(time, layer.containingComp.time);
 
+    if (layer instanceof CameraLayer || layer instanceof LightLayer) {
+        var parent = layer.parent;
+        layer.parent = null;
+        var pos = layer.transform.position.valueAtTime(time, false);
+        point = def(point, [0,0,0]);
+        pos = pos + point;
+        layer.parent = parent;
+        return pos;
+    }
+
     // Without parent, just return the position
     if (layer.parent == null)
     {
@@ -537,7 +547,7 @@ DuAELayer.getWorldPos = function(layer, point, time) {
         return pos + (point - ap);
     }
 
-    if (layer instanceof CameraLayer || layer instanceof LightLayer || layer.threeDLayer) {
+    if (layer.threeDLayer) {
         var parent = layer.parent;
         layer.parent = null;
         var pos = layer.transform.position.valueAtTime(time, false);
