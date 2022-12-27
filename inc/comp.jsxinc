@@ -572,7 +572,7 @@ DuAEComp.checkLayerNames = function(comp) {
 }
 
 /**
- * Creates a new "Shape Null" in the comp.
+ * Creates a new "Null Shape" in the comp.
  * @param {CompItem} [comp=DuAEProject.getActiveComp] The comp where to create the layer
  * @param {float} [size=100] The size of the null
  * @param {Layer} [layer] A layer for the location of the null
@@ -606,7 +606,7 @@ DuAEComp.addNull = function(comp, size, layer) {
 }
 
 /**
- * Creates a new "Shape Adjustment Layer" in the comp.
+ * Creates a new "Adjustment Shape Layer" in the comp.
  * @param {CompItem} [comp=DuAEProject.getActiveComp] The comp where to create the layer
  * @returns {ShapeLayer} The adjustment layer
  */
@@ -633,7 +633,7 @@ DuAEComp.addAdjustmentLayer = function(comp) {
 }
 
 /**
- * Creates a new "Solid Adjustment Layer" in the comp.
+ * Creates a new "Solid Shape Layer" in the comp.
  * @param {DuColor} [color=DuColor.Color.RAINBOX_RED] The color of the solid
  * @param {CompItem} [comp=DuAEProject.getActiveComp] The comp where to create the layer
  * @returns {ShapeLayer} The adjustment layer
