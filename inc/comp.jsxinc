@@ -586,7 +586,7 @@ DuAEComp.addNull = function(comp, size, layer) {
 
     var nullLayer = comp.layers.addShape();
     nullLayer.guideLayer = true;
-    nullLayer.name = i18n._("Null");
+    nullLayer.name = i18n._("⛝");
     nullLayer.label = 1;
 
     DuAELayer.applyPreset(nullLayer, preset_null.toFile());
@@ -615,7 +615,7 @@ DuAEComp.addAdjustmentLayer = function(comp) {
     if (!comp) return;
 
     var layer = comp.layers.addShape();
-    layer.name = i18n._("Adjustment layer");
+    layer.name = DuAELayer.Type.ADJUSTMENT;
     layer.adjustmentLayer = true;
     layer.label = 5;
 
@@ -646,7 +646,7 @@ DuAEComp.addSolid = function(color, comp) {
     if (!(color instanceof DuColor)) color = new DuColor(color);
 
     var layer = comp.layers.addShape();
-    layer.name = i18n._("Solid");
+    layer.name = DuAELayer.Type.SOLID;
     layer.label = 1;
 
     var solidGroup = layer("ADBE Root Vectors Group").addProperty("ADBE Vector Group");

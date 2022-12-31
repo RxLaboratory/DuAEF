@@ -6,10 +6,10 @@
 var DuAELayer = {};
 
 DuAELayer.Type = {
-    NONE: '-',
-    NULL: 'Null',
-    SOLID: 'Solid',
-    ADJUSTMENT: 'Adjustment'
+    NONE: '✕',
+    NULL: '❌',
+    SOLID: '⬛',
+    ADJUSTMENT: '⚒'
 }
 
 /**
