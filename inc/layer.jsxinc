@@ -1940,3 +1940,15 @@ DuAELayer.angleFromLayers = function ( angleLayer, oppositeLayerA, oppositeLayer
     var radians = DuMath.angleFromSides( p, pA, pB );
     return radians * ( 180 / Math.PI );
 }
+
+/**
+ * Returns the location of the layer relative to the reference.
+ * @param {Layer} point The layer to check
+ * @param {Layer} referenceLayer The reference
+ * @return {DuMath.Location} The location
+ */
+DuAELayer.relativeLocation = function( layer, referenceLayer ) {
+    var lP = DuAELayer.getWorldPos(layer);
+    var rP = DuAELayer.getWorldPos(referenceLayer);
+    return DuMath.relativeLocation(lP, rP);
+}
