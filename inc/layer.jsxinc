@@ -6,7 +6,7 @@
 var DuAELayer = {};
 
 DuAELayer.Type = {
-    NONE: '✕',
+    NONE: '-', // ✕
     NULL: '❌',
     SOLID: '⬛',
     ADJUSTMENT: '⚒'
@@ -78,6 +78,26 @@ DuAELayer.setType = function(type, layers) {
             layer.label = 5;
         }
     }
+}
+
+
+/**
+ * Renames a layer, appending a number if needed to keep unique names, and fixing expressions
+ * @param {Layer} layer
+ * @param {string} newName
+ * @return {string} The new name which may be different than <code>newName</code> in case the layer has been numbered.
+ */
+DuAELayer.rename = function( layer, newName ) {
+
+    var oldName = layer.name;
+    
+    layer.name = '** Duik Temp Name **';
+    layer.name = DuAEComp.newUniqueLayerName(newName, layer.containingComp);
+    newName = layer.name;
+
+    app.project.autoFixExpressions(oldName, newName);
+
+    return newName;
 }
 
 /**
