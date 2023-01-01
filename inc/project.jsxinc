@@ -638,7 +638,7 @@ DuAEProject.bakeCompositions = function(mode, frameStep) {
  * @return {bool}
  */
 DuAEProject.containsComp = function() {
-    for (var i = 1, ni = app.project.items.length; i < ni; i++) {
+    for (var i = 1, ni = app.project.items.length; i <= ni; i++) {
         if (app.project.item(i) instanceof CompItem) return true;
     }
     return false;
