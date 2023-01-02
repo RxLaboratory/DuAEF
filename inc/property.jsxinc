@@ -2021,7 +2021,8 @@ DuAEProperty.prototype.setExpression = function(expr, keepValue) {
         }
 
         //restore value
-        if (duaeProp.editable() && keepValue && duaeProp.dimensions() > 0) duaeProp.setValue(2 * originalValue - prop.valueAtTime(comp.time, false));
+        if (keepValue)
+            if (duaeProp.dimensions() > 0 && duaeProp.editable()) duaeProp.setValue(2 * originalValue - prop.valueAtTime(comp.time, false));
     });
 }
 
