@@ -12,6 +12,20 @@ DuAELayer.Type = {
     ADJUSTMENT: '⚒'
 }
 
+// Lists all special character prefixes
+// needed to fix expressions
+DuAELayer.specialPrefixes = [
+    '❌',
+    '⬛',
+    '⚒',
+    '☍',
+    '⚲',
+    '✋',
+    '⛒',
+    '✜',
+    '☉'
+]
+
 /**
  * Checks if a string is one of the prefixes used to identify layer types in their names
  * @param {string} prefix The string to check
@@ -95,7 +109,11 @@ DuAELayer.rename = function( layer, newName ) {
     layer.name = DuAEComp.newUniqueLayerName(newName, layer.containingComp);
     newName = layer.name;
 
+    // First try with AE's method which is faster.
     app.project.autoFixExpressions(oldName, newName);
+    // Then our own because of AE bugs.
+    if (DuString.contains(newName, DuAELayer.specialPrefixes))
+        DuAEProject.autoFixExpressions(oldName, newName);
 
     return newName;
 }

@@ -70,11 +70,12 @@ DuAEExpression.updateCache = function(selectionMode) {
 /**
  * Runs a function on all expressions
  * @param {function} func The function to run, which takes one param, a {@link DuAEPropertyExpression} object.
- * @param {bool} [selectionMode=false] What to update
+ * @param {DuAE.SelectionMode} [selectionMode=DuAE.SelectionMode.ALL_COMPOSITIONS] What to update
  * @param {boolean} [updateCache=true] When false, the cache won't be updated before running the function. Set this to false if you already have updated the cache to improve performance.
  * @param {boolean} [apply=true] When false, the cache won't be applied back to Ae. Set this to false if you need to run other methods on expressions before applying the result to improve performance.
+ * @param {boolean} [onlyIfNoError=false] Applies the cache only if it doesn't generate an error.
  */
-DuAEExpression.doInExpresssions = function(func, selectionMode, updateCache, apply) {
+DuAEExpression.doInExpresssions = function(func, selectionMode, updateCache, apply, onlyIfNoError) {
     selectionMode = def(selectionMode, DuAE.SelectionMode.ALL_COMPOSITIONS);
     updateCache = def(updateCache, true);
     apply = def(apply, true);
@@ -91,11 +92,14 @@ DuAEExpression.doInExpresssions = function(func, selectionMode, updateCache, app
 /**
  * Applies all the expressions stored in the cache to the actual properties in After Effects, if and only if they've been modified.
  * @param {DuAEPropertyExpression[]} [cache] The cache to apply, if different from the automatic DuAEF Cache
+ * @param {boolean} [onlyIfNoError=false] Applies only if it doesn't generate an error.
  */
-DuAEExpression.applyCache = function( cache ) {
+DuAEExpression.applyCache = function( cache, onlyIfNoError ) {
     cache = def(cache, DuAEExpression.cache);
+    onlyIfNoError = def(onlyIfNoError, false);
+
     for (var i = 0, num = DuAEExpression.cache.length; i < num; i++) {
-        DuAEExpression.cache[i].apply();
+        DuAEExpression.cache[i].apply(onlyIfNoError);
     }
 }
 

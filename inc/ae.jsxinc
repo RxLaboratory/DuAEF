@@ -271,6 +271,14 @@ function DuAEPropertyExpression(property)
 		* @type {Boolean}
 		*/
 	this.changed = false;
+
+	/**
+	 * true if the expression has an error
+	 * @memberof DuAEPropertyExpression.prototype
+	 * @name inError
+	 * @type {Boolean}
+	 */
+	this.inError = property.expressionError != "";
 }
 
 /**
@@ -293,14 +301,19 @@ DuAEPropertyExpression.prototype.getProperty = function()
 
 /**
  * Applies the expression back to the actual properties in After Effects, if and only if it's been modified.
+ * @param {boolean} [onlyIfNoError=false] If true, applies the expression only if it doesn't generate an error
  */
-DuAEPropertyExpression.prototype.apply = function()
+DuAEPropertyExpression.prototype.apply = function( onlyIfNoError )
 {
 	if (this.layer.locked) return;
 	if (!this.changed) return;
 
+	onlyIfNoError = def(onlyIfNoError, false);
+	
 	var prop = this.getProperty();
+	var prevExpression = prop.expression;
 	prop.expression = this.expression;
+	if (prop.expressionError != "" && onlyIfNoError) prop.expression = prevExpression;
 }
 
 /**

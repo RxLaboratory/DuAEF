@@ -532,6 +532,24 @@ DuAEProject.replaceInExpressions = function(oldString, newString, caseSensitive)
 }
 
 /**
+ * Reimplements <code>app.project.autoFixExpressions()</code> because it does not work with some special characters.<br/>
+ * Automatically replaces text found in broken expressions in the project, if the new text causes the expression to evaluate without errors.
+ * @param {string} oldText The text to replace.
+ * @param {string} newText The new text.
+ */
+DuAEProject.autoFixExpressions = function(oldText, newText) {
+    
+    var re = new RegExp(DuRegExp.escape(oldText),'g');
+
+    DuAEExpression.doInExpresssions(function(e) {
+        if (!e.inError) return e;
+        e.changed = re.test(e.expression);
+        if (e.changed) e.expression = e.expression.replace(re, newText);
+        return e;
+    }, DuAE.SelectionMode.ALL_COMPOSITIONS, true, true, true); // Apply cache only if it doesn't generate an error
+}
+
+/**
  * Gets the unused footages.
  * @return {FootageItem[]} The list of unused items.
  */
