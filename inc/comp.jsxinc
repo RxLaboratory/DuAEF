@@ -586,7 +586,7 @@ DuAEComp.addNull = function(comp, size, layer) {
 
     var nullLayer = comp.layers.addShape();
     nullLayer.guideLayer = true;
-    nullLayer.name = i18n._("After Effects Layer", "Null");
+    nullLayer.name = i18n._p("After Effects Layer", "Null");
     nullLayer.label = 1;
 
     DuAELayer.applyPreset(nullLayer, preset_null.toFile());
