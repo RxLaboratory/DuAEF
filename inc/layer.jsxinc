@@ -7,9 +7,9 @@ var DuAELayer = {};
 
 DuAELayer.Type = {
     NONE: '-', // ✕
-    NULL: '❌',
-    SOLID: '⬛',
-    ADJUSTMENT: '⚒'
+    NULL: 'N',
+    SOLID: 'S',
+    ADJUSTMENT: 'FX'
 }
 
 // Lists all special character prefixes
@@ -112,6 +112,7 @@ DuAELayer.rename = function( layer, newName ) {
     // First try with AE's method which is faster.
     app.project.autoFixExpressions(oldName, newName);
     // Then our own because of AE bugs.
+    // DEACTIVATED: it's too long. Needs a way to speed up this method
     //if (DuString.contains(newName, DuAELayer.specialPrefixes))
     //    DuAEProject.autoFixExpressions(oldName, newName);
 
