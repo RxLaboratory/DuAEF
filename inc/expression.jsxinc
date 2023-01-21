@@ -10,8 +10,8 @@ var DuAEExpression = {};
 DuAEExpression.suspendCacheUpdates = false;
 
 // the expression cache is an array of DuAEPropertyExpression
-DuAEExpression.cache = [];
-DuAEExpression.lastCacheUpdateTime = 0;
+if (typeof $.global["DUAEF_DATA"].expressionCache === 'undefined') $.global["DUAEF_DATA"].expressionCache = [];
+if (typeof $.global["DUAEF_DATA"].lastExpressionCacheUpdateTime === 'undefined') $.global["DUAEF_DATA"].lastExpressionCacheUpdateTime = 0;
 
 /**
  * The different modes available to bake expressions
@@ -43,7 +43,7 @@ DuAEExpression.updateCache = function(selectionMode) {
     selectionMode = def(selectionMode, DuAE.SelectionMode.ALL_COMPOSITIONS);
 
     //clear cache
-    DuAEExpression.cache = [];
+    $.global["DUAEF_DATA"].expressionCache = [];
 
     var comps = [];
     if (selectionMode == DuAE.SelectionMode.ACTIVE_COMPOSITION || selectionMode == DuAE.SelectionMode.SELECTED_LAYERS || selectionMode == DuAE.SelectionMode.SELECTED_PROPERTIES) comps = [DuAEProject.getActiveComp()];
@@ -64,7 +64,7 @@ DuAEExpression.updateCache = function(selectionMode) {
         });
     }
 
-    DuAEExpression.lastCacheUpdateTime = new Date().getTime();
+    $.global["DUAEF_DATA"].lastExpressionCacheUpdateTime = new Date().getTime();
 }
 
 /**
@@ -82,8 +82,8 @@ DuAEExpression.doInExpresssions = function(func, selectionMode, updateCache, app
 
     if (updateCache) DuAEExpression.updateCache(selectionMode);
 
-    for (var i = 0, num = DuAEExpression.cache.length; i < num; i++) {
-        func(DuAEExpression.cache[i]);
+    for (var i = 0, num = $.global["DUAEF_DATA"].expressionCache.length; i < num; i++) {
+        func($.global["DUAEF_DATA"].expressionCache[i]);
     }
 
     if (apply) DuAEExpression.applyCache();
@@ -95,11 +95,11 @@ DuAEExpression.doInExpresssions = function(func, selectionMode, updateCache, app
  * @param {boolean} [onlyIfNoError=false] Applies only if it doesn't generate an error.
  */
 DuAEExpression.applyCache = function( cache, onlyIfNoError ) {
-    cache = def(cache, DuAEExpression.cache);
+    cache = def(cache, $.global["DUAEF_DATA"].expressionCache);
     onlyIfNoError = def(onlyIfNoError, false);
 
-    for (var i = 0, num = DuAEExpression.cache.length; i < num; i++) {
-        DuAEExpression.cache[i].apply(onlyIfNoError);
+    for (var i = 0, num = $.global["DUAEF_DATA"].expressionCache.length; i < num; i++) {
+        $.global["DUAEF_DATA"].expressionCache[i].apply(onlyIfNoError);
     }
 }
 

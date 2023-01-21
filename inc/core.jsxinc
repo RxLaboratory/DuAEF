@@ -125,3 +125,8 @@ DuAEF.enterRunTime = function()
 {
     DuESF.enterRunTime();
 }
+
+/**
+ * A Global Object to share some Data with other scripts
+ */
+if (typeof $.global["DUAEF_DATA"] === 'undefined') $.global["DUAEF_DATA"] = {};
