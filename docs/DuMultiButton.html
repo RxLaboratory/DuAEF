@@ -5,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> Home</title>
+  <title> DuMultiButton</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -104,17 +104,54 @@
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p></p>
-                    <h1>Home</h1>
+                    <p>Class</p>
+                    <h1>DuMultiButton</h1>
                 </header>
                 
 
 
 
+
+<section>
+
+<header>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>DuMultiButton<span class="signature">()</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description">For use with <a href="DuScriptUI.html"><code>DuScriptUI</code></a>.<br />A multi button popup.<br />This is not a real class, and cannot be instanciated.<br />Use <a href="DuScriptUI.html#.multiButton"><code>DuScriptUI.multiButton</code></a> to create a DuMultiButton.<br />The DuMultiButton inherits the Group object from ScriptUI and has all of its properties and methods.</div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class='vertical-section'>
+                <div class="members">
+                    <div class="member">
+                        <div class=name>
+                            <span class="tag">Constructor</span>
+                        </div>
+                        
+
+
+    
+    <h4 class="name" id="DuMultiButton">
+        <a class="href-link" href="#DuMultiButton">#</a>
+        
+        <span class="code-name">
+            
+                new DuMultiButton<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
     
 
 
-    <h3> </h3>
 
 
 
@@ -125,12 +162,323 @@
 
 
 
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+<div class="table-container">
+    <table class="props table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+            
+<tr class="deep-level-0">
+    
+        <td class="name"><code>label</code></td>
+    
+
+    <td class="type">
+    
+        
+<code class="param-type">StaticText</code>
+
+
+    
+    </td>
+
+    
+
+    
+
+    <td class="description last">The current text</td>
+</tr>
+
+        
+            
+<tr class="deep-level-0">
+    
+        <td class="name"><code>buttons</code></td>
+    
+
+    <td class="type">
+    
+        
+<code class="param-type">Array.&lt;<a href="DuButton.html">DuButton</a>></code>
+
+
+    
+    </td>
+
+    
+
+    
+
+    <td class="description last">The buttons</td>
+</tr>
+
+        
+            
+<tr class="deep-level-0">
+    
+        <td class="name"><code>text</code></td>
+    
+
+    <td class="type">
+    
+        
+<code class="param-type">string</code>
+
+
+    
+    </td>
+
+    
+
+    
+
+    <td class="description last">The current text</td>
+</tr>
+
+        
+            
+<tr class="deep-level-0">
+    
+        <td class="name"><code>build</code></td>
+    
+
+    <td class="type">
+    
+        
+<code class="param-type"><a href="DuMultiButton.html#~build">DuMultiButton~build</a></code>
+
+
+    
+    </td>
+
+    
+
+    
+
+    <td class="description last">You can use this callback to add a function which builds the UI of the popup, it will be called on first display.</td>
+</tr>
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="DuAEF.jsxinc.html" class="button">View Source</a>
+            <span>
+                <a href="DuAEF.jsxinc.html">DuAEF.jsxinc</a>, <a href="DuAEF.jsxinc.html#line13789">line 13789</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
+        
+    
+    </div>
+    
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class='vertical-section'>
+            <h1>Type Definitions</h1>
+            <div class="members">
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="~build">
+        <a class="href-link" href="#~build">#</a>
+        
+        <span class="code-name">
+            
+                build<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        You can use this callback to add a function which builds the content of the popup, it will be called on first display.<br />This allows a faster startup of your script by delaying the creation of the tabs which are hidden at startup.<br />You can use <code>this.addButton</code> to add buttons in the popup.
+    </div>
     
 
 
 
 
 
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="DuAEF.jsxinc.html" class="button">View Source</a>
+            <span>
+                <a href="DuAEF.jsxinc.html">DuAEF.jsxinc</a>, <a href="DuAEF.jsxinc.html#line13804">line 13804</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+            </div>
+        </div>
+    
+
+    
+</article>
+
+</section>
 
 
 

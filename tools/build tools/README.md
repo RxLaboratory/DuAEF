@@ -8,7 +8,7 @@ You'll need to install these first:
 - [nodejs](https://nodejs.org/en/)
 - [jsdoc](https://jsdoc.app/), installed with nodejs `npm install -g jsdoc`
 - Authorize jsdoc to run from powershell: `Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser`
-- Pull the jaguarjs-jsdoc module: `git submodule update --init --recursive`
+- Install the better-docs theme for jsdoc: `npm install --save-dev better-docs`
 
 Just run the `build.bat` script on *Windows* to build DuESF and the doc. The build will be in an `output` subfolder.
 
