@@ -1241,11 +1241,14 @@ DuAEProperty.prototype.setAnimation = function(anim, time, ignoreName, setExpres
             {
                 if (offsetTransform && (anim._matchName == 'ADBE Position' || anim._matchName == 'ADBE Rotate Z'))
                 {
-                    var offset = anim.startValue;
+                    var o = anim.startValue;
+                    offset = true;
                     for (var i = 0, ni = anim.keys.length; i < ni; i++)
                     {
-                        anim.keys[i].value -= offset;
+                        anim.keys[i].value -= o;
                     }
+                    if (anim._matchName == 'ADBE Position') anim.startValue = [0,0];
+                    else anim.startValue = 0;
                 }
                 return this.setAnim(anim, time, setExpression, replace, offset);
             }
