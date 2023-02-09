@@ -826,7 +826,7 @@ DuAEProperty.prototype.animation = function(selected, timeRange) {
 DuAEProperty.prototype.addToExpressionCache = function() {
     this.do(function(prop) {
         var exp = new DuAEPropertyExpression(prop);
-        if (!exp.empty) DuAEExpression.cache.push(exp);
+        if (!exp.empty) $.global["DUAEF_DATA"].expressionCache.push(exp);
     });
 }
 
