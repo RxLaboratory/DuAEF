@@ -22,7 +22,7 @@ DuAEProject.progressRestoreLayerControls = false;
 DuAEProject.setProgressMode = function(inProgress, showProgressBar, askToHideLayerControls, eventCoordinates) {
     inProgress = def(inProgress, true);
     showProgressBar = def(showProgressBar, true);
-    askToHideLayerControls = def(askToHideLayerControls, false);
+    askToHideLayerControls = def(askToHideLayerControls, false) && !DuESF.scriptSettings.get("layerControlsDialogDisabled", false );
     eventCoordinates = def(eventCoordinates, null);
 
     // No change
@@ -52,6 +52,17 @@ DuAEProject.setProgressMode = function(inProgress, showProgressBar, askToHideLay
                     "Hiding layer controls will improve performance a lot. Do you want to toggle layer controls now?\n\n" + 
                     "If layer controls are already hidden, you can ignore this."
                 ), { 'multiline': true });
+                var layerControlsAlertButton = DuScriptUI.checkBox(
+                    dialog.content,
+                    i18n._("Permanently disable this alert."),
+                    w16_dialog,
+                    i18n._("You can disable this alert dialog from showing before long operations.\nLayer Controls state won't be changed."),
+                    i18n._("This alert will be disabled."),
+                    w16_no_dialog
+                );
+                layerControlsAlertButton.onClick = function() {
+                    hideButton.enabled = !layerControlsAlertButton.checked;
+                };
                 var validButtons = DuScriptUI.group(dialog, 'row');
                 var cancelButton = DuScriptUI.button(validButtons, {
                     'text': i18n._("Cancel"),
@@ -79,12 +90,18 @@ DuAEProject.setProgressMode = function(inProgress, showProgressBar, askToHideLay
 
                 if (dialog.result == 0) return false;
 
-                if (dialog.result == 1) {
+                if (dialog.result == 1 && !layerControlsAlertButton.checked) {
+
                     DuAE.toggleLayerControls();
                     DuAEProject.progressRestoreLayerControls = true;
                 }
                 else {
                     DuAEProject.progressRestoreLayerControls = false;
+                    if (layerControlsAlertButton.checked)
+                    {
+                        DuESF.scriptSettings.set("layerControlsDialogDisabled", true);
+                        DuESF.scriptSettings.save();
+                    }
                 }
                 
                 delete dialog;
