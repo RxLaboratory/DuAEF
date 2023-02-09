@@ -2006,7 +2006,11 @@ DuAEProperty.prototype.setExpression = function(expr, keepValue) {
 
         if (!duaeProp.riggable()) return;
         var comp = duaeProp.comp;
-        var originalValue = prop.valueAtTime(comp.time, false);
+
+        var keepVal = keepValue;
+        if (!duaeProp.editable()) keepVal = false;
+        var originalValue;
+        if (keepVal) originalValue = prop.valueAtTime(comp.time, false);
 
         //remove current expression
         if (keepValue) duaeProp.removeExpression();
@@ -2024,7 +2028,7 @@ DuAEProperty.prototype.setExpression = function(expr, keepValue) {
         }
 
         //restore value
-        if (keepValue)
+        if (keepVal)
             if (duaeProp.dimensions() > 0 && duaeProp.editable()) duaeProp.setValue(2 * originalValue - prop.valueAtTime(comp.time, false));
     });
 }
