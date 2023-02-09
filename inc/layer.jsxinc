@@ -58,6 +58,7 @@ DuAELayer.type = function(layer) {
     if (!layer) return DuAELayer.Type.NONE;
     var type = DuAETag.getValue(layer, DuAETag.Key.LAYER_TYPE, DuAETag.Type.STRING);
     if (type == null) return DuAELayer.Type.NONE;
+    if (type == "") return DuAELayer.Type.NONE;
     return type;
 }
 
