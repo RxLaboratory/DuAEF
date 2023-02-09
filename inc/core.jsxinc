@@ -65,7 +65,7 @@
  * @namespace
  * @author Nicolas Dufresne and contributors
  * @copyright 2017 - 2023 Nicolas Dufresne, RxLaboratory
- * @version 1.0.0
+ * @version 1.0.1
  * @license GPL-3.0 <br />
  * DuAEF is free software: you can redistribute it and/or modify<br />
  * it under the terms of the GNU General Public License as published by<br />
@@ -88,7 +88,7 @@ var DuAEF = {};
  * @memberof DuAEF
  * @type {string}
  */
-DuAEF.version = new DuVersion('1.0.0');
+DuAEF.version = new DuVersion('1.0.1');
 /**
  * The current DuAEF File
  * @readonly
