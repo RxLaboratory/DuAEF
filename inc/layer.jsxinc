@@ -736,6 +736,8 @@ DuAELayer.firstKeyFrameTime = function(layers, selected) {
 
 /**
  * Sort the layers by their parenting (root at first index 0)
+ * Layers with a parent outside of the list are at the beginning, followed by layers without parent
+ * Note that the order of these layers is reversed
  * @param {Layer[]|Collection|DuList.<Layer>} layers - The layers to sort
  * @return {Layer[]} The sorted array
  */
@@ -810,7 +812,7 @@ DuAELayer.sortByIndex = function(layers) {
  */
 DuAELayer.parentChain = function(layers) {
     layers = new DuList(layers);
-    //unparent  all but the first
+    //unparent all but the first
     var layersUnparent = [];
     for (var i = 1, numL = layers.length(); i < numL; i++) {
         layersUnparent.push(layers.at(i));
