@@ -1070,15 +1070,19 @@ DuAE.executeCommand = function ( commandID, ignoreUndoGroups ) {
  */
 DuAE.openScriptUIPanel = function ( panelScriptName ) {
     if ( panelScriptName == "" ) return;
-    var scriptUIFile = new File( Folder.appPackage.absoluteURI + '/Scripts/ScriptUI Panels/' + panelScriptName );
-    if ( !scriptUIFile.exists ) {
-        scriptUIFile = new File( Folder.userData.absoluteURI + '/Adobe/After Effects/' + DuAE.version.versionString + '/Scripts/ScriptUI Panels/' + panelScriptName );
-    }
-    if ( !scriptUIFile.exists ) {
-        alert( "The panel " + panelScriptName + " is not installed." );
-        return;
-    }
-    DuAE.executeCommand( panelScriptName );
+	var scriptFolders = DuAE.scriptFolders("ScriptUI Panels");
+
+	for (var i = 0; i < scriptFolders.length; i++)
+	{
+		var scriptUIFile = new File( scriptFolders[i].absoluteURI + '/' + panelScriptName );
+		if ( scriptUIFile.exists )
+		{
+			DuAE.executeCommand( panelScriptName );
+			return;
+		}
+	}
+    
+    alert( i18n._( "The '%1' panel is not installed.", panelScriptName ) ); /// TRANSLATORS: %1 will be the name of the panel
 }
 
 /**
