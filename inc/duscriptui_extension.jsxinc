@@ -176,7 +176,11 @@ DuScriptUI.layerSelector = function( container, helpTip )
     {
         selector.refresh();
 
-        if (e.ctrlKey) {
+        if (e.ctrlKey && DuSystem.win) {
+            selector.setCurrentIndex(0);
+            return;
+        }
+        if (e.metaKey && DuSystem.mac) {
             selector.setCurrentIndex(0);
             return;
         }
@@ -474,7 +478,12 @@ DuScriptUI.compSelector = function( container, helpTip )
     {
         selector.refresh();
 
-        if (e.ctrlKey) {
+        if (e.ctrlKey && DuSystem.win) {
+            selector.setCurrentId(0);
+            return;
+        }
+
+        if (e.metaKey && DuSystem.mac) {
             selector.setCurrentId(0);
             return;
         }
