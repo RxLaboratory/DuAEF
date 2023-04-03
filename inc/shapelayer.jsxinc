@@ -76,3 +76,42 @@ DuAEShapeLayer.isSingleShape = function ( layer ) {
 
     return true;
 }
+
+/**
+ * Gets the content of a specific group in the shape layer
+ * @param {ShapeLayer} layer The layer
+ * @param {string} path The path, using group names. e.g. <code>'Group 1/Subgroup'</code>
+ * @return {PropertyGroup|null} The contents of the vector group, or null if it can't be found.
+ */
+DuAEShapeLayer.getVectorGroupContents = function( layer, path ) {
+    path = path.split("/");
+    var content = layer.property("ADBE Root Vectors Group");
+    if (!content) return null;
+    for (var i = 0, n = path.length; i < n; i++) {
+        subgroup = path[i];
+        content = content.property(subgroup);
+        if (!content) return null;
+        content = content.property('ADBE Vectors Group');
+    }
+    return content;
+}
+
+/**
+ * Gets the transform of a specific group in the shape layer
+ * @param {ShapeLayer} layer The layer
+ * @param {string} path The path, using group names. e.g. <code>'Group 1/Subgroup'</code>
+ * @return {PropertyGroup|null} The contents of the vector group, or null if it can't be found.
+ */
+DuAEShapeLayer.getVectorGroupTransform = function( layer, path ) {
+    path = path.split("/");
+    var content = layer.property("ADBE Root Vectors Group");
+    if (!content) return null;
+    for (var i = 0, n = path.length; i < n; i++) {
+        subgroup = path[i];
+        content = content.property(subgroup);
+        if (!content) return null;
+        if (i != n - 1) content = content.property('ADBE Vectors Group');
+        else content = content.property("ADBE Vector Transform Group");
+    }
+    return content;
+}
