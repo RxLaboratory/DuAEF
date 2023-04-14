@@ -254,10 +254,14 @@ DuAEProject.getItemById = function(id) {
 
 /**
  * Retrieves the first item with the given name
+ * @param {string} name The name to search
+ * @param {FolderItem} [folder] A subfolder to search in
  * @return {Item|null} The item
  */
-DuAEProject.getItemByName = function(name) {
-    var it = new DuList(app.project.items);
+DuAEProject.getItemByName = function(name, folder) {
+    var it;
+    if (typeof folder !== 'undefined') it = new DuList( folder.items );
+    else it = new DuList(app.project.items);
     while (item = it.next()) {
         if (item.name == name) return item;
     }
