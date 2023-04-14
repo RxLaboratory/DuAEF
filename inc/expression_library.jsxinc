@@ -1670,7 +1670,7 @@ DuAEExpression.Library["inverseLogistic"].requirements = [];
 DuAEExpression.Library["isZero"] = {};
 DuAEExpression.Library["isZero"].expression = ['function isZero(a)',
 	'{',
-	'if (a.length)',
+	'if (a instanceof Array)',
 	'{',
 	'for ( var i = 0; i < a.length; i++ )',
 	'{',
