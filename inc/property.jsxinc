@@ -471,6 +471,18 @@ DuAEProperty.prototype.numProperties = function() {
 }
 
 /**
+ * Reimplements the <code>PropertyGroup.setSelectedAtKey</code> method.
+ * @param {int|DuAEKeyframe} key The key to (un)select
+ * @param {Boolean} [selected=true] Whether to select or unselect
+ */
+DuAEProperty.prototype.setSelectedAtKey = function(key, selected) {
+    if (this.isGroup()) return;
+    if (key instanceof DuAEKeyframe) key = key._index;
+    var prop = this.getProperty();
+    prop.setSelectedAtKey(key, def(selected, true));
+}
+
+/**
  * Reimplements the <code>PropertyGroup.property()</code> method for convenience.
  * @param {string|int} index Either the name, matchName or the index.
  * @return {DuAEProperty|null} The sub-property as DuAEProperty object or null if not found.
@@ -923,19 +935,20 @@ DuAEProperty.prototype.lastKeyTime = function(selected) {
  * Sets a {@linkcode DuAEKeyframe} on a property
  * @param {DuAEKeyframe}	key	- The DuAEKeyframe.
  * @param {float}	[timeOffset=comp.time]	- The time offset (added to DuAEKeyframe._time) where to add the key frame.
+ * @return {Boolean} Success
  */
 DuAEProperty.prototype.setKey = function(key, timeOffset) {
     var prop = this.getProperty();
 
-    if (prop.elided) return;
+    if (prop.elided) return false;
 
     if (!prop.propertyType === PropertyType.PROPERTY) {
         DuDebug.throwError("Can not set a key on a group property", 'DuAEProperty.setKey');
-        return;
+        return false;
     }
-    if (!prop.canVaryOverTime) return;
+    if (!prop.canVaryOverTime) return false;
     if (prop.isSeparationLeader)
-        if (prop.dimensionsSeparated) return;
+        if (prop.dimensionsSeparated) return false;
 
     timeOffset = def(timeOffset, this.comp.time);
     var time = key._time + timeOffset;
@@ -944,7 +957,7 @@ DuAEProperty.prototype.setKey = function(key, timeOffset) {
 
     this.setValueAtTime(val, time);
 
-    if (prop.numKeys == 0) return;
+    if (prop.numKeys == 0) return false;
 
     //get the index of the created key
     var index = prop.nearestKeyIndex(time);
@@ -973,6 +986,11 @@ DuAEProperty.prototype.setKey = function(key, timeOffset) {
     } catch (err) {
         if (DuESF.debug) alert(err.description);
     }
+
+    // Select it
+    prop.setSelectedAtKey(index, true);
+
+    return true;
 
 }
 
