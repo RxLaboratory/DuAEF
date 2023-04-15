@@ -95,7 +95,6 @@ DuAELayer.setType = function(type, layers) {
     }
 }
 
-
 /**
  * Renames a layer, appending a number if needed to keep unique names, and fixing expressions
  * @param {Layer} layer
@@ -569,32 +568,25 @@ DuAELayer.getWorldPos = function(layer, point, time) {
     time = def(time, layer.containingComp.time);
 
     if (layer instanceof CameraLayer || layer instanceof LightLayer) {
-        var parent = layer.parent;
-        layer.parent = null;
-        var pos = layer.transform.position.valueAtTime(time, false);
         point = def(point, [0,0,0]);
-        pos = pos + point;
-        layer.parent = parent;
-        return pos;
+    }
+    else {
+        point = def(point, layer.transform.anchorPoint.valueAtTime(time, false));
     }
 
-    // Without parent, just return the position
-    if (layer.parent == null)
-    {
-        var pos = layer.transform.position.valueAtTime(time, false);
-        var ap = layer.transform.anchorPoint.valueAtTime(time, false);
-        point = def(point, ap);
-        return pos + (point - ap);
-    }
+    if (layer instanceof CameraLayer || layer instanceof LightLayer || layer.threeDLayer) {
 
-    if (layer.threeDLayer) {
-        var parent = layer.parent;
-        layer.parent = null;
-        var pos = layer.transform.position.valueAtTime(time, false);
-        var ap = layer.transform.anchorPoint.valueAtTime(time, false);
-        point = def(point, ap);
-        pos = pos + (point - ap);
-        layer.parent = parent;
+        // Add null
+        var comp = layer.containingComp;
+        var nullLayer = comp.layers.addNull();
+        nullLayer.threeDLayer = true;
+        var p = nullLayer.transform.position;
+
+        p.expression = 'thisComp.layer(' + layer.index + ').toWorld(' + point.toSource() + ');';
+        var pos = p.value;
+
+        nullLayer.remove();
+
         return pos;
     }
 
@@ -1466,7 +1458,7 @@ DuAELayer.repositionAnchorPoint = function(layer, value) {
     // Get future position for each position keyframe
 
     // New positions, one per keyframe
-    var newPositions = [];
+    /*var newPositions = [];
     var newXPositions = [];
     var newYPositions = [];
     var newZPositions = [];
@@ -1521,11 +1513,16 @@ DuAELayer.repositionAnchorPoint = function(layer, value) {
             var newPos = DuAELayer.getWorldPos(layer, value);
             newPositions.push(newPos);
         }
-    }
-    
+    }*/
+
+    // Keep the current position of the layer
+    var position = DuAELayer.getWorldPos(layer, [0,0,0]);
 
     // Set anchor point
     layer.transform.anchorPoint.setValue(value);
+
+    // Get the position offset
+    var offset = DuAELayer.getWorldPos(layer, [0,0,0]) - position;
 
     // Adjust position for keyframes
     if (layer.transform.position.dimensionsSeparated) {
@@ -1533,34 +1530,34 @@ DuAELayer.repositionAnchorPoint = function(layer, value) {
         var nK = p.numKeys;
         if (nK > 0) {
             for (var i = 1; i <= nK; i++)
-                p.setValueAtKey(i, newXPositions[i - 1]);
+                p.setValueAtKey(i, p.keyValue(i) - offset[0]);
         }
-        else p.setValue(newXPositions[0]);
+        else p.setValue( p.value - offset[0] );
         
         p = layer.transform.property('ADBE Position_1');
         nK = p.numKeys;
         if (nK > 0) {
             for (var i = 1; i <= nK; i++)
-                p.setValueAtKey(i, newYPositions[i - 1]);
+                p.setValueAtKey(i, p.keyValue(i) - offset[1]);
         }
-        else p.setValue(newYPositions[0]);
+        else p.setValue( p.value - offset[1] );
 
         p = layer.transform.property('ADBE Position_2');
         nK = p.numKeys;
         if (nK > 0) {
             for (var i = 1; i <= nK; i++)
-                p.setValueAtKey(i, newZPositions[i - 1]);
+                p.setValueAtKey(i, p.keyValue(i) - offset[2]);
         }
-        else if (layer.threeDLayer) p.setValue(newZPositions[0]);
+        else if (layer.threeDLayer) p.setValue( p.value - offset[2] );
     }
     else {
         var p = layer.transform.position;
         nK = p.numKeys;
         if (nK > 0) {
             for (var i = 1; i <= nK; i++)
-                p.setValueAtKey(i, newPositions[i - 1]);
+                p.setValueAtKey(i, p.keyValue(i) - offset);
         }
-        else p.setValue(newPositions[0]);
+        else p.setValue( p.value - offset );
     }
     
     // Reparent
