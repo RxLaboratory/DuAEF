@@ -238,12 +238,20 @@ DuAEProperty.prototype.valueAtTime = function(time, preExpression) {
 
 /**
  * Reimplements the <code>Property.selectedKeys</code> attribute for convenience.
+ * @param {Boolean} [asObject=false] If true, returns {@link DuAEKeyframe} objects instead of key indices
  * @return {int[]} The list of selected keyframe indices.
  */
-DuAEProperty.prototype.selectedKeys = function() {
+DuAEProperty.prototype.selectedKeys = function( asObject ) {
     if (this.isGroup()) return [];
+    asObject = def(asObject, false);
     var prop = this.getProperty();
-    return prop.selectedKeys;
+    var ks = prop.selectedKeys;
+    if (!asObject) return ks;
+    var keys = [];
+    for(var k = 0, nk = ks.length; k < nk; k++) {
+        keys.push( this.keyAtIndex(ks[k] ));
+    }
+    return keys;
 }
 
 /**
