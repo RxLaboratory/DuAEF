@@ -34,6 +34,15 @@ DuAEKeySpatialProperties.prototype._clone = function() {
 }
 
 /**
+ * Reverses all the influences (swaps in and out)
+ */
+DuAEKeySpatialProperties.prototype.reverse = function() {
+	var inTangent = this.inTangent;
+	this.inTangent = this.outTangent;
+	this.outTangent = inTangent;
+}
+
+/**
 	 Constructs a new DuAEKeyframe
 	* @class DuAEKeyframe
 	* @classdesc Properties of an After Effects Keyframe, as returned by {@linkcode DuAEProperty.keys} or {@linkcode DuAEProperty.keyAtIndex} or {@linkcode DuAEProperty.keyAtTime}.
@@ -87,6 +96,21 @@ function DuAEKeyframe( other ){
  */
 DuAEKeyframe.prototype._clone = function() {
 	return new DuAEKeyframe( this );
+}
+
+/**
+ * Reverses all the influences (swaps in and out)
+ */
+DuAEKeyframe.prototype.reverse = function() {
+	var inType = this._inInterpolationType;
+	this._inInterpolationType = this._outInterpolationType;
+	this._outInterpolationType = inType;
+
+	var inEase = this.inEase;
+	this.inEase = this.outEase;
+	this.outEase = inEase;
+
+	this.spatialProperties.reverse();
 }
 
 /**

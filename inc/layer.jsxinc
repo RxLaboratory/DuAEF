@@ -433,14 +433,16 @@ DuAELayer.reverseAnims = function(anims) {
         if (anim.type == 'anim') {
             //reverse the array
             anim.keys = anim.keys.reverse();
-            //set the new times
+            //set the new times and reverse influences
             for (var i = 0, num = anim.keys.length; i < num; i++) {
                 var ratio = 1 - ((anim.keys[i]._time - startTime) / duration);
                 anim.keys[i]._time = ratio * duration + startTime;
-                var sV = anim.endValue;
-                anim.endValue = anim.startValue;
-                anim.startValue = sV;
+                anim.keys[i].reverse();                
             }
+            //reverse start and endvalues
+            var sV = anim.endValue;
+            anim.endValue = anim.startValue;
+            anim.startValue = sV;
         } else if (anim.anims) {
             for (var i = 0, num = anim.anims.length; i < num; i++) {
                 reverse(anim.anims[i]);
