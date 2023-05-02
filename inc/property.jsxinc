@@ -1025,19 +1025,13 @@ DuAEProperty.prototype.setValue = function(value, defaultTime) {
         if (prop.dimensionsSeparated) {
             var group = prop.parentProperty;
             var index = prop.propertyIndex;
-            var i = 0;
-            var ok = false;
-            // The sepearation followers should be the next properties in the group
-            while (true) {
-                var p = group.property(index++);
-                if (!p) { ok = false; break; }
-                if (!p.isSeparationFollower) break;
-                if (value.length == i) break;
+            var ok = true;
+            for(var i = 1; i <= value.length; i++) {
+                var p = group.property(index+i);
+                alert(p.name);
                 p = new DuAEProperty(p);
-                var test = p.setValue( value [i] );
-                if (i == 0) ok = test;
-                else if (!test) ok = false;
-                i++;
+                var test = p.setValue( value[i-1] );
+                if (ok) ok = test;
             }
             return ok;
         }
