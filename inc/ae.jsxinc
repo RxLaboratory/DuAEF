@@ -114,6 +114,24 @@ DuAEKeyframe.prototype.reverse = function() {
 }
 
 /**
+ * Checks if all speed eases are 0
+ * @return {Boolean}
+ */
+DuAEKeyframe.prototype.stops = function() {
+	if (key.inEase)
+		for (var i =0; i < this.inEase.length; i++) {
+			if (Math.abs(this.inEase[i].speed) > 0) return false;
+		}
+
+	if (key.outEase)
+		for (var i =0; i < this.outEase.length; i++) {
+			if (Math.abs(this.outEase[i].speed) > 0) return false;
+		}
+
+	return true;
+}
+
+/**
 	* Constructs a new animation
 	* @class DuAEPropertyAnimation
 	* @classdesc Describes the animation of an After Effects property
