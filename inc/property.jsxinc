@@ -2979,6 +2979,7 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
 
                 // Temp workaround because we need to wait for AE!
                 var slowDown = 200;
+                var timeOffset = 0;
 
                 // Reset original interpolation if there are keyframes at the same time (+- a half step)
                 // AND velocity was 0 AND prev and next values are closer after that
@@ -3000,7 +3001,9 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
                         if (key.inEase && key.outEase) prop.setTemporalEaseAtKey(keyIndex, key.inEase, key.outEase);
 
                         // Check if it's better!
-                        $.sleep(slowDown);
+                        //$.sleep(slowDown);
+                        propInfo.comp.time += step;
+                        timeOffset += step;
                         var newPrevOffset = DuMath.length( prop.valueAtTime(time-step, false), extremeValuesAround[t][0] );
                         var newNextOffset = DuMath.length( prop.valueAtTime(time+step, false), extremeValuesAround[t][1] );
 
@@ -3035,7 +3038,9 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
                         }
                     }*/
 
-                    $.sleep(slowDown);
+                    //$.sleep(slowDown);
+                    propInfo.comp.time += step;
+                    timeOffset += step;
                     var currentPrevOffset = DuMath.length( prop.valueAtTime(time-step, false), extremeValuesAround[t][0] );
                     //alert('current offset before: ' + currentPrevOffset);
                     var prevTestOffset = Number.POSITIVE_INFINITY;
@@ -3055,7 +3060,9 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
                                 prop.setTemporalEaseAtKey(keyIndex, testEase, prop.keyOutTemporalEase(keyIndex));
 
                                 // Check the new offset
-                                $.sleep(slowDown);
+                                //$.sleep(slowDown);
+                                propInfo.comp.time += step;
+                                timeOffset += step;
                                 var testPrevOffset = DuMath.length( prop.valueAtTime(time-step, false), extremeValuesAround[t][0] );
                                 //alert('test offset before: ' + testPrevOffset);
                                 // Restore previous if we've gone too far
@@ -3090,7 +3097,9 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
                         }
                     }*/
 
-                    $.sleep(slowDown);
+                    //$.sleep(slowDown);
+                    propInfo.comp.time += step;
+                    timeOffset += step;
                     var currentNextOffset = DuMath.length( prop.valueAtTime(time+step, false), extremeValuesAround[t][1] );
                     //alert('current offset after: ' + currentNextOffset);
                     prevTestOffset = Number.POSITIVE_INFINITY;
@@ -3110,7 +3119,9 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
                                 prop.setTemporalEaseAtKey(keyIndex, prop.keyInTemporalEase(keyIndex), testEase);
 
                                 // Check the new offset
-                                $.sleep(slowDown);
+                                //$.sleep(slowDown);
+                                propInfo.comp.time += step;
+                                timeOffset += step;
                                 var testNextOffset = DuMath.length( prop.valueAtTime(time+step, true), extremeValuesAround[t][1] );
                                 //alert('test offset after: ' + testNextOffset);
                                 // Restore previous if we've gone too far
@@ -3136,6 +3147,9 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
                         }
                     }
                 }
+
+                // Reset the comp CTI
+                propInfo.comp.time -= timeOffset;
             }
             catch (e) { if (DuESF.debug) alert("Line: " + e.line + "\n" + e.message); }
         }
