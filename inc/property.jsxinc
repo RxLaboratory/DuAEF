@@ -2960,7 +2960,7 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
             }
         }
 
-         // Adjust the precision for comparisons
+        // Adjust the precision for comparisons
         var comparisonPrecision = amplitude / 50 * frameStep;
         // Disable expression
         prop.expressionEnabled = false;
