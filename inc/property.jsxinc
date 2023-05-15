@@ -2992,6 +2992,7 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
                         if ( Math.abs(key._time - time) > step*frameStep/2 ) continue;
 
                         // Check the current offsets
+                        $.sleep(slowDown);
                         var prevOffset = DuMath.length( prop.valueAtTime(time-step, false), extremeValuesAround[t][0] );
                         var nextOffset = DuMath.length( prop.valueAtTime(time+step, false), extremeValuesAround[t][1] );
 
@@ -3001,9 +3002,10 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
                         if (key.inEase && key.outEase) prop.setTemporalEaseAtKey(keyIndex, key.inEase, key.outEase);
 
                         // Check if it's better!
-                        //$.sleep(slowDown);
+                        $.sleep(slowDown);
                         propInfo.comp.time += step;
                         timeOffset += step;
+                        $.sleep(slowDown);
                         var newPrevOffset = DuMath.length( prop.valueAtTime(time-step, false), extremeValuesAround[t][0] );
                         var newNextOffset = DuMath.length( prop.valueAtTime(time+step, false), extremeValuesAround[t][1] );
 
@@ -3039,7 +3041,7 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
                     }*/
 
                     //$.sleep(slowDown);
-                    propInfo.comp.time += step;
+                   /* propInfo.comp.time += step;
                     timeOffset += step;
                     var currentPrevOffset = DuMath.length( prop.valueAtTime(time-step, false), extremeValuesAround[t][0] );
                     //alert('current offset before: ' + currentPrevOffset);
@@ -3086,7 +3088,7 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
                                 prop.setTemporalEaseAtKey(keyIndex, ease, prop.keyOutTemporalEase(keyIndex));
                             }
                         }
-                    }
+                    }*/
 
                     /*var outEase = prop.keyOutTemporalEase(keyIndex);
                     var outSpeed = true;
@@ -3098,7 +3100,7 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
                     }*/
 
                     //$.sleep(slowDown);
-                    propInfo.comp.time += step;
+                    /*propInfo.comp.time += step;
                     timeOffset += step;
                     var currentNextOffset = DuMath.length( prop.valueAtTime(time+step, false), extremeValuesAround[t][1] );
                     //alert('current offset after: ' + currentNextOffset);
@@ -3145,7 +3147,7 @@ DuAEProperty.prototype.smartBakeExpressions = function(frameStep) {
                                 prop.setTemporalEaseAtKey(keyIndex, prop.keyInTemporalEase(keyIndex), ease);
                             }
                         }
-                    }
+                    }*/
                 }
 
                 // Reset the comp CTI
