@@ -1498,20 +1498,8 @@ DuAEProperty.prototype.setEase = function( easeInValue, easeOutValue, velocityIn
         for (var k = 0, numK = prop.selectedKeys.length; k < numK; k++) {
             var key = prop.selectedKeys[k];
 
-            if (isdef( easeInValue )) {
-                if (!isdef( velocityInValue ) && prop.keyInInterpolationType(key) == KeyframeInterpolationType.LINEAR) {
-                    vInValue = 0;
-                }
-            }
-
-            if (isdef( easeOutValue )) {
-                if (!isdef( velocityOutValue ) && prop.keyOutInterpolationType(key) == KeyframeInterpolationType.LINEAR) {
-                    vOutValue = 0;
-                }
-            }
-
             //compute the velocity
-            if (velocityAsPercent) {
+            if (velocityAsPercent && (isdef(velocityInValue) || isdef(velocityOutValue))) {
                 //get speed just before and after as if it was linear
                 var prevSpeed;
                 var nextSpeed;
@@ -1548,16 +1536,14 @@ DuAEProperty.prototype.setEase = function( easeInValue, easeOutValue, velocityIn
                     if (valAfter < val) signAfter = -1;
                 }
 
-                if (velocityInValue == velocityOutValue) {
+                if (isdef(velocityInValue) && isdef(velocityOutValue) && velocityInValue == velocityOutValue) {
                     //select average speed
                     var speed = (prevSpeed + nextSpeed) / 2;
-
                     vInValue = velocityInValue * speed / 100 * signBefore;
                     vOutValue = velocityOutValue * speed / 100 * signBefore;
                 } else {
-
-                    vInValue = velocityInValue * prevSpeed / 100 * signBefore;
-                    vOutValue = velocityOutValue * nextSpeed / 100 * signAfter;
+                    if (isdef(velocityInValue)) vInValue = velocityInValue * prevSpeed / 100 * signBefore;
+                    if (isdef(velocityOutValue)) vOutValue = velocityOutValue * nextSpeed / 100 * signAfter;
                 }
 
             }
