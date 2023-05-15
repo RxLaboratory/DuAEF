@@ -1339,6 +1339,7 @@ DuAEProperty.prototype.selectKeys = function(inTime, outTime) {
     outTime = def(outTime, inTime);
     // Run
     this.do(function(propInfo) {
+        if (propInfo.matchName == 'ADBE Marker') return;
         prop = propInfo.getProperty();
         if (prop.elided) return;
         if (prop.isSeparationLeader)
