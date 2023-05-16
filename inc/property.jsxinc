@@ -207,7 +207,6 @@ DuAEProperty.prototype.value = function( preExpression ) {
     if (this.isGroup()) return null;
     preExpression = def(preExpression, false);
 
-    var d = this.dimensions();
     var v;
     if (preExpression)
         v = this.getProperty().valueAtTime(this.comp.time, true);
@@ -217,6 +216,17 @@ DuAEProperty.prototype.value = function( preExpression ) {
     v = this.fixValue(v);
 
     return v;
+}
+
+/**
+ * Reimplements the <code>Property.expressionEnabled</code> attribute for convenience.
+ * @return {boolean} When true, the named property uses its associated expression to generate a value.<br>
+ * When false, the keyframe information or static value of the property is used. This attribute can be set to true only if canSetExpression for the named property is true and expression contains a valid expression string.
+ */
+DuAEProperty.prototype.expressionEnabled = function( preExpression ) {
+    if (this.isGroup()) return false;
+
+    return this.getProperty().expressionEnabled;
 }
 
 /**
@@ -2248,6 +2258,28 @@ DuAEProperty.prototype.removeExpressions = function(filter, keepPostExpressionVa
         if (propInfo.riggable()) {
             if (keepPostExpressionValue) propInfo.setValue(prop.value);
             prop.expression = '';
+        }
+    });
+}
+
+/**
+ * <p><i><strong>Recursive</strong>: this method can run on a property group.</i></p>
+ * Enables or disables all expressions found in the property.
+ * @param {Boolean} [enable=true] Set to false to disable expressions
+ */
+DuAEProperty.prototype.enableExpressions = function(enable) {
+    // Defaults
+    enable = def(enable, true);
+
+    // Run
+    this.do(function(propInfo) {
+        prop = propInfo.getProperty();
+        var expression = prop.expression;
+
+        if (expression == '') return;
+
+        if (propInfo.riggable()) {
+            prop.expressionEnabled = enable;
         }
     });
 }
