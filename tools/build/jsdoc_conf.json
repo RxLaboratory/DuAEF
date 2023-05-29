@@ -1,0 +1,54 @@
+{
+    "plugins": [
+        "node_modules/better-docs/category"
+    ],
+    "recurseDepth": 1,
+    "source": {
+		"include": [ "output/DuAEF.jsxinc" ],
+        "includePattern": ".+\\.jsxinc$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "sourceType": "script",
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc","closure"]
+    },
+    "templates": {
+        "cleverLinks": true,
+        "monospaceLinks": false,
+        "copyright"             : "Copyright (c) 2017-2023 Nicolas Dufresne and contributors",
+        "includeDate"           : true,
+        "search"                : "true",
+        "better-docs": {
+            "name": "DuAEF API Reference",
+            "logo": "",
+            "title": "",
+            "css": "jsdoc.css",
+            "hideGenerator": false,
+            "navLinks": [
+                {
+                    "label": "Website",
+                    "href": "https://rxlaboratory.org"
+                },
+                {
+                    "label": "Source code",
+                    "href": "https://github.com/RxLaboratory/DuAEF"
+                },
+                {
+                    "label": "Donate",
+                    "href": "http://donate.rxlab.info"
+                }
+            ]
+        }
+    },
+    "meta": {
+        "title": "DuAEF",
+        "description": "The Duduf After Effects Framework reference",
+        "keyword": "ExtendScript, Adobe, After Effects"
+    },
+	"opts": {
+        "template": "node_modules/better-docs",
+		"recurse": false,
+        "destination": "../../docs"
+    }
+}

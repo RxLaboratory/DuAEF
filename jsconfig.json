@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+      "module": "commonjs",
+      "target": "es3",
+      "checkJs": true,
+      "ignoreDeprecations": "5.0"
+    },
+    "include": ["./src", "./types", "./examples"]
+  }
