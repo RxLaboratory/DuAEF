@@ -54,6 +54,10 @@ xcopy /Y "%docs_path%\DuAEF.html" "%docs_path%\index.html"
 xcopy /S /I /Y "%docs_path%" "%build_path%\docs"
 xcopy /S /I /Y "%types_path%\.." "%build_path%\types"
 echo " " > "%dist_path%\DuAEF.jsxinc"
+echo " " > "%dist_path%\setup.jsxinc"
+echo " " > "%build_path%\setup.jsxinc"
 xcopy /Y "%build_path%\DuAEF.jsxinc" "%dist_path%\DuAEF.jsxinc"
+xcopy /Y "%repoPath%\src\setup.jsxinc" "%dist_path%\setup.jsxinc"
+xcopy /Y "%repoPath%\src\setup.jsxinc" "%build_path%\setup.jsxinc"
 
 pause
