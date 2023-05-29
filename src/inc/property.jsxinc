@@ -334,7 +334,7 @@ DuAEProperty.prototype.unit = function() {
     this.__isPixels = this.__unitsText == localize("$$$/AE/TLW/GraphEditor/PixelsSource=pixels");
     this.__unit = '';
     if (this.__isPercent) this.__unit = "%";
-    if (this.__isAngle) this.__unit = "°";
+    if (this.__isAngle) this.__unit = "\u00B0";
     if (this.__isPixels) this.__unit = localize("$$$/AE/TLW/GraphEditor/PixelsDest=px");
     return this.__unit;
 }

@@ -405,7 +405,7 @@ DuAE.Type =
 DuAE.Unit =
 {
 	PIXELS: localize("$$$/AE/TLW/GraphEditor/PixelsDest=px"),
-	DEGREES: localize("$$$/AE/TLW/GraphEditor/DegreesDest=°"),
+	DEGREES: localize("$$$/AE/TLW/GraphEditor/DegreesDest=\u00B0"),
 	PERCENT: localize("$$$/AE/TLW/GraphEditor/PercentDest=%")
 }
 

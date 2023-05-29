@@ -5940,7 +5940,7 @@ DuVersion.checkUpdate = function()
 			for (var i = 0; i &lt; descriptionList.length; i++) {
 				var trimmedLine = DuString.trim(descriptionList[i]);
 				if (DuString.startsWith(trimmedLine, "- ")) {
-					descriptionList[i] = descriptionList[i].replace("- ", "• ");
+					descriptionList[i] = descriptionList[i].replace("- ", "\u2022 ");
 				}
 			}
 			reply.description = descriptionList.join("\n");
@@ -20305,7 +20305,7 @@ DuAE.Type =
 DuAE.Unit =
 {
 	PIXELS: localize("$$$/AE/TLW/GraphEditor/PixelsDest=px"),
-	DEGREES: localize("$$$/AE/TLW/GraphEditor/DegreesDest=°"),
+	DEGREES: localize("$$$/AE/TLW/GraphEditor/DegreesDest=\u00B0"),
 	PERCENT: localize("$$$/AE/TLW/GraphEditor/PercentDest=%")
 }
 
@@ -21878,7 +21878,7 @@ DuAEProperty.prototype.unit = function() {
     this.__isPixels = this.__unitsText == localize("$$$/AE/TLW/GraphEditor/PixelsSource=pixels");
     this.__unit = '';
     if (this.__isPercent) this.__unit = "%";
-    if (this.__isAngle) this.__unit = "°";
+    if (this.__isAngle) this.__unit = "\u00B0";
     if (this.__isPixels) this.__unit = localize("$$$/AE/TLW/GraphEditor/PixelsDest=px");
     return this.__unit;
 }
