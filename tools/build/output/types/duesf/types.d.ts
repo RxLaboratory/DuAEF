@@ -538,6 +538,7 @@ declare class DuDebugLog {
  * @property isArray - true if the original  list is an Array, false otherwise
  */
 declare class DuList {
+    constructor(obj?: any[] | Collection | DuList);
     /**
      * True if the original list is an After Effects Collection, false otherwise.
      */
@@ -553,7 +554,7 @@ declare class DuList {
     /**
      * The current index of the iterator.
      */
-    readonly current: int;
+    readonly current: number;
     /**
      * True if the iterator is at the start.
      */
@@ -570,7 +571,7 @@ declare class DuList {
      * Returns the number of items in the list
      * @returns The number of items.
      */
-    length(): int;
+    length(): number;
     /**
      * Alias for {@link DuList#length DuList.length()}
      */
@@ -581,14 +582,14 @@ declare class DuList {
      * @param index - The index of the item. If it is out of range (negative or > length()-1), returns null
      * @returns The item at the given index.
      */
-    at(index: int): any;
+    at(index: number): any;
     /**
      * Gets the first index of a value, or -1 if not found
      * @param value - The value to find. Must be compatible with the == operand if you don't provide a comparison function
      * @param [comparisonFunction] - A function which compares two values which returns true if the values are considered the same.
      * @returns The index of the value, -1 if not found
      */
-    indexOf(value: any, comparisonFunction?: (...params: any[]) => any): int;
+    indexOf(value: any, comparisonFunction?: (...params: any[]) => any): number;
     /**
      * Checks if the list contains the item
      * @param value - The value to find. Must be compatible with the == operand if you don't provide a comparison function
@@ -612,7 +613,7 @@ declare class DuList {
      * @param [comparisonFunction] - A function which compares two values which returns true if the values are considered the same.
      * @returns The duplicated (and removed) values. An empty list for Ae Collections as they can't have duplicated items.
      */
-    removeDuplicates(comparisonFunction?: (...params: any[]) => any): any[];
+    removeDuplicates(comparisonFunction?: (...params: any[]) => any): DuList;
     /**
      * Compares two arrays.<br />
     The items in the arrays must be compatible with the == operand if you don't provide a comparison function
@@ -621,7 +622,7 @@ declare class DuList {
      * @param [floatPrecision = -1] - The precision for (float) number comparison, number of decimals. Set to -1 to not use.
      * @returns true if the two arrays contain the same values
      */
-    equals(other: any[] | Collection | DuList, comparisonFunction?: (...params: any[]) => any, floatPrecision?: int): boolean;
+    equals(other: any[] | Collection | DuList, comparisonFunction?: (...params: any[]) => any, floatPrecision?: number): boolean;
     /**
      * Returns true if the list is empty
      */
@@ -646,24 +647,24 @@ declare class DuList {
     The iterator invalidated.
      * @param index - The index.
      */
-    remove(index: int): void;
+    remove(index: number): void;
     /**
      * Removes the first value from the list. The value must be checkable with the <code>==</code> operator if no <code>comparisonFunction</code> is provided.<br />
     The internal list may be converted to an Array if needed.<br />
     The iterator invalidated.
-     * @param index - The index.
+     * @param value - The value.
      * @param [comparisonFunction] - A function which compares two values which returns true if the values are considered the same.
      */
-    removeOne(index: int, comparisonFunction?: (...params: any[]) => any): void;
+    removeOne(value: any, comparisonFunction?: (...params: any[]) => any): void;
     /**
      * Removes all occurences of the value from the list. The value must be checkable with the <code>==</code> operator if no <code>comparisonFunction</code> is provided.<br />
     The internal list may be converted to an Array if needed.<br />
     The iterator invalidated.
-     * @param index - The index.
+     * @param value - The value.
      * @param [comparisonFunction] - A function which compares two values which returns true if the values are considered the same.
      * @returns The number of items removed.
      */
-    removeAll(index: int, comparisonFunction?: (...params: any[]) => any): int;
+    removeAll(value: number, comparisonFunction?: (...params: any[]) => any): number;
     /**
      * Reimplements the Array.sort() method.<br />
     The internal list may be converted to an Array if needed.<br />
@@ -675,13 +676,10 @@ declare class DuList {
     /**
      * Adds one or more elements to the end of the list and returns the new length of the list.<br />
     The internal list may be converted to an Array if needed.
-     * @param element0 - The element(s) to add to the end of the array.
-     * @param element1 - The element(s) to add to the end of the array.
-     * @param element... - The element(s) to add to the end of the array.
-     * @param elementN - The element(s) to add to the end of the array.
+     * @param elements - The element(s) to add to the end of the array. You can pass an array or multiple arguments
      * @returns The new length of the list.
      */
-    push(element0: any, element1: any, elementN: any): int;
+    push(elements: any[]): number;
     /**
      * Mergeserge two lists.<br />
     This method does not change the existing list, but instead returns a new list.
@@ -693,13 +691,10 @@ declare class DuList {
      * Adds one or more elements to the end of the list and returns the new length of the list, only if the value is not already in the list<br />
     The internal list may be converted to an Array if needed.
      * @param comparisonFunction - A function which compares two values which returns true if the values are considered the same.
-     * @param element0 - The element(s) to add to the end of the array.
-     * @param element1 - The element(s) to add to the end of the array.
-     * @param element... - The element(s) to add to the end of the array.
-     * @param elementN - The element(s) to add to the end of the array.
+     * @param element0 - The element(s) to add to the end of the array. You can pass an array or a list of separated arguments
      * @returns The new length of the list.
      */
-    pushUnique(comparisonFunction: (...params: any[]) => any, element0: any, element1: any, elementN: any): int;
+    pushUnique(comparisonFunction: (...params: any[]) => any, element0: any[]): number;
     /**
      * Alias for {@link DuList#push DuList.push()}
      */
@@ -715,7 +710,7 @@ declare class DuList {
      * @param arr - The other array.
      * @returns The new length of the list.
      */
-    merge(arr: any[]): int;
+    merge(arr: any[]): number;
     /**
      * Merges the new array to the current list.<br />
     Will only add items if they're not already in the list.<br />
@@ -725,7 +720,7 @@ declare class DuList {
      * @param [comparisonFunction] - A function which compares two values which returns true if the values are considered the same.
      * @returns The new length of the list.
      */
-    mergeUnique(arr: any[] | DuList, comparisonFunction?: (...params: any[]) => any): int;
+    mergeUnique(arr: any[] | DuList, comparisonFunction?: (...params: any[]) => any): number;
     /**
      * Reimplementation of the <code>Array.join</code> function.<br />
     For collections, the name of the item will be used, or any other property which makes sense as a string list.
@@ -736,12 +731,12 @@ declare class DuList {
     /**
      * Replaces all occurences of a value with another value.<br />
     The internal list may be converted to an Array if needed.
-     * @param what - The current value
-     * @param with - The new value
+     * @param previousValue - The current value
+     * @param newValue - The new value
      * @param [comparisonFunction] - A function which compares two values which returns true if the values are considered the same.
      * @returns The number of occurences which were updated.
      */
-    replace(what: any, with: any, comparisonFunction?: (...params: any[]) => any): int;
+    replace(previousValue: any, newValue: any, comparisonFunction?: (...params: any[]) => any): number;
     /**
      * Removes the last element of the list and returns it.<br />
     The internal list may be converted to an Array if needed.
@@ -757,7 +752,7 @@ declare class DuList {
      * @param index - The index
      * @returns The item at index, or null if the index is invalid
      */
-    goTo(index: int): any;
+    goTo(index: number): any;
     /**
      * Goes to the end of the Iterator
      * @returns The item at the end, or null if length is 0
@@ -791,7 +786,7 @@ declare class DuList {
      * @param list - The list to check
      * @returns true if this is a Cllection or an Array or a {@link DuList}
      */
-    static isList(list: any[] | Collection): boolean;
+    static isList(list: any[] | Collection | DuList): boolean;
     /**
      * true if the original list is an After Effects Collection, false otherwise
     */
