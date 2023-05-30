@@ -536,9 +536,10 @@ declare class DuDebugLog {
  * Constructs a new DuList object
  * @property isCollection - true if the original list is an After Effects Collection, false otherwise
  * @property isArray - true if the original  list is an Array, false otherwise
+ * @param [obj] - If a single obj is passed, it's used as the only element in the list
  */
 declare class DuList {
-    constructor(obj?: any[] | Collection | DuList);
+    constructor(obj?: any | any[] | Collection | DuList);
     /**
      * True if the original list is an After Effects Collection, false otherwise.
      */
