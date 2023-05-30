@@ -4,6 +4,15 @@
 	* @classdesc Describes a pseudo effect
 	* @param {DuBinary} binaryFile - The ffx file encoded as a {@link DuBinary}.<br />
 	* Note that the pseudo effect's matchName <strong>must start with <code>"Pseudo/"</code></strong>.
+	* @property {string} name The default (localized) name
+	* @property {string} matchName The matchName
+	* @property {boolean} valid * Will be false if the ffx can't be correctly parsed.<br />
+	* Note that an invalid pseudo effect can still be applied (if the file exists), but the new effect may not be returned,<br />
+	* or the {@link DuAEPseudoEffect.props} Object may be empty.
+	* @property {File} file The ffx file.
+	* @property {Object} props An object containing information about the properties of the effect, which can be used to generate expressions.<br />
+	* Access properties with their names, using the group hierarchy.<br />
+	* The info available for each property depends on the original pseudo effect, but there's at least the type and the index of the property.
 	* @category DuAEF
     */
 function DuAEPseudoEffect( binaryFile )

@@ -1861,12 +1861,18 @@ declare namespace DuMath {
      */
     function gaussRandom(min?: int, max?: int, bounded?: boolean): int;
     /**
+     * Generates a zero value
+     * @param dimensions - The number of needed dimensions
+     * @returns Zero [0, ..., 0]
+     */
+    function zero(dimensions: number): number[];
+    /**
      * Measures the vector length between two points
      * @param value1 - The first value
-     * @param value2 - The second value
+     * @param [value2 = [0,0]] - The second value. If omitted, returns the difference between the two first values of value1
      * @returns The length
      */
-    function length(value1: int[], value2: int[]): float;
+    function length(value1: number | number[], value2?: number | number[]): number;
     /**
      * Compares two numbers
      * @param value1 - The first value

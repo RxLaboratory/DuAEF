@@ -1867,12 +1867,18 @@ declare namespace DuMath {
      */
     function gaussRandom(min?: int, max?: int, bounded?: boolean): int;
     /**
+     * Generates a zero value
+     * @param dimensions - The number of needed dimensions
+     * @returns Zero [0, ..., 0]
+     */
+    function zero(dimensions: number): number[];
+    /**
      * Measures the vector length between two points
      * @param value1 - The first value
-     * @param value2 - The second value
+     * @param [value2 = [0,0]] - The second value. If omitted, returns the difference between the two first values of value1
      * @returns The length
      */
-    function length(value1: int[], value2: int[]): float;
+    function length(value1: number | number[], value2?: number | number[]): number;
     /**
      * Compares two numbers
      * @param value1 - The first value
@@ -9657,6 +9663,15 @@ declare namespace DuAEShapeLayer {
 
 /**
  * Constructs a Pseudo Effect.
+ * @property name - The default (localized) name
+ * @property matchName - The matchName
+ * @property valid - * Will be false if the ffx can't be correctly parsed.<br />
+Note that an invalid pseudo effect can still be applied (if the file exists), but the new effect may not be returned,<br />
+or the {@link DuAEPseudoEffect.props} Object may be empty.
+ * @property file - The ffx file.
+ * @property props - An object containing information about the properties of the effect, which can be used to generate expressions.<br />
+Access properties with their names, using the group hierarchy.<br />
+The info available for each property depends on the original pseudo effect, but there's at least the type and the index of the property.
  * @param binaryFile - The ffx file encoded as a {@link DuBinary}.<br />
 Note that the pseudo effect's matchName <strong>must start with <code>"Pseudo/"</code></strong>.
  */
@@ -9698,5 +9713,29 @@ declare class DuAEPseudoEffect {
      * @returns The effect. May be null if the pseudo effect was not parsed correctly
      */
     apply(layer: Layer, name?: string): PropertyGroup | null;
+    /**
+     * The default (localized) name
+    */
+    name: string;
+    /**
+     * The matchName
+    */
+    matchName: string;
+    /**
+     * * Will be false if the ffx can't be correctly parsed.<br />
+     * Note that an invalid pseudo effect can still be applied (if the file exists), but the new effect may not be returned,<br />
+     * or the {@link DuAEPseudoEffect.props} Object may be empty.
+    */
+    valid: boolean;
+    /**
+     * The ffx file.
+    */
+    file: File;
+    /**
+     * An object containing information about the properties of the effect, which can be used to generate expressions.<br />
+     * Access properties with their names, using the group hierarchy.<br />
+     * The info available for each property depends on the original pseudo effect, but there's at least the type and the index of the property.
+    */
+    props: any;
 }
 
