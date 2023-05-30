@@ -394,9 +394,15 @@ DuESF.initMethods = [];
  * @type {function[]}
  */
 DuESF.enterRunTimeMethods = [];
+
+/**
+ * The settings used by DuESF
+ * @type {DuSettings}
+ */
+DuESF.settings = null;
+
 /**
  * This method has to be called once at the very beginning of the script, just after the inclusion of DuESF &lt;code>#include DuESF.jsxinc&lt;/code>
- * @param {DuESF.host} hostApplication - The host application of the script.
  * @param {string} [scriptName="DuESF"] - The name of your script, as it has to be displayed in the UI and the filesystem
  * @param {string} [scriptVersion="0.0.0"] - The version of your script, in the form "XX.XX.XX-Comment", for example "1.0.12-Beta". The "-Comment" part is optional.
  * @param {string} [companyName="RxLaboratory"] - The name of the company/organisation/individual developping this script.
@@ -3300,8 +3306,8 @@ DuSettings.prototype.reset = function()
 
 /**
  * Gets a value from the settings. The key can be a path separated by /
- * @property {string} key The setting to get
- * @property {*} [defaultValue=null] The default value if the key is not set in the settings
+ * @param {string} key The setting to get
+ * @param {*} [defaultValue=null] The default value if the key is not set in the settings
  * @return {*} The value
  */
 DuSettings.prototype.get = function( key, defaultValue )
@@ -29143,7 +29149,7 @@ DuAEProject.getUnusedFootages = function() {
 
 /**
  * Gets a folder with its name. If name is "Project Root" or empty, returns the root of the project.
- * @param {string} folderName The name of the folder
+ * @param {string} folderName The name of the folder.
  * @return {FolderItem|null} The folder or null if not found.
  */
 DuAEProject.getFolderItem = function(folderName) {
@@ -29174,8 +29180,16 @@ DuAEProject.getUnusedComps = function(folder) {
         var item = app.project.item(i);
         if (item instanceof CompItem) {
             if (item.usedIn.length == 0) {
-                if (folder &amp;&amp; folder.id == app.project.rootFolder.id &amp;&amp; item.parentFolder == folder.id) continue;
-                if (folder &amp;&amp; DuAEItem.isInFolder(item, folder)) continue;
+                if (!folder) {
+                    comps.push(item);
+                    continue;
+                }
+                // If it's the root
+                if (folder.id == app.project.rootFolder.id) {
+                    if (item.parentFolder.id != folder.id) comps.push(item);
+                    continue;
+                }
+                if (DuAEItem.isInFolder(item, folder)) continue;
                 comps.push(item);
             }
         }

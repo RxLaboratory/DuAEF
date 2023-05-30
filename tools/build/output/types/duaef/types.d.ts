@@ -167,13 +167,16 @@ declare namespace DuESF {
      */
     var enterRunTimeMethods: ((...params: any[]) => void)[];
     /**
+     * The settings used by DuESF
+     */
+    var settings: DuSettings;
+    /**
      * This method has to be called once at the very beginning of the script, just after the inclusion of DuESF <code>#include DuESF.jsxinc</code>
-     * @param hostApplication - The host application of the script.
      * @param [scriptName = "DuESF"] - The name of your script, as it has to be displayed in the UI and the filesystem
      * @param [scriptVersion = "0.0.0"] - The version of your script, in the form "XX.XX.XX-Comment", for example "1.0.12-Beta". The "-Comment" part is optional.
      * @param [companyName = "RxLaboratory"] - The name of the company/organisation/individual developping this script.
      */
-    function init(hostApplication: DuESF.host, scriptName?: string, scriptVersion?: string, companyName?: string): void;
+    function init(scriptName?: string, scriptVersion?: string, companyName?: string): void;
     /**
      * This method has to be called once at the end of the script, when everything is ready and the main UI visible (after any prompt or setup during startup).
      */
@@ -1046,11 +1049,11 @@ declare class DuSettings {
     reset(): void;
     /**
      * Gets a value from the settings. The key can be a path separated by /
-     * @property key - The setting to get
-     * @property [defaultValue = null] - The default value if the key is not set in the settings
+     * @param key - The setting to get
+     * @param [defaultValue = null] - The default value if the key is not set in the settings
      * @returns The value
      */
-    get(): any;
+    get(key: string, defaultValue?: any): any;
     /**
      * Sets a value to the settings. The key can be a path separated by /
      * @property key - The setting to set
@@ -8689,7 +8692,7 @@ declare namespace DuAEProject {
     function getUnusedFootages(): FootageItem[];
     /**
      * Gets a folder with its name. If name is "Project Root" or empty, returns the root of the project.
-     * @param folderName - The name of the folder
+     * @param folderName - The name of the folder.
      * @returns The folder or null if not found.
      */
     function getFolderItem(folderName: string): FolderItem | null;
