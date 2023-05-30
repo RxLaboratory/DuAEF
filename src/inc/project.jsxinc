@@ -587,7 +587,7 @@ DuAEProject.getUnusedFootages = function() {
 
 /**
  * Gets a folder with its name. If name is "Project Root" or empty, returns the root of the project.
- * @param {string} folderName The name of the folder
+ * @param {string} folderName The name of the folder.
  * @return {FolderItem|null} The folder or null if not found.
  */
 DuAEProject.getFolderItem = function(folderName) {
@@ -618,8 +618,16 @@ DuAEProject.getUnusedComps = function(folder) {
         var item = app.project.item(i);
         if (item instanceof CompItem) {
             if (item.usedIn.length == 0) {
-                if (folder && folder.id == app.project.rootFolder.id && item.parentFolder == folder.id) continue;
-                if (folder && DuAEItem.isInFolder(item, folder)) continue;
+                if (!folder) {
+                    comps.push(item);
+                    continue;
+                }
+                // If it's the root
+                if (folder.id == app.project.rootFolder.id) {
+                    if (item.parentFolder.id != folder.id) comps.push(item);
+                    continue;
+                }
+                if (DuAEItem.isInFolder(item, folder)) continue;
                 comps.push(item);
             }
         }
