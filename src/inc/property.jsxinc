@@ -1497,7 +1497,6 @@ DuAEProperty.prototype.setEase = function( easeInValue, easeOutValue, velocityIn
     if (isNaN(velocityInValue) && isdef( velocityInValue )) velocityInValue = 0;
     if (isNaN(velocityOutValue) && isdef( velocityOutValue )) velocityOutValue = 0;
 
-    var comp = this.comp;
     var prop = this.getProperty();
 
     if (prop.canVaryOverTime) {
@@ -1556,6 +1555,14 @@ DuAEProperty.prototype.setEase = function( easeInValue, easeOutValue, velocityIn
                     if (isdef(velocityOutValue)) vOutValue = velocityOutValue * nextSpeed / 100 * signAfter;
                 }
 
+            }
+
+            // When setting ease on a linear keyframe, set the velocity to 0 by default
+            if (prop.keyInInterpolationType(key) == KeyframeInterpolationType.LINEAR && isdef( easeInValue ) && !isdef( velocityInValue)) {
+                vInValue = 0;
+            }
+            if (prop.keyOutInterpolationType(key) == KeyframeInterpolationType.LINEAR && isdef( easeOutValue ) && !isdef( velocityOutValue)) {
+                vOutValue = 0;
             }
 
             //set interpolation 

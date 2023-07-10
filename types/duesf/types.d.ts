@@ -1,1 +1,1 @@
-../../../../ExtendScript/DuESF/types/duesf/types.d.ts
+../../../DuESF/types/duesf/types.d.ts
