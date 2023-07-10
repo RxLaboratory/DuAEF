@@ -9,15 +9,8 @@ IF "%~1"=="" (
 
 :: The repo (current dir)
 SET repoPath=%~dp0..\..
-
 :: The build path
 SET build_path=%~dp0output
-:: The dist path to copy the result
-SET dist_path="%repoPath%\dist"
-:: The docs path
-SET docs_path="%repoPath%\docs"
-:: The types path
-SET types_path="%repoPath%\types\duaef"
 
 echo Building DuAEF version %version%...
 
@@ -26,12 +19,12 @@ echo __Cleaning build paths
 
 rd /s /q "%build_path%"
 md "%build_path%"
-rd /s /q "%dist_path%"
-md "%dist_path%"
-rd /s /q "%docs_path%"
-md "%docs_path%"
-rd /s /q "%types_path%"
-md "%types_path%"
+rd /s /q "%repoPath%\dist"
+md "%repoPath%\dist"
+rd /s /q "%repoPath%\docs"
+md "%repoPath%\docs"
+rd /s /q "%repoPath%\types\duaef"
+md "%repoPath%\types\duaef"
 
 :: Build
 echo __Building library
@@ -40,8 +33,8 @@ DuBuilder "%repoPath%\src\DuAEF.jsxinc" --no-banner -r "{duaefVersion}:%version%
 :: Generate doc
 echo __Generating docs
 cmd /c jsdoc -c jsdoc_conf.json
-echo " " > "%docs_path%\jsdoc.css"
-xcopy /Y jsdoc.css "%docs_path%\jsdoc.css"
+echo " " > "%repoPath%\docs\jsdoc.css"
+xcopy /Y jsdoc.css "%repoPath%\docs\jsdoc.css"
 
 :: Generate type defs
 echo __Generating type defs
@@ -50,14 +43,14 @@ cmd /c jsdoc -c jsdoc_ts_conf.json
 :: Include the doc in the output folder and
 :: Replace indexes
 echo __Finishing...
-xcopy /Y "%docs_path%\DuAEF.html" "%docs_path%\index.html"
-xcopy /S /I /Y "%docs_path%" "%build_path%\docs"
-xcopy /S /I /Y "%types_path%\.." "%build_path%\types"
-echo " " > "%dist_path%\DuAEF.jsxinc"
-echo " " > "%dist_path%\setup.jsxinc"
+xcopy /Y "%repoPath%\docs\DuAEF.html" "%repoPath%\docs\index.html"
+xcopy /S /I /Y "%repoPath%\docs" "%build_path%\docs"
+xcopy /S /I /Y "%repoPath%\types\duaef\.." "%build_path%\types"
+echo " " > "%repoPath%\dist\DuAEF.jsxinc"
+echo " " > "%repoPath%\dist\setup.jsxinc"
 echo " " > "%build_path%\setup.jsxinc"
-xcopy /Y "%build_path%\DuAEF.jsxinc" "%dist_path%\DuAEF.jsxinc"
-xcopy /Y "%repoPath%\src\setup.jsxinc" "%dist_path%\setup.jsxinc"
+xcopy /Y "%build_path%\DuAEF.jsxinc" "%repoPath%\dist\DuAEF.jsxinc"
+xcopy /Y "%repoPath%\src\setup.jsxinc" "%repoPath%\dist\setup.jsxinc"
 xcopy /Y "%repoPath%\src\setup.jsxinc" "%build_path%\setup.jsxinc"
 
 pause
