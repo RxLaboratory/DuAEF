@@ -22494,7 +22494,6 @@ DuAEProperty.prototype.setKey = function(key, timeOffset) {
 
     timeOffset = def(timeOffset, this.comp.time);
     var time = key._time + timeOffset;
-    var propDimensions = this.dimensions();
     var val = key.value;
 
     this.setValueAtTime(val, time);
