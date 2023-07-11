@@ -22620,6 +22620,7 @@ DuAEProperty.prototype.setKey = function(key, timeOffset) {
 
     //get the index of the created key
     var index = prop.nearestKeyIndex(time);
+    key._index = index;
 
     //set label
     // Doesn't exist in all versions
