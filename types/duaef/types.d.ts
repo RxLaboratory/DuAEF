@@ -6349,6 +6349,16 @@ declare class DuAEProperty {
      */
     nearestKeyIndex(t: float): void;
     /**
+     * Gets the index of the key just before the given time
+     * @param t - The time of the keyframe.
+     */
+    keyIndexBefore(t: float): void;
+    /**
+     * Gets the index of the key just after the given time
+     * @param t - The time of the keyframe.
+     */
+    keyIndexAfter(t: float): void;
+    /**
      * Gets the unit of the property
      * @returns The unit
      */

@@ -21953,11 +21953,14 @@ DuAEProperty.prototype.keyLabel = function(index) {
  * Reimplements the &lt;code>Property.removeKey&lt;/code> method for convenience.
  * @param {int|DuAEKeyframe} key The index or the keyframe.
  */
-DuAEProperty.prototype.removeKey = function(key) {
+DuAEProperty.prototype.removeKey = function(key ) {
     if (this.isGroup()) return;
+
     if (key instanceof DuAEKeyframe) key = key._index;
+    
     var prop = this.getProperty();
     prop.removeKey(key);
+
 }
 
 /**
@@ -21968,6 +21971,33 @@ DuAEProperty.prototype.nearestKeyIndex = function(t) {
     if (this.isGroup()) return 0;
     var prop = this.getProperty();
     return prop.nearestKeyIndex(t);
+}
+
+/**
+ * Gets the index of the key just before the given time
+ * @param {float} t The time of the keyframe.
+ */
+DuAEProperty.prototype.keyIndexBefore = function(t) {
+    if (this.isGroup()) return 0;
+    var prop = this.getProperty();
+    if (prop.numKeys == 0) return 0;
+    var keyIndex = prop.nearestKeyIndex(t);
+    if (prop.keyTime(keyIndex) &lt; t ) return keyIndex;
+    return keyIndex-1;
+}
+
+/**
+ * Gets the index of the key just after the given time
+ * @param {float} t The time of the keyframe.
+ */
+DuAEProperty.prototype.keyIndexAfter = function(t) {
+    if (this.isGroup()) return 0;
+    var prop = this.getProperty();
+    if (prop.numKeys == 0) return 0;
+    var keyIndex = prop.nearestKeyIndex(t);
+    if (prop.keyTime(keyIndex) > t ) return keyIndex;
+    if (keyIndex == prop.numKeys) return 0;
+    return keyIndex+1;
 }
 
 /**
@@ -22614,6 +22644,14 @@ DuAEProperty.prototype.setKey = function(key, timeOffset) {
     var time = key._time + timeOffset;
     var val = key.value;
 
+    // For some reason?? Influences change on the key before/after, restore them
+    var prevEase = null;
+    var nextEase = null;
+    var prevIndex = this.keyIndexBefore(time);
+    var nextIndex = this.keyIndexAfter(time);
+    if (prevIndex > 0) prevEase = prop.keyOutTemporalEase( prevIndex );
+    if (nextIndex > 0) nextEase = prop.keyInTemporalEase( nextIndex );
+
     this.setValueAtTime(val, time);
 
     if (prop.numKeys == 0) return false;
@@ -22643,6 +22681,13 @@ DuAEProperty.prototype.setKey = function(key, timeOffset) {
         prop.setTemporalAutoBezierAtKey(index, key._autoBezier);
         prop.setTemporalEaseAtKey(index, key.inEase, key.outEase);
         prop.setInterpolationTypeAtKey(index, key._inInterpolationType, key._outInterpolationType);
+
+        if (prevEase) {
+            prop.setTemporalEaseAtKey(index-1, prop.keyInTemporalEase( index-1 ), prevEase);
+        }
+        if (nextEase) {
+            prop.setTemporalEaseAtKey(index+1, nextEase, prop.keyOutTemporalEase( index+1 ));
+        }
     } catch (err) {
         if (DuESF.debug) alert(err.description);
     }
@@ -22688,7 +22733,6 @@ DuAEProperty.prototype.setValue = function(value, defaultTime) {
             var ok = true;
             for(var i = 1; i &lt;= value.length; i++) {
                 var p = group.property(index+i);
-                alert(p.name);
                 p = new DuAEProperty(p);
                 var test = p.setValue( value[i-1] );
                 if (ok) ok = test;
@@ -24986,9 +25030,9 @@ DuAEProperty.prototype.snapKeys = function(keys) {
             var key = prop.keyAtIndex(ks[k]);
             var mod = key._time % frameDuration;
             if (mod != 0 ) {
+                prop.removeKey(key);
                 if (mod &lt; halfFrame) key._time -= mod;
                 else key._time += frameDuration - mod;
-                prop.removeKey(key);
                 prop.setKey(key, 0);
             }
         }
