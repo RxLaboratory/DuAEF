@@ -186,7 +186,7 @@ DuAEProperty.prototype.isSeparationLeader = function() {
 DuAEProperty.prototype.dimensionsSeparated = function() {
     if (this.isGroup()) return false;
     if (!this.isSeparationLeader()) return false;
-    return this.getProperty().isSeparationLeader;
+    return this.getProperty().dimensionsSeparated;
 }
 
 /**
