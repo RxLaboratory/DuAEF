@@ -4754,11 +4754,11 @@ declare class OCOConfig {
     set(key: string, value: any): void;
     /**
      * Gets a value from the config. The key can be a path separated by /
-     * @property key - The setting to get
-     * @property [defaultValue = null] - The default value if the key is not set in the settings
+     * @param key - The setting to get
+     * @param [defaultValue = null] - The default value if the key is not set in the settings
      * @returns The value
      */
-    get(): any;
+    get(key: string, defaultValue?: any): any;
 }
 
 /**
