@@ -2081,7 +2081,7 @@ DuAEProperty.prototype.velocityAtTime = function(time, preExpression) {
 DuAEProperty.prototype.setExpression = function(expr, keepValue) {
     keepValue = def(keepValue, true);
 
-    this.do(function(duaeProp) {
+    this.do(function(duaeProp) {       
         prop = duaeProp.getProperty();
 
         if (!duaeProp.riggable()) return;
@@ -2100,6 +2100,7 @@ DuAEProperty.prototype.setExpression = function(expr, keepValue) {
             if (DuESF.debug) alert(e.description);
             return;
         }
+
         //set new expression
         try {
             prop.expression = expr;
@@ -2109,7 +2110,7 @@ DuAEProperty.prototype.setExpression = function(expr, keepValue) {
 
         //restore value
         if (keepVal)
-            if (duaeProp.dimensions() > 0 && duaeProp.editable()) duaeProp.setValue(2 * originalValue - prop.valueAtTime(comp.time, false));
+            if (duaeProp.dimensions() > 0) duaeProp.setValue(2 * originalValue - prop.valueAtTime(comp.time, false));
     });
 }
 
