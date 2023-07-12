@@ -9293,7 +9293,7 @@ declare namespace DuAELayer {
      * @param [time] - the time at which to get the coordinates. Current time by default.
      * @returns The world coordinates of the layer
      */
-    function getWorldPos(layer: Layer, point?: float[], time?: float): float[];
+    function getWorldPos(layer: Layer, point?: Number[], time?: number): Number[];
     /**
      * Adds an animation preset on the layer.<br />
     Be careful as layer selection will be kept but not properties selection,<br />
@@ -9505,7 +9505,7 @@ declare namespace DuAELayer {
      * @param layer - The layer
      * @param value - The new coordinates
      */
-    function repositionAnchorPoint(layer: Layer, value: float[]): void;
+    function repositionAnchorPoint(layer: Layer, value: Number[]): void;
     /**
      * Returns the bounds of the layer in local coordinates, like the sourceRectAtTime() function does in expressions, but can also include masks.
      * @param layer - The layer
@@ -9546,7 +9546,7 @@ declare namespace DuAELayer {
      * @param [mode = DuAEExpression.BakeAlgorithm.SMART] - The algorithm to use for baking the expressions.
      * @param [frameStep = 1.0] - By default, checks one value per keyframe. A lower value increases the precision and allows for sub-frame sampling. A higher value is faster but less precise.
      */
-    function bake(layer: Layer, mode?: DuAEExpression.BakeAlgorithm, frameStep?: float): void;
+    function bake(layer: Layer, mode?: DuAEExpression.BakeAlgorithm, frameStep?: number): void;
     /**
      * Gets the actual width of a layer (including it's scale)
      * @param layer - The layer

@@ -562,9 +562,9 @@ DuAELayer.getMaxDistance = function(layers) {
 /**
  * Gets the world coordinates of the point of a layer
  * @param {Layer} layer - The layer
- * @param {float[]} [point=layer.transform.anchorPoint.value] - the point
- * @param {float} [time] - the time at which to get the coordinates. Current time by default.
- * @return {float[]} The world coordinates of the layer
+ * @param {Number[]} [point=layer.transform.anchorPoint.value] - the point
+ * @param {Number} [time] - the time at which to get the coordinates. Current time by default.
+ * @return {Number[]} The world coordinates of the layer
  */
 DuAELayer.getWorldPos = function(layer, point, time) {
     time = def(time, layer.containingComp.time);
@@ -1450,7 +1450,7 @@ DuAELayer.lastEffect = function(layer, name, skip) {
 /**
  * Changes the coordinates of the anchor point without moving the layer
  * @param {Layer} layer The layer
- * @param {float[]} value The new coordinates
+ * @param {Number[]} value The new coordinates
  */
 DuAELayer.repositionAnchorPoint = function(layer, value) {
     // Unparent
@@ -1521,9 +1521,14 @@ DuAELayer.repositionAnchorPoint = function(layer, value) {
     var position = DuAELayer.getWorldPos(layer, [0,0,0]);
 
     // Set anchor point
-    layer.transform.anchorPoint.setValue(value);
+    var ap = layer.transform.anchorPoint;
+    /* @ts-ignore */
+    if (ap.numKeys > 0) ap.setValueAtTime(layer.containingComp.time, value);
+    /* @ts-ignore */
+    else layer.transform.anchorPoint.setValue(value);
 
     // Get the position offset
+    /* @ts-ignore // Yes, we can do arithmetics with array/vectors */
     var offset = DuAELayer.getWorldPos(layer, [0,0,0]) - position;
 
     // Adjust position for keyframes
@@ -1788,7 +1793,7 @@ DuAELayer.isRenderable = function(layer) {
  * Bakes the expressions to keyframes and removes all non-renderable layers.
  * @param {Layer} layer The layer to bake.
  * @param {DuAEExpression.BakeAlgorithm} [mode=DuAEExpression.BakeAlgorithm.SMART] The algorithm to use for baking the expressions.
- * @param {float} [frameStep=1.0] By default, checks one value per keyframe. A lower value increases the precision and allows for sub-frame sampling. A higher value is faster but less precise.
+ * @param {Number} [frameStep=1.0] By default, checks one value per keyframe. A lower value increases the precision and allows for sub-frame sampling. A higher value is faster but less precise.
  */
 DuAELayer.bake = function (mode, frameStep, layer) {
     // First, check transform properties.
