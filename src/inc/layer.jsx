@@ -1215,7 +1215,7 @@ DuAELayer.align = function(layers, target, position, rotation, scale, opacity) {
 /**
  * Gets the transformation matrix of the layer from the compostion.<br />
  * Use Matrix.applyToPoint(point) to transform any coordinate with the matrix returned by this method.
- * @param {Layer[]} layer - the layer
+ * @param {Layer} layer - the layer
  * @param {float} [time] - the time at which to get the coordinates. Current time by default.
  * @return {Matrix} The coordinates.
  */

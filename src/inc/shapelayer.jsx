@@ -7,7 +7,7 @@ var DuAEShapeLayer = {};
 
 /**
  * A List of primitive shapes
- * @enum {int}
+ * @enum {Number}
  */
 DuAEShapeLayer.Primitive = {
     NONE: 0,
@@ -20,13 +20,18 @@ DuAEShapeLayer.Primitive = {
 
 /**
  * Gets the transformation matrix for all the parent groups of a given property
- * @param {Property|DuAEProperty} prop - The property
+ * @param {PropertyBase|DuAEProperty} prop - The property
+ * @param {Boolean} [includeLayerTransform=true] - Whether to include the layer transformation in the matrix
  * @return {Matrix} The transformation matrix.
  */
-DuAEShapeLayer.getTransformMatrix = function ( prop ) {
+DuAEShapeLayer.getTransformMatrix = function ( prop, includeLayerTransform ) {
+    includeLayerTransform = def(includeLayerTransform, true);
+
     var propInfo = new DuAEProperty( prop );
     prop = propInfo.getProperty();
-    var matrix = DuAELayer.getTransformMatrix( propInfo.layer );
+
+    var matrix = new Matrix();
+    if (includeLayerTransform) matrix = DuAELayer.getTransformMatrix( propInfo.layer );
 
     var props = [];
 
@@ -43,7 +48,7 @@ DuAEShapeLayer.getTransformMatrix = function ( prop ) {
     //apply transforms from the ancestor
     for ( var i = props.length - 1; i >= 0; i-- ) {
         var p = props[ i ].property( "ADBE Vector Transform Group" );
-        matrix.translate( -p.property( "ADBE Vector Anchor" ).value );
+        matrix.translate( - p.property( "ADBE Vector Anchor" ).value );
         matrix.translate( p.property( "ADBE Vector Position" ).value );
         matrix.rotate( p.property( "ADBE Vector Rotation" ).value );
         matrix.scale( p.property( "ADBE Vector Scale" ).value / 100 );

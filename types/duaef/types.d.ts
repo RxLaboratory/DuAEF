@@ -9441,7 +9441,7 @@ declare namespace DuAELayer {
      * @param [time] - the time at which to get the coordinates. Current time by default.
      * @returns The coordinates.
      */
-    function getTransformMatrix(layer: Layer[], time?: float): Matrix;
+    function getTransformMatrix(layer: Layer, time?: float): Matrix;
     /**
      * Moves a layer to the coordinates of a spatial property
      * @param layer - The layer
@@ -9664,9 +9664,10 @@ declare namespace DuAEShapeLayer {
     /**
      * Gets the transformation matrix for all the parent groups of a given property
      * @param prop - The property
+     * @param [includeLayerTransform = true] - Whether to include the layer transformation in the matrix
      * @returns The transformation matrix.
      */
-    function getTransformMatrix(prop: Property | DuAEProperty): Matrix;
+    function getTransformMatrix(prop: PropertyBase | DuAEProperty, includeLayerTransform?: boolean): Matrix;
     /**
      * Checks if this shape layers contains only one shape, one fill, and one stroke,\n
     just like After Effects creates them at first.
