@@ -6517,7 +6517,7 @@ declare class DuAEProperty {
      * @param [timeOffset = comp.time] - The time offset (added to DuAEKeyframe._time) where to add the key frame.
      * @returns Success
      */
-    setKey(key: DuAEKeyframe, timeOffset?: float): boolean;
+    setKey(key: DuAEKeyframe, timeOffset?: number): boolean;
     /**
      * Checks if the property value is a number or an Array of Number.<br >
     I.e if its value type is one of: one D, two D, three D (spatial or not), Color.

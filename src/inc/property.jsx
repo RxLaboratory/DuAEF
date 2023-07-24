@@ -974,15 +974,17 @@ DuAEProperty.prototype.lastKeyTime = function(selected) {
 /**
  * Sets a {@linkcode DuAEKeyframe} on a property
  * @param {DuAEKeyframe}	key	- The DuAEKeyframe.
- * @param {float}	[timeOffset=comp.time]	- The time offset (added to DuAEKeyframe._time) where to add the key frame.
+ * @param {Number}	[timeOffset=comp.time]	- The time offset (added to DuAEKeyframe._time) where to add the key frame.
  * @return {Boolean} Success
  */
 DuAEProperty.prototype.setKey = function(key, timeOffset) {
+    /** @type {Property}
+     * @ts-ignore */
     var prop = this.getProperty();
 
     if (prop.elided) return false;
 
-    if (!prop.propertyType === PropertyType.PROPERTY) {
+    if (prop.propertyType !== PropertyType.PROPERTY) {
         DuDebug.throwError("Can not set a key on a group property", 'DuAEProperty.setKey');
         return false;
     }
@@ -999,8 +1001,8 @@ DuAEProperty.prototype.setKey = function(key, timeOffset) {
     var nextEase = null;
     var prevIndex = this.keyIndexBefore(time);
     var nextIndex = this.keyIndexAfter(time);
-    if (prevIndex > 0) prevEase = prop.keyOutTemporalEase( prevIndex );
-    if (nextIndex > 0) nextEase = prop.keyInTemporalEase( nextIndex );
+    if (prevIndex > 0 && prop.keyOutInterpolationType(prevIndex) == KeyframeInterpolationType.BEZIER) prevEase = prop.keyOutTemporalEase( prevIndex );
+    if (nextIndex > 0 && prop.keyInInterpolationType(nextIndex) == KeyframeInterpolationType.BEZIER) nextEase = prop.keyInTemporalEase( nextIndex );
 
     this.setValueAtTime(val, time);
 
@@ -1011,7 +1013,7 @@ DuAEProperty.prototype.setKey = function(key, timeOffset) {
     key._index = index;
 
     //set label
-    // Doesn't exist in all versions
+    /* @ts-ignore Doesn't exist in all versions*/
     if (jstype(prop.setLabelAtKey) === 'function') prop.setLabelAtKey(index, key.label);
 
     //set interpolations
