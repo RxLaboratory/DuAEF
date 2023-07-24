@@ -2006,7 +2006,7 @@ declare namespace DuMath {
      * @param num - The number to check
      * @returns 1 if num is positive, -1 if negative, 0 in other cases (0, NaN...)
      */
-    function sign(num: number): int;
+    function sign(num: number): number;
     /**
      * Gets the bounds of the values
      * @param values - A list of values
