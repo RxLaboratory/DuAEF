@@ -6281,6 +6281,11 @@ declare class DuAEProperty {
      */
     isSpatial(): boolean;
     /**
+     * Gets the root property group (the group just before the layer, e.g. transform, effects, masks, content...) containing the property
+     * @returns The property group
+     */
+    rootPropertyGroup(): PropertyGroup;
+    /**
      * Reimplements the <code>Property.isSeparationLeader</code> attribute for convenience.
      * @returns true if the property is a separation leader.
      */

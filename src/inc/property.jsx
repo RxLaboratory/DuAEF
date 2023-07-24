@@ -163,11 +163,27 @@ DuAEProperty.prototype.isProperty = function() {
 
 /**
  * Reimplements the <code>Property.isSpatial</code> attribute for convenience.
- * @return {Bool} true if the property is spatial.
+ * @return {Boolean} true if the property is spatial.
  */
 DuAEProperty.prototype.isSpatial = function() {
     if (this.isGroup()) return false;
     return this.getProperty().isSpatial;
+}
+
+/**
+ * Gets the root property group (the group just before the layer, e.g. transform, effects, masks, content...) containing the property
+ * @return {PropertyGroup} The property group
+ */
+DuAEProperty.prototype.rootPropertyGroup = function() {
+    var parentProp = this.getProperty();
+    var rootProp = null;
+    while (parentProp.parentProperty) {
+        rootProp = parentProp;
+        // Traverse up the property tree
+        parentProp = parentProp.parentProperty;
+    }
+    /* @ts-ignore The root is a PropertyGroup */
+    return rootProp;
 }
 
 /**
