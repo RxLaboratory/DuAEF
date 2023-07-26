@@ -33,6 +33,7 @@ DuScriptUI.String.RANGE = "Range";
 DuScriptUI.String.RENDER = "Render";
 DuScriptUI.String.SECONDARY_NAME = "Secondary name";
 DuScriptUI.String.SELECTED_COMPOSITIONS = "Selected compositions";
+DuScriptUI.String.SELECTED_LAYERS = "Selected layers";
 DuScriptUI.String.SELECTED_PROPERTIES = "Selected properties";
 DuScriptUI.String.SET_FRAME_BLENDING = "Set frame blending mode";
 DuScriptUI.String.SHAPE_LAYER = "Shape";
@@ -846,23 +847,23 @@ DuScriptUI.selectionModeSelector = function( container, minimalMode )
     minimalMode = def(minimalMode, DuAE.SelectionMode.SELECTED_PROPERTIES);
     var selector = DuScriptUI.selector( container );
     if (minimalMode <= DuAE.SelectionMode.SELECTED_PROPERTIES) selector.addButton(
-        DuScriptUI.String.SELECTED_PROPERTIES,
+        i18n._("Selected properties"),
         w16_selected_props
     );
     if (minimalMode <= DuAE.SelectionMode.SELECTED_LAYERS) selector.addButton(
-        DuScriptUI.String.SELECTED_LAYERS,
+        i18n._("Selected layers"),
         w16_selected_layers
     );
     if (minimalMode <= DuAE.SelectionMode.ACTIVE_COMPOSITION) selector.addButton(
-        DuScriptUI.String.ACTIVE_COMPOSITION,
+        i18n._("Active composition"),
         w16_layers
     );
     if (minimalMode <= DuAE.SelectionMode.SELECTED_COMPOSITIONS) selector.addButton(
-        DuScriptUI.String.SELECTED_COMPOSITIONS,
+        i18n._("Selected compositions"),
         w16_selected_compositions
     );
     if (minimalMode <= DuAE.SelectionMode.ALL_COMPOSITIONS) selector.addButton(
-        DuScriptUI.String.ALL_COMPOSITIONS,
+        i18n._("All compositions"),
         w16_compositions
     );
 
