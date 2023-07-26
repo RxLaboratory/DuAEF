@@ -10618,9 +10618,15 @@ DuScriptUI.showUI = function( ui, enterRunTime )
 /**
  * Creates the main panel of a script
  * @param {Panel|null} container - The container ('this' in the root of the calling script), either a Panel (when launched from the 'Window' menu) or null (when launched from 'file/scripts/run...')
- * @param {bool} [addSettingsButton=true] - Whether to create a button to open the settings or not
- * @param {bool} [addHelpButton=false] - Whether to create a button to open the help panel or not
+ * @param {Boolean} [addSettingsButton=true] - Whether to create a button to open the settings or not
+ * @param {Boolean} [addHelpButton=false] - Whether to create a button to open the help panel or not
  * @param {File} [scriptFile] - The main script file, needed for the refresh button in debug mode
+ * @param {object[]} [bottomButtons=[]] - A list of objects to add buttons on the bottom bar. Each object must have these attributes:&lt;br>
+ * &lt;ul>
+ * &lt;li>&lt;code>image&lt;/code>: the icon (a path or string encoded PNG)
+ * &lt;li>&lt;code>helpTip&lt;/code>: the helpTip text
+ * &lt;li>&lt;code>onClick&lt;/code>: a callback function
+ * &lt;/ul>
  * @return {DuScriptPanel} The panel created, either a ScriptUI Panel or a ScriptUI Window.
  * @example
  * var ui = DuScriptUI.mainPanel(this,"Test Script");
@@ -10628,13 +10634,15 @@ DuScriptUI.showUI = function( ui, enterRunTime )
  * refreshButton.onClick = function() { ui.refreshUI( new File($.fileName) ); }; //reloads the current script
  * DuScriptUI.showUI(ui);
  */
-DuScriptUI.scriptPanel = function( container, addSettingsButton, addHelpButton, scriptFile )
+DuScriptUI.scriptPanel = function( container, addSettingsButton, addHelpButton, scriptFile, bottomButtons )
 {
     function testGroup( group )
     {
         group.add('statictext', undefined, "test");
         DuScriptUI.setBackgroundColor( group, DuColor.Color.BLACK );
     }
+
+    bottomButtons = def(bottomButtons, []);
 
     addSettingsButton = def(addSettingsButton, true);
     addHelpButton = def(addHelpButton, false);
@@ -11065,6 +11073,21 @@ DuScriptUI.scriptPanel = function( container, addSettingsButton, addHelpButton, 
             helpButton.alignment = ['left', 'fill'];
         }
     }*/
+
+    // Add custom left buttons
+    for (var i = 0; i &lt; bottomButtons.length; i++ ) {
+        var b = bottomButtons[i];
+        b.location = def(b.location, 'left');
+        if (b.location != 'left') continue;
+        b.helpTip = def(b.helpTip, '');
+        var c = DuScriptUI.button( panel.bottomGroup, {
+            text: '',
+            image: b.image,
+            helpTip: b.helpTip
+        });
+        c.alignment = ['left', 'fill'];
+        c.onClick = b.onClick;
+    }
 
     if (addSettingsButton) {
         var settingsButton =  DuScriptUI.button( panel.bottomGroup, {

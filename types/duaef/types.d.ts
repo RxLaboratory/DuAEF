@@ -2996,9 +2996,15 @@ declare namespace DuScriptUI {
      * @param [addSettingsButton = true] - Whether to create a button to open the settings or not
      * @param [addHelpButton = false] - Whether to create a button to open the help panel or not
      * @param [scriptFile] - The main script file, needed for the refresh button in debug mode
+     * @param [bottomButtons = []] - A list of objects to add buttons on the bottom bar. Each object must have these attributes:<br>
+    <ul>
+    <li><code>image</code>: the icon (a path or string encoded PNG)
+    <li><code>helpTip</code>: the helpTip text
+    <li><code>onClick</code>: a callback function
+    </ul>
      * @returns The panel created, either a ScriptUI Panel or a ScriptUI Window.
      */
-    function scriptPanel(container: Panel | null, addSettingsButton?: boolean, addHelpButton?: boolean, scriptFile?: File): DuScriptPanel;
+    function scriptPanel(container: Panel | null, addSettingsButton?: boolean, addHelpButton?: boolean, scriptFile?: File, bottomButtons?: object[]): DuScriptPanel;
     /**
      * Creates a popup to ask for a simple string
      * @param title - The title of the popup
