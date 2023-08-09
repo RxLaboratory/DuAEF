@@ -22471,10 +22471,18 @@ DuAEProperty.prototype.setKey = function(key, timeOffset) {
         };
     }
 
+    // Adjust ease dimensions
+    var inEase = key.inEase;
+    var outEase = key.outEase;
+    if (prop.isSpatial) {
+        if (inEase.length != 1) inEase = [inEase[0]];
+        if (outEase.length != 1) outEase = [outEase[0]];
+    }
+
     try {
         prop.setTemporalContinuousAtKey(index, key._continuous);
         prop.setTemporalAutoBezierAtKey(index, key._autoBezier);
-        prop.setTemporalEaseAtKey(index, key.inEase, key.outEase);
+        prop.setTemporalEaseAtKey(index, inEase, outEase);
         prop.setInterpolationTypeAtKey(index, key._inInterpolationType, key._outInterpolationType);
 
         if (prevEase) {
@@ -22484,7 +22492,7 @@ DuAEProperty.prototype.setKey = function(key, timeOffset) {
             prop.setTemporalEaseAtKey(index+1, nextEase, prop.keyOutTemporalEase( index+1 ));
         }
     } catch (err) {
-        if (DuESF.debug) alert(err.description);
+        if (DuESF.debug) alert("DuAEProperty.prototype.setKey:\n" + err.description);
     }
 
     // Select it
@@ -22964,7 +22972,7 @@ DuAEProperty.prototype.setKeyInterpolation = function(key, typeIn, typeOut, ease
             prop.setTemporalContinuousAtKey(key, false);
         }
     } catch (e) {
-
+        if (DuESF.debug) alert("DuAEProperty.prototype.setKeyInterpolation\n" + e.description);
     }
 }
 
@@ -23119,7 +23127,7 @@ DuAEProperty.prototype.setKeySpeed = function(key, speed) {
 
     // Some properties can't set interpolation type
     try { prop.setTemporalEaseAtKey(key, inEase, outEase); }
-    catch (e) {};
+    catch (e) { if (DuESF.debug) alert("DuAEProperty.prototype.setKeySpeed\n" + e.description); };
 }
 
 /**
