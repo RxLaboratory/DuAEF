@@ -22440,12 +22440,25 @@ DuAEProperty.prototype.setKey = function(key, timeOffset) {
     var val = key.value;
 
     // For some reason?? Influences change on the key before/after, restore them
-    var prevEase = null;
-    var nextEase = null;
+    var prevInfluences = null;
+    var nextInfluences = null;
     var prevIndex = this.keyIndexBefore(time);
     var nextIndex = this.keyIndexAfter(time);
-    if (prevIndex > 0 && prop.keyOutInterpolationType(prevIndex) == KeyframeInterpolationType.BEZIER) prevEase = prop.keyOutTemporalEase( prevIndex );
-    if (nextIndex > 0 && prop.keyInInterpolationType(nextIndex) == KeyframeInterpolationType.BEZIER) nextEase = prop.keyInTemporalEase( nextIndex );
+    if (prevIndex > 0 && prop.keyOutInterpolationType(prevIndex) == KeyframeInterpolationType.BEZIER) {
+        var prevEase = prop.keyOutTemporalEase( prevIndex );
+        prevInfluences = [];
+        for(var i = 0, n = prevEase.length; i < n; i++) {
+            prevInfluences.push(prevEase[i].influence);
+        }
+    }
+    if (nextIndex > 0 && prop.keyInInterpolationType(nextIndex) == KeyframeInterpolationType.BEZIER) {
+        var nextEase = prop.keyInTemporalEase( nextIndex );
+        nextInfluences = [];
+        for(var i = 0, n = nextEase.length; i < n; i++) {
+            nextInfluences.push(nextEase[i].influence);
+        }
+    }
+        
 
     this.setValueAtTime(val, time);
 
@@ -22480,16 +22493,24 @@ DuAEProperty.prototype.setKey = function(key, timeOffset) {
     }
 
     try {
+        prop.setInterpolationTypeAtKey(index, key._inInterpolationType, key._outInterpolationType);
         prop.setTemporalContinuousAtKey(index, key._continuous);
         prop.setTemporalAutoBezierAtKey(index, key._autoBezier);
         prop.setTemporalEaseAtKey(index, inEase, outEase);
-        prop.setInterpolationTypeAtKey(index, key._inInterpolationType, key._outInterpolationType);
 
-        if (prevEase) {
-            prop.setTemporalEaseAtKey(index-1, prop.keyInTemporalEase( index-1 ), prevEase);
+        if (prevInfluences) {
+            var ease = prop.keyOutTemporalEase( index-1 );
+            for (var i = 0, n = ease.length; i < n; i++) {
+                ease[i].influence = prevInfluences[i];
+            }
+            prop.setTemporalEaseAtKey(index-1, prop.keyInTemporalEase( index-1 ), ease);
         }
-        if (nextEase) {
-            prop.setTemporalEaseAtKey(index+1, nextEase, prop.keyOutTemporalEase( index+1 ));
+        if (nextInfluences) {
+            var ease = prop.keyInTemporalEase( index+1 );
+            for (var i = 0, n = ease.length; i < n; i++) {
+                ease[i].influence = nextInfluences[i];
+            }
+            prop.setTemporalEaseAtKey(index+1, ease, prop.keyOutTemporalEase( index+1 ));
         }
     } catch (err) {
         if (DuESF.debug) alert("DuAEProperty.prototype.setKey:\n" + err.description);
@@ -24833,7 +24854,7 @@ DuAEProperty.prototype.snapKeys = function(keys) {
         for (var k = 0; k < ks.length; k++) {
             var key = prop.keyAtIndex(ks[k]);
             var mod = key._time % frameDuration;
-            if (mod != 0 ) {
+            if (mod != 0) {
                 prop.removeKey(key);
                 if (mod < halfFrame) key._time -= mod;
                 else key._time += frameDuration - mod;
