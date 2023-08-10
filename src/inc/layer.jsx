@@ -1990,15 +1990,17 @@ DuAELayer.isAdjustment = function ( layer ) {
  * @param {Layer} angleLayer The layer at which to measure the angle
  * @param {Layer} oppositeLayerA One of the opposite layers
  * @param {Layer} oppositeLayerB The other opposite layer
- * @return {float} The angle in degrees.
+ * @return {Number} The angle in degrees. This is an oriented angle (the value can be negative).
  */
 DuAELayer.angleFromLayers = function ( angleLayer, oppositeLayerA, oppositeLayerB ) {
     var p = DuAELayer.getWorldPos( angleLayer );
     var pA = DuAELayer.getWorldPos( oppositeLayerA );
     var pB = DuAELayer.getWorldPos( oppositeLayerB );
 
-    var radians = DuMath.angleFromSides( p, pA, pB );
-    return radians * ( 180 / Math.PI );
+    var vecA = DuVector.fromPoints(p, pA);
+    var vecB = DuVector.fromPoints(p, pB);
+
+    return vecA.orientedAngle(vecB);
 }
 
 /**

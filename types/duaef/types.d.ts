@@ -1883,10 +1883,10 @@ declare namespace DuMath {
      * Compares two numbers
      * @param value1 - The first value
      * @param value2 - The second value
-     * @param [floatPrecision = -1] - The precision for (float) number comparison, number of decimals. Set to -1 to not use.
+     * @param [floatPrecision = 9] - The precision for (float) number comparison, number of decimals. Set to -1 to not use.
      * @returns true if the two values are equal
      */
-    function equals(value1: number | Number[], value2: number | Number[], floatPrecision?: int): boolean;
+    function equals(value1: number | Number[], value2: number | Number[], floatPrecision?: number): boolean;
     /**
      * Calculates the log10 of a number
      * @param w - The number
@@ -2035,7 +2035,103 @@ declare namespace DuMath {
      * @param oppositePointB - The other opposite point
      * @returns The angle in radians.
      */
-    function angleFromSides(anglePoint: float[], oppositePointA: float[], oppositePointB: float[]): float;
+    function angleFromSides(anglePoint: Number[], oppositePointA: Number[], oppositePointB: Number[]): number;
+}
+
+/**
+ * Constructs a new Vector
+ * @param components - The components of the vector, one number per dimension
+ */
+declare class DuVector {
+    constructor(components: Number[]);
+    /**
+     * Creates a vector from two points
+     * @param pointA - The origin of the vector
+     * @param pointB - The end of the vector
+     */
+    static fromPoints(pointA: Number[], pointB: Number[]): DuVector;
+    /**
+     * Creates a unit vector
+     * @param axis - The unit axis
+     * @param dimensions - The number of dimensions
+     */
+    static unit(axis: number, dimensions: number): DuVector;
+    /**
+     * Addition
+     * @param other - The vector to add
+     * @returns The result
+     */
+    add(other: DuVector): DuVector;
+    /**
+     * Subtraction
+     * @param other - The vector to subtract
+     * @returns The result
+     */
+    subtract(other: DuVector): DuVector;
+    /**
+     * Scale
+     * @param factor - The scale factor
+     * @returns The result
+     */
+    scale(factor: number): DuVector;
+    /**
+     * +
+    The length of the vector
+     * @returns The length
+     */
+    length(): number;
+    /**
+     * Dot Product
+     * @param other - The other vector
+     */
+    dot(other: DuVector): number;
+    /**
+     * Create a normalized vector (with length equal to 1)
+     * @returns The normalized vector
+     */
+    normalize(): DuVector;
+    /**
+     * Checks if the two vectors have the same direction
+     */
+    hasSameDirection(other: DuVector): boolean;
+    /**
+     * Checks if the two vectors have an opposite direction
+     */
+    hasOppositeDirection(other: DuVector): boolean;
+    /**
+     * Checks if the two vectors are perpendicular
+     */
+    isPerpendicular(other: DuVector): boolean;
+    /**
+     * Cross Product
+     */
+    cross(other: DuVector): DuVector;
+    /**
+     * Gets the angle between the two vectors
+     * @returns The angle in degrees
+     */
+    angle(other: DuVector): number;
+    /**
+     * Creates the same vector in the opposite direction (scale -1)
+     */
+    negate(): DuVector;
+    /**
+     * Projects the vector on another vector
+     */
+    projectOn(other: DuVector): DuVector;
+    /**
+     * Sets a new length for the vector
+     */
+    setLength(newLength: number): DuVector;
+    /**
+     * Checks the orientation of the angle between 2D vectors
+     * @returns <code>1</code>: counter-clockwiser, <code>-1</code>: clockwise, <code>0</code>: aligned
+     */
+    orientation2D(other: DuVector): number;
+    /**
+     * Gets the angle between the two 2D vectors
+     */
+    orientedAngle(other: DuVector): number;
 }
 
 /**
@@ -9615,9 +9711,9 @@ declare namespace DuAELayer {
      * @param angleLayer - The layer at which to measure the angle
      * @param oppositeLayerA - One of the opposite layers
      * @param oppositeLayerB - The other opposite layer
-     * @returns The angle in degrees.
+     * @returns The angle in degrees. This is an oriented angle (the value can be negative).
      */
-    function angleFromLayers(angleLayer: Layer, oppositeLayerA: Layer, oppositeLayerB: Layer): float;
+    function angleFromLayers(angleLayer: Layer, oppositeLayerA: Layer, oppositeLayerB: Layer): number;
     /**
      * Returns the location of the layer relative to the reference.
      * @param point - The layer to check
