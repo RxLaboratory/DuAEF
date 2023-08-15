@@ -22866,10 +22866,10 @@ DuAEProperty.prototype.setKey = function(key, timeOffset) {
     }
 
     try {
-        prop.setInterpolationTypeAtKey(index, key._inInterpolationType, key._outInterpolationType);
         prop.setTemporalContinuousAtKey(index, key._continuous);
         prop.setTemporalAutoBezierAtKey(index, key._autoBezier);
         prop.setTemporalEaseAtKey(index, inEase, outEase);
+        prop.setInterpolationTypeAtKey(index, key._inInterpolationType, key._outInterpolationType);
 
         if (prevInfluences) {
             var ease = prop.keyOutTemporalEase( index-1 );
