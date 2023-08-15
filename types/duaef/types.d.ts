@@ -9353,7 +9353,7 @@ declare namespace DuAELayer {
      * @param [dontMoveAncestors = false] - When set to true, the transform (position, rotation) values for ancestor layers (the ones without parent) will be offset to 0 before applying the animation.
      * @returns The animations which were not set (no corresponding layers)
      */
-    function setAnims(layers: Layer[] | LayerCollection, anims: DuAELayerAnimation[], time?: float, ignoreName?: boolean, setExpression?: boolean, onlyKeyframes?: boolean, replace?: boolean, whiteList?: string[], offset?: boolean, reverse?: boolean, dontMoveAncestors?: boolean): DuAELayerAnimation[];
+    function setAnims(layers: Layer[] | LayerCollection, anims: DuAELayerAnimation[], time?: number, ignoreName?: boolean, setExpression?: boolean, onlyKeyframes?: boolean, replace?: boolean, whiteList?: string[], offset?: boolean, reverse?: boolean, dontMoveAncestors?: boolean): DuAELayerAnimation[];
     /**
      * Reverses the times of the keyframes to reverse the animation
      * @param anims - The animation

@@ -109,6 +109,11 @@ DuAEKeyframe.prototype.reverse = function() {
 	var inEase = this.inEase;
 	this.inEase = this.outEase;
 	this.outEase = inEase;
+	
+	for (var i = 0; i < this.inEase.length; i++) {
+		this.inEase[i].speed = -this.inEase[i].speed;
+		this.outEase[i].speed = -this.outEase[i].speed;
+	}
 
 	this.spatialProperties.reverse();
 }

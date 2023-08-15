@@ -367,7 +367,7 @@ DuAELayer.setAllAnims = function(layers, anims, time, ignoreName, setExpression,
  * To set all animations on all layers, not checking their names or indices, use {@link DuAELayer.setAllAnims}.
  * @param {Layer[]|LayerCollection}	layers	- The layers.
  * @param {DuAELayerAnimation[]} anims	- The layer animations
- * @param {float}	[time=comp.time]	- The time where to begin the animation
+ * @param {Number}	[time=comp.time]	- The time where to begin the animation
  * @param {Boolean}	[ignoreName=false]	- true to set the anim even if name of the property do not match the name animation.<br />
  * This way, only the type of property (i.e. matchName) is checked.
  * @param {Boolean}	[setExpression=false]	- Set the expression on the property
@@ -426,7 +426,11 @@ DuAELayer.reverseAnims = function(anims) {
         else if (endTime < anim.endTime) endTime = anim.endTime;
     });
 
+    if (startTime === null) startTime = 0;
+    if (endTime === null) endTime = 0;
+
     var duration = endTime - startTime;
+    if (duration == 0) return;
 
     //recursive function to reverse keyframes in anim
     function reverse(anim) {
