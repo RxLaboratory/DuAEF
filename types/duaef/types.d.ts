@@ -7496,6 +7496,11 @@ declare namespace DuAEExpression {
          */
         function "addPoints"(p1: float[][], p2: float[][], w: float): float[][];
         /**
+         * A fast pseudo random number generator
+        usage: `var rng = alea(seed); rng(5, 10);` Generates a number between  5 and 10.
+         */
+        function "alea"(seed: any): void;
+        /**
          * Gets the distance of a point to a line
          * @param point - The point [x,y]
          * @param line - The line [ A , B ] where A and B are two points
@@ -7578,9 +7583,10 @@ declare namespace DuAEExpression {
         /**
          * Generates a unit vector in 2 or 3 dimensions
          * @param dimensions - The number of dimensions, either 2 or 3
+         * @param [rng = random] - A Random number generator which can take a min and max value like the random() function.
          * @returns The vector
          */
-        function "randomUnitVector"(dimensions: number): Number[];
+        function "randomUnitVector"(dimensions: number, rng?: (...params: any[]) => any): Number[];
         /**
          * Substracts two lists of points/vectors.
          * @param p1 - The list of points
@@ -8265,6 +8271,11 @@ declare namespace DuAEExpression {
          */
         function "addPoints"(p1: float[][], p2: float[][], w: float): float[][];
         /**
+         * A fast pseudo random number generator
+        usage: `var rng = alea(seed); rng(5, 10);` Generates a number between  5 and 10.
+         */
+        function "alea"(seed: any): void;
+        /**
          * Gets the distance of a point to a line
          * @param point - The point [x,y]
          * @param line - The line [ A , B ] where A and B are two points
@@ -8347,9 +8358,10 @@ declare namespace DuAEExpression {
         /**
          * Generates a unit vector in 2 or 3 dimensions
          * @param dimensions - The number of dimensions, either 2 or 3
+         * @param [rng = random] - A Random number generator which can take a min and max value like the random() function.
          * @returns The vector
          */
-        function "randomUnitVector"(dimensions: number): Number[];
+        function "randomUnitVector"(dimensions: number, rng?: (...params: any[]) => any): Number[];
         /**
          * Substracts two lists of points/vectors.
          * @param p1 - The list of points
