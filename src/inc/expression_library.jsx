@@ -775,6 +775,9 @@ DuAEExpression.Library["gaussianInterpolation"].expression = ['function gaussian
 	'if (typeof value1 === \'undefined\') value1 = 0;',
 	'if (typeof value2 === \'undefined\') value2 = 0;',
 	'if (typeof rate === \'undefined\') rate = 0;',
+	'if (value1 == value2) return value1;',
+	'if (t >= tMax) return value2;',
+	'if (t <= tMin) return value1;',
 	'if (t != tMin)',
 	'{',
 	'var newValue1 = gaussianInterpolation( tMin, tMin, tMax, value1, value2, rate );',
@@ -1800,6 +1803,35 @@ DuAEExpression.Library["normalizeWeights"].expression = ['function normalizeWeig
 DuAEExpression.Library["normalizeWeights"].requirements = [];
 
 /**
+ * Generates a unit vector in 2 or 3 dimensions
+ * @function
+ * @param {Number} dimensions The number of dimensions, either 2 or 3
+ * @returns {Number[]} The vector
+ * @category ExpressionLibrary
+ */
+DuAEExpression.Library["randomUnitVector"] = {};
+DuAEExpression.Library["randomUnitVector"].expression = ['function randomUnitVector( dimensions ) {',
+	'var angle = random(0, 2*Math.PI);',
+	'if (dimensions == 2) {',
+	'return [Math.cos(angle), Math.sin(angle)];',
+	'}',
+	'else if (dimensions == 3) {',
+	'var z = random(-1, 1);',
+	'var f = Math.sqrt(1-z*z);',
+	'return [',
+	'f*Math.cos(angle),',
+	'f*Math.sin(angle),',
+	'z',
+	'];',
+	'}',
+	'else {',
+	'return null;',
+	'}',
+	'}'
+	].join('\n');
+DuAEExpression.Library["randomUnitVector"].requirements = [];
+
+/**
     * Fix for the ExtendScript engine, implements the Math.sign function.
     * @function
     * @name Math.sign
@@ -1841,6 +1873,26 @@ DuAEExpression.Library["subPoints"].expression = ['function subPoints(p1, p2, w)
 	'}'
 	].join('\n');
 DuAEExpression.Library["subPoints"].requirements = [];
+
+/**
+ * Creates a unit vector along a given axis
+ * @function
+ * @param {Number} dimensions 
+ * @param {Number} axis 
+ * @returns {Number[]}
+ * @category ExpressionLibrary
+ */
+DuAEExpression.Library["unitVector"] = {};
+DuAEExpression.Library["unitVector"].expression = ['function unitVector(dimensions, axis) {',
+	'var vec = new Array(dimensions)',
+	'for (var i = 0; i < dimensions; i++) {',
+	'if (i == axis) vec[i] = 1;',
+	'else vec[i] = 0;',
+	'}',
+	'return vec;',
+	'}'
+	].join('\n');
+DuAEExpression.Library["unitVector"].requirements = [];
 
 /**
  * Adds two paths together.<br />

@@ -1780,7 +1780,7 @@ DuAELayer.isRenderable = function(layer) {
         var contents = layer.sourceText.value.text;
         if (contents == "") return false;
     }
-    if (layer.transform.opacity.expression == "" && layer.transform.opacity.value == 0) return false;
+    if (layer.transform.opacity.expression == "" && layer.transform.opacity.value == 0 && layer.transform.opacity.numKeys == 0) return false;
     else if (layer.transform.opacity.expression == "") return true;
 
     // Check opacity for each frame if there's an expression in it

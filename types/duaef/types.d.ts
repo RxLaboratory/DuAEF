@@ -7576,6 +7576,12 @@ declare namespace DuAEExpression {
          */
         function "normalizeWeights"(weights: float[], sum?: float): float[];
         /**
+         * Generates a unit vector in 2 or 3 dimensions
+         * @param dimensions - The number of dimensions, either 2 or 3
+         * @returns The vector
+         */
+        function "randomUnitVector"(dimensions: number): Number[];
+        /**
          * Substracts two lists of points/vectors.
          * @param p1 - The list of points
          * @param p2 - The other list of points
@@ -7583,6 +7589,10 @@ declare namespace DuAEExpression {
          * @returns The substracted points
          */
         function "subPoints"(p1: float[][], p2: float[][], w: float): float[][];
+        /**
+         * Creates a unit vector along a given axis
+         */
+        function "unitVector"(dimensions: number, axis: number): Number[];
         /**
          * Adds two paths together.<br />
         The paths must be objects with three array attributes: points, inTangents, outTangents
@@ -8335,6 +8345,12 @@ declare namespace DuAEExpression {
          */
         function "normalizeWeights"(weights: float[], sum?: float): float[];
         /**
+         * Generates a unit vector in 2 or 3 dimensions
+         * @param dimensions - The number of dimensions, either 2 or 3
+         * @returns The vector
+         */
+        function "randomUnitVector"(dimensions: number): Number[];
+        /**
          * Substracts two lists of points/vectors.
          * @param p1 - The list of points
          * @param p2 - The other list of points
@@ -8342,6 +8358,10 @@ declare namespace DuAEExpression {
          * @returns The substracted points
          */
         function "subPoints"(p1: float[][], p2: float[][], w: float): float[][];
+        /**
+         * Creates a unit vector along a given axis
+         */
+        function "unitVector"(dimensions: number, axis: number): Number[];
         /**
          * Adds two paths together.<br />
         The paths must be objects with three array attributes: points, inTangents, outTangents

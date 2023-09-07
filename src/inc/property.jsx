@@ -2123,7 +2123,7 @@ DuAEProperty.prototype.velocityAtTime = function(time, preExpression) {
  * Sets an expression to a property.<br />
  * With the ability to keep the initial value.
  * @param {string} expr - The expression
- * @param {bool} [keepValue=true] - When true, the method will try to keep the same resulting value as before applying the expression.
+ * @param {Boolean} [keepValue=true] - When true, the method will try to keep the same resulting value as before applying the expression.
  */
 DuAEProperty.prototype.setExpression = function(expr, keepValue) {
     keepValue = def(keepValue, true);
