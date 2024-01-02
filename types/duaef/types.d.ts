@@ -4448,7 +4448,7 @@ declare class DuToolBar {
      * @param [addOptions = false] - Whether to add more options
      * @param [optionsWithoutPanel = false] - Whether the options need a dedicated panel
      */
-    static addutton(text: string, icon?: string, helpTip?: string, addOptions?: boolean, optionsWithoutPanel?: boolean): void;
+    static addButton(text: string, icon?: string, helpTip?: string, addOptions?: boolean, optionsWithoutPanel?: boolean): void;
 }
 
 /**
