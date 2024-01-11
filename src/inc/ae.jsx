@@ -987,7 +987,7 @@ DuAE.getAEVersionName = function ( versionAsFloat ) {
     if ( versionAsFloat >= 16 && versionAsFloat < 17 ) return "CC2019";
     if ( versionAsFloat >= 17 && versionAsFloat < 18 ) return "2020";
     if ( versionAsFloat >= 18 && versionAsFloat < 22) return "2021";
-    if ( versionAsFloat >= 22 ) return "2022";
+    if ( versionAsFloat >= 22) return "20" + Math.floor(versionAsFloat);
     return "Unknown";
 }
 
