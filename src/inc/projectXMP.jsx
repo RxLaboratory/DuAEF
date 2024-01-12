@@ -19,17 +19,18 @@ DuAEProjectXMP.getXmp = function()
 /**
  * Gets the value of a property.
  * @param {string} prop The name of the property
- * @param {XMPConst} [type] The property data type, one of: - XMPConst.STRING - XMPConst.INTEGER - XMPConst.NUMBER - XMPConst.BOOLEAN - XMPConst.XMPDATE
+ * @param {*} [defaultVal] A default value to be returned if the property is not found.
  * @return {Object} The value
  */
-DuAEProjectXMP.getPropertyValue = function( prop, type)
+DuAEProjectXMP.getPropertyValue = function( prop, defaultVal)
 {
     var xmp = DuAEProjectXMP.getXmp();
     if (!xmp) return null;
 
     var p = xmp.getProperty(XMPConst.NS_XMP, prop);
 
-    if (!p) return null;
+    if (!p) return defaultVal;
+    if (p.value === null) return defaultVal;
     return p.value;
 }
 
@@ -88,7 +89,10 @@ DuAEProjectXMP.setPropertyValue = function(prop, value)
  */
 DuAEProjectXMP.getSettings = function ()
 {
-    var json = JSON.parse(DuAEProjectXMP.getPropertyValue("DuAEF"));
+    var json = null;
+    try {
+        json = JSON.parse(DuAEProjectXMP.getPropertyValue("DuAEF"));
+    } catch (e) {}
     if (!json) json = {};
     return json;
 }
