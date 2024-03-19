@@ -102,9 +102,21 @@ DuAEF.file = new File( $.fileName );
 ( function()
 {
     //Update AE Dark Grey Color with the actual color
-    var aeColor = app.themeColor( 78 );
-	aeColor.push(1);
+	var aeVersion = parseFloat(
+        app.version.split('x')[0]
+    );
 
+	// Default to AE very dark gray
+	var aeColor = [0.113725,0.113725,0.113725,1];
+
+	if (aeVersion >= 24.4) {
+
+	}
+	else {
+		aeColor = app.themeColor( 78 );
+		aeColor.push(1);
+	}
+    
     DuColor.Color.AE_DARK_GREY = aeColor;
 } )();
 
