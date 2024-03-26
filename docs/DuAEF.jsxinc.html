@@ -11878,19 +11878,19 @@ DuScriptUI.button = function(container, text, image, helpTip, addOptionsPanel, o
         e.stopPropagation();
         DuScriptUI.dimControls();
 
-        /*if (duButton.label &amp;&amp; !options.small) {
+        if (DuESF.scriptVersion.version &lt; 24.4 &amp;&amp; duButton.label &amp;&amp; !options.small) {
             DuScriptUI.setTextColor(duButton.label, DuColor.Color.APP_HIGHLIGHT_COLOR);
-        }*/
-        //else {
+        }
+        else {
             DuScriptUI.setBackgroundColor(mainGroup, DuColor.Color.APP_HIGHLIGHT_COLOR.darker());
-        //}
+        }
         
         DuScriptUI.highlightedControls.push(duButton);
     }
 
     duButton.dim = function() {
         DuScriptUI.setBackgroundColor(mainGroup, duButton.bgColor);
-        //if (duButton.label) DuScriptUI.setTextColor(duButton.label, duButton.textColor);
+        if (duButton.label) DuScriptUI.setTextColor(duButton.label, duButton.textColor);
     }
 
     duButton.setBackgroundColor = function(color) {
@@ -13020,14 +13020,14 @@ DuScriptUI.checkBox = function( container, text, image, helpTip, textChecked, im
 
         if ( duCheckBox.checked )
         {
-            if (duCheckBox.hasLabel &amp;&amp; !options.isTab) DuScriptUI.setTextColor( duCheckBox.labelChecked, DuColor.Color.APP_HIGHLIGHT_COLOR.lighter(150) );
-            
-            if (!duCheckBox.hasLabel &amp;&amp; !options.isTab) DuScriptUI.setBackgroundColor( duCheckBox.buttonGroup, DuColor.Color.APP_HIGHLIGHT_COLOR );
-            // image
-            if (!options.isTab &amp;&amp; duCheckBox.imageOnly) DuScriptUI.setBackgroundColor( duCheckBox.imageGroup, DuColor.Color.APP_HIGHLIGHT_COLOR );
-
+            if (!options.isTab) {
+                if (duCheckBox.hasLabel &amp;&amp; DuESF.scriptVersion.version &lt; 24.4)
+                    DuScriptUI.setTextColor( duCheckBox.labelChecked, DuColor.Color.APP_HIGHLIGHT_COLOR.lighter(150) );
+                else
+                    DuScriptUI.setBackgroundColor( duCheckBox.buttonGroup, DuColor.Color.APP_HIGHLIGHT_COLOR );
+            }
             //outline
-            if ( options.isTab )
+            else
             {
                 DuScriptUI.setBackgroundColor( duCheckBox.outLine, DuColor.Color.APP_HIGHLIGHT_COLOR );
                 if (duCheckBox.hasLabel) DuScriptUI.setTextColor( duCheckBox.label, DuColor.Color.APP_HIGHLIGHT_COLOR );
@@ -13035,14 +13035,14 @@ DuScriptUI.checkBox = function( container, text, image, helpTip, textChecked, im
         }
         else 
         {
-            if (duCheckBox.hasLabel &amp;&amp; !options.isTab) DuScriptUI.setTextColor( duCheckBox.label, DuColor.Color.APP_HIGHLIGHT_COLOR );
-
-            if (!duCheckBox.hasLabel &amp;&amp; !options.isTab) DuScriptUI.setBackgroundColor( duCheckBox.buttonGroup, DuColor.Color.APP_HIGHLIGHT_COLOR.darker() );
-            // image
-            if (!options.isTab &amp;&amp; duCheckBox.imageOnly) DuScriptUI.setBackgroundColor( duCheckBox.imageGroup, DuColor.Color.APP_HIGHLIGHT_COLOR.darker() );
-
+            if (!options.isTab) {
+                if (duCheckBox.hasLabel &amp;&amp; DuESF.scriptVersion.version &lt; 24.4)
+                    DuScriptUI.setTextColor( duCheckBox.label, DuColor.Color.APP_HIGHLIGHT_COLOR );
+                else
+                    DuScriptUI.setBackgroundColor( duCheckBox.buttonGroup, DuColor.Color.APP_HIGHLIGHT_COLOR.darker() );
+            }
             //outline
-            if (options.isTab )
+            else
             {
                 DuScriptUI.setBackgroundColor( duCheckBox.outLine, DuColor.Color.APP_HIGHLIGHT_COLOR );
                 if (duCheckBox.hasLabel) DuScriptUI.setTextColor( duCheckBox.label, DuColor.Color.APP_HIGHLIGHT_COLOR );
@@ -14911,7 +14911,7 @@ DuScriptUI.multiButton = function( container, text, image, helpTip, ignoreUIMode
     {
         e.stopPropagation();
         DuScriptUI.dimControls();
-        if (multiButton.label)
+        if (multiButton.label &amp;&amp; DuESF.scriptVersion.version &lt; 24.4)
         {
             DuScriptUI.setTextColor( multiButton.label, DuColor.Color.APP_HIGHLIGHT_COLOR );
         }
