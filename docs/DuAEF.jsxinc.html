@@ -11881,7 +11881,7 @@ DuScriptUI.button = function(container, text, image, helpTip, addOptionsPanel, o
         e.stopPropagation();
         DuScriptUI.dimControls();
 
-        if (DuESF.scriptVersion.version &lt; 24.4 &amp;&amp; duButton.label &amp;&amp; !options.small) {
+        if ((DuESF.hostVersion.version &lt; 24.4 || DuESF.host != DuESF.HostApplication.AFTER_EFFECTS) &amp;&amp; duButton.label &amp;&amp; !options.small) {
             DuScriptUI.setTextColor(duButton.label, DuColor.Color.APP_HIGHLIGHT_COLOR);
         }
         else {
@@ -13024,7 +13024,7 @@ DuScriptUI.checkBox = function( container, text, image, helpTip, textChecked, im
         if ( duCheckBox.checked )
         {
             if (!options.isTab) {
-                if (duCheckBox.hasLabel &amp;&amp; DuESF.scriptVersion.version &lt; 24.4)
+                if (duCheckBox.hasLabel &amp;&amp; (DuESF.hostVersion.version &lt; 24.4 || DuESF.host != DuESF.HostApplication.AFTER_EFFECTS))
                     DuScriptUI.setTextColor( duCheckBox.labelChecked, DuColor.Color.APP_HIGHLIGHT_COLOR.lighter(150) );
                 else
                     DuScriptUI.setBackgroundColor( duCheckBox.buttonGroup, DuColor.Color.APP_HIGHLIGHT_COLOR );
@@ -13039,7 +13039,7 @@ DuScriptUI.checkBox = function( container, text, image, helpTip, textChecked, im
         else 
         {
             if (!options.isTab) {
-                if (duCheckBox.hasLabel &amp;&amp; DuESF.scriptVersion.version &lt; 24.4)
+                if (duCheckBox.hasLabel &amp;&amp; (DuESF.hostVersion.version &lt; 24.4 || DuESF.host != DuESF.HostApplication.AFTER_EFFECTS))
                     DuScriptUI.setTextColor( duCheckBox.label, DuColor.Color.APP_HIGHLIGHT_COLOR );
                 else
                     DuScriptUI.setBackgroundColor( duCheckBox.buttonGroup, DuColor.Color.APP_HIGHLIGHT_COLOR.darker() );
@@ -14914,7 +14914,7 @@ DuScriptUI.multiButton = function( container, text, image, helpTip, ignoreUIMode
     {
         e.stopPropagation();
         DuScriptUI.dimControls();
-        if (multiButton.label &amp;&amp; DuESF.scriptVersion.version &lt; 24.4)
+        if (multiButton.label &amp;&amp; (DuESF.hostVersion.version &lt; 24.4 || DuESF.host != DuESF.HostApplication.AFTER_EFFECTS))
         {
             DuScriptUI.setTextColor( multiButton.label, DuColor.Color.APP_HIGHLIGHT_COLOR );
         }
