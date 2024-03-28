@@ -6,6 +6,7 @@
 #include "inc/duscriptui_extension.jsx"
 #include "inc/core.jsx"
 #include "inc/ae.jsx"
+#include "inc/ui.jsx"
 #include "inc/tag.jsx"
 #include "inc/property.jsx"
 #include "inc/expression.jsx"

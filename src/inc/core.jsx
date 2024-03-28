@@ -97,37 +97,18 @@ DuAEF.version = new DuVersion('{duaefVersion}');
  */
 DuAEF.file = new File( $.fileName );
 
-
-//Initializes DuAEF
-( function()
-{
-    //Update AE Dark Grey Color with the actual color
-	var aeVersion = parseFloat(
-        app.version.split('x')[0]
-    );
-
-	// Default to AE very dark gray
-	var aeColor = [0.113725,0.113725,0.113725,1];
-
-	if (aeVersion >= 24.4) {
-
-	}
-	else {
-		aeColor = app.themeColor( 78 );
-		aeColor.push(1);
-	}
-    
-    DuColor.Color.AE_DARK_GREY = aeColor;
-} )();
-
 /**
  * This method has to be called once at the very beginning of the script, just after the inclusion of DuAEF <code>#include DuAEF.jsxinc</code>
  * @param {string} [scriptName="DuAEF"] - The name of your script, as it has to be displayed in the UI and the filesystem
  * @param {string} [scriptVersion="0.0.0"] - The version of your script, in the form "XX.XX.XX-Comment", for example "1.0.12-Beta". The "-Comment" part is optional.
+ * @param {string} [companyName=""] - The name of the company/organization/author of the script.
  */
 DuAEF.init = function( scriptName, scriptVersion, companyName )
 {
     DuESF.init(scriptName, scriptVersion, companyName);
+	DuColor.Color.AE_DARK_GREY = DuAEUI.bgColor();
+	DuColor.Color.APP_BACKGROUND_COLOR = DuAEUI.bgColor();
+	DuColor.Color.APP_TEXT_COLOR = DuAEUI.textColor();
 }
 
 /**

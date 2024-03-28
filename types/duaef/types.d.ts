@@ -819,7 +819,7 @@ Alpha > 1 is clamped to 1.<br />
 Colors are stored in 32 bit float to keep the maximum precision.
  */
 declare class DuColor {
-    constructor(floatRGBA?: float[]);
+    constructor(floatRGBA?: Number[]);
     /**
      * Returns the color as a float Array with alpha
      * @param [clamped = true] - Set to false to keep the values > 1.0
@@ -892,8 +892,7 @@ declare class DuColor {
      */
     toJSON(): string;
     /**
-     * Creates a color adjusted according to the brightness setting of the application.<br />
-    For now, works only in After Effects
+     * Creates a color adjusted according to the brightness setting of the application.
      * @returns The new color
      */
     adjusted(): DuColor;
@@ -3212,7 +3211,7 @@ declare namespace DuScriptUI {
      * @param color - The new color [R,V,B,A] Array
      * @param [adjusted = true] - lightens the color if the brightness setting of Ae is not set on the darkest one
      */
-    function setBackgroundColor(uiItem: ScriptUI, color: any[], adjusted?: boolean): void;
+    function setBackgroundColor(uiItem: ScriptUI, color: Number[] | DuColor, adjusted?: boolean): void;
     /**
      * Adds a group in a container, using  DuScriptUI default alignments, and DuScriptUI.defaultSpacing. Margins are set to 0.
      * @param container - Where to create the group
@@ -5571,8 +5570,9 @@ declare namespace DuAEF {
      * This method has to be called once at the very beginning of the script, just after the inclusion of DuAEF <code>#include DuAEF.jsxinc</code>
      * @param [scriptName = "DuAEF"] - The name of your script, as it has to be displayed in the UI and the filesystem
      * @param [scriptVersion = "0.0.0"] - The version of your script, in the form "XX.XX.XX-Comment", for example "1.0.12-Beta". The "-Comment" part is optional.
+     * @param [companyName = ""] - The name of the company/organization/author of the script.
      */
-    function init(scriptName?: string, scriptVersion?: string): void;
+    function init(scriptName?: string, scriptVersion?: string, companyName?: string): void;
     /**
      * This method has to be called once at the end of the script, when everything is ready and the main UI visible (after any prompt or setup during startup).
      */
@@ -6181,6 +6181,52 @@ declare namespace DuAE {
      * @returns The array
      */
     function convertCollectionToArray(collection: any[] | Collection): any[];
+}
+
+/**
+ * After Effects User Interface tools
+ */
+declare namespace DuAEUI {
+    /**
+     * The limits between the three themes
+     */
+    enum brightnessLimits {
+        DARK = 0.16,
+        LIGHT = 0.5
+    }
+    /**
+     * Checks if the "use reduced contrast" appearance option is enabled.
+     */
+    function useReducedContrast(): boolean;
+    /**
+     * Gets the current Brightness appearance option.
+     * @returns A value in [0.0 ... 1.0].
+    In 24.4.0:
+    - Darkest is `<= 0.16`. The corresponding backgound color is [.11328125, .11328125, .11328125, 1]
+    - Dark is `> 0.16`. The corresponding backgound color is [.1953125, .1953125, .1953125, 1]
+    - Light is `> 0.5`.  The corresponding backgound color is [.96875, .96875, .96875, 1]
+     */
+    function brightness(): number;
+    /**
+     * Is the UI using the "Darkest" theme?
+     */
+    function isDarkest(): boolean;
+    /**
+     * Is the UI using the "Dark" theme?
+     */
+    function isDark(): boolean;
+    /**
+     * Is the UI using the "Light" theme?
+     */
+    function isLight(): boolean;
+    /**
+     * Gets the current bakckground color
+     */
+    function bgColor(): DuColor;
+    /**
+     * Gets the current foreground color
+     */
+    function textColor(): DuColor;
 }
 
 /**
