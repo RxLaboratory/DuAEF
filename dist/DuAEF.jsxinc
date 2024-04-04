@@ -2601,8 +2601,25 @@ DuColor.init = function()
 	if (DuESF.host == DuESF.HostApplication.AFTER_EFFECTS) 
 	{
 		DuColor.Color.APP_TEXT_COLOR = new DuColor( [ 0.6941, 0.6941, 0.6941, 1]);
-		var bgColor = app.themeColor(78) - [0.0127, 0.0127, 0.0127];
-		bgColor.push(1);
+		var bgColor = [.11328125, .11328125, .11328125, 1];
+		if (DuESF.hostVersion.version < 24.4) {
+			/* @ts-ignore */
+			bgColor = app.themeColor(78) - [0.0127, 0.0127, 0.0127];
+			bgColor.push(1);
+		}
+		else {
+			/* @ts-ignore */
+			var brightness = app.preferences.getPrefAsFloat(
+				"Main Pref Section v2",
+				"User Interface Brightness (4) [0.0..1.0]",
+				/* @ts-ignore */
+				PREFType.PREF_Type_MACHINE_INDEPENDENT
+				);
+			if (brightness < .16) bgColor = [.11328125, .11328125, .11328125, 1];
+			else if (brightness < .5) bgColor = [.1953125, .1953125, .1953125, 1];
+			else bgColor = [.96875, .96875, .96875, 1];
+		}
+		
 		DuColor.Color.APP_BACKGROUND_COLOR = new DuColor( bgColor );
 		DuColor.Color.APP_HIGHLIGHT_COLOR = DuColor.Color.AFTER_EFFECTS_BLUE;
 		DuColor.Color.DARK_GREY = new DuColor( [.2, .2, .2, 1] );
