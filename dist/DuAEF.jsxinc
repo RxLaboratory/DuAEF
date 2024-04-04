@@ -11600,7 +11600,7 @@ DuScriptUI.button = function(container, text, image, helpTip, addOptionsPanel, o
 
         if (!options.optionsWithoutPanel) {
             // Create panel
-            var optionsPanel = DuScriptUI.popUp(options.text == '' ? 'Options' : options.text);
+            var optionsPanel = DuScriptUI.popUp(options.text == '' ? i18n._('Options') : options.text);
             duButton.optionsPopup = optionsPanel;
             duButton.optionsPanel = DuScriptUI.group(optionsPanel.content, 'column');
 
@@ -11636,7 +11636,7 @@ DuScriptUI.button = function(container, text, image, helpTip, addOptionsPanel, o
                 duButton,
                 '',
                 w12_options,
-                options.text + '\nOptions'
+                options.text + '\n' + i18n._('Options')
             )
             optionsButton.alignment = ['left', 'center'];
 

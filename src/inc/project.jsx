@@ -47,11 +47,11 @@ DuAEProject.setProgressMode = function(inProgress, showProgressBar, askToHideLay
                 // Ask to hide layer controls
                 var dialog = DuScriptUI.popUp("Hide layer controls", undefined, true);
                 dialog.result = 0;
-                dialog.content.add('statictext', undefined, i18n._(
-                    "You're starting a process which can take some time.\n" +
-                    "Hiding layer controls will improve performance a lot. Do you want to toggle layer controls now?\n\n" + 
-                    "If layer controls are already hidden, you can ignore this."
-                ), { 'multiline': true });
+                dialog.content.add('statictext', undefined,
+                    i18n._("You're starting a process which can take some time.") + "\n" +
+                    i18n._("Hiding layer controls will improve performance a lot. Do you want to toggle layer controls now?") + "\n\n" +
+                    i18n._("If layer controls are already hidden, you can ignore this."),
+                    { 'multiline': true });
                 var layerControlsAlertButton = DuScriptUI.checkBox(
                     dialog.content,
                     i18n._("Permanently disable this alert."),
