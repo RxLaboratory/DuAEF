@@ -10228,7 +10228,7 @@ DuScriptUI.titleBar = function( container, title, closeButton, pinButton ) {
     titleBar.spacing = 0;
     titleBar.orientation = 'row';
     titleBar.alignment = ['fill','top'];
-    DuScriptUI.setBackgroundColor( titleBar, DuColor.Color.APP_BACKGROUND_COLOR.darker() );
+    DuScriptUI.setBackgroundColor( titleBar, DuColor.Color.APP_BACKGROUND_COLOR.lighter() );
 
     titleBar.onClose = function() {};
     titleBar.onPin = function(p) {};
@@ -12570,7 +12570,7 @@ DuScriptUI.separator = function( container, name, checkable, drawLine )
         if ( checkable ) separator.label = separator.add( 'checkbox', undefined, name );
         else separator.label = separator.add( 'statictext', undefined, name );
         separator.label.alignment = [ 'center', 'bottom' ];
-        if ( drawLine ) DuScriptUI.setBackgroundColor( separator, DuColor.Color.APP_BACKGROUND_COLOR.darker() );
+        if ( drawLine ) DuScriptUI.setBackgroundColor( separator, DuColor.Color.APP_BACKGROUND_COLOR.lighter() );
     }
     else if ( drawLine )
     {
