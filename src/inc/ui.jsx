@@ -44,7 +44,11 @@ DuAEUI.brightnessLimits = {
  * @returns {Boolean}
  */
 DuAEUI.useReducedContrast = function() {
-    if (DuAE.version.version < 24.4)
+    if (DuAE.version.version < 24.4 || app.preferences.havePref(
+        "Main Pref Section v2",
+        "Use Reduced Contrast",
+        PREFType.PREF_Type_MACHINE_INDEPENDENT
+    ))
         return true;
 
     return app.preferences.getPrefAsBool(
@@ -63,7 +67,11 @@ DuAEUI.useReducedContrast = function() {
  * - Light is `> 0.5`.  The corresponding backgound color is [.96875, .96875, .96875, 1]
  */
 DuAEUI.brightness = function() {
-    if (DuAE.version.version < 24.4)
+    if (DuAE.version.version < 24.4 || !app.preferences.havePref(
+        "Main Pref Section v2",
+        "User Interface Brightness (4) [0.0..1.0]",
+        PREFType.PREF_Type_MACHINE_INDEPENDENT
+    ))
         return .2;
 
     return app.preferences.getPrefAsFloat(
