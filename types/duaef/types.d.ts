@@ -7756,6 +7756,12 @@ declare namespace DuAEExpression {
          */
         function "isPosition"(prop?: Property): boolean;
         /**
+         * Checks if a property is a shape layer.
+         * @param [lay = thisLayer] - The layer to test
+         * @returns true if the prop is a layer
+         */
+        function "isShapeLayer"(lay?: Property): boolean;
+        /**
          * Checks if a property is spatial
          * @param [prop = thisProperty] - The property to check
          * @returns true if the property is spatial.
@@ -8530,6 +8536,12 @@ declare namespace DuAEExpression {
          * @returns true if the property is the transform.position property.
          */
         function "isPosition"(prop?: Property): boolean;
+        /**
+         * Checks if a property is a shape layer.
+         * @param [lay = thisLayer] - The layer to test
+         * @returns true if the prop is a layer
+         */
+        function "isShapeLayer"(lay?: Property): boolean;
         /**
          * Checks if a property is spatial
          * @param [prop = thisProperty] - The property to check
