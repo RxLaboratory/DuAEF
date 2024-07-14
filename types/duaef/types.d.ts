@@ -880,6 +880,18 @@ declare class DuColor {
      */
     lighter(ratio?: int): DuColor;
     /**
+     * Creates a new color lighter or darker depending on the difference between the APP_TEXT_COLOR (foreground color) and the APP_BACKGROUND_COLOR
+     * @param [ratio = 200] - Pull ratio
+     * @returns The new color
+     */
+    pull(ratio?: int): DuColor;
+    /**
+     * Creates a new color lighter or darker depending on the difference between the APP_TEXT_COLOR (foreground color) and the APP_BACKGROUND_COLOR
+     * @param [ratio = 200] - Push ratio
+     * @returns The new color
+     */
+    push(ratio?: int): DuColor;
+    /**
      * Compares two colors
      * @param [ignoreAlpha = false] - Set to true to consider colors to be equal if they differ only by their alpha.
      * @param [precision = 4] - The precision to use (the number of decimals to compare).
@@ -896,6 +908,10 @@ declare class DuColor {
      * @returns The new color
      */
     adjusted(): DuColor;
+    /**
+     * Checks if the app is in "dark mode", i.e. the APP_TEXT_COLOR is lighter than the APP_BACKGROUND_COLOR
+     */
+    static isUsingDarkMode(): void;
     /**
      * Creates a new DuColor from a hex code/array
      * @param hexColor - The hexadecimal color
