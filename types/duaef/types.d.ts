@@ -4439,7 +4439,7 @@ This is not a real class, and cannot be instanciated.<br />
 Use {@link DuScriptUI.toolBar} to create a Tool Bar.<br />
 The DuToolBar inherits the <code>Group</code> object from ScriptUI and has all of its properties and methods.
  */
-declare class DuToolBar {
+declare class DuToolBar extends Group {
     /**
      * Changes the background color of the button.
      * @param text - The button text.
