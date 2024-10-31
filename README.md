@@ -12,7 +12,7 @@ It is very easy to use and **[documented](https://duaef.rxlab.guide)**.
 - Tools: [rxlaboratory.org/tag/after-effects](https://rxlaboratory.org/tag/after-effects/)
 - Developers and users chat: [chat.rxlab.info](https://chat.rxlab.info)
     - Feel free to come talk with us ! :smile:
-- Developers' documentation: [https://duaef.rxlab.guide](https://duaef.rxlab.guide)    
+- Developers' documentation: [duaef.rxlab.guide](https://duaef.rxlab.guide)    
    
 ## How to use the framework in an After Effects script?
 
